@@ -17,7 +17,7 @@ import sys
 sys.path = ['/work/sciences/toolbox/python/pyGeoSpatialETL'] + sys.path
 
 from coverage.TimeCoverage import TimeCoverage
-from coverage.operator.interpolator.CoverageInterpolatorReader import CoverageInterpolatorReader
+from coverage.operator.interpolator.CoverageInterpolator import CoverageInterpolator
 from coverage.operator.interpolator.InterpolatorCore import InterpolatorCore
 from coverage.io.netcdf.ww3.WW3Reader import WW3Reader
 from coverage.io.netcdf.DefaultWriter import DefaultWriter
@@ -38,10 +38,10 @@ if __name__ == "__main__":
     InterpolatorCore.INTERPOLATION_METHOD = "nearest";
 
     depths = np.array([])
-    coverage = TimeCoverage(CoverageInterpolatorReader(coverageOrig,0.1,0.1,depths))
+    coverage = TimeCoverage(CoverageInterpolator(coverageOrig, 0.1, 0.1, depths))
 
     #Renommer toutes les noms des fonctions
-    writer = DefaultWriter(coverage,'/tmp/ww3_regular.nc')
+    writer = DefaultWriter(coverage, '/tmp/ww3_regular.nc')
 
     writer.write_variable_barotropic_sea_water_velocity()
     writer.write_variable_sea_surface_height_above_mean_sea_level()

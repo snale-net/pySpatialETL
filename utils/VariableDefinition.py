@@ -1,0 +1,325 @@
+class VariableDefinition:
+
+    STANDARD_NAME = {};
+    LONG_NAME = {};
+    VARIABLE_NAME = {}
+    CANONICAL_UNITS = {};
+
+    STANDARD_NAME['longitude'] = "longitude"
+    LONG_NAME['longitude'] = "Longitude"
+    VARIABLE_NAME['longitude'] = "longitude"
+    CANONICAL_UNITS['longitude'] = "degree_east"
+
+    STANDARD_NAME['latitude'] = "latitude"
+    LONG_NAME['latitude'] = "Latitude"
+    VARIABLE_NAME['latitude'] = "latitude"
+    CANONICAL_UNITS['latitude'] = "degree_north"
+
+    STANDARD_NAME['depth'] = "depth"
+    LONG_NAME['depth'] = "Positive depth"
+    VARIABLE_NAME['depth'] = "depth"
+    CANONICAL_UNITS['depth'] = "m"
+
+    STANDARD_NAME['time'] = "time"
+    LONG_NAME['time'] = "Time UTC"
+    VARIABLE_NAME['time'] = "time"
+    CANONICAL_UNITS['time'] = "year-month-day hour:minute:second UTC"
+
+    STANDARD_NAME['point'] = "point"
+    LONG_NAME['point'] = "Geographical Point"
+    VARIABLE_NAME['point'] = "point"
+    CANONICAL_UNITS['point'] = "identifier"
+
+    STANDARD_NAME['sea_binary_mask'] = "sea_binary_mask"
+    LONG_NAME['sea_binary_mask'] = "Sea Binary Mask"
+    VARIABLE_NAME['sea_binary_mask'] = "sea_mask"
+    CANONICAL_UNITS['sea_binary_mask'] = "1"
+
+    STANDARD_NAME['2d_sea_binary_mask'] = "sea_binary_mask"
+    LONG_NAME['2d_sea_binary_mask'] = "Sea Binary Mask"
+    VARIABLE_NAME['2d_sea_binary_mask'] = "sea_mask"
+    CANONICAL_UNITS['2d_sea_binary_mask'] = "1"
+
+    STANDARD_NAME['wet_binary_mask'] = "wet_binary_mask"
+    LONG_NAME['wet_binary_mask'] = "Wet Binary Mask"
+    VARIABLE_NAME['wet_binary_mask'] = "wet_mask"
+    CANONICAL_UNITS['wet_binary_mask'] = "1"
+
+    STANDARD_NAME['mesh_size'] = "mesh_size"
+    LONG_NAME['mesh_size'] = "Mesh Size"
+    VARIABLE_NAME['mesh_size'] = "mesh_size"
+    CANONICAL_UNITS['mesh_size'] = "m"
+
+    # HYDRO
+    # Sea Surface
+    STANDARD_NAME['sea_surface_height_above_mean_sea_level'] = "sea_surface_height_above_mean_sea_level"
+    LONG_NAME['sea_surface_height_above_mean_sea_level'] = "Sea Surface Height Above Mean Sea Level"
+    VARIABLE_NAME['sea_surface_height_above_mean_sea_level'] = "ssh_msl"
+    CANONICAL_UNITS['sea_surface_height_above_mean_sea_level'] = "m"
+
+    STANDARD_NAME['sea_surface_height_above_geoid'] = "sea_surface_height_above_geoid"
+    LONG_NAME['sea_surface_height_above_geoid'] = "Sea Surface Height Above Geoid"
+    VARIABLE_NAME['sea_surface_height_above_geoid'] = "ssh_geoid"
+    CANONICAL_UNITS['sea_surface_height_above_geoid'] = "m"
+
+    STANDARD_NAME['sea_surface_temperature'] = "sea_surface_temperature"
+    LONG_NAME['sea_surface_temperature'] = "Sea Surface Temperature"
+    VARIABLE_NAME['sea_surface_temperature'] = "sea_surface_temperature"
+    CANONICAL_UNITS['sea_surface_temperature'] = "C"
+
+    STANDARD_NAME['sea_surface_salinity'] = "sea_surface_salinity"
+    LONG_NAME['sea_surface_salinity'] = "Sea Surface Salinity"
+    VARIABLE_NAME['sea_surface_salinity'] = "sea_surface_salinity"
+    CANONICAL_UNITS['sea_surface_salinity'] = "psu"
+
+    STANDARD_NAME['sea_water_pressure_at_sea_water_surface'] = "sea_water_pressure_at_sea_water_surface"
+    LONG_NAME['sea_water_pressure_at_sea_water_surface'] = "Sea Water Pressure At Sea Water Surface"
+    VARIABLE_NAME['sea_water_pressure_at_sea_water_surface'] = "sea_surface_water_pressure"
+    CANONICAL_UNITS['sea_water_pressure_at_sea_water_surface'] = "dbar"
+
+    STANDARD_NAME['sea_surface_density'] = "sea_surface_density"
+    LONG_NAME['sea_surface_density'] = "Sea Surface Density"
+    VARIABLE_NAME['sea_surface_density'] = "sea_surface_density"
+    CANONICAL_UNITS['sea_surface_density'] = "kg m-3"
+
+    STANDARD_NAME['eastward_sea_water_velocity_at_sea_water_surface'] = "eastward_sea_water_velocity_at_sea_water_surface"
+    LONG_NAME['eastward_sea_water_velocity_at_sea_water_surface'] = "Eastward Sea Water Velocity At Sea Water Surface"
+    VARIABLE_NAME['eastward_sea_water_velocity_at_sea_water_surface'] = "u_sea_surface_vel"
+    CANONICAL_UNITS['eastward_sea_water_velocity_at_sea_water_surface'] = "m s-1"
+
+    STANDARD_NAME['northward_sea_water_velocity_at_sea_water_surface'] = "northward_sea_water_velocity_at_sea_water_surface"
+    LONG_NAME['northward_sea_water_velocity_at_sea_water_surface'] = "Northward Sea Water Velocity At Sea Water Surface"
+    VARIABLE_NAME['northward_sea_water_velocity_at_sea_water_surface'] = "v_sea_surface_vel"
+    CANONICAL_UNITS['northward_sea_water_velocity_at_sea_water_surface'] = "m s-1"
+
+    STANDARD_NAME['sea_water_speed_at_sea_water_surface'] = "sea_water_speed_at_sea_water_surface"
+    LONG_NAME['sea_water_speed_at_sea_water_surface'] = "Sea Water Speed At Sea Water Surface"
+    VARIABLE_NAME['sea_water_speed_at_sea_water_surface'] = "sea_surface_speed"
+    CANONICAL_UNITS['sea_water_speed_at_sea_water_surface'] = "m s-1"
+
+    STANDARD_NAME['sea_water_from_direction_at_sea_water_surface'] = "sea_water_from_direction_at_sea_water_surface"
+    LONG_NAME['sea_water_from_direction_at_sea_water_surface'] = "Sea Water From Direction At Sea Water Surface"
+    VARIABLE_NAME['sea_water_from_direction_at_sea_water_surface'] = "sea_surface_from_dir"
+    CANONICAL_UNITS['sea_water_from_direction_at_sea_water_surface'] = "degree"  # from North=0"
+
+    STANDARD_NAME['sea_water_to_direction_at_sea_water_surface'] = "sea_water_to_direction_at_sea_water_surface"
+    LONG_NAME['sea_water_to_direction_at_sea_water_surface'] = "Sea Water To Direction At Sea Water Surface"
+    VARIABLE_NAME['sea_water_to_direction_at_sea_water_surface'] = "sea_surface_to_dir"
+    CANONICAL_UNITS['sea_water_to_direction_at_sea_water_surface'] = "degree"  # from North=0"
+
+    # 2D
+    STANDARD_NAME['bathymetry'] = "bathymetry"
+    LONG_NAME['bathymetry'] = "Bathymetry"
+    VARIABLE_NAME['bathymetry'] = "bathymetry"
+    CANONICAL_UNITS['bathymetry'] = "m"
+
+    STANDARD_NAME['barotropic_eastward_sea_water_velocity'] = "barotropic_eastward_sea_water_velocity"
+    LONG_NAME['barotropic_eastward_sea_water_velocity'] = "Barotropic Eastward Sea Water Velocity"
+    VARIABLE_NAME['barotropic_eastward_sea_water_velocity'] = "u_sea_water_bar_vel"
+    CANONICAL_UNITS['barotropic_eastward_sea_water_velocity'] = "m s-1"
+
+    STANDARD_NAME['barotropic_northward_sea_water_velocity'] = "barotropic_northward_sea_water_velocity"
+    LONG_NAME['barotropic_northward_sea_water_velocity'] = "Barotropic Northward Sea Water Velocity"
+    VARIABLE_NAME['barotropic_northward_sea_water_velocity'] = "v_sea_water_bar_vel"
+    CANONICAL_UNITS['barotropic_northward_sea_water_velocity'] = "m s-1"
+
+    STANDARD_NAME['barotropic_sea_water_speed'] = "barotropic_sea_water_speed"
+    LONG_NAME['barotropic_sea_water_speed'] = "Barotropic Sea Water Speed"
+    VARIABLE_NAME['barotropic_sea_water_speed'] = "sea_water_bar_speed"
+    CANONICAL_UNITS['barotropic_sea_water_speed'] = "m s-1"
+
+    STANDARD_NAME['barotropic_sea_water_from_direction'] = "barotropic_sea_water_from_direction"
+    LONG_NAME['barotropic_sea_water_from_direction'] = "Barotropic Sea Water From Direction"
+    VARIABLE_NAME['barotropic_sea_water_from_direction'] = "sea_water_bar_from_dir"
+    CANONICAL_UNITS['barotropic_sea_water_from_direction'] = "degree"  # from North=0"
+
+    STANDARD_NAME['barotropic_sea_water_to_direction'] = "barotropic_sea_water_to_direction"
+    LONG_NAME['barotropic_sea_water_to_direction'] = "Barotropic Sea Water To Direction"
+    VARIABLE_NAME['barotropic_sea_water_to_direction'] = "sea_water_bar_to_dir"
+    CANONICAL_UNITS['barotropic_sea_water_to_direction'] = "degree"  # from North=0"
+
+    # 3D
+    STANDARD_NAME['sea_water_turbidity'] = "sea_water_turbidity"
+    LONG_NAME['sea_water_turbidity'] = "Sea Water Turbidity"
+    VARIABLE_NAME['sea_water_turbidity'] = "sea_water_turbidity"
+    CANONICAL_UNITS['sea_water_turbidity'] = "FTU"
+
+    STANDARD_NAME['sea_water_electrical_conductivity'] = "sea_water_electrical_conductivity"
+    LONG_NAME['sea_water_electrical_conductivity'] = "Sea Water Electrical Conductivity"
+    VARIABLE_NAME['sea_water_electrical_conductivity'] = "sea_water_electrical_conductivity"
+    CANONICAL_UNITS['sea_water_electrical_conductivity'] = "S m-1"
+
+    STANDARD_NAME['sea_water_temperature'] = "sea_water_temperature"
+    LONG_NAME['sea_water_temperature'] = "Sea Water Temperature"
+    VARIABLE_NAME['sea_water_temperature'] = "sea_water_temperature"
+    CANONICAL_UNITS['sea_water_temperature'] = "degree"
+
+    STANDARD_NAME['sea_water_salinity'] = "sea_water_salinity"
+    LONG_NAME['sea_water_salinity'] = "Sea Water Salinity"
+    VARIABLE_NAME['sea_water_salinity'] = "sea_water_salinity"
+    CANONICAL_UNITS['sea_water_salinity'] = "psu"
+
+    STANDARD_NAME['sea_water_density'] = "sea_water_density"
+    LONG_NAME['sea_water_density'] = "Sea Water Density"
+    VARIABLE_NAME['sea_water_density'] = "sea_water_density"
+    CANONICAL_UNITS['sea_water_density'] = "kg m-3"
+
+    STANDARD_NAME['baroclinic_eastward_sea_water_velocity'] = "baroclinic_eastward_sea_water_velocity"
+    LONG_NAME['baroclinic_eastward_sea_water_velocity'] = "Baroclinic Eastward Sea Water Velocity"
+    VARIABLE_NAME['baroclinic_eastward_sea_water_velocity'] = "u_sea_water_vel"
+    CANONICAL_UNITS['baroclinic_eastward_sea_water_velocity'] = "m s-1"
+
+    STANDARD_NAME['baroclinic_northward_sea_water_velocity'] = "baroclinic_northward_sea_water_velocity"
+    LONG_NAME['baroclinic_northward_sea_water_velocity'] = "Baroclinic Northward Sea Water Velocity"
+    VARIABLE_NAME['baroclinic_northward_sea_water_velocity'] = "v_sea_water_vel"
+    CANONICAL_UNITS['baroclinic_northward_sea_water_velocity'] = "m s-1"
+
+    STANDARD_NAME['baroclinic_sea_water_speed'] = "baroclinic_sea_water_speed"
+    LONG_NAME['baroclinic_sea_water_speed'] = "Baroclinic Sea Water Speed"
+    VARIABLE_NAME['baroclinic_sea_water_speed'] = "sea_water_speed"
+    CANONICAL_UNITS['baroclinic_sea_water_speed'] = "m s-1"
+
+    STANDARD_NAME['baroclinic_sea_water_from_direction'] = "baroclinic_sea_water_from_direction"
+    LONG_NAME['baroclinic_sea_water_from_direction'] = "Baroclinic Sea Water From Direction"
+    VARIABLE_NAME['baroclinic_sea_water_from_direction'] = "sea_water_from_dir"
+    CANONICAL_UNITS['baroclinic_sea_water_from_direction'] = "degree"  # from North=0"
+
+    STANDARD_NAME['baroclinic_sea_water_to_direction'] = "baroclinic_sea_water_to_direction"
+    LONG_NAME['baroclinic_sea_water_to_direction'] = "Baroclinic Sea Water To Direction"
+    VARIABLE_NAME['baroclinic_sea_water_to_direction'] = "sea_water_to_dir"
+    CANONICAL_UNITS['baroclinic_sea_water_to_direction'] = "degree"  # from North=0"
+
+    STANDARD_NAME['water_volume_transport_into_sea_water_from_rivers'] = "water_volume_transport_into_sea_water_from_rivers"
+    LONG_NAME['water_volume_transport_into_sea_water_from_rivers'] = "Water Volume Transport Into Sea Water From Rivers"
+    VARIABLE_NAME['water_volume_transport_into_sea_water_from_rivers'] = "rivers_flux"
+    CANONICAL_UNITS['water_volume_transport_into_sea_water_from_rivers'] = "m3 s-1"
+
+    # WAVES
+    STANDARD_NAME['sea_surface_wave_significant_height'] = "sea_surface_wave_significant_height"
+    LONG_NAME['sea_surface_wave_significant_height'] = "Sea Surface Wave Significant Height"
+    VARIABLE_NAME['sea_surface_wave_significant_height'] = "hs"
+    CANONICAL_UNITS['sea_surface_wave_significant_height'] = "m"
+
+    STANDARD_NAME['sea_surface_wave_breaking_height'] = "sea_surface_wave_breaking_height"
+    LONG_NAME['sea_surface_wave_breaking_height'] = "Sea Surface Wave Breaking Height"
+    VARIABLE_NAME['sea_surface_wave_breaking_height'] = "wch"
+    CANONICAL_UNITS['sea_surface_wave_breaking_height'] = "m"
+
+    STANDARD_NAME['sea_surface_wave_mean_period'] = "sea_surface_wave_mean_period"
+    LONG_NAME['sea_surface_wave_mean_period'] = "Sea Surface Wave Mean Period"
+    VARIABLE_NAME['sea_surface_wave_mean_period'] = "wave_mean_period"
+    CANONICAL_UNITS['sea_surface_wave_mean_period'] = "s"
+
+    STANDARD_NAME['sea_surface_wave_peak_period'] = "sea_surface_wave_peak_period"
+    LONG_NAME['sea_surface_wave_peak_period'] = "Sea Surface Wave Peak Period"
+    VARIABLE_NAME['sea_surface_wave_peak_period'] = "wave_peak_period"
+    CANONICAL_UNITS['sea_surface_wave_peak_period'] = "s"
+
+    STANDARD_NAME['sea_surface_wave_from_direction'] = "sea_surface_wave_from_direction"
+    LONG_NAME['sea_surface_wave_from_direction'] = "Sea Surface Wave From Direction"
+    VARIABLE_NAME['sea_surface_wave_from_direction'] = "wave_from_dir"
+    CANONICAL_UNITS['sea_surface_wave_from_direction'] = "degree" # from North=0 / East=90"
+
+    STANDARD_NAME['sea_surface_wave_to_direction'] = "sea_surface_wave_to_direction"
+    LONG_NAME['sea_surface_wave_to_direction'] = "Sea Surface Wave To Direction"
+    VARIABLE_NAME['sea_surface_wave_to_direction'] = "wave_to_dir"
+    CANONICAL_UNITS['sea_surface_wave_to_direction'] = "degree" # from North=0 / East=90"
+
+    STANDARD_NAME['eastward_atmosphere_momentum_flux_to_waves'] = "eastward_atmosphere_momentum_flux_to_waves"
+    LONG_NAME['eastward_atmosphere_momentum_flux_to_waves'] = "Eastward Atmosphere Momentum Flux To Waves"
+    VARIABLE_NAME['eastward_atmosphere_momentum_flux_to_waves'] = "u_taw"
+    CANONICAL_UNITS['eastward_atmosphere_momentum_flux_to_waves'] = "m2 s-1"
+
+    STANDARD_NAME['northward_atmosphere_momentum_flux_to_waves'] = "northward_atmosphere_momentum_flux_to_waves"
+    LONG_NAME['northward_atmosphere_momentum_flux_to_waves'] = "Northward Atmosphere Momentum Flux To Waves"
+    VARIABLE_NAME['northward_atmosphere_momentum_flux_to_waves'] = "v_taw"
+    CANONICAL_UNITS['northward_atmosphere_momentum_flux_to_waves'] = "m2 s-1"
+
+    STANDARD_NAME['eastward_waves_momentum_flux_to_ocean'] = "eastward_waves_momentum_flux_to_ocean"
+    LONG_NAME['eastward_waves_momentum_flux_to_ocean'] = "Eastward Waves Momentum Flux To Ocean"
+    VARIABLE_NAME['eastward_waves_momentum_flux_to_ocean'] = "u_two"
+    CANONICAL_UNITS['eastward_waves_momentum_flux_to_ocean'] = "m2 s-1"
+
+    STANDARD_NAME['northward_waves_momentum_flux_to_ocean'] = "northward_waves_momentum_flux_to_ocean"
+    LONG_NAME['northward_waves_momentum_flux_to_ocean'] = "Northward Waves Momentum Flux To Ocean"
+    VARIABLE_NAME['northward_waves_momentum_flux_to_ocean'] = "v_two"
+    CANONICAL_UNITS['northward_waves_momentum_flux_to_ocean'] = "m2 s-1"
+
+    STANDARD_NAME['eastward_sea_surface_wave_stokes_drift_velocity'] = "eastward_sea_surface_wave_stokes_drift_velocity"
+    LONG_NAME['eastward_sea_surface_wave_stokes_drift_velocity'] = "Eastward Sea Surface Wave Stokes Drift Velocity"
+    VARIABLE_NAME['eastward_sea_surface_wave_stokes_drift_velocity'] = "u_stokes_drift_vel"
+    CANONICAL_UNITS['eastward_sea_surface_wave_stokes_drift_velocity'] = "m s-1"
+
+    STANDARD_NAME['northward_sea_surface_wave_stokes_drift_velocity'] = "northward_sea_surface_wave_stokes_drift_velocity"
+    LONG_NAME['northward_sea_surface_wave_stokes_drift_velocity'] = "Northward Sea Surface Wave Stokes Drift Velocity"
+    VARIABLE_NAME['northward_sea_surface_wave_stokes_drift_velocity'] = "v_stokes_drift_vel"
+    CANONICAL_UNITS['northward_sea_surface_wave_stokes_drift_velocity'] = "m s-1"
+
+    STANDARD_NAME['radiation_pressure_bernouilli_head'] = "radiation_pressure_bernouilli_head"
+    LONG_NAME['radiation_pressure_bernouilli_head'] = "Radiation Pressure Bernouilli_Head"
+    VARIABLE_NAME['radiation_pressure_bernouilli_head'] = "pres_bernouilli_head"
+    CANONICAL_UNITS['radiation_pressure_bernouilli_head'] = "m2 s-2"
+
+    STANDARD_NAME['sea_surface_wave_energy_flux_to_ocean'] = "sea_surface_wave_energy_flux_to_ocean"
+    LONG_NAME['sea_surface_wave_energy_flux_to_ocean'] = "Sea Surface Wave Energy Flux To Ocean"
+    VARIABLE_NAME['sea_surface_wave_energy_flux_to_ocean'] = "wave_energy_flux_to_ocean"
+    CANONICAL_UNITS['sea_surface_wave_energy_flux_to_ocean'] = "W m-2"
+
+    STANDARD_NAME['sea_surface_wave_energy_dissipation_at_ground_level'] = "sea_surface_wave_energy_dissipation_at_ground_level"
+    LONG_NAME['sea_surface_wave_energy_dissipation_at_ground_level'] = "Sea Surface Wave Energy Dissipation At Ground Level"
+    VARIABLE_NAME['sea_surface_wave_energy_dissipation_at_ground_level'] = "wave_energy_dissip_bottom"
+    CANONICAL_UNITS['sea_surface_wave_energy_dissipation_at_ground_level'] = "W m-2"
+
+    # METEO
+    STANDARD_NAME['surface_air_pressure'] = "surface_air_pressure"
+    LONG_NAME['surface_air_pressure'] = "Surface Air Pressure"
+    VARIABLE_NAME['surface_air_pressure'] = "surface_air_pressure"
+    CANONICAL_UNITS['surface_air_pressure'] = "Pa"
+
+    STANDARD_NAME['eastward_wind_10m'] = "eastward_wind_10m"
+    LONG_NAME['eastward_wind_10m'] = "Eastward Wind 10m"
+    VARIABLE_NAME['eastward_wind_10m'] = "u_wind_10m"
+    CANONICAL_UNITS['eastward_wind_10m'] = "m s-1"
+
+    STANDARD_NAME['northward_wind_10m'] = "northward_wind_10m"
+    LONG_NAME['northward_wind_10m'] = "Northward Wind 10m"
+    VARIABLE_NAME['northward_wind_10m'] = "v_wind_10m"
+    CANONICAL_UNITS['northward_wind_10m'] = "m s-1"
+
+    STANDARD_NAME['wind_speed_10m'] = "wind_speed_10m"
+    LONG_NAME['wind_speed_10m'] = "Wind Speed 10m"
+    VARIABLE_NAME['wind_speed_10m'] = "wind_speed_10m"
+    CANONICAL_UNITS['wind_speed_10m'] = "m s-1"
+
+    STANDARD_NAME['wind_to_direction_10m'] = "wind_to_direction_10m"
+    LONG_NAME['wind_to_direction_10m'] = "Wind to Direction 10m"
+    VARIABLE_NAME['wind_to_direction_10m'] = "wind_to_dir_10m"
+    CANONICAL_UNITS['wind_to_direction_10m'] = "degree" # to North=0 / East=90"
+
+    STANDARD_NAME['wind_from_direction_10m'] = "wind_from_direction_10m"
+    LONG_NAME['wind_from_direction_10m'] = "Wind From Direction 10m"
+    VARIABLE_NAME['wind_from_direction_10m'] = "wind_from_dir_10m"
+    CANONICAL_UNITS['wind_from_direction_10m'] = "degree" # from North=0 / East=90"
+
+    STANDARD_NAME['rainfall_amount'] = "rainfall_amount"
+    LONG_NAME['rainfall_amount'] = "Rainfall Amount"
+    VARIABLE_NAME['rainfall_amount'] = "rainfall"
+    CANONICAL_UNITS['rainfall_amount'] = "kg m-1"
+
+    STANDARD_NAME['eastward_wind_stress'] = "eastward_wind_stress"
+    LONG_NAME['eastward_wind_stress'] = "Eastward Wind Stress"
+    VARIABLE_NAME['eastward_wind_stress'] = "u_wind_stress"
+    CANONICAL_UNITS['eastward_wind_stress'] = "W m2"
+
+    STANDARD_NAME['northward_wind_stress'] = "northward_wind_stresse"
+    LONG_NAME['northward_wind_stress'] = "Northward Wind Stress"
+    VARIABLE_NAME['northward_wind_stress'] = "v_wind_stress"
+    CANONICAL_UNITS['northward_wind_stress'] = "W m2"
+
+    STANDARD_NAME['topography'] = "topography"
+    LONG_NAME['topography'] = "Topography"
+    VARIABLE_NAME['topography'] = "topography"
+    CANONICAL_UNITS['topography'] = "m"
+
+
+

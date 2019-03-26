@@ -180,6 +180,9 @@ class MultiPoint():
         return [nearest_point_index, nearest_lon, nearest_lat, min_dist]
 
     # Scalar
+    def read_variable_point_names(self):
+        return self.reader.read_variable_point_names()
+
     def read_variable_time(self):
         """
         Read time for all point

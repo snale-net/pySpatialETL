@@ -16,6 +16,7 @@
 from __future__ import division, print_function, absolute_import
 import logging
 import os
+import numpy as np
 
 class MultiPointReader(object):
     
@@ -37,4 +38,13 @@ class MultiPointReader(object):
 
     def read_axis_t(self, timestamp):
         raise NotImplementedError(str(type(self)) + " don't have implemented the function 'read_axis_t()'.")
+
+    def read_variable_point_names(self):
+
+        nbPoints = np.shape(self.read_axis_x())[0]
+        data = np.empty([nbPoints],dtype=object)
+        for count in range(0,nbPoints):
+            data[count] = "Point-"+str(count)
+
+        return data
 

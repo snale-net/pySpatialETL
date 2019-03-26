@@ -40,10 +40,6 @@ if __name__ == "__main__":
     TimeMultiPoint.TIME_DELTA_MIN = timedelta(hours=3)
     TimeMultiPoint.TIME_DELTA_MAX = timedelta(hours=6)
 
-    # readerNok = NokoueReader("/work/sciences/projects/WWB-2017/Manicouagan/outputs/input-files/TStra_SW_20090306_0000_regular.nc",
-    #                          stationCoords,
-    #                          depths)
-
     reader =  SymphonieReader('/work/sciences/projects/WWB-2017/Manicouagan/configuration_V2015/TStra_N/OFFLINE/grid.nc',
                              '/work/sciences/projects/WWB-2017/Manicouagan/configuration_V2015/TStra_N/GRAPHIQUES/20090301_071217.nc',
                               stationCoords,
@@ -52,6 +48,7 @@ if __name__ == "__main__":
     # TimeLevel
     myPoints = TimeLevelMultiPoint(reader)
     writer = NcWriter(myPoints, '/tmp/symphonie_points.nc')
+    writer.write_variable_sea_surface_height_above_mean_sea_level()
     writer.write_variable_sea_water_temperature()
     writer.write_variable_sea_water_salinity()
     writer.write_variable_baroclinic_sea_water_velocity()

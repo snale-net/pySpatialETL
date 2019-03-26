@@ -18,10 +18,11 @@ from point.MultiPoint import MultiPoint
 from point.operators.interpolator.InterpolatorCore import time_interpolation
 from numpy import int,int32,int64
 import numpy as np
-from datetime import datetime,timedelta
+from datetime import datetime,timedelta,timezone
 import logging
 import pandas
 import math
+
 
 class TimeMultiPoint(MultiPoint):
     """"""
@@ -93,6 +94,8 @@ class TimeMultiPoint(MultiPoint):
 
         elif type(t) == datetime:
 
+            logging.debug("[TimeMultiPoint][find_time_index()] Looking for : "+str(t))
+
             # Pour chaque temps, on cherche l'index inférieur le plus proche de notre date t
             index_t = 0
             while index_t < self.get_t_size(raw=True) and (t - self.raw_times[index_t]).total_seconds() > zero_delta.total_seconds():
@@ -106,17 +109,20 @@ class TimeMultiPoint(MultiPoint):
                     index_t = index_t -1
 
                 if index_t not in indexes_t:
+                    logging.debug("[TimeMultiPoint][find_time_index()] Found : "+str(self.raw_times[index_t]))
                     indexes_t.append(int(index_t))
 
                 if abs((t - self.raw_times[index_t]).total_seconds()) != zero_delta.total_seconds():
                     # On n'a trouvé exactement notre temps, on cherche autour les dates avant et après au TIME_DELTA  près
                     tt = index_t
                     while tt - 1 >= 0 and abs((t - self.raw_times[tt-1]).total_seconds()) <= TimeMultiPoint.TIME_DELTA.total_seconds() and tt - 1 not in indexes_t:
+                        logging.debug("[TimeMultiPoint][find_time_index()] Found : "+str(self.raw_times[tt - 1]))
                         indexes_t.append(int(tt - 1))
                         tt = tt -1
 
                     tt = index_t
                     while tt + 1 < self.get_t_size(raw=True) and abs((t - self.raw_times[tt+1]).total_seconds()) <= TimeMultiPoint.TIME_DELTA.total_seconds() and tt + 1 not in indexes_t:
+                        logging.debug("[TimeMultiPoint][find_time_index()] Found : "+str(self.raw_times[tt + 1]))
                         indexes_t.append(int(tt + 1))
                         tt= tt +1
 
@@ -175,7 +181,7 @@ class TimeMultiPoint(MultiPoint):
         results = np.zeros([self.get_nb_points()])
         results[:] = np.NAN
 
-        targetTime = [datetime.timestamp(date)]
+        targetTime = [date.replace(tzinfo=timezone.utc).timestamp()]
         rawTime = self.read_axis_t(timestamp=1, raw=True)
 
         candidateTimes = np.zeros([len(indexes_t)])
@@ -205,6 +211,40 @@ class TimeMultiPoint(MultiPoint):
         return results
 
     # Scalar
+    def read_variable_longitude_at_time(self, date):
+        index_t = self.find_time_index(date)
+
+        if len(index_t) > 1:
+            layers = np.zeros([len(index_t), self.get_nb_points()])
+            layers[::] = np.NAN
+
+            for t in range(0, len(index_t)):
+                layers[t] = self.reader.read_variable_longitude_at_time(index_t[t])
+
+            data = self.interpolate_time(date,index_t,layers)
+
+        else:
+            data = self.reader.read_variable_longitude_at_time(index_t[0])
+
+        return data
+
+    def read_variable_latitude_at_time(self, date):
+        index_t = self.find_time_index(date)
+
+        if len(index_t) > 1:
+            layers = np.zeros([len(index_t), self.get_nb_points()])
+            layers[::] = np.NAN
+
+            for t in range(0, len(index_t)):
+                layers[t] = self.reader.read_variable_latitude_at_time(index_t[t])
+
+            data = self.interpolate_time(date,index_t,layers)
+
+        else:
+            data = self.reader.read_variable_latitude_at_time(index_t[0])
+
+        return data
+
     # HYDRO
     def read_variable_sea_surface_temperature_at_time(self, date):
         index_t = self.find_time_index(date)

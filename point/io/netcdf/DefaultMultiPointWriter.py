@@ -16,7 +16,7 @@
 from __future__ import division, print_function, absolute_import
 from point.io.MultiPointWriter import MultiPointWriter
 from point.MultiPoint import MultiPoint
-from utils.VariableUnits import VariableUnits
+from utils.VariableDefinition import VariableDefinition
 from netCDF4 import Dataset
 from netCDF4 import date2num
 from numpy import float32,float64,int32
@@ -39,34 +39,38 @@ class DefaultMultiPointWriter(MultiPointWriter):
         self.ncfile.meta_data = str(self.points.meta_data)
 
         # Geo-points dimension
-        self.ncfile.createDimension('point', self.points.get_nb_points())
-        var = self.ncfile.createVariable('point', int32, ('point',))
-        var.long_name = "point number";
-        var.standard_name = "point_number";
+        self.ncfile.createDimension(VariableDefinition.VARIABLE_NAME['point'], self.points.get_nb_points())
+        var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['point'], int32,
+                                         (VariableDefinition.VARIABLE_NAME['point'],))
+        var.long_name = VariableDefinition.LONG_NAME['point']
+        var.standard_name = VariableDefinition.STANDARD_NAME['point']
         var.axis = "X";
-        var[:] = range(0,self.points.get_nb_points());
+        var.units = VariableDefinition.CANONICAL_UNITS['point'];
+        var[:] = range(0, self.points.get_nb_points());
 
-        var = self.ncfile.createVariable('longitude', float32, ('point',), fill_value=9.96921e+36)
-        var.long_name = "longitude";
-        var.standard_name = "longitude";
-        var.valid_min = "-180.0";
-        var.valid_max = "180.0";
-        var.units = VariableUnits.CANONICAL_UNITS[var.standard_name];
-        var[:] = self.points.read_axis_x()
-
-        var = self.ncfile.createVariable('latitude', float32, ('point',), fill_value=9.96921e+36)
-        var.long_name = "latitude";
-        var.standard_name = "latitude";
+        var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['latitude'], float32,
+                                         (VariableDefinition.VARIABLE_NAME['point'],), fill_value=9.96921e+36)
+        var.long_name = VariableDefinition.LONG_NAME['latitude']
+        var.standard_name = VariableDefinition.STANDARD_NAME['latitude']
         var.valid_min = "-90.0";
         var.valid_max = "90.0";
-        var.units = VariableUnits.CANONICAL_UNITS[var.standard_name];
+        var.units = VariableDefinition.CANONICAL_UNITS['latitude']
         var[:] = self.points.read_axis_y()
+
+        var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['longitude'], float32,
+                                         (VariableDefinition.VARIABLE_NAME['point'],), fill_value=9.96921e+36)
+        var.long_name = VariableDefinition.LONG_NAME['longitude']
+        var.standard_name = VariableDefinition.STANDARD_NAME['longitude']
+        var.valid_min = "-180.0";
+        var.valid_max = "180.0";
+        var.units = VariableDefinition.CANONICAL_UNITS['longitude']
+        var[:] = self.points.read_axis_x()
 
     def close(self):
         self.ncfile.close()
 
     def write_variable_time(self):
-        times = self.ncfile.createVariable('point_time', float64, ('point',))
+        times = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['time'], float64, (VariableDefinition.VARIABLE_NAME['point'],))
         times.units = 'seconds since 1970-01-01 00:00:00'
         times.calendar = 'gregorian'
         times.standard_name = 'time'
@@ -75,69 +79,69 @@ class DefaultMultiPointWriter(MultiPointWriter):
         times[:] = date2num(self.points.read_variable_time(), units=times.units, calendar=times.calendar)
 
     def write_variable_bathymetry(self):
-        var = self.ncfile.createVariable('bathymetry', float32, ('point',),
+        var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['bathymetry'], float32, (VariableDefinition.VARIABLE_NAME['point'],),
                                          fill_value=9.96921e+36)
-        var.long_name = "Bathymetry";
-        var.standard_name = "bathymetry";
-        var.units = VariableUnits.CANONICAL_UNITS[var.standard_name];
+        var.long_name = VariableDefinition.LONG_NAME['bathymetry']
+        var.standard_name = VariableDefinition.STANDARD_NAME['bathymetry']
+        var.units = VariableDefinition.CANONICAL_UNITS['bathymetry']
         var.positive = "down" ;
 
-        logging.info('[DefaultMultiPointWriter] Writing variable \'' + var.long_name + '\'')
+        logging.info('[DefaultMultiPointWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['bathymetry']) + '\'')
         var[:] = self.points.read_variable_bathymetry()
 
     def write_variable_sea_surface_temperature(self):
-        var = self.ncfile.createVariable('sea_surface_temperature', float32, ('point',),
+        var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_surface_temperature'], float32, (VariableDefinition.VARIABLE_NAME['point'],),
                                          fill_value=9.96921e+36)
-        var.long_name = "Sea Surface Temperature";
-        var.standard_name = "sea_surface_temperature";
-        var.units = VariableUnits.CANONICAL_UNITS[var.standard_name];
+        var.long_name = VariableDefinition.LONG_NAME['sea_surface_temperature']
+        var.standard_name = VariableDefinition.STANDARD_NAME['sea_surface_temperature']
+        var.units = VariableDefinition.CANONICAL_UNITS['sea_surface_temperature']
 
-        logging.info('[DefaultMultiPointWriter] Writing variable \'' + var.long_name + '\'')
+        logging.info('[DefaultMultiPointWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['sea_surface_temperature']) + '\'')
         var[:] = self.points.read_variable_sea_surface_temperature()
 
     def write_variable_sea_water_electrical_conductivity(self):
-        var = self.ncfile.createVariable('sea_water_electrical_conductivity', float32, ('point',),
+        var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_water_electrical_conductivity'], float32, (VariableDefinition.VARIABLE_NAME['point'],),
                                          fill_value=9.96921e+36)
-        var.long_name = "Sea Water Electrical Conductivity";
-        var.standard_name = "sea_water_electrical_conductivity";
-        var.units = VariableUnits.CANONICAL_UNITS[var.standard_name];
+        var.long_name = VariableDefinition.LONG_NAME['sea_water_electrical_conductivity']
+        var.standard_name = VariableDefinition.STANDARD_NAME['sea_water_electrical_conductivity']
+        var.units = VariableDefinition.CANONICAL_UNITS['sea_water_electrical_conductivity']
 
-        logging.info('[DefaultMultiPointWriter] Writing variable \'' + var.long_name + '\'')
+        logging.info('[DefaultMultiPointWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['sea_water_electrical_conductivity']) + '\'')
         var[:] = self.points.read_variable_sea_water_electrical_conductivity()
 
     def write_variable_sea_water_pressure_at_sea_water_surface(self):
-        var = self.ncfile.createVariable('sea_water_pressure_at_sea_water_surface', float32, ('point'),
+        var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_water_pressure_at_sea_water_surface'], float32, (VariableDefinition.VARIABLE_NAME['point']),
                                          fill_value=9.96921e+36)
-        var.long_name = "Sea Water Pressure At Sea Water Surface";
-        var.standard_name = "sea_water_pressure_at_sea_water_surface";
-        var.units = VariableUnits.CANONICAL_UNITS[var.standard_name];
+        var.long_name = VariableDefinition.LONG_NAME['sea_water_pressure_at_sea_water_surface']
+        var.standard_name = VariableDefinition.STANDARD_NAME['sea_water_pressure_at_sea_water_surface']
+        var.units = VariableDefinition.CANONICAL_UNITS['sea_water_pressure_at_sea_water_surface']
 
-        logging.info('[DefaultMultiPointWriter] Writing variable \'' + var.long_name + '\'')
+        logging.info('[DefaultMultiPointWriter] Writing variable \'' + str( VariableDefinition.LONG_NAME['sea_water_pressure_at_sea_water_surface']) + '\'')
         var[:] = self.points.read_variable_sea_water_pressure_at_sea_water_surface()
 
     def write_variable_sea_surface_salinity(self):
-        var = self.ncfile.createVariable('sea_surface_salinity', float32, ('point'), fill_value=9.96921e+36)
-        var.long_name = "Sea Surface Salinity";
-        var.standard_name = "sea_surface_salinity";
-        var.units = VariableUnits.CANONICAL_UNITS[var.standard_name];
+        var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_surface_salinity'], float32, (VariableDefinition.VARIABLE_NAME['point']), fill_value=9.96921e+36)
+        var.long_name = VariableDefinition.LONG_NAME['sea_surface_salinity']
+        var.standard_name = VariableDefinition.STANDARD_NAME['sea_surface_salinity']
+        var.units = VariableDefinition.CANONICAL_UNITS['sea_surface_salinity']
 
-        logging.info('[DefaultMultiPointWriter] Writing variable \'' + var.long_name + '\'')
+        logging.info('[DefaultMultiPointWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['sea_surface_salinity']) + '\'')
         var[:] = self.points.read_variable_sea_surface_salinity()
 
     def write_variable_sea_surface_density(self):
-        var = self.ncfile.createVariable('sea_surface_density', float32, ('point',), fill_value=9.96921e+36)
-        var.long_name = "Sea Surface Density";
-        var.standard_name = "sea_surface_densitiy";
-        var.units = VariableUnits.CANONICAL_UNITS[var.standard_name];
+        var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_surface_density'], float32, (VariableDefinition.VARIABLE_NAME['point'],), fill_value=9.96921e+36)
+        var.long_name = VariableDefinition.LONG_NAME['sea_surface_density']
+        var.standard_name = VariableDefinition.STANDARD_NAME['sea_surface_density']
+        var.units =VariableDefinition.CANONICAL_UNITS['sea_surface_density']
 
-        logging.info('[DefaultMultiPointWriter] Writing variable \'' + var.long_name + '\'')
+        logging.info('[DefaultMultiPointWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['sea_surface_density']) + '\'')
         var[:] = self.points.read_variable_sea_surface_density()
 
     def write_variable_sea_water_turbidity(self):
-        var = self.ncfile.createVariable('sea_water_turbidity', float32, ('point',), fill_value=9.96921e+36)
-        var.long_name = "Sea Surface Turbidity";
-        var.standard_name = "sea_water_turbidity";
-        var.units = VariableUnits.CANONICAL_UNITS[var.standard_name];
+        var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_water_turbidity'], float32, (VariableDefinition.VARIABLE_NAME['point'],), fill_value=9.96921e+36)
+        var.long_name = VariableDefinition.LONG_NAME['sea_water_turbidity']
+        var.standard_name = VariableDefinition.STANDARD_NAME['sea_water_turbidity']
+        var.units = VariableDefinition.CANONICAL_UNITS['sea_water_turbidity']
 
-        logging.info('[DefaultMultiPointWriter] Writing variable \'' + var.long_name + '\'')
+        logging.info('[DefaultMultiPointWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['sea_water_turbidity']) + '\'')
         var[:] = self.points.read_variable_sea_water_turbidity()

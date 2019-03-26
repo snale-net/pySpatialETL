@@ -16,7 +16,7 @@
 from __future__ import division, print_function, absolute_import
 from point.io.MultiPointWriter import MultiPointWriter
 from point.TimeMultiPoint import TimeMultiPoint
-from utils.VariableUnits import VariableUnits
+from utils.VariableDefinition import VariableDefinition
 from netCDF4 import Dataset
 from netCDF4 import date2num
 from numpy import float32
@@ -49,8 +49,8 @@ class DefaultTimePointWriter(MultiPointWriter):
         file.write("############################################################ \n\
 # Station : " + str(self.points.name_station) + " \n\
 # Coordinate Reference System : WGS84 \n\
-# Longitude : " + str(self.points.x_coord) + " \n\
-# Latitude : " + str(self.points.y_coord) + " \n\
+# Longitude : " + str(self.points.read_axis_x()[self.index_x]) + " \n\
+# Latitude : " + str(self.points.read_axis_y()[self.index_x]) + " \n\
 # Data source : " + str(self.points.data_source) + " \n\
 # Meta Data : " + str(self.points.meta_data) + " \n\
 # Time zone : UTC \n\
@@ -59,18 +59,30 @@ class DefaultTimePointWriter(MultiPointWriter):
 
         column = 2
         for key in list(self.data):
-            file.write("# Column " + str(column) + ": " + str(key) + " " + str(
-                VariableUnits.CANONICAL_UNITS[key]) + " FillValue: NaN \n")
+            file.write("# Column " + str(column) + ": " + str(VariableDefinition.STANDARD_NAME[key]) + " (" + str(
+                VariableDefinition.CANONICAL_UNITS[key]) + ") - FillValue: NaN \n")
             column = column + 1
 
-        file.write("# Generated with pyGeoSpatialETL\n")
         file.write("############################################################\n")
 
         file.write(old)  # write the new line before
         file.close()
 
-    def write_variable_sea_surface_height(self):
-        logging.info('[DefaultTimePointWriter] Writing variable \'Sea Surface Height\'')
+    def write_variable_sea_surface_height_above_mean_sea_level(self):
+        logging.info('[DefaultTimePointWriter] Writing variable \''+str(VariableDefinition.LONG_NAME['sea_surface_height_above_mean_sea_level'])+'\'')
+
+        data = np.zeros([self.points.get_t_size()])
+        data[:] = np.nan
+        time_index = 0
+        for time in self.points.read_axis_t():
+            data[time_index] = self.points.read_variable_sea_surface_height_above_mean_sea_level_at_time(time)[self.index_x]
+            time_index += 1
+
+        self.data['sea_surface_height_above_mean_sea_level'] = data
+
+    def write_variable_sea_surface_height_above_geoid(self):
+        logging.info('[DefaultTimePointWriter] Writing variable \'' + str(
+            VariableDefinition.LONG_NAME['sea_surface_height_above_geoid']) + '\'')
 
         data = np.zeros([self.points.get_t_size()])
         data[:] = np.nan
@@ -79,10 +91,10 @@ class DefaultTimePointWriter(MultiPointWriter):
             data[time_index] = self.points.read_variable_sea_surface_height_at_time(time)[self.index_x]
             time_index += 1
 
-        self.data['sea_surface_height'] = data
+        self.data['sea_surface_height_above_geoid'] = data
 
     def write_variable_sea_surface_temperature(self):
-        logging.info('[DefaultTimePointWriter] Writing variable \'Sea Surface Temperature\'')
+        logging.info('[DefaultTimePointWriter] Writing variable \''+str(VariableDefinition.LONG_NAME['sea_surface_temperature'])+'\'')
         data = np.zeros([self.points.get_t_size()])
         data[:] = np.nan
         time_index = 0
@@ -93,7 +105,7 @@ class DefaultTimePointWriter(MultiPointWriter):
         self.data['sea_surface_temperature'] = data
 
     def write_variable_longitude(self):
-        logging.info('[DefaultTimePointWriter] Writing variable \'Longitude\'')
+        logging.info('[DefaultTimePointWriter] Writing variable \''+str(VariableDefinition.LONG_NAME['longitude'])+'\'')
         data = np.zeros([self.points.get_t_size()])
         data[:] = np.nan
         time_index = 0
@@ -104,7 +116,7 @@ class DefaultTimePointWriter(MultiPointWriter):
         self.data['longitude'] = data
 
     def write_variable_latitude(self):
-        logging.info('[DefaultTimePointWriter] Writing variable \'Latitude\'')
+        logging.info('[DefaultTimePointWriter] Writing variable \''+str(VariableDefinition.LONG_NAME['latitude'])+'\'')
         data = np.zeros([self.points.get_t_size()])
         data[:] = np.nan
         time_index = 0
@@ -115,7 +127,7 @@ class DefaultTimePointWriter(MultiPointWriter):
         self.data['latitude'] = data
 
     def write_variable_sea_surface_wave_significant_height(self):
-        logging.info('[DefaultTimePointWriter] Writing variable \'Sea Surface Wave Significant Height\'')
+        logging.info('[DefaultTimePointWriter] Writing variable \''+str(VariableDefinition.LONG_NAME['sea_surface_wave_significant_height'])+'\'')
         data = np.zeros([self.points.get_t_size()])
         data[:] = np.nan
         time_index = 0
@@ -126,7 +138,7 @@ class DefaultTimePointWriter(MultiPointWriter):
         self.data['sea_surface_wave_significant_height'] = data
 
     def write_variable_sea_surface_wave_mean_period(self):
-        logging.info('[DefaultTimePointWriter] Writing variable \'Sea Surface Wave Mean Period\'')
+        logging.info('[DefaultTimePointWriter] Writing variable \''+str(VariableDefinition.LONG_NAME['sea_surface_wave_mean_period'])+'\'')
         data = np.zeros([self.points.get_t_size()])
         data[:] = np.nan
         time_index = 0
@@ -137,7 +149,7 @@ class DefaultTimePointWriter(MultiPointWriter):
         self.data['sea_surface_wave_mean_periode'] = data
 
     def write_variable_sea_surface_salinity(self):
-        logging.info('[DefaultTimePointWriter] Writing variable \'Sea Surface Salinity\'')
+        logging.info('[DefaultTimePointWriter] Writing variable \''+str(VariableDefinition.LONG_NAME['sea_surface_salinity'])+'\'')
         data = np.zeros([self.points.get_t_size()])
         data[:] = np.nan
         time_index = 0
@@ -148,7 +160,7 @@ class DefaultTimePointWriter(MultiPointWriter):
         self.data['sea_surface_salinity'] = data
 
     def write_variable_sea_surface_density(self):
-        logging.info('[DefaultTimePointWriter] Writing variable \'Sea Surface Density\'')
+        logging.info('[DefaultTimePointWriter] Writing variable \''+str(VariableDefinition.LONG_NAME['sea_surface_density'])+'\'')
         data = np.zeros([self.points.get_t_size()])
         data[:] = np.nan
         time_index = 0
@@ -159,7 +171,7 @@ class DefaultTimePointWriter(MultiPointWriter):
         self.data['sea_surface_density'] = data
 
     def write_variable_sea_water_turbidity(self):
-        logging.info('[DefaultTimePointWriter] Writing variable \'Sea Water Turbidity\'')
+        logging.info('[DefaultTimePointWriter] Writing variable \''+str(VariableDefinition.LONG_NAME['sea_water_turbidity'])+'\'')
         data = np.zeros([self.points.get_t_size()])
         data[:] = np.nan
         time_index = 0
@@ -170,7 +182,7 @@ class DefaultTimePointWriter(MultiPointWriter):
         self.data['sea_water_turbidity'] = data
 
     def write_variable_bathymetry(self):
-        logging.info('[DefaultTimePointWriter] Writing variable \'Bathymetry\'')
+        logging.info('[DefaultTimePointWriter] Writing variable \''+str(VariableDefinition.LONG_NAME['bathymetry'])+'\'')
         data = np.zeros([self.points.get_t_size()])
         data[:] = np.nan
         time_index = 0
@@ -181,7 +193,7 @@ class DefaultTimePointWriter(MultiPointWriter):
         self.data['bathymetry'] = data
 
     def write_variable_wind_speed_10m(self):
-        logging.info('[DefaultTimePointWriter] Writing variable \'Wind Speed 10m\'')
+        logging.info('[DefaultTimePointWriter] Writing variable \''+str(VariableDefinition.LONG_NAME['wind_speed_10m'])+'\'')
         data = np.zeros([self.points.get_t_size()])
         data[:] = np.nan
         time_index = 0
@@ -192,7 +204,7 @@ class DefaultTimePointWriter(MultiPointWriter):
         self.data['wind_speed_10m'] = data
 
     def write_variable_wind_from_direction_10m(self):
-        logging.info('[DefaultTimePointWriter] Writing variable \'Wind From Direction 10m\'')
+        logging.info('[DefaultTimePointWriter] Writing variable \''+str(VariableDefinition.LONG_NAME['wind_from_direction_10m'])+'\'')
         data = np.zeros([self.points.get_t_size()])
         data[:] = np.nan
         time_index = 0
@@ -203,7 +215,7 @@ class DefaultTimePointWriter(MultiPointWriter):
         self.data['wind_from_direction_10m'] = data
 
     def write_variable_wind_to_direction_10m(self):
-        logging.info('[DefaultTimePointWriter] Writing variable \'Wind To Direction 10m\'')
+        logging.info('[DefaultTimePointWriter] Writing variable \''+str(VariableDefinition.LONG_NAME['wind_to_direction_10m'])+'\'')
         data = np.zeros([self.points.get_t_size()])
         data[:] = np.nan
         time_index = 0
@@ -214,7 +226,7 @@ class DefaultTimePointWriter(MultiPointWriter):
         self.data['wind_from_direction_10m'] = data
 
     def write_variable_surface_air_pressure(self):
-        logging.info('[DefaultTimePointWriter] Writing variable \'Surface Air Pressure\'')
+        logging.info('[DefaultTimePointWriter] Writing variable \''+str(VariableDefinition.LONG_NAME['surface_air_pressure'])+'\'')
         data = np.zeros([self.points.get_t_size()])
         data[:] = np.nan
         time_index = 0
@@ -224,7 +236,7 @@ class DefaultTimePointWriter(MultiPointWriter):
         self.data['surface_air_pressure'] = data
 
     def write_variable_rainfall_amount(self):
-        logging.info('[DefaultTimePointWriter] Writing variable \'Rainfall Amount\'')
+        logging.info('[DefaultTimePointWriter] Writing variable \''+str(VariableDefinition.LONG_NAME['rainfall_amount'])+'\'')
         data = np.zeros([self.points.get_t_size()])
         data[:] = np.nan
         time_index = 0
@@ -234,7 +246,7 @@ class DefaultTimePointWriter(MultiPointWriter):
         self.data['rainfall_amount'] = data
 
     def write_variable_sea_water_pressure_at_sea_water_surface(self):
-        logging.info('[DefaultTimePointWriter] Writing variable \'Sea Water Pressure At Sea Water Surface\'')
+        logging.info('[DefaultTimePointWriter] Writing variable \''+str(VariableDefinition.LONG_NAME['sea_water_pressure_at_sea_water_surface'])+'\'')
         data = np.zeros([self.points.get_t_size()])
         data[:] = np.nan
         time_index = 0
@@ -245,7 +257,7 @@ class DefaultTimePointWriter(MultiPointWriter):
         self.data['sea_water_pressure_at_sea_water_surface'] = data
 
     def write_variable_sea_water_electrical_conductivity(self):
-        logging.info('[DefaultTimePointWriter] Writing variable \'Sea Water Electrical Conductivity\'')
+        logging.info('[DefaultTimePointWriter] Writing variable \''+str(VariableDefinition.LONG_NAME['sea_water_electrical_conductivity'])+'\'')
         data = np.zeros([self.points.get_t_size()])
         data[:] = np.nan
         time_index = 0

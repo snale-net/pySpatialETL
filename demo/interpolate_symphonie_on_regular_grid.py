@@ -17,7 +17,7 @@ import sys
 sys.path = ['/work/sciences/toolbox/python/pyGeoSpatialETL'] + sys.path
 
 from coverage.TimeLevelCoverage import TimeLevelCoverage
-from coverage.operator.interpolator.CoverageInterpolatorReader import CoverageInterpolatorReader
+from coverage.operator.interpolator.CoverageInterpolator import CoverageInterpolator
 from coverage.operator.interpolator.InterpolatorCore import InterpolatorCore
 from coverage.io.netcdf.symphonie.SymphonieReader2015 import SymphonieReader2015
 from coverage.io.netcdf.DefaultWriter import DefaultWriter
@@ -39,10 +39,10 @@ if __name__ == "__main__":
     InterpolatorCore.INTERPOLATION_METHOD = "nearest";
 
     depths = np.array([0.0, 10.0, 50.0, 100.0])
-    coverage = TimeLevelCoverage(CoverageInterpolatorReader(coverageOrig,0.001,0.001,depths))
+    coverage = TimeLevelCoverage(CoverageInterpolator(coverageOrig, 0.001, 0.001, depths))
 
     #Renommer toutes les noms des fonctions
-    writer = DefaultWriter(coverage,'/tmp/symphonie_regular.nc')
+    writer = DefaultWriter(coverage, '/tmp/symphonie_regular.nc')
 
     writer.write_variable_baroclinic_sea_water_velocity()
     writer.write_variable_barotropic_sea_water_velocity()
@@ -50,15 +50,15 @@ if __name__ == "__main__":
     writer.write_variable_wind_stress()
     writer.write_variable_sea_water_temperature()
     writer.write_variable_sea_water_salinity()
-    # writer.write_variable_2D_wet_binary_mask()
+    # writer.write_variable_wet_binary_mask()
     writer.write_variable_2D_sea_binary_mask()
     writer.write_variable_wind_10m()
     writer.write_variable_mesh_size()
-    writer.write_variable_sea_surface_wave_significant_height()
-    writer.write_variable_sea_surface_wave_mean_period()
-    writer.write_variable_sea_surface_wave_peak_period()
-    writer.write_variable_sea_surface_wave_from_direction()
-    writer.write_variable_sea_surface_wave_to_direction()
+    #writer.write_variable_sea_surface_wave_significant_height()
+    #writer.write_variable_sea_surface_wave_mean_period()
+    #writer.write_variable_sea_surface_wave_peak_period()
+    #writer.write_variable_sea_surface_wave_from_direction()
+    #writer.write_variable_sea_surface_wave_to_direction()
     writer.close()
     
     print('End of programm')
