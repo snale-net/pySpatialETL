@@ -223,7 +223,7 @@ class DefaultTimePointWriter(MultiPointWriter):
             data[time_index] = self.points.read_variable_wind_to_direction_10m_at_time(time)[self.index_x]
             time_index += 1
 
-        self.data['wind_from_direction_10m'] = data
+        self.data['wind_to_direction_10m'] = data
 
     def write_variable_surface_air_pressure(self):
         logging.info('[DefaultTimePointWriter] Writing variable \''+str(VariableDefinition.LONG_NAME['surface_air_pressure'])+'\'')

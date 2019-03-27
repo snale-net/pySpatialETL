@@ -74,11 +74,15 @@ class WW3Reader (CoverageReader):
         #attention en ce qui concerne les conventions d'angle en meteorologie. celles ci
         # sont appliquées par ww3. en meteo, un vent venant du nord a une direction de 0°,
         # un vent venant de l'est a une direction de 90°. par consequent il faut corriger
-        # cette convention en faisant 270°-angle
-        return 270.-self.ncfile.variables["dir"][t][:]
+        # cette convention si on veut la direction vers en faisant 270°-angle
+        return self.ncfile.variables["dir"][t][:]
 
     def read_variable_sea_surface_wave_to_direction_at_time(self, t):
-        return self.ncfile.variables["dir"][t][:]
+        #attention en ce qui concerne les conventions d'angle en meteorologie. celles ci
+        # sont appliquées par ww3. en meteo, un vent venant du nord a une direction de 0°,
+        # un vent venant de l'est a une direction de 90°. par consequent il faut corriger
+        # cette convention si on veut la direction vers en faisant 270°-angle
+        return 270.-self.ncfile.variables["dir"][t][:]
     
     def read_variable_sea_surface_wave_mean_period_at_time(self,t):
         return self.ncfile.variables["t01"][t][:]
