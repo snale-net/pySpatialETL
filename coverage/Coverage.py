@@ -187,7 +187,10 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
         return [nearest_x_index,nearest_y_index,nearest_lon,nearest_lat,min_dist]
     
     # Variables
-    # HYDRO    
+    #################
+    # HYDRO
+    # 2D
+    #################
     def read_variable_bathymetry(self):     
         """Retourne la bathymétrie sur toute la couverture
     @return: un tableau en deux dimensions [y,x]."""
@@ -206,25 +209,30 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
     """
         return self.reader.read_variable_2D_sea_binary_mask()
 
+    #################
+    # METEO
+    # 2D
+    #################
+    def read_variable_topography(self):     
+        """Retourne la topographie sur toute la couverture
+    @return: un tableau en deux dimensions [y,x]."""
+        return self.reader.read_variable_topography()
+
+    #OTHERS
     def read_variable_Ha(self):
         """Retourne l'amplitude de la réanalyse
     @return: un tableau en deux dimensions [y,x]."""
         return self.reader.read_variable_Ha()
 
-    def read_variable_sea_surface_density(self):
-        """Retourne la densité de l'eau de surface
-            @return: un tableau en deux dimensions [y,x]."""
-        return self.reader.read_variable_sea_surface_density()
+    # def read_variable_sea_surface_density(self):
+    #     """Retourne la densité de l'eau de surface
+    #         @return: un tableau en deux dimensions [y,x]."""
+    #     return self.reader.read_variable_sea_surface_density()
+    #
+    # def read_variable_sea_water_turbidity(self):
+    #     """Retourne la turbidité de l'eau de surface
+    #                 @return: un tableau en deux dimensions [y,x]."""
+    #     return self.reader.read_variable_sea_water_turbidity()
 
-    def read_variable_sea_water_turbidity(self):
-        """Retourne la turbidité de l'eau de surface
-                    @return: un tableau en deux dimensions [y,x]."""
-        return self.reader.read_variable_sea_water_turbidity()
-    
-    # ATMOS    
-    def read_variable_topography(self):     
-        """Retourne la topographie sur toute la couverture
-    @return: un tableau en deux dimensions [y,x]."""
-        return self.reader.read_variable_topography()
         
         

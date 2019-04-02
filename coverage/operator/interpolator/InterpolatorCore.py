@@ -26,9 +26,6 @@ class InterpolatorCore(object):
     VERTICAL_INTERPOLATION_METHOD = "nearest";
 
 def resample_2d_to_grid(sourceAxisX,sourceAxisY,targetAxisX, targetAixsY,data):
-    
-    logging.info('[InterpolatorCore] Source grid size : '+str(np.shape(sourceAxisX)))
-    logging.info('[InterpolatorCore] Target grid size : '+str(np.shape(targetAxisX)))
 
     return griddata((sourceAxisX.ravel(),sourceAxisY.ravel()), data.ravel(),(targetAxisX, targetAixsY), method=InterpolatorCore.HORIZONTAL_INTERPOLATION_METHOD, fill_value=9.96921e+36)
 

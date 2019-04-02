@@ -18,8 +18,7 @@ from coverage.io.CoverageWriter import CoverageWriter
 from utils.VariableDefinition import VariableDefinition
 from netCDF4 import Dataset
 from netCDF4 import date2num
-from numpy import float32
-from numpy import float64
+from numpy import int16,float32,float64
 import numpy as np
 import logging
 from coverage.TimeCoverage import TimeCoverage
@@ -127,7 +126,7 @@ class DefaultWriter (CoverageWriter):
 
     def write_variable_2D_sea_binary_mask(self):
 
-        var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['2d_sea_binary_mask'], int, (VariableDefinition.VARIABLE_NAME['latitude'],VariableDefinition.VARIABLE_NAME['longitude'],), fill_value=-9999)
+        var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['2d_sea_binary_mask'], int16, (VariableDefinition.VARIABLE_NAME['latitude'],VariableDefinition.VARIABLE_NAME['longitude'],), fill_value=-9999)
         var.long_name = VariableDefinition.LONG_NAME['2d_sea_binary_mask']
         var.standard_name = VariableDefinition.STANDARD_NAME['2d_sea_binary_mask']
         var.units = VariableDefinition.CANONICAL_UNITS['2d_sea_binary_mask']
@@ -275,6 +274,27 @@ class DefaultWriter (CoverageWriter):
             logging.debug(
                 '[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['sea_surface_temperature']) + '\' at time \'' + str(time) + '\'')
             var[time_index:time_index + 1, :] = self.coverage.read_variable_sea_surface_temperature_at_time(time)
+            time_index += 1
+
+    def write_variable_sea_water_temperature_at_ground_level(self):
+
+        var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_water_temperature_at_ground_level'], float32, (
+        VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['latitude'],
+        VariableDefinition.VARIABLE_NAME['longitude'],),
+                                         fill_value=9.96921e+36)
+        var.long_name = VariableDefinition.LONG_NAME['sea_water_temperature_at_ground_level']
+        var.standard_name = VariableDefinition.STANDARD_NAME['sea_water_temperature_at_ground_level']
+        var.units = VariableDefinition.CANONICAL_UNITS['sea_water_temperature_at_ground_level']
+
+        logging.info(
+            '[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['sea_water_temperature_at_ground_level']) + '\'')
+
+        time_index = 0
+        for time in self.coverage.read_axis_t():
+            logging.debug(
+                '[DefaultWriter] Writing variable \'' + str(
+                    VariableDefinition.LONG_NAME['sea_water_temperature_at_ground_level']) + '\' at time \'' + str(time) + '\'')
+            var[time_index:time_index + 1, :] = self.coverage.read_variable_sea_water_temperature_at_ground_level_at_time(time)
             time_index += 1
 
     def write_variable_sea_water_temperature(self):

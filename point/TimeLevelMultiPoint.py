@@ -18,6 +18,7 @@ from __future__ import division, print_function, absolute_import
 from point.LevelMultiPoint import LevelMultiPoint
 from point.TimeMultiPoint import TimeMultiPoint
 from point.MultiPoint import MultiPoint
+
 import numpy as np
 from datetime import datetime,timedelta
 import logging
@@ -26,87 +27,95 @@ import logging
 class TimeLevelMultiPoint(LevelMultiPoint, TimeMultiPoint):
     """"""
 
-    def __init__(self,myReader):
-        LevelMultiPoint.__init__(self, myReader)
-        TimeMultiPoint.__init__(self, myReader)
+    def __init__(self,myReader,depth=None,time_range=None):
+        LevelMultiPoint.__init__(self, myReader,depth)
+        TimeMultiPoint.__init__(self, myReader,time_range=time_range)
 
     # Scalar
-    def read_variable_baroclinic_sea_water_velocity_at_time_and_depth(self,date,depth):
+    def read_variable_baroclinic_sea_water_velocity_at_time_and_depth(self,time,depth):
 
-        index_t = self.find_time_index(date)
-        index_z = self.find_level_index(depth)
+        indexes_t = self.find_time_index(time);
+        tmp = self.find_level_index(depth);
+        vert_coord = tmp[0]
+        indexes_z = tmp[1]
 
-        #TODO
-        # Il n'y a pas d'interpolation verticale pour le moment. Seule le module Coverage offre l'interpolation verticale.
-        # On teste si le reader se base sur une Coverage, dans ce cas, on fournit directement la profondeur pour que le Coverage
-        # interpolle verticalement pour nous.
-        if self.is_coverage_based():
-            index_z = depth
+        layers = np.zeros([np.shape(indexes_t)[0],2, np.shape(indexes_z)[0],self.get_nb_points()])
+        layers[::] = np.NAN
 
-        if len(index_t) > 1:
-            layers = np.zeros([len(index_t), self.get_nb_points()])
-            layers[::] = np.NAN
+        results = np.zeros([np.shape(indexes_t)[0],2,self.get_nb_points()])
+        results[:] = np.NAN
 
-            for t in range(0, len(index_t)):
-                layers[t] = self.reader.read_variable_baroclinic_sea_water_velocity_at_time_and_depth(index_t[t],index_z)
+        for t in range(0, len(indexes_t)):
 
-            data = self.interpolate_time(date, index_t, layers)
+            for z in range(0, len(indexes_z)):
 
+                all_data = self.reader.read_variable_baroclinic_sea_water_velocity_at_time_and_depth(indexes_t[t],
+                                                                                                 indexes_z[z])
+
+                # Comp U
+                layers[t,0, z] = all_data[0]
+                # Comp V
+                layers[t,1, z] = all_data[1]
+
+            # Comp U
+            results[t][0] = self.interpolate_vertical(depth, vert_coord, indexes_z, layers[t,0])
+            # Comp V
+            results[t][1] = self.interpolate_vertical(depth, vert_coord, indexes_z, layers[t,1])
+
+        if len(indexes_t) == 1:
+            return [results[0:,0,:],results[0:,1,:]]
         else:
-            data = self.reader.read_variable_baroclinic_sea_water_velocity_at_time_and_depth(index_t[0],index_z)
+            return [self.interpolate_time(time, indexes_t, results[:,0,:]),self.interpolate_time(time, indexes_t, results[:,1,:])]
 
-        return data
 
-    def read_variable_sea_water_temperature_at_time_and_depth(self,date,depth):
+    def read_variable_sea_water_temperature_at_time_and_depth(self,time,depth):
 
-        index_t = self.find_time_index(date)
-        index_z = self.find_level_index(depth)
+        indexes_t = self.find_time_index(time);
+        tmp = self.find_level_index(depth);
+        vert_coord = tmp[0]
+        indexes_z = tmp[1]
 
-        #TODO
-        # Il n'y a pas d'interpolation verticale pour le moment. Seule le module Coverage offre l'interpolation verticale.
-        # On teste si le reader se base sur une Coverage, dans ce cas, on fournit directement la profondeur pour que le Coverage
-        # interpolle verticalement pour nous.
-        if self.is_coverage_based():
-            index_z = depth
+        layers = np.zeros([np.shape(indexes_t)[0],np.shape(indexes_z)[0], self.get_nb_points()])
+        layers[::] = np.NAN
 
-        if len(index_t) > 1:
-            layers = np.zeros([len(index_t), self.get_nb_points()])
-            layers[::] = np.NAN
+        results = np.zeros([np.shape(indexes_t)[0],self.get_nb_points()])
+        results[:] = np.NAN
 
-            for t in range(0, len(index_t)):
-                layers[t] = self.reader.read_variable_sea_water_temperature_at_time_and_depth(index_t[t],index_z)
+        for t in range(0, len(indexes_t)):
+            for z in range(0, len(indexes_z)):
+                    layers[t,z] = self.reader.read_variable_sea_water_temperature_at_time_and_depth(indexes_t[t], indexes_z[z])
 
-            data = self.interpolate_time(date, index_t, layers)
+            results[t] = self.interpolate_vertical(depth,vert_coord,indexes_z,layers[t])
 
-        else:
-            data = self.reader.read_variable_sea_water_temperature_at_time_and_depth(index_t[0],index_z)
+        if len(indexes_t) > 1:
+            results = self.interpolate_time(time, indexes_t, results)
 
-        return data
+        return results
 
-    def read_variable_sea_water_salinity_at_time_and_depth(self, date, depth):
 
-        index_t = self.find_time_index(date)
-        index_z = self.find_level_index(depth)
+    def read_variable_sea_water_salinity_at_time_and_depth(self, time, depth):
 
-        #TODO
-        # Il n'y a pas d'interpolation verticale pour le moment. Seule le module Coverage offre l'interpolation verticale.
-        # On teste si le reader se base sur une Coverage, dans ce cas, on fournit directement la profondeur pour que le Coverage
-        # interpolle verticalement pour nous.
-        if self.is_coverage_based():
-            index_z = depth
+        indexes_t = self.find_time_index(time);
+        tmp = self.find_level_index(depth);
+        vert_coord = tmp[0]
+        indexes_z = tmp[1]
 
-        if len(index_t) > 1:
-            layers = np.zeros([len(index_t), self.get_nb_points()])
-            layers[::] = np.NAN
+        layers = np.zeros([np.shape(indexes_t)[0], np.shape(indexes_z)[0], self.get_nb_points()])
+        layers[::] = np.NAN
 
-            for t in range(0, len(index_t)):
-                layers[t] = self.reader.read_variable_sea_water_salinity_at_time_and_depth(index_t[t], index_z)
+        results = np.zeros([np.shape(indexes_t)[0], self.get_nb_points()])
+        results[:] = np.NAN
 
-            data = self.interpolate_time(date, index_t, layers)
+        for t in range(0, len(indexes_t)):
+            for z in range(0, len(indexes_z)):
+                layers[t, z] = self.reader.read_variable_sea_water_salinity_at_time_and_depth(indexes_t[t],
+                                                                                                 indexes_z[z])
 
-        else:
-            data = self.reader.read_variable_sea_water_salinity_at_time_and_depth(index_t[0], index_z)
+            results[t] = self.interpolate_vertical(depth, vert_coord, indexes_z, layers[t])
 
-        return data
+        if len(indexes_t) > 1:
+            results = self.interpolate_time(time, indexes_t, results)
+
+        return results
 
 

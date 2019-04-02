@@ -15,52 +15,17 @@
 #
 from __future__ import division, print_function, absolute_import
 from coverage.io.CoverageReader import CoverageReader
+from coverage.io.netcdf.symphonie.SymphonieReader import SymphonieReader
 from netCDF4 import Dataset, num2date
 import numpy as np
 
-class SymphonieOldReader(CoverageReader):
+class SymphonieOldReader(SymphonieReader):
 
-    def __init__(self,myGrid, myFile):   
-        CoverageReader.__init__(self,myFile);
-        self.ncfile = Dataset(self.filename, 'r')
-        self.grid = Dataset(myGrid, 'r')
-        
-    # Axis
-    def read_axis_t(self,timestamp):
-        data = self.ncfile.variables['time'][:]         
-        result = num2date(data, units = "seconds since 2012-08-01 00:00:00", calendar = self.ncfile.variables['time'].calendar)
-        
-        if timestamp ==1:           
-            return [ (t - TimeCoverage.TIME_DATUM).total_seconds() \
-                for t in result];
-        else:            
-            return result
-    
-    def read_axis_x(self):       
-        return self.grid.variables['longitude_t'][:]
-    
-    def read_axis_y(self):      
-        return self.grid.variables['latitude_t'][:]
-    
-    def read_axis_z(self):
-        lev = self.grid.variables['depth_t'][::]
-        lev[::] *= -1.0 # inverse la profondeur
-        return lev
-        
-    # Data    
-    def read_variable_mask(self): 
-        return self.grid.variables["mask_t"][:]
-    
-    def read_variable_mesh_size(self): 
-        return self.grid.variables["sqrt_dxdy"][:]    
-    
-    def read_variable_bathymetry(self): 
-        return self.grid.variables["hm_w"][:]
-    
-    def read_variable_ssh_at_time(self,t):
-        return self.ncfile.variables["ssh_w"][t][:]
+    def __init__(self,myGrid, myFile):
+        SymphonieReader.__init__(self,myGrid,myFile);
 
-    def read_variable_current_at_time_and_depth(self,index_t,index_z,depth,method="nearest"):
+
+    def read_variable_current_at_time_and_depth(self,index_t,index_z):
         mask_t = self.read_variable_mask();
         #mask_u = self.grid.variables["mask_u"][:];
         #mask_v = self.grid.variables["mask_v"][:];

@@ -116,11 +116,6 @@ class MultiPoint():
             logging.info("No medatdata available.")
             logging.debug(str(type(self.reader)) + " don't have implemented the function 'read_metadata()'.")
 
-    def is_coverage_based(self):
-        #TODO à virer. Pour le moment, j'utilise ça pour palier à l'interpolatrion vertical
-        # Comme
-        return self.reader.is_coverage_based()
-
     # Axis
     def get_nb_points(self):
             return self.nb_points

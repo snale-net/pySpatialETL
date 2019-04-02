@@ -35,7 +35,7 @@ class TimeMultiPoint(MultiPoint):
     #TIME_INTERPOLATION_METHOD = "backfill"
     #TIME_INTERPOLATION_METHOD = "linear"
 
-    def __init__(self,myReader,freq=None,start=None,end=None):
+    def __init__(self,myReader,freq=None,start=None,end=None,time_range=None):
         MultiPoint.__init__(self, myReader)
 
         self.raw_times = self.reader.read_axis_t(timestamp=0)
@@ -44,7 +44,11 @@ class TimeMultiPoint(MultiPoint):
         self.target_times = self.raw_times
         self.target_tmax = self.raw_tmax
 
-        if freq is not None and start is None and end is None:
+        if time_range is not None:
+            self.target_times = time_range
+            self.target_tmax = np.shape(self.target_times)[0]
+
+        elif freq is not None and start is None and end is None:
             self.freq = freq
             t_index = [self.raw_times[0], self.raw_times[self.raw_tmax - 1]]
             # we sort by dates
@@ -113,6 +117,7 @@ class TimeMultiPoint(MultiPoint):
                     indexes_t.append(int(index_t))
 
                 if abs((t - self.raw_times[index_t]).total_seconds()) != zero_delta.total_seconds():
+                    logging.debug("[TimeMultiPoint][find_time_index()] Looking for others dates with time delta of "+str(TimeMultiPoint.TIME_DELTA))
                     # On n'a trouvé exactement notre temps, on cherche autour les dates avant et après au TIME_DELTA  près
                     tt = index_t
                     while tt - 1 >= 0 and abs((t - self.raw_times[tt-1]).total_seconds()) <= TimeMultiPoint.TIME_DELTA.total_seconds() and tt - 1 not in indexes_t:
@@ -131,7 +136,7 @@ class TimeMultiPoint(MultiPoint):
 
             if not indexes_t:
                 raise ValueError("" + str(t) + " was not found. Maybe the TimeMultiPoint.TIME_DELTA_MIN (" + str(
-                    TimeMultiPoint.TIME_DELTA_MIN) + ") is too small or the date is out the range.")
+                    TimeMultiPoint.TIME_DELTA) + ") is too small or the date is out the range.")
 
         else:
             raise ValueError("" + str(t) + " have to be an integer or a datetime.")
@@ -263,6 +268,23 @@ class TimeMultiPoint(MultiPoint):
 
         return data
 
+    def read_variable_sea_water_temperature_at_ground_level_at_time(self, date):
+        index_t = self.find_time_index(date)
+
+        if len(index_t) > 1:
+            layers = np.zeros([len(index_t), self.get_nb_points()])
+            layers[::] = np.NAN
+
+            for t in range(0, len(index_t)):
+                layers[t] = self.reader.read_variable_sea_water_temperature_at_ground_level_at_time(index_t[t])
+
+            data = self.interpolate_time(date, index_t, layers)
+
+        else:
+            data = self.reader.read_variable_sea_water_temperature_at_ground_level_at_time(index_t[0])
+
+        return data
+
     def read_variable_sea_surface_salinity_at_time(self, date):
         index_t = self.find_time_index(date)
 
@@ -277,6 +299,23 @@ class TimeMultiPoint(MultiPoint):
 
         else:
             data = self.reader.read_variable_sea_surface_salinity_at_time(index_t[0])
+
+        return data
+
+    def read_variable_sea_water_salinity_at_ground_level_at_time(self, date):
+        index_t = self.find_time_index(date)
+
+        if len(index_t) > 1:
+            layers = np.zeros([len(index_t), self.get_nb_points()])
+            layers[::] = np.NAN
+
+            for t in range(0, len(index_t)):
+                layers[t] = self.reader.read_variable_sea_water_salinity_at_ground_level_at_time(index_t[t])
+
+            data = self.interpolate_time(date, index_t, layers)
+
+        else:
+            data = self.reader.read_variable_sea_water_salinity_at_ground_level_at_time(index_t[0])
 
         return data
 

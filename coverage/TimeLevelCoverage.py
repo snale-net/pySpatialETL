@@ -27,10 +27,124 @@ Elle rajoute les dimensions temporelle et verticale à la couverture horizontale
 
         LevelCoverage.__init__(self,myReader);  
         TimeCoverage.__init__(self,myReader);
-        
-    # Variables
 
+    #################
     # HYDRO
+    # 3D
+    #################
+
+    def read_variable_sea_water_temperature_at_time_and_depth(self, time, depth):
+        """Retourne la salinité à la date souhaitée et au niveau souhaité sur toute la couverture horizontale.
+    @type time: datetime ou l'index
+    @param time: date souhaitée
+    @type depth: profondeur en mètre (float) ou index (integer)
+    @param depth: profondeur souhaitée. Si le z est un entier, on considère qu'il s'agit de l'index,
+    si c'est un flottant on considère qu'il s'agit d'une profondeur
+    @return: un tableau en deux dimensions [y,x]."""
+
+        index_t = self.find_time_index(time);
+        tmp = self.find_level_index(depth);
+        vert_coord = tmp[0]
+        indexes_z = tmp[1]
+
+        xmax = self.get_x_size()
+        ymax = self.get_y_size()
+        layers = np.zeros([np.shape(indexes_z)[0], ymax, xmax])
+        layers[::] = np.NAN
+
+        results = np.zeros([ymax, xmax])
+        results[:] = np.NAN
+
+        targetDepth = [depth]
+
+        for z in range(0, len(indexes_z)):
+            layers[z] = self.reader.read_variable_sea_water_temperature_at_time_and_depth(index_t, indexes_z[z])
+
+        for y in range(0, ymax):
+            for x in range(0, xmax):
+
+                if len(vert_coord[y, x]) == 1:
+                    # Il n'y a qu'une seule couche de sélectionner donc pas d'interpolation possible
+
+                    # On retrouve l'index de la layer
+                    array = np.asarray(indexes_z)
+                    index_layer = (np.abs(array - vert_coord[y, x][0])).argmin()
+
+                    results[y, x] = layers[index_layer, y, x]
+
+                elif len(vert_coord[y, x]) > 1:
+
+                    candidateValues = np.zeros([len(vert_coord[y, x])])
+                    candidateDepths = np.zeros([len(vert_coord[y, x])])
+
+                    for z in range(0, len(vert_coord[y, x])):
+                        # On retrouve l'index de la layer
+                        array = np.asarray(indexes_z)
+                        index_layer = (np.abs(array - vert_coord[y, x][z])).argmin()
+
+                        candidateDepths[z] = self.levels[index_layer, y, x]
+                        candidateValues[z] = layers[index_layer, y, x]
+
+                    results[y, x] = vertical_interpolation(candidateDepths, targetDepth, candidateValues)
+
+        return results
+
+    def read_variable_sea_water_salinity_at_time_and_depth(self, time, depth):
+        """Retourne la salinité à la date souhaitée et au niveau souhaité sur toute la couverture horizontale.
+    @type time: datetime ou l'index
+    @param time: date souhaitée
+    @type depth: profondeur en mètre (float) ou index (integer)
+    @param depth: profondeur souhaitée. Si le z est un entier, on considère qu'il s'agit de l'index,
+    si c'est un flottant on considère qu'il s'agit d'une profondeur
+    @return: un tableau en deux dimensions [y,x]."""
+
+        index_t = self.find_time_index(time);
+        tmp = self.find_level_index(depth);
+        vert_coord = tmp[0]
+        indexes_z = tmp[1]
+
+        xmax = self.get_x_size()
+        ymax = self.get_y_size()
+        layers = np.zeros([np.shape(indexes_z)[0], ymax, xmax])
+        layers[::] = np.NAN
+
+        results = np.zeros([ymax, xmax])
+        results[:] = np.NAN
+
+        targetDepth = [depth]
+
+        for z in range(0, len(indexes_z)):
+            layers[z] = self.reader.read_variable_sea_water_salinity_at_time_and_depth(index_t, indexes_z[z])
+
+        for y in range(0, ymax):
+            for x in range(0, xmax):
+
+                if len(vert_coord[y, x]) == 1:
+                    # Il n'y a qu'une seule couche de sélectionner donc pas d'interpolation possible
+
+                    # On retrouve l'index de la layer
+                    array = np.asarray(indexes_z)
+                    index_layer = (np.abs(array - vert_coord[y, x][0])).argmin()
+
+                    results[y, x] = layers[index_layer, y, x]
+
+                elif len(vert_coord[y, x]) > 1:
+
+                    candidateValues = np.zeros([len(vert_coord[y, x])])
+                    candidateDepths = np.zeros([len(vert_coord[y, x])])
+
+                    for z in range(0, len(vert_coord[y, x])):
+                        # On retrouve l'index de la layer
+                        array = np.asarray(indexes_z)
+                        index_layer = (np.abs(array - vert_coord[y, x][z])).argmin()
+
+                        candidateDepths[z] = self.levels[index_layer, y, x]
+                        candidateValues[z] = layers[index_layer, y, x]
+
+                    results[y, x] = vertical_interpolation(candidateDepths, targetDepth, candidateValues)
+
+        return results
+
     def read_variable_baroclinic_sea_water_velocity_at_time_and_depth(self,time,depth):
         """Retourne les composantes u,v du courant à la date souhaitée et au niveau souhaité sur toute la couverture horizontale.
     @type time: datetime ou l'index
@@ -96,119 +210,8 @@ Elle rajoute les dimensions temporelle et verticale à la couverture horizontale
 
         return results
 
-    def read_variable_sea_water_salinity_at_time_and_depth(self,time,depth):
-        """Retourne la salinité à la date souhaitée et au niveau souhaité sur toute la couverture horizontale.
-    @type time: datetime ou l'index
-    @param time: date souhaitée
-    @type depth: profondeur en mètre (float) ou index (integer)
-    @param depth: profondeur souhaitée. Si le z est un entier, on considère qu'il s'agit de l'index,
-    si c'est un flottant on considère qu'il s'agit d'une profondeur
-    @return: un tableau en deux dimensions [y,x]."""
-
-        index_t = self.find_time_index(time);
-        tmp = self.find_level_index(depth);
-        vert_coord = tmp[0]
-        indexes_z = tmp[1]
-
-        xmax = self.get_x_size()
-        ymax = self.get_y_size()
-        layers = np.zeros([np.shape(indexes_z)[0], ymax, xmax])
-        layers[::] = np.NAN
-
-        results = np.zeros([ymax, xmax])
-        results[:] = np.NAN
-
-        targetDepth = [depth]
-
-        for z in range(0, len(indexes_z)):
-            layers[z] = self.reader.read_variable_sea_water_salinity_at_time_and_depth(index_t, indexes_z[z])
-
-        for y in range(0, ymax):
-            for x in range(0, xmax):
-
-                if len(vert_coord[y, x]) == 1:
-                    # Il n'y a qu'une seule couche de sélectionner donc pas d'interpolation possible
-
-                    # On retrouve l'index de la layer
-                    array = np.asarray(indexes_z)
-                    index_layer = (np.abs(array - vert_coord[y, x][0])).argmin()
-
-                    results[y, x] = layers[index_layer, y, x]
-
-                elif len(vert_coord[y, x]) > 1:
-
-                    candidateValues = np.zeros([len(vert_coord[y, x])])
-                    candidateDepths = np.zeros([len(vert_coord[y, x])])
-
-                    for z in range(0, len(vert_coord[y, x])):
-                        # On retrouve l'index de la layer
-                        array = np.asarray(indexes_z)
-                        index_layer = (np.abs(array - vert_coord[y, x][z])).argmin()
-
-                        candidateDepths[z] = self.levels[index_layer, y, x]
-                        candidateValues[z] = layers[index_layer, y, x]
-
-                    results[y, x] = vertical_interpolation(candidateDepths, targetDepth, candidateValues)
-
-        return results
-
-    def read_variable_sea_water_temperature_at_time_and_depth(self, time, depth):
-        """Retourne la salinité à la date souhaitée et au niveau souhaité sur toute la couverture horizontale.
-    @type time: datetime ou l'index
-    @param time: date souhaitée
-    @type depth: profondeur en mètre (float) ou index (integer)
-    @param depth: profondeur souhaitée. Si le z est un entier, on considère qu'il s'agit de l'index,
-    si c'est un flottant on considère qu'il s'agit d'une profondeur
-    @return: un tableau en deux dimensions [y,x]."""
-
-        index_t = self.find_time_index(time);
-        tmp = self.find_level_index(depth);
-        vert_coord = tmp[0]
-        indexes_z = tmp[1]
-
-        xmax = self.get_x_size()
-        ymax = self.get_y_size()
-        layers = np.zeros([np.shape(indexes_z)[0], ymax, xmax])
-        layers[::] = np.NAN
-
-        results = np.zeros([ymax, xmax])
-        results[:] = np.NAN
-
-        targetDepth = [depth]
-
-        for z in range(0, len(indexes_z)):
-            layers[z] = self.reader.read_variable_sea_water_temperature_at_time_and_depth(index_t, indexes_z[z])
-
-        for y in range(0, ymax):
-            for x in range(0, xmax):
-
-                if len(vert_coord[y,x]) == 1:
-                    # Il n'y a qu'une seule couche de sélectionner donc pas d'interpolation possible
-
-                    # On retrouve l'index de la layer
-                    array = np.asarray(indexes_z)
-                    index_layer = (np.abs(array - vert_coord[y, x][0])).argmin()
-
-                    results[y, x] = layers[index_layer, y, x]
-
-                elif len(vert_coord[y,x]) > 1:
-
-                    candidateValues = np.zeros([len(vert_coord[y,x])])
-                    candidateDepths = np.zeros([len(vert_coord[y,x])])
-
-                    for z in range(0, len(vert_coord[y,x])):
-                        # On retrouve l'index de la layer
-                        array = np.asarray(indexes_z)
-                        index_layer = (np.abs(array - vert_coord[y, x][z])).argmin()
-
-                        candidateDepths[z] = self.levels[index_layer, y, x]
-                        candidateValues[z] = layers[index_layer, y, x]
-
-                    results[y, x] = vertical_interpolation(candidateDepths, targetDepth, candidateValues)
 
 
-        return results
-    
        
 
             
