@@ -282,3 +282,24 @@ class DefaultTimeMultiPointWriter(MultiPointWriter):
             var[time_index:time_index + 1, :] = self.points.read_variable_sea_water_pressure_at_sea_water_surface_at_time(time)
 
             time_index += 1
+
+    def write_variable_water_volume_transport_into_sea_water_from_rivers(self):
+        var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['water_volume_transport_into_sea_water_from_rivers'], float32, (
+        VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['point']),
+                                         fill_value=9.96921e+36)
+        var.long_name = VariableDefinition.LONG_NAME['water_volume_transport_into_sea_water_from_rivers']
+        var.standard_name = VariableDefinition.STANDARD_NAME['water_volume_transport_into_sea_water_from_rivers']
+        var.units = VariableDefinition.CANONICAL_UNITS['water_volume_transport_into_sea_water_from_rivers']
+
+        logging.info('[DefaultTimeMultiPointWriter] Writing variable \'' + str(
+            VariableDefinition.LONG_NAME['water_volume_transport_into_sea_water_from_rivers']) + '\'')
+
+        time_index = 0
+        for time in self.points.read_axis_t():
+            logging.debug(
+                '[DefaultTimeMultiPointWriter] Writing variable \'' + str(
+                    VariableDefinition.LONG_NAME['water_volume_transport_into_sea_water_from_rivers']) + '\' at time \'' + str(time) + '\'')
+
+            var[time_index:time_index + 1, :] = self.points.read_variable_water_volume_transport_into_sea_water_from_rivers_at_time(time)
+
+            time_index += 1

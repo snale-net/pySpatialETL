@@ -47,7 +47,7 @@ class CoverageInterpolator():
         self.depths = depths
 
         logging.info('[InterpolatorCore] Source grid size : ' + str(np.shape(self.coverage.read_axis_x())))
-        logging.info('[InterpolatorCore] Target grid size : ' + str(np.shape(self.read_axis_x())))
+        logging.info('[InterpolatorCore] Target grid size : (' + str(np.shape(self.read_axis_x())[0])+", "+ str(np.shape(self.read_axis_y())[0])+")")
 
     # Axis
     def read_axis_x(self):

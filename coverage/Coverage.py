@@ -134,7 +134,7 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
 
         return self.regular_grid
         
-    def find_point_index(self,target_lon,target_lat,method="classic"):
+    def find_point_index(self,target_lon,target_lat,method="quick"):
         """Retourne le point le plus proche du point donné en paramètre.
     @param target_lon: Coordonnée longitude du point
     @param target_lat: Coordonnée latitude du point
@@ -178,6 +178,25 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
 
                             nearest_y_index = y
                             nearest_x_index = x
+        elif method == "quick":
+
+            # Longitude : on cherche l'index le plus proche
+            array = np.asarray(lon)
+            nearest_x_index = (np.abs(array - target_lon)).argmin()
+
+            # Latitude : on cherche l'index le plus proche
+            array = np.asarray(lat)
+            nearest_y_index = (np.abs(array - target_lat)).argmin()
+
+            if self.is_regular_grid():
+                nearest_lon = lon[nearest_x_index]
+                nearest_lat = lat[nearest_y_index]
+            else:
+                nearest_lon = lon[nearest_y_index, nearest_x_index]
+                nearest_lat = lat[nearest_y_index, nearest_x_index]
+
+            min_dist = distance_on_unit_sphere(target_lon, target_lat,nearest_lon,nearest_lat)
+
         else:
             raise RuntimeError("Method "+str(method)+" is not implemented yet.")
 

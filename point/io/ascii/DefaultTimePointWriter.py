@@ -290,3 +290,16 @@ class DefaultTimePointWriter(MultiPointWriter):
             time_index += 1
 
         self.data['sea_water_electrical_conductivity'] = data
+
+
+    def write_variable_water_volume_transport_into_sea_water_from_rivers(self):
+        logging.info('[DefaultTimePointWriter] Writing variable \''+str(VariableDefinition.LONG_NAME['water_volume_transport_into_sea_water_from_rivers'])+'\'')
+        data = np.zeros([self.points.get_t_size()])
+        data[:] = np.nan
+        time_index = 0
+        for time in self.points.read_axis_t():
+            data[time_index] = self.points.read_variable_water_volume_transport_into_sea_water_from_rivers_at_time(time)[
+                self.index_x]
+            time_index += 1
+
+        self.data['water_volume_transport_into_sea_water_from_rivers'] = data

@@ -135,7 +135,7 @@ class TimeMultiPoint(MultiPoint):
                 logging.debug("[TimeMultiPoint] " + str(t) + " was not found on the T axis.")
 
             if not indexes_t:
-                raise ValueError("" + str(t) + " was not found. Maybe the TimeMultiPoint.TIME_DELTA_MIN (" + str(
+                raise ValueError("" + str(t) + " was not found. Maybe the TimeMultiPoint.TIME_DELTA (" + str(
                     TimeMultiPoint.TIME_DELTA) + ") is too small or the date is out the range.")
 
         else:
@@ -567,6 +567,23 @@ class TimeMultiPoint(MultiPoint):
 
         else:
             data = self.reader.read_variable_rainfall_amount_at_time(index_t[0])
+
+        return data
+
+    def read_variable_water_volume_transport_into_sea_water_from_rivers_at_time(self, date):
+        index_t = self.find_time_index(date)
+
+        if len(index_t) > 1:
+            layers = np.zeros([len(index_t), self.get_nb_points()])
+            layers[::] = np.NAN
+
+            for t in range(0, len(index_t)):
+                layers[t] = self.reader.read_variable_water_volume_transport_into_sea_water_from_rivers_at_time(index_t[t])
+
+            data = self.interpolate_time(date, index_t, layers)
+
+        else:
+            data = self.reader.read_variable_water_volume_transport_into_sea_water_from_rivers_at_time(index_t[0])
 
         return data
 
