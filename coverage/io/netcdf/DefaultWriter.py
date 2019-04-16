@@ -321,6 +321,44 @@ class DefaultWriter (CoverageWriter):
 
             time_index += 1
 
+    def write_variable_sea_surface_salinity(self):
+
+        var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_surface_salinity'], float32, (VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],),
+                                         fill_value=9.96921e+36)
+        var.long_name = VariableDefinition.LONG_NAME['sea_surface_salinity']
+        var.standard_name = VariableDefinition.STANDARD_NAME['sea_surface_salinity']
+        var.units = VariableDefinition.CANONICAL_UNITS['sea_surface_salinity']
+
+        logging.info('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['sea_surface_salinity']) + '\'')
+
+        time_index = 0
+        for time in self.coverage.read_axis_t():
+            logging.debug(
+                '[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['sea_surface_salinity']) + '\' at time \'' + str(time) + '\'')
+            var[time_index:time_index + 1, :] = self.coverage.read_variable_sea_surface_salinity_at_time(time)
+            time_index += 1
+
+    def write_variable_sea_water_salinity_at_ground_level(self):
+
+        var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_water_salinity_at_ground_level'], float32, (
+        VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['latitude'],
+        VariableDefinition.VARIABLE_NAME['longitude'],),
+                                         fill_value=9.96921e+36)
+        var.long_name = VariableDefinition.LONG_NAME['sea_water_salinity_at_ground_level']
+        var.standard_name = VariableDefinition.STANDARD_NAME['sea_water_salinity_at_ground_level']
+        var.units = VariableDefinition.CANONICAL_UNITS['sea_water_salinity_at_ground_level']
+
+        logging.info(
+            '[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['sea_water_salinity_at_ground_level']) + '\'')
+
+        time_index = 0
+        for time in self.coverage.read_axis_t():
+            logging.debug(
+                '[DefaultWriter] Writing variable \'' + str(
+                    VariableDefinition.LONG_NAME['sea_water_salinity_at_ground_level']) + '\' at time \'' + str(time) + '\'')
+            var[time_index:time_index + 1, :] = self.coverage.read_variable_sea_water_salinity_at_ground_level_at_time(time)
+            time_index += 1
+
     def write_variable_sea_water_salinity(self):
 
         var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_water_salinity'], float32,
