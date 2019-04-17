@@ -22,29 +22,46 @@ import numpy as np
 
 
 def time_interpolation(sourceAxis,targetAxis,data,method):
-    logging.info("[InterpolatorCore][time_interpolation()] Looking for time : "+str(datetime.utcfromtimestamp(targetAxis[0]))+" with method '"+str(method)+"'.")
-    logging.debug("[InterpolatorCore][time_interpolation()] Source Axis contains: ")
+    logging.debug("[InterpolatorCore][time_interpolation()] Looking for time : "+str(datetime.utcfromtimestamp(targetAxis[0]))+" with method '"+str(method)+"'.")
     for time in sourceAxis:
-        logging.debug(datetime.utcfromtimestamp(time))
+        logging.debug("[InterpolatorCore][time_interpolation()] Source Axis contains: "+str(datetime.utcfromtimestamp(time)))
 
-    logging.debug("[InterpolatorCore][time_interpolation()] Target Axis contains: ")
     for time in targetAxis:
-        logging.debug(datetime.utcfromtimestamp(time))
+        logging.debug("[InterpolatorCore][time_interpolation()] Target Axis contains: "+str(datetime.utcfromtimestamp(time)))
 
-    if method == "mean":
+    if method is None:
+        return np.nan
+
+    elif method == "mean":
         return np.mean(data)
+
+    elif method == "nearest":
+
+        array = np.asarray(sourceAxis)
+        nearest_index_t = (np.abs(array - targetAxis[0])).argmin()
+        return data[nearest_index_t]
+
     else:
         f = interp1d(sourceAxis, data, kind=method, bounds_error=True)
         return f(targetAxis)
 
 def vertical_interpolation(sourceAxis,targetAxis,data,method):
-    logging.info("[InterpolatorCore][vertical_interpolation()] Looking for water depth : " + str(targetAxis[0]) + " m with method '" + str(method) + "'.")
+    logging.debug("[InterpolatorCore][vertical_interpolation()] Looking for water depth : " + str(targetAxis[0]) + " m with method '" + str(method) + "'.")
     logging.debug("[InterpolatorCore][vertical_interpolation()] Source Axis contains: "+str(sourceAxis))
     logging.debug("[InterpolatorCore][vertical_interpolation()] Candidates values are: " + str(data))
     logging.debug("[InterpolatorCore][vertical_interpolation()] Target Axis contains: " + str(targetAxis))
 
-    if method == "mean":
+    if method is None:
+        return np.nan
+
+    elif method == "mean":
         return np.mean(data)
+
+    elif method == "nearest":
+        array = np.asarray(sourceAxis)
+        nearest_index_t = (np.abs(array - targetAxis[0])).argmin()
+        return data[nearest_index_t]
+
     else:
         f = interp1d(sourceAxis,data,kind=method,bounds_error=False)
         return f(targetAxis)

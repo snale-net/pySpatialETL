@@ -100,21 +100,15 @@ class TimeMultiPoint(MultiPoint):
 
             logging.debug("[TimeMultiPoint][find_time_index()] Looking for : "+str(t))
 
-            # Pour chaque temps, on cherche l'index inférieur le plus proche de notre date t
-            index_t = 0
-            while index_t < self.get_t_size(raw=True) and (t - self.raw_times[index_t]).total_seconds() > zero_delta.total_seconds():
-                index_t = index_t + 1
+            # On cherche l'index le plus proche
+            array = np.asarray(self.read_axis_t(timestamp=1,raw=1))
+            index_t = (np.abs(array - t.replace(tzinfo=timezone.utc).timestamp())).argmin()
 
-            if index_t >= 0 and index_t < self.get_t_size(raw=True):
-                # On a trouvé quelques choses
+            if abs(t - self.raw_times[index_t]).total_seconds() <= TimeMultiPoint.TIME_DELTA.total_seconds():
+                # On a trouvé une date qui correspond au delta près.
 
-                if (t - self.raw_times[index_t]).total_seconds() > zero_delta.total_seconds():
-                    # On est allé un temps trop loin. L'index le plus proche inférieur est index-1.
-                    index_t = index_t -1
-
-                if index_t not in indexes_t:
-                    logging.debug("[TimeMultiPoint][find_time_index()] Found : "+str(self.raw_times[index_t]))
-                    indexes_t.append(int(index_t))
+                logging.debug("[TimeMultiPoint][find_time_index()] Found : "+str(self.raw_times[index_t]))
+                indexes_t.append(int(index_t))
 
                 if abs((t - self.raw_times[index_t]).total_seconds()) != zero_delta.total_seconds():
                     logging.debug("[TimeMultiPoint][find_time_index()] Looking for others dates with time delta of "+str(TimeMultiPoint.TIME_DELTA))

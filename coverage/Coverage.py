@@ -16,6 +16,7 @@
 from __future__ import division, print_function, absolute_import
 import numpy as np
 import math
+from scipy.spatial.distance import cdist
  
 def distance_on_unit_sphere(long1, lat1,long2, lat2):
     """
@@ -190,17 +191,33 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
                 array = np.asarray(lat)
                 nearest_y_index = (np.abs(array - target_lat)).argmin()
 
-                if self.is_regular_grid():
-                    nearest_lon = lon[nearest_x_index]
-                    nearest_lat = lat[nearest_y_index]
-                else:
-                    nearest_lon = lon[nearest_y_index, nearest_x_index]
-                    nearest_lat = lat[nearest_y_index, nearest_x_index]
+                nearest_lon = lon[nearest_x_index]
+                nearest_lat = lat[nearest_y_index]
 
                 min_dist = distance_on_unit_sphere(target_lon, target_lat,nearest_lon,nearest_lat)
 
             else:
                 raise NotImplementedError("Method " + str(method) + " is implemented on for regular grid.")
+
+                # Ne fonctionne pas !!
+                # Longitude : on cherche l'index le plus proche
+                array = np.asarray(lon)
+                idx = np.abs(array - target_lon)
+                nearest_x_index = np.where(idx == idx.min())
+
+                print(nearest_x_index)
+
+                # Latitude : on cherche l'index le plus proche
+                array = np.asarray(lat)
+                idy = np.abs(array - target_lat)
+                nearest_y_index = np.where(idy == idy.min())
+
+                print(nearest_y_index)
+
+                nearest_lon = lon[nearest_y_index, nearest_x_index]
+                nearest_lat = lat[nearest_y_index, nearest_x_index]
+
+                min_dist = distance_on_unit_sphere(target_lon, target_lat, nearest_lon, nearest_lat)
 
         else:
             raise RuntimeError("Method "+str(method)+" is not implemented yet.")
