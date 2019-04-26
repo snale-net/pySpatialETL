@@ -138,7 +138,11 @@ class DefaultWriter(MultiPointWriter):
                 '[DefaultTimeMultiPointWriter] Writing variable \'' + str(
                     VariableDefinition.LONG_NAME['sea_surface_height_above_mean_sea_level']) + '\' at time \'' + str(time) + '\'')
 
-            var[time_index:time_index + 1, :] = self.points.read_variable_sea_surface_height_above_mean_sea_level_at_time(time_index)
+            if self.is_raw_times:
+                # Inutile de rechercher la date si l'axe du temps est le même que la donnée brute
+                var[time_index:time_index + 1, :] = self.points.read_variable_sea_surface_height_above_mean_sea_level_at_time(time_index)
+            else:
+                var[time_index:time_index + 1, :] = self.points.read_variable_sea_surface_height_above_mean_sea_level_at_time(time)
 
             time_index += 1
 
@@ -159,7 +163,11 @@ class DefaultWriter(MultiPointWriter):
                 '[DefaultTimeMultiPointWriter] Writing variable \'' + str(
                     VariableDefinition.LONG_NAME['wind_speed_10m']) + '\' at time \'' + str(time) + '\'')
 
-            var[time_index:time_index + 1, :] = self.points.read_variable_wind_speed_10m_at_time(time)
+            if self.is_raw_times:
+                # Inutile de rechercher la date si l'axe du temps est le même que la donnée brute
+                var[time_index:time_index + 1, :] = self.points.read_variable_wind_speed_10m_at_time(time_index)
+            else:
+                var[time_index:time_index + 1, :] = self.points.read_variable_wind_speed_10m_at_time(time)
 
             time_index += 1
 
@@ -180,7 +188,11 @@ class DefaultWriter(MultiPointWriter):
                 '[DefaultTimeMultiPointWriter] Writing variable \'' + str(
                     VariableDefinition.LONG_NAME['wind_from_direction_10m']) + '\' at time \'' + str(time) + '\'')
 
-            var[time_index:time_index + 1, :] = self.points.read_variable_wind_from_direction_10m_at_time(time)
+            if self.is_raw_times:
+                # Inutile de rechercher la date si l'axe du temps est le même que la donnée brute
+                var[time_index:time_index + 1, :] = self.points.read_variable_wind_from_direction_10m_at_time(time_index)
+            else:
+                var[time_index:time_index + 1, :] = self.points.read_variable_wind_from_direction_10m_at_time(time)
 
             time_index += 1
 
@@ -202,7 +214,11 @@ class DefaultWriter(MultiPointWriter):
                     VariableDefinition.LONG_NAME['wind_to_direction_10m']) + '\' at time \'' + str(
                     time) + '\'')
 
-            var[time_index:time_index + 1, :] = self.points.read_variable_wind_to_direction_10m_at_time(time)
+            if self.is_raw_times:
+                # Inutile de rechercher la date si l'axe du temps est le même que la donnée brute
+                var[time_index:time_index + 1, :] = self.points.read_variable_wind_to_direction_10m_at_time(time_index)
+            else:
+                var[time_index:time_index + 1, :] = self.points.read_variable_wind_to_direction_10m_at_time(time)
 
             time_index += 1
 
@@ -223,7 +239,11 @@ class DefaultWriter(MultiPointWriter):
                 '[DefaultTimeMultiPointWriter] Writing variable \'' + str(
                     VariableDefinition.LONG_NAME['rainfall_amount']) + '\' at time \'' + str(time) + '\'')
 
-            var[time_index:time_index + 1, :] = self.points.read_variable_rainfall_amount_at_time(time)
+            if self.is_raw_times:
+                # Inutile de rechercher la date si l'axe du temps est le même que la donnée brute
+                var[time_index:time_index + 1, :] = self.points.read_variable_rainfall_amount_at_time(time_index)
+            else:
+                var[time_index:time_index + 1, :] = self.points.read_variable_rainfall_amount_at_time(time)
 
             time_index += 1
 
@@ -243,7 +263,11 @@ class DefaultWriter(MultiPointWriter):
                 '[DefaultTimeMultiPointWriter] Writing variable \'' + str(
                     VariableDefinition.LONG_NAME['surface_air_pressure']) + '\' at time \'' + str(time) + '\'')
 
-            var[time_index:time_index + 1, :] = self.points.read_variable_surface_air_pressure_at_time(time)
+            if self.is_raw_times:
+                # Inutile de rechercher la date si l'axe du temps est le même que la donnée brute
+                var[time_index:time_index + 1, :] = self.points.read_variable_surface_air_pressure_at_time(time_index)
+            else:
+                var[time_index:time_index + 1, :] = self.points.read_variable_surface_air_pressure_at_time(time)
 
             time_index += 1
 
@@ -263,7 +287,11 @@ class DefaultWriter(MultiPointWriter):
                 '[DefaultTimeMultiPointWriter] Writing variable \'' + str(
                     VariableDefinition.LONG_NAME['sea_surface_temperature']) + '\' at time \'' + str(time) + '\'')
 
-            var[time_index:time_index + 1, :] = self.points.read_variable_sea_surface_temperature_at_time(time)
+            if self.is_raw_times:
+                # Inutile de rechercher la date si l'axe du temps est le même que la donnée brute
+                var[time_index:time_index + 1, :] = self.points.read_variable_sea_surface_temperature_at_time(time_index)
+            else:
+                var[time_index:time_index + 1, :] = self.points.read_variable_sea_surface_temperature_at_time(time)
 
             time_index += 1
 
@@ -283,7 +311,12 @@ class DefaultWriter(MultiPointWriter):
                 '[DefaultTimeMultiPointWriter] Writing variable \'' + str(
                     VariableDefinition.LONG_NAME['sea_water_temperature_at_ground_level']) + '\' at time \'' + str(time) + '\'')
 
-            var[time_index:time_index + 1, :] = self.points.read_variable_sea_water_temperature_at_ground_level_at_time(time)
+            if self.is_raw_times:
+                # Inutile de rechercher la date si l'axe du temps est le même que la donnée brute
+                var[time_index:time_index + 1,
+                :] = self.points.read_variable_sea_water_temperature_at_ground_level_at_time(time_index)
+            else:
+                var[time_index:time_index + 1, :] = self.points.read_variable_sea_water_temperature_at_ground_level_at_time(time)
 
             time_index += 1
 
@@ -304,7 +337,11 @@ class DefaultWriter(MultiPointWriter):
                     VariableDefinition.LONG_NAME['sea_surface_salinity']) + '\' at time \'' + str(
                     time) + '\'')
 
-            var[time_index:time_index + 1, :] = self.points.read_variable_sea_surface_salinity_at_time(time)
+            if self.is_raw_times:
+                # Inutile de rechercher la date si l'axe du temps est le même que la donnée brute
+                var[time_index:time_index + 1, :] = self.points.read_variable_sea_surface_salinity_at_time(time_index)
+            else:
+                var[time_index:time_index + 1, :] = self.points.read_variable_sea_surface_salinity_at_time(time)
 
             time_index += 1
 
@@ -325,7 +362,12 @@ class DefaultWriter(MultiPointWriter):
                     VariableDefinition.LONG_NAME['sea_water_salinity_at_ground_level']) + '\' at time \'' + str(
                     time) + '\'')
 
-            var[time_index:time_index + 1, :] = self.points.read_variable_sea_water_salinity_at_ground_level_at_time(time)
+            if self.is_raw_times:
+                # Inutile de rechercher la date si l'axe du temps est le même que la donnée brute
+                var[time_index:time_index + 1,
+                :] = self.points.read_variable_sea_water_salinity_at_ground_level_at_time(time_index)
+            else:
+                var[time_index:time_index + 1, :] = self.points.read_variable_sea_water_salinity_at_ground_level_at_time(time)
 
             time_index += 1
 
@@ -346,7 +388,11 @@ class DefaultWriter(MultiPointWriter):
                 '[DefaultTimeMultiPointWriter] Writing variable \'' + str(
                     VariableDefinition.LONG_NAME['barotropic_sea_water_speed']) + '\' at time \'' + str(time) + '\'')
 
-            var[time_index:time_index + 1, :] = self.points.read_variable_barotropic_sea_water_speed_at_time(time)
+            if self.is_raw_times:
+                # Inutile de rechercher la date si l'axe du temps est le même que la donnée brute
+                var[time_index:time_index + 1, :] = self.points.read_variable_barotropic_sea_water_speed_at_time(time_index)
+            else:
+                var[time_index:time_index + 1, :] = self.points.read_variable_barotropic_sea_water_speed_at_time(time)
 
             time_index += 1
 
@@ -369,7 +415,13 @@ class DefaultWriter(MultiPointWriter):
                     VariableDefinition.LONG_NAME['barotropic_sea_water_from_direction']) + '\' at time \'' + str(
                     time) + '\'')
 
-            var[time_index:time_index + 1, :] = self.points.read_variable_barotropic_sea_water_from_direction_at_time(
+            if self.is_raw_times:
+                # Inutile de rechercher la date si l'axe du temps est le même que la donnée brute
+                var[time_index:time_index + 1,
+                :] = self.points.read_variable_barotropic_sea_water_from_direction_at_time(
+                    time_index)
+            else:
+                var[time_index:time_index + 1, :] = self.points.read_variable_barotropic_sea_water_from_direction_at_time(
                 time)
 
             time_index += 1
@@ -393,7 +445,12 @@ class DefaultWriter(MultiPointWriter):
                     VariableDefinition.LONG_NAME['barotropic_sea_water_to_direction']) + '\' at time \'' + str(
                     time) + '\'')
 
-            var[time_index:time_index + 1, :] = self.points.read_variable_barotropic_sea_water_to_direction_at_time(
+            if self.is_raw_times:
+                # Inutile de rechercher la date si l'axe du temps est le même que la donnée brute
+                var[time_index:time_index + 1, :] = self.points.read_variable_barotropic_sea_water_to_direction_at_time(
+                    time_index)
+            else:
+                var[time_index:time_index + 1, :] = self.points.read_variable_barotropic_sea_water_to_direction_at_time(
                 time)
 
             time_index += 1
@@ -417,8 +474,11 @@ class DefaultWriter(MultiPointWriter):
                     VariableDefinition.LONG_NAME['sea_water_pressure_at_sea_water_surface']) + '\' at time \'' + str(
                     time) + '\'')
 
-            var[time_index:time_index + 1,
-            :] = self.points.read_variable_sea_water_pressure_at_sea_water_surface_at_time(time)
+            if self.is_raw_times:
+                # Inutile de rechercher la date si l'axe du temps est le même que la donnée brute
+                var[time_index:time_index + 1,:] = self.points.read_variable_sea_water_pressure_at_sea_water_surface_at_time(time_index)
+            else:
+                var[time_index:time_index + 1,:] = self.points.read_variable_sea_water_pressure_at_sea_water_surface_at_time(time)
 
             time_index += 1
 
@@ -449,7 +509,11 @@ class DefaultWriter(MultiPointWriter):
             z_index = 0
             for depth in self.points.read_axis_z():
 
-                cur = self.points.read_variable_baroclinic_sea_water_velocity_at_time_and_depth(time, depth)
+                if self.is_raw_times:
+                    # Inutile de rechercher la date si l'axe du temps est le même que la donnée brute
+                    cur = self.points.read_variable_baroclinic_sea_water_velocity_at_time_and_depth(time_index, depth)
+                else:
+                    cur = self.points.read_variable_baroclinic_sea_water_velocity_at_time_and_depth(time, depth)
 
                 ucur[time_index:time_index + 1,z_index:z_index + 1] = cur[0]
                 vcur[time_index:time_index + 1,z_index:z_index + 1] = cur[1]
@@ -474,7 +538,12 @@ class DefaultWriter(MultiPointWriter):
 
             z_index = 0
             for depth in self.points.read_axis_z():
-                data = self.points.read_variable_sea_water_temperature_at_time_and_depth(time,depth)
+
+                if self.is_raw_times:
+                    # Inutile de rechercher la date si l'axe du temps est le même que la donnée brute
+                    data = self.points.read_variable_sea_water_temperature_at_time_and_depth(time_index, depth)
+                else:
+                    data = self.points.read_variable_sea_water_temperature_at_time_and_depth(time,depth)
 
                 var[time_index:time_index + 1,z_index:z_index + 1] = data
                 z_index = z_index +1
@@ -496,7 +565,12 @@ class DefaultWriter(MultiPointWriter):
 
             z_index = 0
             for depth in self.points.read_axis_z():
-                data = self.points.read_variable_sea_water_salinity_at_time_and_depth(time, depth)
+
+                if self.is_raw_times:
+                    # Inutile de rechercher la date si l'axe du temps est le même que la donnée brute
+                    data = self.points.read_variable_sea_water_salinity_at_time_and_depth(time_index, depth)
+                else:
+                    data = self.points.read_variable_sea_water_salinity_at_time_and_depth(time, depth)
 
                 var[time_index:time_index + 1, z_index:z_index + 1] = data
                 z_index = z_index + 1
@@ -518,7 +592,12 @@ class DefaultWriter(MultiPointWriter):
 
             z_index = 0
             for depth in self.points.read_axis_z():
-                data = self.points.read_variable_sea_water_density_at_time_and_depth(time, depth)
+
+                if self.is_raw_times:
+                    # Inutile de rechercher la date si l'axe du temps est le même que la donnée brute
+                    data = self.points.read_variable_sea_water_density_at_time_and_depth(time_index, depth)
+                else:
+                    data = self.points.read_variable_sea_water_density_at_time_and_depth(time, depth)
 
                 var[time_index:time_index + 1, z_index:z_index + 1] = data
                 z_index = z_index + 1
@@ -540,7 +619,12 @@ class DefaultWriter(MultiPointWriter):
 
             z_index = 0
             for depth in self.points.read_axis_z():
-                data = self.points.read_variable_sea_water_turbidity_at_time_and_depth(time, depth)
+
+                if self.is_raw_times:
+                    # Inutile de rechercher la date si l'axe du temps est le même que la donnée brute
+                    data = self.points.read_variable_sea_water_turbidity_at_time_and_depth(time_index, depth)
+                else:
+                    data = self.points.read_variable_sea_water_turbidity_at_time_and_depth(time, depth)
 
                 var[time_index:time_index + 1, z_index:z_index + 1] = data
                 z_index = z_index + 1
@@ -563,7 +647,12 @@ class DefaultWriter(MultiPointWriter):
 
             z_index = 0
             for depth in self.points.read_axis_z():
-                data = self.points.read_variable_sea_water_conductivity_at_time_and_depth(time, depth)
+
+                if self.is_raw_times:
+                    # Inutile de rechercher la date si l'axe du temps est le même que la donnée brute
+                    data = self.points.read_variable_sea_water_conductivity_at_time_and_depth(time_index, depth)
+                else:
+                    data = self.points.read_variable_sea_water_conductivity_at_time_and_depth(time, depth)
 
                 var[time_index:time_index + 1, z_index:z_index + 1] = data
                 z_index = z_index + 1

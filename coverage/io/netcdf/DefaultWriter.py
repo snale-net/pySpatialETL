@@ -176,7 +176,8 @@ class DefaultWriter (CoverageWriter):
         time_index=0
         for time in self.coverage.read_axis_t():
             logging.debug('[DefaultWriter] Writing variable \''+str(VariableDefinition.LONG_NAME['sea_surface_height_above_mean_sea_level'])+'\' at time \''+str(time)+'\'')
-            var[time_index:time_index+1,:] = self.coverage.read_variable_sea_surface_height_above_mean_sea_level_at_time(time)
+            # Pas d'interpolation temporelle donc on parcours les index du temps
+            var[time_index:time_index+1,:] = self.coverage.read_variable_sea_surface_height_above_mean_sea_level_at_time(time_index)
             time_index += 1
 
     def write_variable_sea_surface_height_above_geoid(self):
@@ -193,8 +194,9 @@ class DefaultWriter (CoverageWriter):
         for time in self.coverage.read_axis_t():
             logging.debug(
                 '[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['sea_surface_height_above_geoid']) + '\' at time \'' + str(time) + '\'')
+            # Pas d'interpolation temporelle donc on parcours les index du temps
             var[time_index:time_index + 1,
-            :] = self.coverage.read_variable_sea_surface_height_above_geoid_at_time(time)
+            :] = self.coverage.read_variable_sea_surface_height_above_geoid_at_time(time_index)
             time_index += 1
 
     def write_variable_baroclinic_sea_water_velocity(self):
@@ -223,7 +225,8 @@ class DefaultWriter (CoverageWriter):
 
             level_index = 0
             for level in self.coverage.read_axis_z():
-                cur = self.coverage.read_variable_baroclinic_sea_water_velocity_at_time_and_depth(time, level)
+                # Pas d'interpolation temporelle donc on parcours les index du temps
+                cur = self.coverage.read_variable_baroclinic_sea_water_velocity_at_time_and_depth(time_index, level)
 
                 ucur[time_index:time_index + 1, level_index:level_index + 1, :, :] = cur[0]
                 vcur[time_index:time_index + 1, level_index:level_index + 1, :, :] = cur[1]
@@ -253,7 +256,8 @@ class DefaultWriter (CoverageWriter):
             logging.debug(
                 '[DefaultWriter] Writing variable \'Barotropic Sea Water Velocity\' at time \'' + str(time) + '\'')
 
-            cur = self.coverage.read_variable_barotropic_sea_water_velocity_at_time(time)
+            # Pas d'interpolation temporelle donc on parcours les index du temps
+            cur = self.coverage.read_variable_barotropic_sea_water_velocity_at_time(time_index)
 
             ucur[time_index:time_index + 1, :, :] = cur[0]
             vcur[time_index:time_index + 1, :, :] = cur[1]
@@ -273,7 +277,8 @@ class DefaultWriter (CoverageWriter):
         for time in self.coverage.read_axis_t():
             logging.debug(
                 '[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['sea_surface_temperature']) + '\' at time \'' + str(time) + '\'')
-            var[time_index:time_index + 1, :] = self.coverage.read_variable_sea_surface_temperature_at_time(time)
+            # Pas d'interpolation temporelle donc on parcours les index du temps
+            var[time_index:time_index + 1, :] = self.coverage.read_variable_sea_surface_temperature_at_time(time_index)
             time_index += 1
 
     def write_variable_sea_water_temperature_at_ground_level(self):
@@ -294,7 +299,8 @@ class DefaultWriter (CoverageWriter):
             logging.debug(
                 '[DefaultWriter] Writing variable \'' + str(
                     VariableDefinition.LONG_NAME['sea_water_temperature_at_ground_level']) + '\' at time \'' + str(time) + '\'')
-            var[time_index:time_index + 1, :] = self.coverage.read_variable_sea_water_temperature_at_ground_level_at_time(time)
+            # Pas d'interpolation temporelle donc on parcours les index du temps
+            var[time_index:time_index + 1, :] = self.coverage.read_variable_sea_water_temperature_at_ground_level_at_time(time_index)
             time_index += 1
 
     def write_variable_sea_water_temperature(self):
@@ -315,8 +321,9 @@ class DefaultWriter (CoverageWriter):
 
             level_index = 0
             for level in self.coverage.read_axis_z():
+                # Pas d'interpolation temporelle donc on parcours les index du temps
                 var[time_index:time_index + 1, level_index:level_index + 1, :,
-                :] = self.coverage.read_variable_sea_water_temperature_at_time_and_depth(time, level)
+                :] = self.coverage.read_variable_sea_water_temperature_at_time_and_depth(time_index, level)
                 level_index += 1
 
             time_index += 1
@@ -335,7 +342,8 @@ class DefaultWriter (CoverageWriter):
         for time in self.coverage.read_axis_t():
             logging.debug(
                 '[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['sea_surface_salinity']) + '\' at time \'' + str(time) + '\'')
-            var[time_index:time_index + 1, :] = self.coverage.read_variable_sea_surface_salinity_at_time(time)
+            # Pas d'interpolation temporelle donc on parcours les index du temps
+            var[time_index:time_index + 1, :] = self.coverage.read_variable_sea_surface_salinity_at_time(time_index)
             time_index += 1
 
     def write_variable_sea_water_salinity_at_ground_level(self):
@@ -356,7 +364,8 @@ class DefaultWriter (CoverageWriter):
             logging.debug(
                 '[DefaultWriter] Writing variable \'' + str(
                     VariableDefinition.LONG_NAME['sea_water_salinity_at_ground_level']) + '\' at time \'' + str(time) + '\'')
-            var[time_index:time_index + 1, :] = self.coverage.read_variable_sea_water_salinity_at_ground_level_at_time(time)
+            # Pas d'interpolation temporelle donc on parcours les index du temps
+            var[time_index:time_index + 1, :] = self.coverage.read_variable_sea_water_salinity_at_ground_level_at_time(time_index)
             time_index += 1
 
     def write_variable_sea_water_salinity(self):
@@ -377,8 +386,9 @@ class DefaultWriter (CoverageWriter):
 
             level_index = 0
             for level in self.coverage.read_axis_z():
+                # Pas d'interpolation temporelle donc on parcours les index du temps
                 var[time_index:time_index + 1, level_index:level_index + 1, :,
-                :] = self.coverage.read_variable_sea_water_salinity_at_time_and_depth(time, level)
+                :] = self.coverage.read_variable_sea_water_salinity_at_time_and_depth(time_index, level)
                 level_index += 1
 
             time_index += 1
@@ -397,7 +407,8 @@ class DefaultWriter (CoverageWriter):
         for time in self.coverage.read_axis_t():
             logging.debug(
                 '[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['sea_surface_wave_significant_height']) + '\' at time \'' + str(time) + '\'')
-            var[time_index:time_index+1,:] = self.coverage.read_variable_sea_surface_wave_significant_height_at_time(time)
+            # Pas d'interpolation temporelle donc on parcours les index du temps
+            var[time_index:time_index+1,:] = self.coverage.read_variable_sea_surface_wave_significant_height_at_time(time_index)
             time_index += 1
 
     def write_variable_sea_surface_wave_breaking_height(self):
@@ -414,8 +425,9 @@ class DefaultWriter (CoverageWriter):
         for time in self.coverage.read_axis_t():
             logging.debug(
                 '[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['sea_surface_wave_breaking_height']) + '\' at time \'' + str(time) + '\'')
+            # Pas d'interpolation temporelle donc on parcours les index du temps
             var[time_index:time_index + 1,
-            :] = self.coverage.read_variable_sea_surface_wave_breaking_height_at_time(time)
+            :] = self.coverage.read_variable_sea_surface_wave_breaking_height_at_time(time_index)
             time_index += 1
 
     def write_variable_sea_surface_wave_mean_period(self):
@@ -432,8 +444,9 @@ class DefaultWriter (CoverageWriter):
         for time in self.coverage.read_axis_t():
             logging.debug(
                 '[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['sea_surface_wave_mean_period']) + '\' at time \'' + str(time) + '\'')
+            # Pas d'interpolation temporelle donc on parcours les index du temps
             var[time_index:time_index + 1, :] = self.coverage.read_variable_sea_surface_wave_mean_period_at_time(
-                time)
+                time_index)
             time_index += 1
 
     def write_variable_sea_surface_wave_peak_period(self):
@@ -450,8 +463,9 @@ class DefaultWriter (CoverageWriter):
         for time in self.coverage.read_axis_t():
             logging.debug(
                 '[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['sea_surface_wave_peak_period']) + '\' at time \'' + str(time) + '\'')
+            # Pas d'interpolation temporelle donc on parcours les index du temps
             var[time_index:time_index + 1, :] = self.coverage.read_variable_sea_surface_wave_peak_period_at_time(
-                time)
+                time_index)
             time_index += 1
 
     def write_variable_sea_surface_wave_from_direction(self):
@@ -468,8 +482,9 @@ class DefaultWriter (CoverageWriter):
         for time in self.coverage.read_axis_t():
             logging.debug(
                 '[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['sea_surface_wave_from_direction']) + '\' at time \'' + str(time) + '\'')
+            # Pas d'interpolation temporelle donc on parcours les index du temps
             var[time_index:time_index + 1, :] = self.coverage.read_variable_sea_surface_wave_from_direction_at_time(
-                time)
+                time_index)
             time_index += 1
 
     def write_variable_sea_surface_wave_to_direction(self):
@@ -486,8 +501,9 @@ class DefaultWriter (CoverageWriter):
         for time in self.coverage.read_axis_t():
             logging.debug(
                 '[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['sea_surface_wave_to_direction']) + '\' at time \'' + str(time) + '\'')
+            # Pas d'interpolation temporelle donc on parcours les index du temps
             var[time_index:time_index + 1, :] = self.coverage.read_variable_sea_surface_wave_to_direction_at_time(
-                time)
+                time_index)
             time_index += 1
 
     def write_variable_sea_surface_wave_stokes_drift_velocity(self):
@@ -509,7 +525,8 @@ class DefaultWriter (CoverageWriter):
 
             logging.debug('[DefaultWriter] Writing variable \'Surface Stokes Drift Velocity\' at time \''+str(time)+'\'')
 
-            cur = self.coverage.read_variable_sea_surface_wave_stokes_drift_velocity_at_time(time)
+            # Pas d'interpolation temporelle donc on parcours les index du temps
+            cur = self.coverage.read_variable_sea_surface_wave_stokes_drift_velocity_at_time(time_index)
 
             ucur[time_index:time_index+1,:,:] = cur[0]
             vcur[time_index:time_index+1,:,:] = cur[1]
@@ -534,7 +551,8 @@ class DefaultWriter (CoverageWriter):
 
             logging.debug('[DefaultWriter] Writing variable \'Atmosphere Momentum Flux to Waves\' at time \''+str(time)+'\'')
 
-            cur = self.coverage.read_variable_atmosphere_momentum_flux_to_waves_at_time(time)
+            # Pas d'interpolation temporelle donc on parcours les index du temps
+            cur = self.coverage.read_variable_atmosphere_momentum_flux_to_waves_at_time(time_index)
 
             ucur[time_index:time_index+1,:,:] = cur[0]
             vcur[time_index:time_index+1,:,:] = cur[1]
@@ -559,7 +577,8 @@ class DefaultWriter (CoverageWriter):
 
             logging.debug('[DefaultWriter] Writing variable \'Waves Momentum Flux To Ocean\' at time \''+str(time)+'\'')
 
-            cur = self.coverage.read_variable_waves_momentum_flux_to_ocean_at_time(time)
+            # Pas d'interpolation temporelle donc on parcours les index du temps
+            cur = self.coverage.read_variable_waves_momentum_flux_to_ocean_at_time(time_index)
 
             ucur[time_index:time_index+1,:,:] = cur[0]
             vcur[time_index:time_index+1,:,:] = cur[1]
@@ -579,8 +598,9 @@ class DefaultWriter (CoverageWriter):
         for time in self.coverage.read_axis_t():
             logging.debug(
                 '[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['radiation_pressure_bernouilli_head']) + '\' at time \'' + str(time) + '\'')
+            # Pas d'interpolation temporelle donc on parcours les index du temps
             var[time_index:time_index + 1,
-            :] = self.coverage.read_variable_radiation_pressure_bernouilli_head_at_time(time)
+            :] = self.coverage.read_variable_radiation_pressure_bernouilli_head_at_time(time_index)
             time_index += 1
 
     def write_variable_sea_surface_wave_energy_dissipation_at_ground_level(self):
@@ -597,8 +617,9 @@ class DefaultWriter (CoverageWriter):
         for time in self.coverage.read_axis_t():
             logging.debug(
                 '[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['sea_surface_wave_energy_dissipation_at_ground_level']) + '\' at time \'' + str(time) + '\'')
+            # Pas d'interpolation temporelle donc on parcours les index du temps
             var[time_index:time_index + 1,
-            :] = self.coverage.read_variable_sea_surface_wave_energy_dissipation_at_ground_level_at_time(time)
+            :] = self.coverage.read_variable_sea_surface_wave_energy_dissipation_at_ground_level_at_time(time_index)
             time_index += 1
 
     def write_variable_sea_surface_wave_energy_flux_to_ocean(self):
@@ -615,8 +636,9 @@ class DefaultWriter (CoverageWriter):
         for time in self.coverage.read_axis_t():
             logging.debug(
                 '[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['sea_surface_wave_energy_flux_to_ocean']) + '\' at time \'' + str(time) + '\'')
+            # Pas d'interpolation temporelle donc on parcours les index du temps
             var[time_index:time_index + 1,
-            :] = self.coverage.read_variable_sea_surface_wave_energy_flux_to_ocean_at_time(time)
+            :] = self.coverage.read_variable_sea_surface_wave_energy_flux_to_ocean_at_time(time_index)
             time_index += 1
 
     # METEO
@@ -639,7 +661,8 @@ class DefaultWriter (CoverageWriter):
 
             logging.debug('[DefaultWriter] Writing variable \'Wind 10m\' at time \''+str(time)+'\'')
 
-            cur = self.coverage.read_variable_wind_10m_at_time(time)
+            # Pas d'interpolation temporelle donc on parcours les index du temps
+            cur = self.coverage.read_variable_wind_10m_at_time(time_index)
 
             ucur[time_index:time_index+1,:,:] = cur[0]
             vcur[time_index:time_index+1,:,:] = cur[1]
@@ -665,7 +688,8 @@ class DefaultWriter (CoverageWriter):
         for time in self.coverage.read_axis_t():
             logging.debug('[DefaultWriter] Writing variable \'Wind Stress\' at time \'' + str(time) + '\'')
 
-            cur = self.coverage.read_variable_wind_stress_at_time(time)
+            # Pas d'interpolation temporelle donc on parcours les index du temps
+            cur = self.coverage.read_variable_wind_stress_at_time(time_index)
 
             ucur[time_index:time_index + 1, :, :] = cur[0]
             vcur[time_index:time_index + 1, :, :] = cur[1]

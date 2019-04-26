@@ -44,9 +44,12 @@ class TimeMultiPoint(MultiPoint):
         self.target_times = self.raw_times
         self.target_tmax = self.raw_tmax
 
+        self.is_raw_times = True
+
         if time_range is not None:
             self.target_times = time_range
             self.target_tmax = np.shape(self.target_times)[0]
+            self.is_raw_times = False
 
         elif freq is not None and start is None and end is None:
             self.freq = freq
@@ -57,10 +60,12 @@ class TimeMultiPoint(MultiPoint):
             self.target_times = pandas.date_range(start=t_index[0],
                                                 end=t_index[1], freq=self.freq).to_pydatetime();
             self.target_tmax = np.shape(self.target_times)[0]
+            self.is_raw_times = False
 
         elif freq is not None and start is not None or end is not None:
             self.target_times = pandas.date_range(start=start, end=end, freq=freq).to_pydatetime()
             self.target_tmax = np.shape(self.target_times)[0]
+            self.is_raw_times = False
 
     # Axis
     def read_axis_t(self,timestamp=0,raw=False):
