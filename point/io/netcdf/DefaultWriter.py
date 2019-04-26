@@ -54,8 +54,8 @@ class DefaultWriter(MultiPointWriter):
                                          (VariableDefinition.VARIABLE_NAME['point'],), fill_value=9.96921e+36)
         var.long_name = VariableDefinition.LONG_NAME['latitude']
         var.standard_name = VariableDefinition.STANDARD_NAME['latitude']
-        var.valid_min = "-90.0";
-        var.valid_max = "90.0";
+        var.valid_min = -90.0;
+        var.valid_max = 90.0;
         var.units = VariableDefinition.CANONICAL_UNITS['latitude']
         var[:] = self.points.read_axis_y()
 
@@ -63,8 +63,8 @@ class DefaultWriter(MultiPointWriter):
                                          (VariableDefinition.VARIABLE_NAME['point'],), fill_value=9.96921e+36)
         var.long_name = VariableDefinition.LONG_NAME['longitude']
         var.standard_name = VariableDefinition.STANDARD_NAME['longitude']
-        var.valid_min = "-180.0";
-        var.valid_max = "180.0";
+        var.valid_min = -180.0;
+        var.valid_max = 180.0;
         var.units = VariableDefinition.CANONICAL_UNITS['longitude']
         var[:] = self.points.read_axis_x()
 
@@ -85,7 +85,7 @@ class DefaultWriter(MultiPointWriter):
 
             # Depth dimension
             self.ncfile.createDimension(VariableDefinition.VARIABLE_NAME['depth'], self.points.get_z_size())
-            var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['depth'], float64,
+            var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['depth'], float32,
                                              (VariableDefinition.VARIABLE_NAME['depth'],))
             var.standard_name = VariableDefinition.STANDARD_NAME['depth']
             var.long_name = VariableDefinition.LONG_NAME['depth']
@@ -138,7 +138,7 @@ class DefaultWriter(MultiPointWriter):
                 '[DefaultTimeMultiPointWriter] Writing variable \'' + str(
                     VariableDefinition.LONG_NAME['sea_surface_height_above_mean_sea_level']) + '\' at time \'' + str(time) + '\'')
 
-            var[time_index:time_index + 1, :] = self.points.read_variable_sea_surface_height_above_mean_sea_level_at_time(time)
+            var[time_index:time_index + 1, :] = self.points.read_variable_sea_surface_height_above_mean_sea_level_at_time(time_index)
 
             time_index += 1
 

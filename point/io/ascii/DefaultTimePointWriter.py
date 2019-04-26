@@ -75,7 +75,7 @@ class DefaultTimePointWriter(MultiPointWriter):
         data[:] = np.nan
         time_index = 0
         for time in self.points.read_axis_t():
-            data[time_index] = self.points.read_variable_sea_surface_height_above_mean_sea_level_at_time(time)[self.index_x]
+            data[time_index] = self.points.read_variable_sea_surface_height_above_mean_sea_level_at_time(time_index)[self.index_x]
             time_index += 1
 
         self.data['sea_surface_height_above_mean_sea_level'] = data
