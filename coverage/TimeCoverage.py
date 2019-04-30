@@ -19,6 +19,7 @@ from datetime import timedelta
 from datetime import datetime
 from numpy import int,int32,int64
 import math
+import numpy as np
 
 class TimeCoverage(Coverage):
     """La classe TimeCoverage est une extension de la classe Coverage.
@@ -32,6 +33,7 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             
         Coverage.__init__(self,myReader);  
         self.times = self.read_axis_t();
+        self.t_size = len(self.times)
    
     # Axis
     def find_time_index(self,t):
@@ -67,7 +69,7 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
     def get_t_size(self):
         """Retourne la taille de l'axe t.
     @return:  un entier correspondant à la taille de l'axe t."""
-        return len(self.times);
+        return self.t_size;
     
     # Variables
     def read_variable_2D_sea_binary_mask_at_time(self, t):
@@ -356,6 +358,8 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         index_t = self.find_time_index(t);
 
+        return self.reader.read_variable_surface_air_pressure_at_time(index_t)
+
     def read_variable_sea_surface_air_pressure_at_time(self, t):
         """Retourne la pression à la surface à la date souhaitée sur toute la couverture horizontale.
     @type t: datetime ou l'index
@@ -472,15 +476,33 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
     def read_variable_wind_speed_10m_at_time(self, date):
         comp = self.read_variable_wind_10m_at_time(date)
-        return math.sqrt(comp[0] ** 2 + comp[1] ** 2)
+        result = np.zeros([self.get_y_size(),self.get_x_size()])
+        result[:] = np.nan
+        for x in range(0,self.get_x_size()):
+            for y in range(0,self.get_y_size()):
+                result[y,x] = math.sqrt(comp[0][y,x] ** 2 + comp[1][y,x] ** 2)
+
+        return result
 
     def read_variable_wind_from_direction_10m_at_time(self, date):
         comp = self.read_variable_wind_10m_at_time(date)
-        return  (180.0 / math.pi) * (math.atan2(comp[0], comp[1])) % 360.0
+        result = np.zeros([self.get_y_size(), self.get_x_size()])
+        result[:] = np.nan
+        for x in range(0, self.get_x_size()):
+            for y in range(0, self.get_y_size()):
+                result[y, x] = 270. - (180.0 / math.pi) * (math.atan2(comp[0][y,x], comp[1][y,x])) + 180.0 % 360.0
+
+        return result
 
     def read_variable_wind_to_direction_10m_at_time(self, date):
         comp = self.read_variable_wind_10m_at_time(date)
-        return  (180.0 / math.pi) * (math.atan2(comp[0], comp[1])) + 180.0 % 360.0
+        result = np.zeros([self.get_y_size(), self.get_x_size()])
+        result[:] = np.nan
+        for x in range(0, self.get_x_size()):
+            for y in range(0, self.get_y_size()):
+                result[y, x] = 270. - (180.0 / math.pi) * (math.atan2(comp[0][y,x], comp[1][y,x])) % 360.0
+
+        return result
 
 
 

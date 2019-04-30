@@ -85,7 +85,7 @@ Elle rajoute les dimensions temporelle et verticale à la couverture horizontale
                         candidateDepths[z] = self.levels[index_layer, y, x]
                         candidateValues[z] = layers[index_layer, y, x]
 
-                    results[y, x] = vertical_interpolation(candidateDepths, targetDepth, candidateValues)
+                    results[y, x] = vertical_interpolation(candidateDepths, targetDepth, candidateValues,LevelCoverage.VERTICAL_INTERPOLATION_METHOD)
 
         return results
 
@@ -141,7 +141,7 @@ Elle rajoute les dimensions temporelle et verticale à la couverture horizontale
                         candidateDepths[z] = self.levels[index_layer, y, x]
                         candidateValues[z] = layers[index_layer, y, x]
 
-                    results[y, x] = vertical_interpolation(candidateDepths, targetDepth, candidateValues)
+                    results[y, x] = vertical_interpolation(candidateDepths, targetDepth, candidateValues,LevelCoverage.VERTICAL_INTERPOLATION_METHOD)
 
         return results
 
@@ -205,8 +205,8 @@ Elle rajoute les dimensions temporelle et verticale à la couverture horizontale
                         candidateValues[0][z] = layers[index_layer,0, y, x]
                         candidateValues[1][z] = layers[index_layer,1, y, x]
 
-                    results[0][y, x] = vertical_interpolation(candidateDepths, targetDepth, candidateValues[0])
-                    results[1][y, x] = vertical_interpolation(candidateDepths, targetDepth,  candidateValues[1])
+                    results[0][y, x] = vertical_interpolation(candidateDepths, targetDepth, candidateValues[0],LevelCoverage.VERTICAL_INTERPOLATION_METHOD)
+                    results[1][y, x] = vertical_interpolation(candidateDepths, targetDepth,  candidateValues[1],LevelCoverage.VERTICAL_INTERPOLATION_METHOD)
 
         return results
 

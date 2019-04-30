@@ -31,8 +31,8 @@ class DefaultWriter(MultiPointWriter):
     def __init__(self, p,myFile):
         MultiPointWriter.__init__(self,p,myFile)
 
-        if not isinstance(self.points, TimeLevelMultiPoint):
-            raise ValueError("This writer supports only a TimeLevelMultiPoint object")
+        #if not isinstance(self.points, TimeLevelMultiPoint):
+        #    raise ValueError("This writer supports only a TimeLevelMultiPoint object")
 
         self.ncfile = Dataset(self.filename, 'w', format='NETCDF4')
         self.ncfile.description = 'Generated with pyGeoSpatialETL'

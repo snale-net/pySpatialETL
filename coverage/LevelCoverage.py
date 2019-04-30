@@ -23,12 +23,21 @@ class LevelCoverage(Coverage):
 La classe LevelCoverage est une extension de la classe Coverage.
 Elle rajoute une dimension verticale à la couverture horizontale classique.
 """
-    DEPTH_DELTA = 10; #meters
+    DEPTH_DELTA = 0.5; #meters
+    VERTICAL_INTERPOLATION_METHOD = "linear"
     
     def __init__(self, myReader):
         Coverage.__init__(self,myReader);
         self.levels = self.read_axis_z();
         self.last_index = None
+        self.z_size = np.shape(self.levels)[0];
+
+        if self.levels.ndim == 3:
+            self.sigma_coordinate = True
+        elif self.levels.ndim == 1:
+            self.sigma_coordinate = False
+        else:
+            raise ValueError("[LevelCoverage] Unable to recognize the type of the vertical grid.")
         
     # Axis
     def read_axis_z(self):
@@ -40,17 +49,12 @@ Elle rajoute une dimension verticale à la couverture horizontale classique.
     def is_sigma_coordinate(self):
         """Retourne vrai si la grille verticale est en coordonnée sigma, sinon faux.
     @return:  vrai si la grille verticale est en coordonnée sigma sinon faux."""
-        if self.levels.ndim == 3:
-            return True
-        elif self.levels.ndim == 1:
-            return False
-        else:
-            raise ValueError("Unable to recognize the type of the vertical grid.")
+        return self.sigma_coordinate
     
     def get_z_size(self):
         """Retourne la taille de l'axe z.
     @return:  un entier correspondant à la taille de l'axe z."""
-        return np.shape(self.levels)[0];
+        return self.z_size
     
     def find_level_index(self,depth):
         """Retourne l'index de la profondeur la plus proche selon le point le plus proche.
@@ -62,7 +66,7 @@ Elle rajoute une dimension verticale à la couverture horizontale classique.
         xmax=self.get_x_size()
         ymax=self.get_y_size()
         zmax = self.get_z_size()
-        mask = self.read_variable_2D_sea_binary_mask()
+        #mask = self.read_variable_2D_sea_binary_mask()
         vert_coord = np.empty([ymax,xmax],dtype=object)
         indexes_z = []
 
@@ -80,43 +84,59 @@ Elle rajoute une dimension verticale à la couverture horizontale classique.
 
         elif self.is_sigma_coordinate() == True: # Cas de grille sigma
 
-                for y in range(0,ymax):
-                    for x in range(0,xmax):
+            logging.debug("[LevelCoverage][find_level_index()] Looking for : " + str(depth) + " m water depth")
 
-                        vert_coord[y, x] = []
+            for y in range(0,ymax):
+                for x in range(0,xmax):
 
-                        if mask[y,x] == 1:
+                    vert_coord[y, x] = []
 
-                            # On cherche l'index le plus proche
-                            array = np.asarray(self.levels[:,y,x])
-                            index_z = (np.abs(array - depth)).argmin()
+                    if np.isnan(self.levels[:,y,x]).all() == False:
 
-                            if abs(depth - self.levels[index_z,y,x]) <= LevelCoverage.DEPTH_DELTA:
-                                # On a trouvé une profondeur qui correspond au delta près.
+                        logging.debug("[LevelCovergae][find_level_index()] Point [" + str(x) + "," + str(y) + "] - water depth candidates are : " + str(self.levels[:,y,x]))
 
-                                vert_coord[y,x].append((int(index_z)))
-                                indexes_z.append((int(index_z)))
+                        # On cherche l'index le plus proche
+                        array = np.asarray(self.levels[:,y,x])
+                        index_z = (np.abs(array - depth)).argmin()
 
-                                if abs(depth - self.levels[index_z,y,x]) != 0.0:
-                                    # On n'a pas trouvé exactement notre profondeur, on va chercher autour au DEPTH_DELTA près
-                                    zz = index_z
+                        if abs(depth - self.levels[index_z,y,x]) <= LevelCoverage.DEPTH_DELTA:
+                            # On a trouvé une profondeur qui correspond au delta près.
 
-                                    while zz - 1 >= 0 and abs(self.levels[zz-1,y,x]- depth) <= LevelCoverage.DEPTH_DELTA and zz -1 not in vert_coord[y,x]:
-                                        vert_coord[y, x].append((int(zz-1)))
-                                        indexes_z.append((int(zz-1)))
-                                        zz = zz -1
+                            logging.debug(
+                                "[LevelCoverage][find_level_index()] Point [" + str(x) + "," + str(y) + "] - found : " + str(
+                                    self.levels[index_z, y, x]) + " m water depth")
 
-                                    while zz + 1 < self.get_z_size() and abs(self.levels[zz+1,y,x]- depth) <= LevelCoverage.DEPTH_DELTA and zz +1 not in vert_coord[y,x]:
-                                        vert_coord[y, x].append((int(zz+1)))
-                                        indexes_z.append((int(zz+1)))
-                                        zz = zz +1
-                            else :
-                                #raise ValueError("[LevelCoverage] " + str(depth) + " m water depth was not found for the point [" + str(x) + "," + str(y) + "]. Max depth found is for this point is " + str(self.levels[z,y,x]))
-                                logging.debug("[LevelCoverage] " + str(depth) + " m water depth was not found for the point [" + str(x) + "," + str(y) + "]. Max depth found is for this point is " + str(self.levels[index_z,y,x])+" m.")
+                            vert_coord[y,x].append((int(index_z)))
+                            indexes_z.append((int(index_z)))
 
-                            vert_coord[y,x] = np.array(np.unique(vert_coord[y,x]))
+                            if abs(depth - self.levels[index_z,y,x]) != 0.0:
+                                # On n'a pas trouvé exactement notre profondeur, on va chercher autour au DEPTH_DELTA près
+                                zz = index_z
+
+                                while zz - 1 >= 0 and abs(self.levels[zz-1,y,x]- depth) <= LevelCoverage.DEPTH_DELTA and zz -1 not in vert_coord[y,x]:
+                                    logging.debug(
+                                        "[LevelCoverage][find_level_index()] Point [" + str(x) + "," + str(y) + "] - found : " + str(
+                                            self.levels[zz-1, y, x]) + " m water depth")
+                                    vert_coord[y, x].append((int(zz-1)))
+                                    indexes_z.append((int(zz-1)))
+                                    zz = zz -1
+
+                                while zz + 1 < self.get_z_size() and abs(self.levels[zz+1,y,x]- depth) <= LevelCoverage.DEPTH_DELTA and zz +1 not in vert_coord[y,x]:
+                                    logging.debug(
+                                        "[LevelCoverage][find_level_index()] Point [" + str(x) + "," + str(y) + "] - found : " + str(
+                                            self.levels[zz+1, y, x]) + " m water depth")
+                                    vert_coord[y, x].append((int(zz+1)))
+                                    indexes_z.append((int(zz+1)))
+                                    zz = zz +1
+                        else :
+                            #raise ValueError("[LevelCoverage] " + str(depth) + " m water depth was not found for the point [" + str(x) + "," + str(y) + "]. Max depth found is for this point is " + str(self.levels[z,y,x]))
+                            logging.debug("[LevelCoverage] " + str(depth) + " m water depth was not found for the point [" + str(x) + "," + str(y) + "]. Max depth found is for this point is " + str(self.levels[index_z,y,x])+" m.")
+
+                        vert_coord[y,x] = np.array(np.unique(vert_coord[y,x]))
 
         else: # Cas de grille classique
+
+            logging.debug("[LevelCoverage][find_level_index()] Looking for : " + str(depth) + " m water depth")
 
             # On cherche l'index le plus proche
             array = np.asarray(self.levels)
@@ -125,29 +145,37 @@ Elle rajoute une dimension verticale à la couverture horizontale classique.
             if abs(depth - self.levels[index_z]) <= LevelCoverage.DEPTH_DELTA:
             # On a trouvé une profondeur qui correspond au delta près.
 
+                logging.debug(
+                "[LevelCoverage][find_level_index()] found : " + str(
+                    self.levels[index_z]) + " m water depth")
+
                 for y in range(0, ymax):
                     for x in range(0, xmax):
 
                         vert_coord[y, x] = []
+                        vert_coord[y,x].append((int(index_z)))
+                        indexes_z.append((int(index_z)))
 
-                        if mask[y, x] == 1:
+                        if abs(depth - self.levels[index_z]) != 0.0:
+                            # On n'a pas trouvé exactement notre profondeur, on va chercher autour au DEPTH_DELTA près
+                            zz = index_z
 
-                            vert_coord[y,x].append((int(index_z)))
-                            indexes_z.append((int(index_z)))
+                            while zz - 1 >= 0 and abs(self.levels[zz - 1] - depth) <= LevelCoverage.DEPTH_DELTA and zz -1 not in vert_coord[y,x]:
+                                logging.debug(
+                                    "[LevelCoverage][find_level_index()] found : " + str(
+                                        self.levels[zz-1]) + " m water depth")
 
-                            if abs(depth - self.levels[index_z]) != 0.0:
-                                # On n'a pas trouvé exactement notre profondeur, on va chercher autour au DEPTH_DELTA près
-                                zz = index_z
+                                vert_coord[y,x].append((int(zz - 1)))
+                                indexes_z.append((int(zz - 1)))
+                                zz = zz - 1
 
-                                while zz - 1 >= 0 and abs(self.levels[zz - 1] - depth) <= LevelCoverage.DEPTH_DELTA and zz - 1 not in vert_coord[y,x]:
-                                    vert_coord[y,x].append((int(zz - 1)))
-                                    indexes_z.append((int(zz - 1)))
-                                    zz = zz - 1
-
-                                while zz + 1 < self.get_z_size() and abs(self.levels[zz + 1] - depth) <= LevelCoverage.DEPTH_DELTA and zz + 1 not in vert_coord[y,x]:
-                                    vert_coord[y,x].append((int(zz + 1)))
-                                    indexes_z.append((int(zz + 1)))
-                                    zz = zz + 1
+                            while zz + 1 < self.get_z_size() and abs(self.levels[zz + 1] - depth) <= LevelCoverage.DEPTH_DELTA and zz +1 not in vert_coord[y,x]:
+                                logging.debug(
+                                    "[LevelCoverage][find_level_index()] found : " + str(
+                                        self.levels[zz+1]) + " m water depth")
+                                vert_coord[y,x].append((int(zz + 1)))
+                                indexes_z.append((int(zz + 1)))
+                                zz = zz + 1
 
             else:
                 logging.debug("[LevelCoverage] " + str(depth) + " m water depth was not found on the Z axis.")

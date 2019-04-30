@@ -79,6 +79,23 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
             
         self.reader = myReader;
         self.regular_grid = None
+        self.x_size = None
+        self.y_size = None
+
+        lon = self.read_axis_x()
+        lat = self.read_axis_y()
+
+        if lon.ndim == 1:
+            self.regular_grid = True
+        else:
+            self.regular_grid = False
+
+        if self.is_regular_grid():
+            self.x_size = np.shape(lon)[0];
+            self.y_size = np.shape(lat)[0];
+        else:
+            self.x_size = np.shape(lon)[1];
+            self.y_size = np.shape(lat)[0];
 
         # try to fill metadata
         self.read_metadata()
@@ -110,28 +127,16 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
     def get_x_size(self):
         """Retourne la taille de l'axe x.
     @return:  un entier correspondant à la taille de l'axe x."""
-        if self.is_regular_grid():
-            return np.shape(self.read_axis_x())[0];
-        else:
-            return np.shape(self.read_axis_x())[1];
+        return self.x_size
     
     def get_y_size(self):
         """Retourne la taille de l'axe y.
     @return:  un entier correspondant à la taille de l'axe y."""
-        if self.is_regular_grid():
-            return np.shape(self.read_axis_y())[0];
-        else:
-            return np.shape(self.read_axis_y())[0];
+        return self.y_size
     
     def is_regular_grid(self):
         """Retourne vrai si la maille est régulière, sinon faux.
     @return:  vrai si la maille est régulière sinon faux."""
-
-        if self.regular_grid is None:
-            if self.read_axis_x().ndim == 1:
-                self.regular_grid = True
-            else:
-                self.regular_grid = False
 
         return self.regular_grid
         

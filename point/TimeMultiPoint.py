@@ -520,7 +520,7 @@ class TimeMultiPoint(MultiPoint):
         data[::] = np.NAN
 
         for index_x in range(0, self.get_nb_points()):
-            data[index_x] = (math.degrees(math.atan2(comp[1][index_x], comp[0][index_x]))) % 360.0
+            data[index_x] = 270. - (math.degrees(math.atan2(comp[1][index_x], comp[0][index_x]))) + 180.0 % 360.0
 
         return data
 
@@ -531,7 +531,7 @@ class TimeMultiPoint(MultiPoint):
         data[::] = np.NAN
 
         for index_x in range(0, self.get_nb_points()):
-            data[index_x] = (180.0 + math.degrees(math.atan2(comp[1][index_x], comp[0][index_x]))) % 360.0
+            data[index_x] = 270. - (math.degrees(math.atan2(comp[1][index_x], comp[0][index_x]))) % 360.0
 
         return data
 

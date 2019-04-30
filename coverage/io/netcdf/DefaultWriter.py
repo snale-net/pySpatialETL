@@ -696,4 +696,59 @@ class DefaultWriter (CoverageWriter):
             time_index += 1
 
 
+    def write_variable_wind_speed_10m(self):
+
+        var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['wind_speed_10m'], float32,
+                                         (VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],), fill_value=9.96921e+36)
+        var.long_name = VariableDefinition.LONG_NAME['wind_speed_10m']
+        var.standard_name = VariableDefinition.STANDARD_NAME['wind_speed_10m']
+        var.units = VariableDefinition.CANONICAL_UNITS['wind_speed_10m']
+
+        logging.info('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['wind_speed_10m']) + '\'')
+
+        time_index = 0
+        for time in self.coverage.read_axis_t():
+            logging.debug(
+                '[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['wind_speed_10m']) + '\' at time \'' + str(time) + '\'')
+            # Pas d'interpolation temporelle donc on parcours les index du temps
+            var[time_index:time_index + 1,:] = self.coverage.read_variable_wind_speed_10m_at_time(time_index)
+            time_index += 1
+
+    def write_variable_wind_to_direction_10m(self):
+
+        var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['wind_to_direction_10m'], float32,
+                                         (VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],), fill_value=9.96921e+36)
+        var.long_name = VariableDefinition.LONG_NAME['wind_to_direction_10m']
+        var.standard_name = VariableDefinition.STANDARD_NAME['wind_to_direction_10m']
+        var.units = VariableDefinition.CANONICAL_UNITS['wind_to_direction_10m']
+
+        logging.info('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['wind_to_direction_10m']) + '\'')
+
+        time_index = 0
+        for time in self.coverage.read_axis_t():
+            logging.debug(
+                '[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['wind_to_direction_10m']) + '\' at time \'' + str(time) + '\'')
+            # Pas d'interpolation temporelle donc on parcours les index du temps
+            var[time_index:time_index + 1,:] = self.coverage.read_variable_wind_to_direction_10m_at_time(time_index)
+            time_index += 1
+
+    def write_variable_wind_from_direction_10m(self):
+
+        var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['wind_from_direction_10m'], float32,
+                                         (VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],), fill_value=9.96921e+36)
+        var.long_name = VariableDefinition.LONG_NAME['wind_from_direction_10m']
+        var.standard_name = VariableDefinition.STANDARD_NAME['wind_from_direction_10m']
+        var.units = VariableDefinition.CANONICAL_UNITS['wind_from_direction_10m']
+
+        logging.info('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['wind_from_direction_10m']) + '\'')
+
+        time_index = 0
+        for time in self.coverage.read_axis_t():
+            logging.debug(
+                '[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['wind_from_direction_10m']) + '\' at time \'' + str(time) + '\'')
+            # Pas d'interpolation temporelle donc on parcours les index du temps
+            var[time_index:time_index + 1,:] = self.coverage.read_variable_wind_from_direction_10m_at_time(time_index)
+            time_index += 1
+
+
 
