@@ -272,7 +272,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
     def read_variable_sea_water_salinity_at_ground_level_at_time(self, index_t):
         index_z = 0
         data = np.ma.masked_where(self.grid.variables["mask_t"][index_z][:] < 1,
-                                  self.ncfile.variables["tem"][index_t][index_z][:])
+                                  self.ncfile.variables["sal"][index_t][index_z][:])
         np.ma.set_fill_value(data, np.nan)
         return data.filled()
 
