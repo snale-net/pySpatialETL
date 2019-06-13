@@ -73,8 +73,9 @@ Elle rajoute une dimension verticale à la couverture horizontale classique.
 
         if type(depth) == int or type(depth) == np.int32 or type(depth) == np.int64:
 
-            if depth < 0 or depth >= self.get_z_size():
-                raise ValueError("Depth index have to range between 0 and "+str(self.get_z_size()-1)+". Actually depth index = "+str(depth))
+            # A déplacer dans le reader
+            #if depth < min or depth >= max:
+            #    raise ValueError("Depth index have to range between "+str(min)+" and "+str(max)+". Actually depth index = "+str(depth))
 
             for y in range(0, ymax):
                 for x in range(0, xmax):
