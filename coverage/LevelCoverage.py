@@ -31,6 +31,7 @@ Elle rajoute une dimension verticale à la couverture horizontale classique.
         self.levels = self.read_axis_z();
         self.last_index = None
         self.z_size = np.shape(self.levels)[0];
+        self.researchedDepth = []
 
         if self.levels.ndim == 3:
             self.sigma_coordinate = True
@@ -70,7 +71,7 @@ Elle rajoute une dimension verticale à la couverture horizontale classique.
         vert_coord = np.empty([ymax,xmax],dtype=object)
         indexes_z = []
 
-        if type(depth) == int:
+        if type(depth) == int or type(depth) == np.int32 or type(depth) == np.int64:
 
             if depth < 0 or depth >= self.get_z_size():
                 raise ValueError("Depth index have to range between 0 and "+str(self.get_z_size()-1)+". Actually depth index = "+str(depth))

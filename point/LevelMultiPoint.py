@@ -87,7 +87,7 @@ class LevelMultiPoint(MultiPoint):
         vert_coord = np.empty([self.get_nb_points()], dtype=object)
         indexes_z = []
 
-        if type(depth) == int:
+        if type(depth) == int or type(depth) == np.int32 or type(depth) == np.int64:
 
             if depth < 0 or depth >= self.get_z_size(raw=True):
                 raise ValueError("Depth index have to range between 0 and " + str(
