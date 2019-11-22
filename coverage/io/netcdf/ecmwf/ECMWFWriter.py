@@ -14,7 +14,7 @@
 # Author : Fabien Rétif - fabien.retif@zoho.com
 #
 from __future__ import division, print_function, absolute_import
-from coverage.io.CoverageReader import CoverageReader
+from coverage.io.CoverageWriter import CoverageWriter
 from netCDF4 import Dataset
 from netCDF4 import date2num
 from numpy import float32
@@ -22,7 +22,7 @@ from numpy import float64
 import numpy as np
 import logging
 
-class ECMWFWriter (CoverageReader):
+class ECMWFWriter (CoverageWriter):
 
     def __init__(self, cov,myFile):
         CoverageReader.__init__(self,myFile);

@@ -1,14 +1,14 @@
 # -*- encoding:utf-8 -*-
 """
 ==================================
-TIFF SRTM (:mod:`coverage.io.tiff.srtm`)
+ASCII SWAN (:mod:`coverage.io.ascii.swan`)
 ==================================
 
-.. currentmodule:: coverage.io.tiff.srtm
+.. currentmodule:: coverage.io.ascii.swan
 
 """
 from __future__ import division, print_function, absolute_import
 
-from .SRTMReader import SRTMReader
+from .SWANReader import SWANReader
 
-__all__ = ['SRTMReader']
+__all__ = ['SWANReader']

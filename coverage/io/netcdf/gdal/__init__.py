@@ -1,14 +1,14 @@
 # -*- encoding:utf-8 -*-
 """
 ==================================
-TIFF SRTM (:mod:`coverage.io.tiff.srtm`)
+NetCDF GDAL (:mod:`coverage.io.netcdf.gdal`)
 ==================================
 
-.. currentmodule:: coverage.io.tiff.srtm
+.. currentmodule:: coverage.io.netcdf.gdal
 
 """
 from __future__ import division, print_function, absolute_import
 
-from .SRTMReader import SRTMReader
+from .GDALReader import GDALReader
 
-__all__ = ['SRTMReader']
+__all__ = ['GDALReader']

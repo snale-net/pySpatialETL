@@ -15,12 +15,15 @@
 #
 from __future__ import division, print_function, absolute_import
 from coverage.io.CoverageWriter import CoverageWriter
+import numpy as np
 
 class GMTWriter(CoverageWriter):
 
     def __init__(self,cov,myFile):
-        raise NotImplementedError("Update to do")
+        #raise NotImplementedError("Update to do")
         CoverageWriter.__init__(self,cov,myFile);
+
+        self.file = open(self.filename, "w")
 
     def write_variable_axis(self):
 
@@ -36,22 +39,24 @@ class GMTWriter(CoverageWriter):
                 file.write(str(lon[j, i]) + "\t" + str(lat[j, i]) + "\t" + "\n")
 
         file.close()
+
+    def close(self):
+        self.file.close()
         
     def write_variable_bathymetry(self): 
         
         lon = self.coverage.read_axis_x()
         lat = self.coverage.read_axis_y()
-        data =  self.coverage.read_variable_bathymetry() 
-        
-        file = open(self.filename, "w")  
-        file.write("#Longitude \t Latitude \t h (m)\n")  
-        for i in range(0, len(lon[1])):
-            for j in range(0, len(lon)):    
+        data =  self.coverage.read_variable_bathymetry()
+        print(np.shape(data))
+
+        self.file.write("#Longitude \t Latitude \t h (m)\n")
+        for i in range(0, len(lon)):
+            for j in range(0, len(lat)):
                 #print i,j
                 
-                file.write(str(lon[j,i])+"\t"+str(lat[j,i])+"\t"+str(data[j,i])+"\n")
-            
-        file.close()
+                self.file.write(str(lon[i])+"\t"+str(lat[j])+"\t"+str(data[j,i])+"\n")
+
         
     def write_variable_current_at_time_and_depth(self,time,z):
         
