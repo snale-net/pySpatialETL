@@ -15,14 +15,20 @@
 #
 from __future__ import division, print_function, absolute_import
 from coverage.io.CoverageReader import CoverageReader
-from netCDF4 import Dataset, num2date
+from netCDF4 import Dataset, MFDataset, num2date
 import numpy as np
+import os
 
 class SymphonieOfflineReader(CoverageReader):
 
     def __init__(self,myGrid, myFile):   
         CoverageReader.__init__(self,myFile);
-        self.ncfile = Dataset(self.filename, 'r')
+
+        if os.path.isfile(self.filename):
+            self.ncfile = Dataset(self.filename, 'r')
+        elif os.path.isdir(self.filename):
+            self.ncfile = MFDataset(os.path.join(self.filename,"*.nc"), 'r')
+
         self.grid = Dataset(myGrid, 'r')
         
     # Axis

@@ -151,13 +151,12 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
      [2] : la coordonnée en longitude du point le plus proche
      [3] : la coordonnée en latitude point le plus proche
      [4] : la distance du point le plus proche en kilomètre."""
-        min_dist=10000000
         lon = self.read_axis_x()
         lat = self.read_axis_y()
         mask = self.read_variable_2D_sea_binary_mask()
-        
-        nearest_x_index = 0
-        nearest_y_index = 0
+        dist = np.zeros([self.get_y_size(),self.get_x_size()])
+        dist[:] = 10000
+
         nearest_lon = np.nan
         nearest_lat = np.nan
 
@@ -166,24 +165,29 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
                 for y in range(0, self.get_y_size()):
 
                     if(mask[y,x] == 1): #=Terre
-
                         if self.is_regular_grid():
-                            dist = distance_on_unit_sphere(target_lon,target_lat,lon[x],lat[y])
+                            dist[y,x] = distance_on_unit_sphere(target_lon,target_lat,lon[x],lat[y])
                         else:
-                            dist = distance_on_unit_sphere(target_lon,target_lat,lon[y,x],lat[y,x])
+                            dist[y,x] = distance_on_unit_sphere(target_lon,target_lat,lon[y,x],lat[y,x])
 
+            nearest_y_index,nearest_x_index = np.where(dist == np.min(dist))
 
-                        if dist < min_dist:
-                            min_dist = dist
-                            if self.is_regular_grid():
-                                nearest_lon = lon[x]
-                                nearest_lat = lat[y]
-                            else:
-                                nearest_lon = lon[y,x]
-                                nearest_lat = lat[y,x]
+            if len(nearest_y_index) == 0 or len(nearest_x_index) == 0:
+                raise RuntimeError("No nearest point found.")
 
-                            nearest_y_index = y
-                            nearest_x_index = x
+            nearest_x_index = nearest_x_index[0]
+            nearest_y_index = nearest_y_index[0]
+            min_dist = dist[nearest_y_index,nearest_x_index]
+
+            if self.is_regular_grid():
+                nearest_lon = lon[nearest_x_index]
+                nearest_lat = lat[nearest_y_index]
+            else:
+                nearest_lon = lon[nearest_y_index, nearest_x_index]
+                nearest_lat = lat[nearest_y_index, nearest_x_index]
+
+            return [nearest_x_index, nearest_y_index, nearest_lon, nearest_lat, min_dist]
+
         elif method == "quick":
 
             if self.is_regular_grid():
@@ -201,8 +205,10 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
 
                 min_dist = distance_on_unit_sphere(target_lon, target_lat,nearest_lon,nearest_lat)
 
+                return [nearest_x_index, nearest_y_index, nearest_lon, nearest_lat, min_dist]
+
             else:
-                raise NotImplementedError("Method " + str(method) + " is implemented on for regular grid.")
+                raise NotImplementedError("Method " + str(method) + " is not implemented for regular grid.")
 
                 # Ne fonctionne pas !!
                 # Longitude : on cherche l'index le plus proche
@@ -226,11 +232,6 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
 
         else:
             raise RuntimeError("Method "+str(method)+" is not implemented yet.")
-
-        if nearest_lon == np.nan or nearest_lat == np.nan:
-            raise RuntimeError("No nearest point found.")
-		
-        return [nearest_x_index,nearest_y_index,nearest_lon,nearest_lat,min_dist]
     
     # Variables
     #################

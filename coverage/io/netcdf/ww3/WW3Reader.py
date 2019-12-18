@@ -16,17 +16,22 @@
 from __future__ import division, print_function, absolute_import
 from coverage.io.CoverageReader import CoverageReader
 from coverage.TimeCoverage import TimeCoverage
-from netCDF4 import Dataset, num2date
+from netCDF4 import Dataset, MFDataset, num2date
 import numpy as np
 from datetime import datetime
 from time import strftime
 import logging
+import os
 
 class WW3Reader (CoverageReader):
 
     def __init__(self, myFile):
         CoverageReader.__init__(self,myFile);
-        self.ncfile = Dataset(self.filename, 'r')
+
+        if os.path.isfile(self.filename):
+            self.ncfile = Dataset(self.filename, 'r')
+        elif os.path.isdir(self.filename):
+            self.ncfile = MFDataset(os.path.join(self.filename, "*.nc"), 'r')
         
     # Axis
     def read_axis_t(self,timestamp):

@@ -31,7 +31,7 @@ Elle rajoute une dimension verticale à la couverture horizontale classique.
         self.levels = self.read_axis_z();
         self.last_index = None
         self.z_size = np.shape(self.levels)[0];
-        self.researchedDepth = []
+        self.depth_weight = []
 
         if self.levels.ndim == 3:
             self.sigma_coordinate = True
