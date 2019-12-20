@@ -28,5 +28,5 @@ La classe SymphonieReader permet de lire les données du format Symphonie
     def __init__(self,myGrid, myFile):
         SymphonieReader.__init__(self,myGrid,myFile);
         
-    def read_variable_sea_surface_height_above_mean_sea_level_at_time(self,index_t):
-        return self.ncfile.variables["ssh"][index_t][:]
+    def read_variable_sea_surface_height_above_mean_sea_level_at_time(self,index_t,xmin,xmax,ymin,ymax):
+        return np.ma.filled(self.ncfile.variables["ssh"][index_t][ymin:ymax,xmin:xmax],fill_value=np.nan)

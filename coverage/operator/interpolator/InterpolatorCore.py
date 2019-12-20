@@ -19,25 +19,14 @@ from scipy.interpolate import interp1d
 import logging
 import numpy as np
 
-def resample_2d_to_grid(sourceAxisX,sourceAxisY,targetAxisX, targetAixsY,data,method):
+def resample_2d_to_grid(gridX,gridY,newX,newY,data,method):
 
     logging.debug("[InterpolatorCore][horizontal_interpolation()] starting interpolation with method '" + str(method) + "'")
-    return griddata((sourceAxisX.ravel(),sourceAxisY.ravel()), data.ravel(),(targetAxisX, targetAixsY), method=method, fill_value=9.96921e+36)
 
-    # lon = lonWaves
-    # lat = latWaves
-    # thedata = meanHs
-    # gridX, gridY = np.meshgrid(lon, lat)
-    # points = np.array([gridX.flatten(), gridY.flatten()]).T
-    # values = thedata.flatten()
-    # Xmin = np.min(lon)
-    # Xmax = np.max(lon)
-    # Ymin = np.min(lat)
-    # Ymax = np.max(lat)
-    # newX = np.linspace(start=Xmin, stop=Xmax, num=666)  # 666
-    # newY = np.linspace(start=Ymin, stop=Ymax, num=600)  # 600
-    # xx, yy = np.meshgrid(newX, newY)
-    # mygrid_cubicspline = griddata(points, values, (xx, yy), method='linear', rescale=True)
+    points = np.array([gridX.flatten(), gridY.flatten()]).T
+    values = data.flatten()
+    xx, yy = np.meshgrid(newX, newY)
+    return griddata(points, values, (xx, yy), method=method, rescale=True,fill_value=9.96921e+36)
 
 def resample_2d_to_resolution(sourceAxisX,sourceAxisY,targetResX, targetResY,data,method):
     

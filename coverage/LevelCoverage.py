@@ -39,13 +39,22 @@ Elle rajoute une dimension verticale à la couverture horizontale classique.
             self.sigma_coordinate = False
         else:
             raise ValueError("[LevelCoverage] Unable to recognize the type of the vertical grid.")
-        
+
     # Axis
     def read_axis_z(self):
         """Retourne les valeurs (souvent en mètre) de l'axe z.
     @return:  si la grille est en coordonnée sigma alors un tableau à trois dimensions [z,y,x] est retourné sinon
     un tableau une dimension [z]."""
-        return self.reader.read_axis_z();
+        data = self.reader.read_axis_z(self.map_mpi[self.rank]["global_x_min_overlap"],
+            self.map_mpi[self.rank]["global_x_max_overlap"],
+            self.map_mpi[self.rank]["global_y_min_overlap"],
+            self.map_mpi[self.rank]["global_y_max_overlap"]);
+
+        if data.ndim == 3:
+            return data[self.map_mpi[self.rank]["local_y_min"]:self.map_mpi[self.rank]["local_y_max"],
+               self.map_mpi[self.rank]["local_x_min"]:self.map_mpi[self.rank]["local_x_max"]]
+        elif data.ndim ==1:
+            return data
 
     def is_sigma_coordinate(self):
         """Retourne vrai si la grille verticale est en coordonnée sigma, sinon faux.

@@ -36,11 +36,17 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             self.ncfile = MFDataset(os.path.join(self.filename,"*.nc"), 'r')
 
         self.grid = Dataset(myGrid, 'r')
-        lon_t = self.read_axis_x()
-        lat_t = self.read_axis_y()
-        self.xmax = np.shape(lon_t)[1]
-        self.ymax = np.shape(lon_t)[0]
-        self.zmax = np.shape(self.read_axis_z())[0]
+        self.xmax = self.get_x_size()
+        self.ymax = self.get_y_size()
+        #self.zmax = np.shape(self.grid.variables['depth_t'])[0]
+        self.gridrotcos_t = None
+        self.gridrotsin_t = None
+
+    def compute_rot(self):
+
+        lon_t = self.grid.variables['longitude_t'][:]
+        lat_t = self.grid.variables['latitude_t'][:]
+
         self.gridrotcos_t = np.zeros([self.ymax, self.xmax])
         self.gridrotsin_t = np.zeros([self.ymax, self.xmax])
 
@@ -55,20 +61,32 @@ La classe SymphonieReader permet de lire les données du format Symphonie
                 self.gridrotcos_t[y, x] = np.cos(x0)
                 self.gridrotsin_t[y, x] = np.sin(x0)
 
-    def read_axis_x(self):
-        return self.grid.variables['longitude_t'][:]
+    def is_regular_grid(self):
+        return False
 
-    def read_axis_y(self):
-        return self.grid.variables['latitude_t'][:]
+    def get_x_size(self):
+        return np.shape(self.grid.variables['longitude_t'][:])[1];
 
-    def read_axis_z(self):
-        lev = np.ma.masked_where(self.grid.variables["mask_t"][::] < 1 , self.grid.variables['depth_t'][::])
+    def get_y_size(self):
+        return np.shape(self.grid.variables['latitude_t'][:])[0];
+
+    def get_t_size(self):
+        return np.shape(self.ncfile.variables['time'])[0];
+
+    def read_axis_x(self,xmin,xmax,ymin,ymax):
+        return self.grid.variables['longitude_t'][ymin:ymax,xmin:xmax]
+
+    def read_axis_y(self,xmin,xmax,ymin,ymax):
+        return self.grid.variables['latitude_t'][ymin:ymax,xmin:xmax]
+
+    def read_axis_z(self,xmin,xmax,ymin,ymax):
+        lev = np.ma.masked_where(self.grid.variables["mask_t"][:ymin:ymax,xmin:xmax] < 1 , self.grid.variables['depth_t'][:ymin:ymax,xmin:xmax])
         np.ma.set_fill_value(lev,np.nan)
         lev[::] *= -1.0  # inverse la profondeur
         return lev.filled()
 
-    def read_axis_t(self, timestamp):
-        data = self.ncfile.variables['time'][:]
+    def read_axis_t(self,tmin,tmax,timestamp):
+        data = self.ncfile.variables['time'][tmin:tmax]
         result = num2date(data, units=self.ncfile.variables['time'].units.replace('from', 'since').replace('jan',
                                                                                                            '01').replace(
             'feb', '02').replace('mar', '03').replace('apr', '04').replace('may', '05').replace('jun', '06').replace(
@@ -85,9 +103,9 @@ La classe SymphonieReader permet de lire les données du format Symphonie
     def read_variable_time(self):
         return self.read_axis_t(timestamp=0)
 
-    def read_variable_2D_sea_binary_mask(self):
+    def read_variable_2D_sea_binary_mask(self,xmin,xmax,ymin,ymax):
         index_z = self.zmax - 1
-        return self.grid.variables["mask_t"][index_z][:]
+        return self.grid.variables["mask_t"][index_z][ymin:ymax,xmin:xmax]
         #data = np.ma.masked_where(self.grid.variables["mask_t"][index_z][:] < 1,
         #                          self.grid.variables["mask_t"][index_z][:])
         #np.ma.set_fill_value(data, -9999)
@@ -113,11 +131,8 @@ La classe SymphonieReader permet de lire les données du format Symphonie
     # Sea Surface
     #################
 
-    def read_variable_sea_surface_height_above_mean_sea_level_at_time(self, index_t):
-        index_z = self.zmax - 1
-        data = np.ma.masked_where(self.grid.variables["mask_t"][index_z][:] < 1 ,self.ncfile.variables["ssh_w"][index_t][:])
-        np.ma.set_fill_value(data, np.nan)
-        return data.filled()
+    def read_variable_sea_surface_height_above_mean_sea_level_at_time(self, index_t,xmin,xmax,ymin,ymax):
+        return np.ma.filled(self.ncfile.variables["ssh_w"][index_t][ymin:ymax,xmin:xmax],fill_value=np.nan)
 
     def read_variable_sea_surface_temperature_at_time(self, index_t):
         index_z = self.zmax - 1

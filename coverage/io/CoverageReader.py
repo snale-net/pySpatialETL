@@ -25,6 +25,15 @@ class CoverageReader(object):
 
         self.filename = myFile;
 
+    def is_regular_grid(self):
+        raise NotImplementedError(str(type(self))+" don't have implemented the function 'is_regular_grid()'.")
+
+    def get_x_size(self):
+        raise NotImplementedError(str(type(self))+" don't have implemented the function 'get_x_size()'.")
+
+    def get_y_size(self):
+        raise NotImplementedError(str(type(self))+" don't have implemented the function 'get_y_size()'.")
+
     def read_axis_x(self):
         raise NotImplementedError(str(type(self))+" don't have implemented the function 'read_axis_x()'.")
 

@@ -23,10 +23,9 @@ class CoverageInterpolator():
     """
     Cette classe permet d'interpoler un coverage non régulier sur une grille régulière.
     """
-
     HORIZONTAL_INTERPOLATION_METHOD = "linear"
 
-    def __init__(self, cov,resX,resY,depths,bbox=None):
+    def __init__(self,cov,resX,resY,depths,bbox=None):
         """
     Constructeur
     @param cov : la coverage
@@ -39,11 +38,10 @@ class CoverageInterpolator():
 
         if bbox == None:
             # we compute the destination grid
-            Ymin=np.min(self.coverage.read_axis_y())
-            Ymax=np.max(self.coverage.read_axis_y())
-            Xmin=np.min(self.coverage.read_axis_x())
-            Xmax=np.max(self.coverage.read_axis_x())
-
+            Ymin=np.min(self.coverage.reader.read_axis_y(0,self.coverage.get_global_x_size(),0,self.coverage.get_global_y_size()))
+            Ymax=np.max(self.coverage.reader.read_axis_y(0,self.coverage.get_global_x_size(),0,self.coverage.get_global_y_size()))
+            Xmin=np.min(self.coverage.reader.read_axis_x(0,self.coverage.get_global_x_size(),0,self.coverage.get_global_y_size()))
+            Xmax=np.max(self.coverage.reader.read_axis_x(0,self.coverage.get_global_x_size(),0,self.coverage.get_global_y_size()))
         else:
             Ymin=bbox[2]
             Ymax=bbox[3]
@@ -51,24 +49,36 @@ class CoverageInterpolator():
             Xmax=bbox[1]
 
         res=np.mean([self.targetResX,self.targetResY])
-        self.lon_reg,self.lat_reg=np.meshgrid(np.arange(Xmin, Xmax, res),np.arange(Ymin, Ymax, res))
+
+        self.targetX = np.arange(Xmin, Xmax, res)
+        self.targetY = np.arange(Ymin, Ymax, res)
+        self.lon_reg,self.lat_reg=np.meshgrid(self.targetX,self.targetY)
 
         self.depths = depths
 
         logging.info('[CoverageInterpolator] Source grid size : ' + str(np.shape(self.coverage.read_axis_x())))
-        logging.info('[CoverageInterpolator] Target grid size : (' + str(np.shape(self.read_axis_x())[0])+", "+ str(np.shape(self.read_axis_y())[0])+")")
+        logging.info('[CoverageInterpolator] Target grid size : (' + str(self.get_x_size())+", "+ str(self.get_y_size())+")")
 
     # Axis
-    def read_axis_x(self):
-        return self.lon_reg[0, :]
+    def get_x_size(self):
+        return np.shape(self.targetX)[0];
 
-    def read_axis_y(self):
-        return self.lat_reg[:,0]
+    def get_y_size(self):
+        return np.shape(self.targetY)[0];
 
-    def read_axis_z(self):
+    def get_t_size(self):
+        return self.coverage.get_t_size()
+
+    def read_axis_x(self,xmin,xmax,ymin,ymax):
+        return self.targetX[xmin:xmax]
+
+    def read_axis_y(self,xmin,xmax,ymin,ymax):
+        return self.targetY[ymin:ymax]
+
+    def read_axis_z(self,xmin,xmax,ymin,ymax):
         return self.depths
 
-    def read_axis_t(self,timestamp=0):
+    def read_axis_t(self,tmin,tmax,timestamp=0):
         return self.coverage.read_axis_t(timestamp)
 
     # Variables
@@ -85,7 +95,7 @@ class CoverageInterpolator():
     def read_variable_time(self):
         return self.read_axis_t(timestamp=0)
 
-    def read_variable_2D_sea_binary_mask(self):
+    def read_variable_2D_sea_binary_mask(self,xmin,xmax,ymin,ymax):
         return resample_2d_to_grid(self.coverage.read_axis_x(), self.coverage.read_axis_y(), self.lon_reg, self.lat_reg,
                                    self.coverage.read_variable_2D_sea_binary_mask(),CoverageInterpolator.HORIZONTAL_INTERPOLATION_METHOD)
 
@@ -122,13 +132,15 @@ class CoverageInterpolator():
     # Sea Surface
     #################
 
-    def read_variable_sea_surface_height_above_mean_sea_level_at_time(self, time):
+    def read_variable_sea_surface_height_above_mean_sea_level_at_time(self,time,xmin,xmax,ymin,ymax):
         return resample_2d_to_grid(self.coverage.read_axis_x(), self.coverage.read_axis_y(), self.lon_reg, self.lat_reg,
                                    self.coverage.read_variable_sea_surface_height_above_mean_sea_level_at_time(time),CoverageInterpolator.HORIZONTAL_INTERPOLATION_METHOD)
+        #return data[ymin:ymax,xmin:xmax]
+
 
     def read_variable_sea_surface_height_above_geoid_at_time(self, time):
         return resample_2d_to_grid(self.coverage.read_axis_x(), self.coverage.read_axis_y(), self.lon_reg, self.lat_reg,
-                                   self.coverage.read_variable_sea_surface_height_above_geoidl_at_time(time),CoverageInterpolator.HORIZONTAL_INTERPOLATION_METHOD)
+                                   self.coverage.read_variable_sea_surface_height_above_geoid_at_time(time),CoverageInterpolator.HORIZONTAL_INTERPOLATION_METHOD)
 
     def read_variable_sea_surface_temperature_at_time(self, time):
         return resample_2d_to_grid(
