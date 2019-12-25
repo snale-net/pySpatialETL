@@ -89,16 +89,20 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
         self.source_regular_grid = self.reader.is_regular_grid()
         self.target_regular_grid = self.source_regular_grid
         self.map_mpi = None
-
         self.horizontal_resampling = False
-        self.global_source_x_size = self.reader.get_x_size()
-        self.global_source_y_size = self.reader.get_y_size()
-        self.global_target_res_x = None
-        self.global_target_res_y = None
-        self.global_target_axis_x = None
-        self.global_target_axis_y = None
-        self.global_target_x_size = None
-        self.global_target_y_size = None
+
+        self.source_global_x_size = self.reader.get_x_size()
+        self.source_global_y_size = self.reader.get_y_size()
+        self.source_global_axis_x = self.reader.read_axis_x(0, self.source_global_x_size, 0,
+                                                            self.source_global_y_size)
+        self.source_global_axis_y = self.reader.read_axis_y(0, self.source_global_x_size, 0,
+                                                            self.source_global_y_size)
+        self.target_global_res_x = None
+        self.target_global_res_y = None
+        self.target_global_axis_x = None
+        self.target_global_axis_y = None
+        self.target_global_x_size = None
+        self.target_global_y_size = None
 
         self.comm = MPI.COMM_WORLD
         self.size = self.comm.Get_size()
@@ -110,42 +114,67 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
             self.target_regular_grid = True
 
             res = np.mean([resolution_x, resolution_y])
-            self.global_target_res_x = res
-            self.global_target_res_y = res
+            self.target_global_res_x = res
+            self.target_global_res_y = res
 
             if bbox == None:
                 # we compute the destination grid
-                Ymin = np.min(self.reader.read_axis_y(0, self.global_source_x_size, 0,
-                                                               self.get_global_y_size()))
-                Ymax = np.max(self.reader.read_axis_y(0, self.global_source_x_size, 0,
-                                                              self.global_source_y_size))
-                Xmin = np.min(self.reader.read_axis_x(0, self.global_source_x_size, 0,
-                                                               self.global_source_y_size))
-                Xmax = np.max(self.reader.read_axis_x(0, self.global_source_x_size, 0,
-                                                               self.global_source_y_size))
+                Ymin = np.min(self.source_global_axis_y)
+                Ymax = np.max(self.source_global_axis_y)
+                Xmin = np.min(self.source_global_axis_x)
+                Xmax = np.max(self.source_global_axis_x)
             else:
                 Ymin = bbox[2]
                 Ymax = bbox[3]
                 Xmin = bbox[0]
                 Xmax = bbox[1]
 
-            self.global_target_axis_x = np.arange(Xmin, Xmax, res)
-            self.global_target_axis_y = np.arange(Ymin, Ymax, res)
+            self.target_global_axis_x = np.arange(Xmin, Xmax, res)
+            self.target_global_axis_y = np.arange(Ymin, Ymax, res)
 
-            self.global_target_x_size=len(self.global_target_axis_x)
-            self.global_target_y_size=len(self.global_target_axis_y)
+            self.target_global_x_size=len(self.target_global_axis_x)
+            self.target_global_y_size=len(self.target_global_axis_y)
 
             if self.rank == 0:
-                logging.info('[horizontal_interpolation] Source grid size : (' + str(self.global_source_x_size) + ", " + str(
-                    self.global_source_y_size) + ")")
-                logging.info('[horizontal_interpolation] Target grid size : (' + str(self.global_target_x_size) + ", " + str(
-                    self.global_target_y_size) + ")")
+                logging.info('[horizontal_interpolation] Source grid size : (' + str(self.source_global_x_size) + ", " + str(
+                    self.source_global_y_size) + ")")
+                logging.info('[horizontal_interpolation] Target grid size : (' + str(self.target_global_x_size) + ", " + str(
+                    self.target_global_y_size) + ")")
 
         else:
-            self.global_target_x_size = self.global_source_x_size
-            self.global_target_y_size = self.global_source_y_size
+            self.target_global_axis_x = self.source_global_axis_x
+            self.target_global_axis_y = self.source_global_axis_y
+            self.target_global_x_size = self.source_global_x_size
+            self.target_global_y_size = self.source_global_y_size
 
         self.create_mpi_map()
+
+        if self.horizontal_resampling:
+            # TODO essayer de calculer un secteur sur la grille d'origine
+            self.map_mpi[self.rank]["src_global_x"] = np.s_[0:self.source_global_x_size]
+            self.map_mpi[self.rank]["src_global_y"] = np.s_[0:self.source_global_y_size]
+
+            self.map_mpi[self.rank]["src_global_x_overlap"] = np.s_[0:self.source_global_x_size]
+            self.map_mpi[self.rank]["src_global_y_overlap"] = np.s_[0:self.source_global_y_size]
+
+            self.map_mpi[self.rank]["src_local_x"] = np.s_[0:self.source_global_x_size]
+            self.map_mpi[self.rank]["src_local_y"] = np.s_[0:self.source_global_y_size]
+
+            self.map_mpi[self.rank]["src_local_x_size"] = self.source_global_x_size
+            self.map_mpi[self.rank]["src_local_y_size"] = self.source_global_y_size
+
+            self.map_mpi[self.rank]["src_local_x_size_overlap"] = self.source_global_x_size
+            self.map_mpi[self.rank]["src_local_y_size_overlap"] = self.source_global_y_size
+
+            # #redure point on source
+            # Xmin = np.min(self.read_axis_x("target",with_overlap=True))
+            # Xmax = np.max(self.read_axis_x("target",with_overlap=True))
+            # Ymin = np.min(self.read_axis_y("target",with_overlap=True))
+            # Ymax = np.max(self.read_axis_y("target",with_overlap=True))
+            # c1 = self.find_point_index(Xmin,Ymin)
+            # c2 = self.find_point_index(Xmax, Ymax)
+            # self.map_mpi[self.rank]["src_global_x"] = np.s_[c1[0]:c2[0]]
+            # self.map_mpi[self.rank]["src_global_y"] = np.s_[c1[1]:c2[1]]
 
         if self.rank==0:
             logging.debug("MPI map:")
@@ -157,75 +186,8 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
         self.read_metadata()
 
     def create_mpi_map(self):
+        print("à copier from timecoverage")
 
-        self.map_mpi = np.empty(self.size,dtype=object)
-        source_sample = np.zeros([self.global_source_y_size,self.global_source_x_size])
-        target_sample = np.zeros([self.global_target_y_size, self.global_target_x_size])
-
-        # Découpage sur 2 axes
-        source_slices = shape_split(source_sample.shape, self.size, axis=[0, 0])
-
-        slice_index = 0
-        for slyce in source_slices.flatten():
-            slice = tuple(slyce)
-
-            m = np.s_[0:2, 3:4]
-            print(m)
-
-            map = {}
-            # Grille source
-            map["source_global_x_min"] = slice[1].start
-            map["source_global_x_max"] = slice[1].stop
-            map["source_global_y_min"] = slice[0].start
-            map["source_global_y_max"] = slice[0].stop
-            map["source_x_size"] = map["source_global_x_max"] - map["source_global_x_min"]
-            map["source_y_size"] = map["source_global_y_max"] - map["source_global_y_min"]
-
-            map["source_global_x_min_overlap"] = max(0,map["source_global_x_min"]-Coverage.HORIZONTAL_OVERLAPING_SIZE)
-            map["source_global_x_max_overlap"] = min(self.global_source_x_size,map["source_global_x_max"]+Coverage.HORIZONTAL_OVERLAPING_SIZE)
-            map["source_global_y_min_overlap"] = max(0,map["source_global_y_min"]-Coverage.HORIZONTAL_OVERLAPING_SIZE)
-            map["source_global_y_max_overlap"] = min(self.global_source_y_size,map["source_global_y_max"]+Coverage.HORIZONTAL_OVERLAPING_SIZE)
-            map["source_x_size_overlap"] = map["source_global_x_max_overlap"] - map["source_global_x_min_overlap"]
-            map["source_y_size_overlap"] = map["source_global_y_max_overlap"] -  map["source_global_y_min_overlap"]
-
-            map["source_x_min"] = Coverage.HORIZONTAL_OVERLAPING_SIZE
-            map["source_x_max"] = map["source_x_size_overlap"]-Coverage.HORIZONTAL_OVERLAPING_SIZE
-            map["source_y_min"] = Coverage.HORIZONTAL_OVERLAPING_SIZE
-            map["source_y_max"] = map["source_y_size_overlap"]-Coverage.HORIZONTAL_OVERLAPING_SIZE
-
-            if  map["source_global_x_min"] == 0 :
-                map["source_x_min"] = 0
-
-            if  map["source_global_y_min"] == 0 :
-                map["source_y_min"] = 0
-
-            if map["source_global_x_max"] == self.global_source_x_size:
-                map["source_x_max"] = map["source_x_size_overlap"]
-
-            if map["source_global_y_max"] == self.global_source_y_size:
-                 map["source_y_max"] = map["source_y_size_overlap"]
-
-            # Grille destination
-            lon = self.reader.read_axis_y(map["source_global_x_min"], map["source_global_x_max"], map["source_global_y_min"],
-                                                  map["source_global_y_max"])
-            lat = self.reader.read_axis_y(map["source_global_x_min"], map["source_global_x_max"], map["source_global_y_min"],
-                                                  map["source_global_y_max"])
-            Ymin = np.min(lat)
-            Ymax = np.max(lat)
-            Xmin = np.min(lon)
-            Xmax = np.max(lon)
-
-            lBconer = self.find_point_index(Xmin,Ymin)
-            hRcorner = self.find_point_index(Xmax,Ymax)
-
-            map["target_global_x_min"] = lBconer[0]
-            map["target_global_x_max"] = hRcorner[0]
-            map["target_global_y_min"] = lBconer[1]
-            map["target_global_y_max"] = hRcorner[1]
-
-            self.map_mpi[slice_index] = map
-
-            slice_index = slice_index + 1
 
     # Read metadata
     def read_metadata(self):
@@ -239,74 +201,109 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
         if  "read_metadata" in dir(self.reader):
             m = self.reader.read_metadata()
 
-    def get_x_size(self):
-        return self.map_mpi[self.rank]["x_size"]
+    def get_x_size(self,type="target",with_overlap=False):
+        if type == "target_global":
+            return self.target_global_x_size
+        elif type == "source_global":
+            return self.source_global_x_size
+        elif type == "source" and with_overlap is True:
+            return self.map_mpi[self.rank]["src_local_x_size_overlap"]
+        elif type == "source" and with_overlap is False:
+            return self.map_mpi[self.rank]["src_local_x_size"]
+        elif type == "target" and with_overlap is True:
+            return self.map_mpi[self.rank]["dst_global_x_size_overlap"]
+        else:
+            return self.map_mpi[self.rank]["dst_local_x_size"]
 
-    def get_y_size(self):
-        return self.map_mpi[self.rank]["y_size"]
+    def get_y_size(self,type="target",with_overlap=False):
+        if type == "target_global":
+            return self.target_global_y_size
+        elif type == "source_global":
+            return self.source_global_y_size
+        elif type == "source" and with_overlap is True:
+            return self.map_mpi[self.rank]["src_local_y_size_overlap"]
+        elif type == "source" and with_overlap is False:
+            return self.map_mpi[self.rank]["src_local_y_size"]
+        elif type == "target" and with_overlap is True:
+            return self.map_mpi[self.rank]["dst_global_y_size_overlap"]
+        else:
+            return self.map_mpi[self.rank]["dst_local_y_size"]
 
-    def get_global_x_size(self):
-        return self.global_target_x_size
-
-    def get_global_y_size(self):
-        return self.global_target_y_size
-
-    def is_regular_grid(self):
+    def is_regular_grid(self,type="target"):
         """Retourne vrai si la maille est régulière, sinon faux.
     @return:  vrai si la maille est régulière sinon faux."""
 
-        return self.target_regular_grid
+        if type == "target":
+            return self.target_regular_grid
+        else:
+            return self.source_regular_grid
+
     # Axis        
     def read_axis_x(self,type="target",with_overlap=False):
         """Retourne les valeurs (souvent la longitude) de l'axe x.
     @return:  un tableau à une ou deux dimensions selon le type de maille des valeurs de l'axe x (souvent la longitude) : [x] ou [y,x]."""
 
         if (type == "target_global"):
-            return self.global_target_axis_x
+            return self.target_global_axis_x
 
-        if (type=="source" or self.horizontal_resampling == False) or (type=="target" and self.horizontal_resampling == False):
+        elif type == "source_global":
+            return self.reader.read_axis_x(self.map_mpi[self.rank]["src_global_x"].start,
+                                    self.map_mpi[self.rank]["src_global_x"].stop,
+                                    self.map_mpi[self.rank]["src_global_y"].start,
+                                    self.map_mpi[self.rank]["src_global_y"].stop)
 
-            data = self.reader.read_axis_x(self.map_mpi[self.rank]["source_global_x_min_overlap"],
-                                           self.map_mpi[self.rank]["source_global_x_max_overlap"],
-                                           self.map_mpi[self.rank]["source_global_y_min_overlap"],
-                                           self.map_mpi[self.rank]["source_global_y_max_overlap"])
+        elif type == "source":
+            return self.reader.read_axis_x(self.map_mpi[self.rank]["src_local_x"].start,
+                                    self.map_mpi[self.rank]["src_local_x"].stop,
+                                    self.map_mpi[self.rank]["src_local_y"].start,
+                                    self.map_mpi[self.rank]["src_local_y"].stop)
 
-            if with_overlap is False:
-                if self.source_regular_grid:
-                    data = data[self.map_mpi[self.rank]["source_x_min"]:self.map_mpi[self.rank]["source_x_max"]]
-                else:
-                    data = data[self.map_mpi[self.rank]["source_y_min"]:self.map_mpi[self.rank]["source_y_max"],
-                           self.map_mpi[self.rank]["source_x_min"]:self.map_mpi[self.rank]["source_x_max"]]
+        elif type == "target" and with_overlap is True:
 
-            return data
-        else:
-            return self.global_target_axis_x[self.map_mpi[self.rank]["target_global_x_min"]:self.map_mpi[self.rank]["target_global_x_max"]]
+            if self.is_regular_grid():
+                return self.target_global_axis_x[self.map_mpi[self.rank]["dst_global_x_overlap"]]
+            else:
+                return self.target_global_axis_x[self.map_mpi[self.rank]["dst_global_y_overlap"],
+                                                 self.map_mpi[self.rank]["dst_global_x_overlap"]]
+        else :
+
+            if self.is_regular_grid():
+                return self.target_global_axis_x[self.map_mpi[self.rank]["dst_global_x"]]
+            else:
+                return self.target_global_axis_x[self.map_mpi[self.rank]["dst_global_y"],self.map_mpi[self.rank]["dst_global_x"]]
         
     def read_axis_y(self,type="target",with_overlap=False):
         """Retourne les valeurs (souvent la latitude) de l'axe y.
     @return:  un tableau à une ou deux dimensions selon le type de maille des valeurs de l'axe y (souvent la latitude) : [x] ou [y,x]."""
 
-        if(type=="target_global"):
-            return self.global_target_axis_y
+        if type=="target_global":
+            return self.target_global_axis_y
 
-        if (type == "source" or self.horizontal_resampling == False) or (
-                type == "target" and self.horizontal_resampling == False):
+        elif type == "source_global":
+            return self.reader.read_axis_y(self.map_mpi[self.rank]["src_global_x"].start,
+                                           self.map_mpi[self.rank]["src_global_x"].stop,
+                                           self.map_mpi[self.rank]["src_global_y"].start,
+                                           self.map_mpi[self.rank]["src_global_y"].stop)
 
-            data = self.reader.read_axis_y(self.map_mpi[self.rank]["source_global_x_min_overlap"],
-                                           self.map_mpi[self.rank]["source_global_x_max_overlap"],
-                                           self.map_mpi[self.rank]["source_global_y_min_overlap"],
-                                           self.map_mpi[self.rank]["source_global_y_max_overlap"])
+        elif type == "source":
+            return self.reader.read_axis_y(self.map_mpi[self.rank]["src_local_x"].start,
+                                           self.map_mpi[self.rank]["src_local_x"].stop,
+                                           self.map_mpi[self.rank]["src_local_y"].start,
+                                           self.map_mpi[self.rank]["src_local_y"].stop)
 
-            if with_overlap is False:
-                if self.source_regular_grid:
-                    data = data[self.map_mpi[self.rank]["source_y_min"]:self.map_mpi[self.rank]["source_y_max"]]
-                else:
-                    data = data[self.map_mpi[self.rank]["source_y_min"]:self.map_mpi[self.rank]["source_y_max"],
-                           self.map_mpi[self.rank]["source_x_min"]:self.map_mpi[self.rank]["source_x_max"]]
+        elif type == "target" and with_overlap is True:
 
-            return data
+            if self.is_regular_grid():
+                return self.target_global_axis_y[self.map_mpi[self.rank]["dst_global_y_overlap"]]
+            else:
+                return self.target_global_axis_y[self.map_mpi[self.rank]["dst_global_y_overlap"],
+                                                 self.map_mpi[self.rank]["dst_global_x_overlap"]]
         else:
-            return self.global_target_axis_y[self.map_mpi[self.rank]["target_global_y_min"]:self.map_mpi[self.rank]["target_global_y_max"]]
+
+            if self.is_regular_grid():
+                return self.target_global_axis_y[self.map_mpi[self.rank]["dst_global_y"]]
+            else:
+                return self.target_global_axis_y[self.map_mpi[self.rank]["dst_global_y"],self.map_mpi[self.rank]["dst_global_x"]]
         
     def find_point_index(self,target_lon,target_lat,method="classic"):
         """Retourne le point le plus proche du point donné en paramètre.
@@ -319,18 +316,18 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
      [2] : la coordonnée en longitude du point le plus proche
      [3] : la coordonnée en latitude point le plus proche
      [4] : la distance du point le plus proche en kilomètre."""
-        lon = self.read_axis_x(type="target_global")
-        lat = self.read_axis_y(type="target_global")
+        lon = self.read_axis_x(type="source_global")
+        lat = self.read_axis_y(type="source_global")
         #mask = self.read_variable_2D_sea_binary_mask()
-        dist = np.zeros([self.global_target_y_size,self.global_target_x_size])
+        dist = np.zeros([self.source_global_y_size, self.source_global_x_size])
         dist[:] = 100000
 
         if method=="classic":
-            for x in range(0, self.global_target_x_size):
-                for y in range(0, self.global_target_y_size):
+            for x in range(0, self.source_global_x_size):
+                for y in range(0, self.source_global_y_size):
 
                     #if(mask[y,x] == 1): #=Terre
-                    if self.is_regular_grid():
+                    if self.reader.is_regular_grid():
                         dist[y,x] = distance_on_unit_sphere(target_lon,target_lat,lon[x],lat[y])
                     else:
                         dist[y,x] = distance_on_unit_sphere(target_lon,target_lat,lon[y,x],lat[y,x])

@@ -36,8 +36,8 @@ class DefaultWriter (CoverageWriter):
         self.ncfile.description = 'Generated with pyGeoSpatialETL'
 
         # dimensions
-        self.ncfile.createDimension(VariableDefinition.VARIABLE_NAME['latitude'], self.coverage.get_global_y_size())
-        self.ncfile.createDimension(VariableDefinition.VARIABLE_NAME['longitude'], self.coverage.get_global_x_size())
+        self.ncfile.createDimension(VariableDefinition.VARIABLE_NAME['latitude'], self.coverage.get_y_size(type="target_global"))
+        self.ncfile.createDimension(VariableDefinition.VARIABLE_NAME['longitude'], self.coverage.get_x_size(type="target_global"))
 
         if self.coverage.is_regular_grid()==True:
 
@@ -58,13 +58,8 @@ class DefaultWriter (CoverageWriter):
             longitudes.axis = "X" ;
             longitudes.units = VariableDefinition.CANONICAL_UNITS['longitude'];
 
-            latitudes[
-                self.coverage.map_mpi[self.coverage.rank]["target_global_y_min"]:self.coverage.map_mpi[self.coverage.rank]["target_global_y_max"]
-            ] = self.coverage.read_axis_y()
-
-            longitudes[
-                self.coverage.map_mpi[self.coverage.rank]["target_global_x_min"]:self.coverage.map_mpi[self.coverage.rank]["target_global_x_max"]
-            ] = self.coverage.read_axis_x()
+            latitudes[self.coverage.map_mpi[self.coverage.rank]["dst_global_y"]] = self.coverage.read_axis_y()
+            longitudes[self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = self.coverage.read_axis_x()
 
         else:
 
@@ -86,18 +81,14 @@ class DefaultWriter (CoverageWriter):
 
             # data
             latitudes[
-            self.coverage.map_mpi[self.coverage.rank]["target_global_y_min"]:self.coverage.map_mpi[self.coverage.rank]["target_global_y_max"],
-            self.coverage.map_mpi[self.coverage.rank]["target_global_x_min"]:self.coverage.map_mpi[self.coverage.rank]["target_global_x_max"]
-            ] = self.coverage.read_axis_y()
+            self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = self.coverage.read_axis_y()
 
             longitudes[
-            self.coverage.map_mpi[self.coverage.rank]["target_global_y_min"]:self.coverage.map_mpi[self.coverage.rank]["target_global_y_max"],
-            self.coverage.map_mpi[self.coverage.rank]["target_global_x_min"]:self.coverage.map_mpi[self.coverage.rank]["target_global_x_max"]
-            ] = self.coverage.read_axis_x()
+            self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = self.coverage.read_axis_x()
 
         if(isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
-            self.ncfile.createDimension(VariableDefinition.VARIABLE_NAME['time'], self.coverage.get_global_t_size())
+            self.ncfile.createDimension(VariableDefinition.VARIABLE_NAME['time'], self.coverage.get_t_size(type="target_global"))
             times = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['time'], float64, (VariableDefinition.VARIABLE_NAME['time'],))
             times.units= 'seconds since 1970-01-01 00:00:00'
             times.calendar= 'gregorian'
@@ -106,15 +97,14 @@ class DefaultWriter (CoverageWriter):
             times.conventions = "UTC time"
 
             times[
-            self.coverage.map_mpi[self.coverage.rank]["target_global_t_min"]:self.coverage.map_mpi[self.coverage.rank]["target_global_t_max"]
-            ] = date2num(self.coverage.read_axis_t(), units = times.units, calendar = times.calendar)
+            self.coverage.map_mpi[self.coverage.rank]["dst_global_t"]] = date2num(self.coverage.read_axis_t(), units = times.units, calendar = times.calendar)
 
         if(isinstance(self.coverage, LevelCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
             if self.coverage.is_sigma_coordinate():
                 raise ValueError("This writer supports only Coverage with a regular vertical axis.")
 
-            self.ncfile.createDimension(VariableDefinition.VARIABLE_NAME['depth'], self.coverage.get_z_size())
+            self.ncfile.createDimension(VariableDefinition.VARIABLE_NAME['depth'], self.coverage.get_z_size(type="target"))
             levels = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['depth'], float64, (VariableDefinition.VARIABLE_NAME['depth'],))
             levels.standard_name= 'depth'
             levels.long_name="Positive depth"
@@ -189,17 +179,18 @@ class DefaultWriter (CoverageWriter):
         var.standard_name = VariableDefinition.STANDARD_NAME['sea_surface_height_above_mean_sea_level']
         var.units = VariableDefinition.CANONICAL_UNITS['sea_surface_height_above_mean_sea_level']
 
-        logging.info('[DefaultWriter] Writing variable \''+str(VariableDefinition.LONG_NAME['sea_surface_height_above_mean_sea_level'])+'\'')
+        if self.coverage.rank == 0:
+            logging.info('[DefaultWriter] Writing variable \''+str(VariableDefinition.LONG_NAME['sea_surface_height_above_mean_sea_level'])+'\'')
 
         time_index=0
         for time in self.coverage.read_axis_t():
 
-            logging.debug('[DefaultWriter]['+str(self.coverage.rank)+'] Writing variable \''+str(VariableDefinition.LONG_NAME['sea_surface_height_above_mean_sea_level'])+'\' at time \''+str(time)+'\'')
+            logging.debug('[DefaultWriter] Writing variable \''+str(VariableDefinition.LONG_NAME['sea_surface_height_above_mean_sea_level'])+'\' at time \''+str(time)+'\'')
 
             var[
-            self.coverage.map_mpi[self.coverage.rank]["target_global_t_min"]+time_index:self.coverage.map_mpi[self.coverage.rank]["target_global_t_min"]+time_index+1,
-            self.coverage.map_mpi[self.coverage.rank]["target_global_y_min"]:self.coverage.map_mpi[self.coverage.rank]["target_global_y_max"],
-            self.coverage.map_mpi[self.coverage.rank]["target_global_x_min"]:self.coverage.map_mpi[self.coverage.rank]["target_global_x_max"]
+            self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start+time_index:self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start+time_index+1,
+            self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
+            self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]
             ] = self.coverage.read_variable_sea_surface_height_above_mean_sea_level_at_time(time)
 
             time_index += 1
@@ -252,8 +243,12 @@ class DefaultWriter (CoverageWriter):
                 # Pas d'interpolation temporelle donc on parcours les index du temps
                 cur = self.coverage.read_variable_baroclinic_sea_water_velocity_at_time_and_depth(time_index, level)
 
-                ucur[time_index:time_index + 1, level_index:level_index + 1, :, :] = cur[0]
-                vcur[time_index:time_index + 1, level_index:level_index + 1, :, :] = cur[1]
+                ucur[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index:
+                self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index + 1, level_index:level_index + 1, self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
+                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = cur[0]
+                vcur[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index:
+                self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index + 1, level_index:level_index + 1, self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
+                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = cur[1]
                 level_index += 1
 
             time_index += 1
@@ -412,8 +407,9 @@ class DefaultWriter (CoverageWriter):
             level_index = 0
             for level in self.coverage.read_axis_z():
                 # Pas d'interpolation temporelle donc on parcours les index du temps
-                var[time_index:time_index + 1, level_index:level_index + 1, :,
-                :] = self.coverage.read_variable_sea_water_salinity_at_time_and_depth(time_index, level)
+                var[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index:
+                self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index + 1, level_index:level_index + 1, self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
+                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = self.coverage.read_variable_sea_water_salinity_at_time_and_depth(time_index, level)
                 level_index += 1
 
             time_index += 1

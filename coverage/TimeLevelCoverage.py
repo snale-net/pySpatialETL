@@ -14,8 +14,10 @@
 # Author : Fabien Rétif - fabien.retif@zoho.com
 #
 from __future__ import division, print_function, absolute_import
+from coverage.Coverage import  Coverage
 from coverage.LevelCoverage import LevelCoverage
 from coverage.TimeCoverage import TimeCoverage
+from coverage.operator.interpolator.InterpolatorCore import resample_2d_to_grid
 from coverage.operator.interpolator.InterpolatorCore import vertical_interpolation
 import numpy as np
 
@@ -23,10 +25,10 @@ class TimeLevelCoverage(LevelCoverage,TimeCoverage):
     """La classe TimeLevelCoverage est une extension de la classe Coverage, LevelCoverage, TimeCoverage.
 Elle rajoute les dimensions temporelle et verticale à la couverture horizontale classique.
     """
-    def __init__(self, myReader):
+    def __init__(self, myReader,bbox=None,resolution_x=None,resolution_y=None,zbox=None,resolution_z=None):
 
-        LevelCoverage.__init__(self,myReader);  
-        TimeCoverage.__init__(self,myReader);
+        LevelCoverage.__init__(self,myReader,bbox=bbox,resolution_x=resolution_x,resolution_y=resolution_y,zbox=zbox,resolution_z=resolution_z);
+        TimeCoverage.__init__(self,myReader,bbox=bbox,resolution_x=resolution_x,resolution_y=resolution_y);
 
     #################
     # HYDRO
@@ -103,32 +105,40 @@ Elle rajoute les dimensions temporelle et verticale à la couverture horizontale
         vert_coord = tmp[0]
         indexes_z = tmp[1]
 
-        xmax = self.get_x_size()
-        ymax = self.get_y_size()
+        xmax = self.get_x_size(type="source",with_overlap=True)
+        ymax = self.get_y_size(type="source",with_overlap=True)
+
         layers = np.zeros([np.shape(indexes_z)[0], ymax, xmax])
         layers[::] = np.NAN
 
-        results = np.zeros([ymax, xmax])
-        results[:] = np.NAN
+        data = np.zeros([ymax, xmax])
+        data[:] = np.NAN
 
         targetDepth = [depth]
 
         for z in range(0, len(indexes_z)):
-            layers[z] = self.reader.read_variable_sea_water_salinity_at_time_and_depth(index_t, indexes_z[z])
+            layers[z] = self.reader.read_variable_sea_water_salinity_at_time_and_depth(
+                self.map_mpi[self.rank]["src_global_t"].start+index_t, indexes_z[z],
+                self.map_mpi[self.rank]["src_global_x_overlap"].start,
+                self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+                self.map_mpi[self.rank]["src_global_y_overlap"].start,
+                self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
-        for y in range(0, ymax):
-            for x in range(0, xmax):
+        for y in range(0, self.get_y_size(type="source",with_overlap=True)):
+            for x in range(0, self.get_x_size(type="source",with_overlap=True)):
 
-                if len(vert_coord[y, x]) == 1:
+                print(vert_coord[y, x] )
+
+                if vert_coord[y, x] is not None and len(vert_coord[y, x]) == 1:
                     # Il n'y a qu'une seule couche de sélectionner donc pas d'interpolation possible
 
                     # On retrouve l'index de la layer
                     array = np.asarray(indexes_z)
                     index_layer = (np.abs(array - vert_coord[y, x][0])).argmin()
 
-                    results[y, x] = layers[index_layer, y, x]
+                    data[y, x] = layers[index_layer, y, x]
 
-                elif len(vert_coord[y, x]) > 1:
+                elif vert_coord[y, x] is not None and len(vert_coord[y, x]) > 1:
 
                     candidateValues = np.zeros([len(vert_coord[y, x])])
                     candidateDepths = np.zeros([len(vert_coord[y, x])])
@@ -138,12 +148,22 @@ Elle rajoute les dimensions temporelle et verticale à la couverture horizontale
                         array = np.asarray(indexes_z)
                         index_layer = (np.abs(array - vert_coord[y, x][z])).argmin()
 
-                        candidateDepths[z] = self.levels[index_layer, y, x]
+                        candidateDepths[z] = self.source_global_axis_z[index_layer, y, x]
                         candidateValues[z] = layers[index_layer, y, x]
 
-                    results[y, x] = vertical_interpolation(candidateDepths, targetDepth, candidateValues,LevelCoverage.VERTICAL_INTERPOLATION_METHOD)
+                    data[y, x] = vertical_interpolation(candidateDepths, targetDepth, candidateValues,LevelCoverage.VERTICAL_INTERPOLATION_METHOD)
 
-        return results
+        if self.horizontal_resampling:
+
+            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data,
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+
 
     def read_variable_baroclinic_sea_water_velocity_at_time_and_depth(self,time,depth):
         """Retourne les composantes u,v du courant à la date souhaitée et au niveau souhaité sur toute la couverture horizontale.

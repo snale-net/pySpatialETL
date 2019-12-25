@@ -35,116 +35,130 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
     TIME_OVERLAPING_SIZE = 0
 
     def __init__(self, myReader,bbox=None,resolution_x=None,resolution_y=None):
-            
-        Coverage.__init__(self,myReader,bbox=bbox,resolution_x=resolution_x,resolution_y=resolution_y);
-        self.times = self.read_axis_t();
-        self.global_source_t_size = len(self.times)
+
+        Coverage.__init__(self, myReader, bbox=bbox, resolution_x=resolution_x, resolution_y=resolution_y);
+
+        self.source_global_t_size = self.reader.get_t_size()
+        self.source_global_axis_t = self.reader.read_axis_t(0,self.source_global_t_size,0);
+        self.target_global_t_size = self.source_global_t_size
+        self.target_global_axis_t = self.source_global_axis_t
+
+        self.temporal_resampling = False
+
+        if self.temporal_resampling:
+            # TODO essayer de calculer un secteur sur la grille d'origine
+            self.map_mpi[self.rank]["src_global_t"] = np.s_[0:self.source_global_t_size]
+            self.map_mpi[self.rank]["src_global_overlap"] = np.s_[0:self.source_global_t_size]
+            self.map_mpi[self.rank]["src_local_t"] = np.s_[0:self.source_global_t_size]
+
+            # self.map_mpi[self.rank]["src_global_x"] = np.s_[0:self.source_global_x_size]
+            # self.map_mpi[self.rank]["src_global_y"] = np.s_[0:self.source_global_y_size]
+            # #redure point on source
+            # Xmin = np.min(self.read_axis_x("target",with_overlap=True))
+            # Xmax = np.max(self.read_axis_x("target",with_overlap=True))
+            # Ymin = np.min(self.read_axis_y("target",with_overlap=True))
+            # Ymax = np.max(self.read_axis_y("target",with_overlap=True))
+            # c1 = self.find_point_index(Xmin,Ymin)
+            # c2 = self.find_point_index(Xmax, Ymax)
+            # self.map_mpi[self.rank]["src_global_x"] = np.s_[c1[0]:c2[0]]
+            # self.map_mpi[self.rank]["src_global_y"] = np.s_[c1[1]:c2[1]]
 
     def create_mpi_map(self):
 
-        self.global_source_t_size = self.reader.get_t_size()
+        self.target_global_t_size = self.reader.get_t_size()
 
         self.map_mpi = np.empty(self.size, dtype=object)
-        source_sample = np.zeros([self.global_source_t_size, self.global_source_y_size, self.global_source_x_size])
-        target_sample = np.zeros([self.global_source_t_size, self.global_target_y_size, self.global_target_x_size])
+        target_sample = np.zeros([self.target_global_t_size, self.target_global_y_size, self.target_global_x_size])
 
         # Découpage sur 2 axes
-        source_slices = shape_split(source_sample.shape, self.size, axis=[0, 0, 0])
+        target_slices = shape_split(target_sample.shape, self.size, axis=[0, 0, 0])
 
         slice_index = 0
-        for slyce in source_slices.flatten():
+        for slyce in target_slices.flatten():
             slice = tuple(slyce)
 
             map = {}
             # Grille source
-            map["source_global_t_min"] = slice[0].start
-            map["source_global_t_max"] = slice[0].stop
-            map["source_global_x_min"] = slice[2].start
-            map["source_global_x_max"] = slice[2].stop
-            map["source_global_y_min"] = slice[1].start
-            map["source_global_y_max"] = slice[1].stop
+            map["dst_global_t"] = slice[0]
+            map["dst_global_x"] = slice[2]
+            map["dst_global_y"] = slice[1]
 
-            map["source_t_size"] = map["source_global_t_max"] - map["source_global_t_min"]
-            map["source_x_size"] = map["source_global_x_max"] - map["source_global_x_min"]
-            map["source_y_size"] = map["source_global_y_max"] - map["source_global_y_min"]
+            map["dst_local_t_size"] = map["dst_global_t"].stop - map["dst_global_t"].start
+            map["dst_local_x_size"] = map["dst_global_x"].stop - map["dst_global_x"].start
+            map["dst_local_y_size"] = map["dst_global_y"].stop - map["dst_global_y"].start
 
-            map["source_global_t_min_overlap"] = max(0, map["source_global_t_min"] - TimeCoverage.TIME_OVERLAPING_SIZE)
-            map["source_global_t_max_overlap"] = min(self.global_source_t_size, map["source_global_t_max"] + TimeCoverage.TIME_OVERLAPING_SIZE)
-            map["source_global_x_min_overlap"] = max(0,map["source_global_x_min"] - Coverage.HORIZONTAL_OVERLAPING_SIZE)
-            map["source_global_x_max_overlap"] = min(self.global_source_x_size,map["source_global_x_max"] + Coverage.HORIZONTAL_OVERLAPING_SIZE)
-            map["source_global_y_min_overlap"] = max(0,map["source_global_y_min"] - Coverage.HORIZONTAL_OVERLAPING_SIZE)
-            map["source_global_y_max_overlap"] = min(self.global_source_y_size,map["source_global_y_max"] + Coverage.HORIZONTAL_OVERLAPING_SIZE)
+            dst_global_t_min_overlap = max(0, map["dst_global_t"].start - TimeCoverage.TIME_OVERLAPING_SIZE)
+            dst_global_t_max_overlap = min(self.target_global_t_size, map["dst_global_t"].stop + TimeCoverage.TIME_OVERLAPING_SIZE)
+            map["dst_global_t_overlap"] = np.s_[dst_global_t_min_overlap:dst_global_t_max_overlap]
 
-            map["source_t_size_overlap"] = map["source_global_t_max_overlap"] - map["source_global_t_min_overlap"]
-            map["source_x_size_overlap"] = map["source_global_x_max_overlap"] - map["source_global_x_min_overlap"]
-            map["source_y_size_overlap"] = map["source_global_y_max_overlap"] - map["source_global_y_min_overlap"]
+            dst_global_x_min_overlap = max(0,map["dst_global_x"].start - Coverage.HORIZONTAL_OVERLAPING_SIZE)
+            dst_global_x_max_overlap = min(self.target_global_x_size, map["dst_global_x"].stop + Coverage.HORIZONTAL_OVERLAPING_SIZE)
+            map["dst_global_x_overlap"] = np.s_[dst_global_x_min_overlap:dst_global_x_max_overlap]
 
-            map["source_t_min"] = TimeCoverage.TIME_OVERLAPING_SIZE
-            map["source_t_max"] = map["source_t_size_overlap"] - TimeCoverage.TIME_OVERLAPING_SIZE
-            map["source_x_min"] = Coverage.HORIZONTAL_OVERLAPING_SIZE
-            map["source_x_max"] = map["source_x_size_overlap"] - Coverage.HORIZONTAL_OVERLAPING_SIZE
-            map["source_y_min"] = Coverage.HORIZONTAL_OVERLAPING_SIZE
-            map["source_y_max"] = map["source_y_size_overlap"] - Coverage.HORIZONTAL_OVERLAPING_SIZE
+            dst_global_y_min_overlap = max(0,map["dst_global_y"].start - Coverage.HORIZONTAL_OVERLAPING_SIZE)
+            dst_global_y_max_overlap = min(self.target_global_y_size, map["dst_global_y"].stop + Coverage.HORIZONTAL_OVERLAPING_SIZE)
+            map["dst_global_y_overlap"] = np.s_[dst_global_y_min_overlap:dst_global_y_max_overlap]
 
-            if map["source_global_t_min"] == 0:
-                map["source_t_min"] = 0
+            map["dst_global_t_size_overlap"] = map["dst_global_t_overlap"].stop - map["dst_global_t_overlap"].start
+            map["dst_global_x_size_overlap"] = map["dst_global_x_overlap"].stop - map["dst_global_x_overlap"].start
+            map["dst_global_y_size_overlap"] = map["dst_global_y_overlap"].stop - map["dst_global_y_overlap"].start
 
-            if map["source_global_t_max"] == self.global_source_t_size:
-                map["source_t_max"] = map["source_t_size_overlap"]
+            dst_t_min = TimeCoverage.TIME_OVERLAPING_SIZE
+            dst_t_max = map["dst_global_t_size_overlap"] - TimeCoverage.TIME_OVERLAPING_SIZE
+            dst_x_min = Coverage.HORIZONTAL_OVERLAPING_SIZE
+            dst_x_max = map["dst_global_x_size_overlap"] - Coverage.HORIZONTAL_OVERLAPING_SIZE
+            dst_y_min = Coverage.HORIZONTAL_OVERLAPING_SIZE
+            dst_y_max = map["dst_global_y_size_overlap"] - Coverage.HORIZONTAL_OVERLAPING_SIZE
 
-            if map["source_global_x_min"] == 0:
-                map["source_x_min"] = 0
+            if map["dst_global_t"].start == 0:
+                dst_t_min = 0
 
-            if map["source_global_y_min"] == 0:
-                map["source_y_min"] = 0
+            if map["dst_global_t"].stop == self.target_global_t_size:
+                dst_t_max = map["dst_global_t_size_overlap"]
 
-            if map["source_global_x_max"] == self.global_source_x_size:
-                map["source_x_max"] = map["source_x_size_overlap"]
+            if map["dst_global_x"].start == 0:
+                dst_x_min = 0
 
-            if map["source_global_y_max"] == self.global_source_y_size:
-                map["source_y_max"] = map["source_y_size_overlap"]
+            if map["dst_global_x"].stop == self.target_global_x_size:
+                dst_x_max = map["dst_global_x_size_overlap"]
 
-            # Grille destination
-            # lon = self.reader.read_axis_x(0, self.global_source_x_size, 0,
-            #                               self.global_source_y_size)
-            # lat = self.reader.read_axis_y(0, self.global_source_x_size, 0,
-            #                               self.global_source_y_size)
-            #
-            #
-            # lBcorner = self.find_point_index(lon[map["source_global_y_min"],map["source_global_x_min"]],lat[map["source_global_y_min"],map["source_global_x_min"]])
-            # hRcorner = self.find_point_index(lon[map["source_global_y_max"]-1,map["source_global_x_max"]-1],lat[map["source_global_y_max"]-1,map["source_global_x_max"]-1])
+            if map["dst_global_y"].start == 0:
+                dst_y_min = 0
 
-            lon = self.reader.read_axis_x(map["source_global_x_min"], map["source_global_x_max"],
-                                          map["source_global_y_min"],
-                                          map["source_global_y_max"])
-            lat = self.reader.read_axis_y(map["source_global_x_min"], map["source_global_x_max"],
-                                          map["source_global_y_min"],
-                                          map["source_global_y_max"])
+            if map["dst_global_y"].stop == self.target_global_y_size:
+                dst_y_max = map["dst_global_y_size_overlap"]
 
-            Ymin = np.min(lat)
-            Ymax = np.max(lat)
-            Xmin = np.min(lon)
-            Xmax = np.max(lon)
+            map["dst_local_t"] = np.s_[dst_t_min:dst_t_max]
+            map["dst_local_x"] = np.s_[dst_x_min:dst_x_max]
+            map["dst_local_y"] = np.s_[dst_y_min:dst_y_max]
 
-            lBcorner = self.find_point_index(Xmin,Ymin)
-            hRcorner = self.find_point_index(Xmax,Ymax)
+            # Source grille
+            map["src_global_t"] = map["dst_global_t"]
+            map["src_global_x"] = map["dst_global_x"]
+            map["src_global_y"] = map["dst_global_y"]
 
-            print(self.rank,"bottom left",lBcorner)
-            print(self.rank,"up right",hRcorner)
+            map["src_global_t_overlap"] = map["dst_global_t_overlap"]
+            map["src_global_x_overlap"] = map["dst_global_x_overlap"]
+            map["src_global_y_overlap"] = map["dst_global_y_overlap"]
 
-            map["target_global_t_min"] = map["source_global_t_min"]
-            map["target_global_t_max"] = map["source_global_t_max"]
-            map["target_global_x_min"] = max(0,lBcorner[0]-1)
-            map["target_global_x_max"] = min(self.global_target_x_size,hRcorner[0]+1)
-            map["target_global_y_min"] = max(0,lBcorner[1]-1)
-            map["target_global_y_max"] = max(self.global_target_y_size,hRcorner[1]+1)
+            map["src_local_t"] = map["dst_local_t"]
+            map["src_local_x"] = map["dst_local_x"]
+            map["src_local_y"] = map["dst_local_y"]
+
+            map["src_local_t_size"] = map["dst_local_t_size"]
+            map["src_local_x_size"] = map["dst_local_x_size"]
+            map["src_local_y_size"] = map["dst_local_y_size"]
+
+            map["src_local_t_size_overlap"] = map["dst_global_t_size_overlap"]
+            map["src_local_x_size_overlap"] = map["dst_global_x_size_overlap"]
+            map["src_local_y_size_overlap"] = map["dst_global_y_size_overlap"]
 
             self.map_mpi[slice_index] = map
 
             slice_index = slice_index + 1
    
     # Axis
-    def find_time_index(self,t):
+    def find_time_index(self,t,method="quick"):
         """Retourne l'index de la date la plus proche à TIME_DELTA_MIN prêt.
     @type t: datetime ou int
     @param t: date souhaitée ou l'index de la date souhaitée
@@ -159,30 +173,64 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             return t;
 
         if type(t) == datetime or type(t) == cftime._cftime.real_datetime:
-            zero_delta = timedelta(minutes = 00)
-            for i in range(0,self.get_t_size()):
-                if t - self.times[i] == zero_delta or t - self.times[i] < TimeCoverage.TIME_DELTA:
-                    return i
 
-            raise ValueError(""+str(t)+" was not found. Maybe the TimeCoverage.TIME_DELTA_MIN ("+ str(TimeCoverage.TIME_DELTA)+") is too small or the date is out the range.")
+            zero_delta = timedelta(minutes=00)
+            array = np.asarray(self.target_global_axis_t[self.map_mpi[self.rank]["src_global_t"]])
+
+            #logging.debug("[TimeCoverage][find_time_index()] Looking for : " + str(t))
+            #logging.debug("[TimeCovergae][find_time_index()] Proc [" + str(self.rank) + "] - datetime candidates are : " + str(array))
+
+            if method == "classic":
+
+                for i in range(0,self.get_t_size()):
+                    if t - array[i] == zero_delta or t - array[i] < TimeCoverage.TIME_DELTA:
+                        return i
+
+            elif method == "quick":
+
+                nearest_t_index = (np.abs(array - t)).argmin()
+
+                if t - array[nearest_t_index] == zero_delta or t - array[nearest_t_index] < TimeCoverage.TIME_DELTA:
+                    return nearest_t_index
+            else:
+                raise NotImplementedError("Method " + str(method) + " is not implemented for regular grid.")
+
+            raise ValueError("Proc n°"+str(self.rank)+" doesn't find '"+str(t)+"'. Maybe the TimeCoverage.TIME_DELTA ("+ str(TimeCoverage.TIME_DELTA)+") is too small or the date is out the range.")
+
         else:
             raise ValueError(""+str(t)+" have to be an integer or a datetime. Current type: "+str(type(t)))
     
-    def read_axis_t(self,timestamp=0):
+    def read_axis_t(self,type="target",with_overlap=False,timestamp=0):
         """Retourne les valeurs de l'axe t.
     @param timestamp: égale 1 si le temps est souhaité en timestamp depuis TIME_DATUM.
     @return:  un tableau à une dimensions [z] au format datetime ou timestamp si timestamp=1."""
-        return self.reader.read_axis_t(self.map_mpi[self.rank]["source_global_t_min_overlap"],
-                                       self.map_mpi[self.rank]["source_global_t_max_overlap"],timestamp)[
-            self.map_mpi[self.rank]["source_t_min"]:self.map_mpi[self.rank]["source_t_max"]];
+        if type == "target_global":
+            return self.target_global_axis_t
 
-    def get_global_t_size(self):
-        return self.reader.get_t_size()
-    
-    def get_t_size(self):
-        """Retourne la taille de l'axe t.
-    @return:  un entier correspondant à la taille de l'axe t."""
-        return self.global_source_t_size;
+        elif type == "source_global":
+            return self.reader.read_axis_t(self.map_mpi[self.rank]["src_global_t"].start,
+                                           self.map_mpi[self.rank]["src_global_t"].stop,timestamp)
+
+        elif type == "source":
+            return self.reader.read_axis_t(self.map_mpi[self.rank]["src_local_t"].start,
+                                           self.map_mpi[self.rank]["src_local_t"].stop,timestamp)
+
+        elif type == "target" and with_overlap is True:
+                return self.target_global_axis_t[self.map_mpi[self.rank]["dst_global_t_overlap"]]
+        else:
+                return self.target_global_axis_t[self.map_mpi[self.rank]["dst_global_t"]]
+
+    def get_t_size(self,type="target",with_overlap=False):
+        if type == "target_global":
+            return self.target_global_t_size
+        elif type == "source_global":
+            return self.source_global_t_size
+        elif type == "source":
+            return self.map_mpi[self.rank]["src_local_t_size"]
+        elif type == "target" and with_overlap is True:
+            return self.map_mpi[self.rank]["dst_local_t_size_overlap"]
+        else:
+            return self.map_mpi[self.rank]["dst_local_t_size"]
     
     # Variables
     def read_variable_2D_sea_binary_mask_at_time(self, t):
@@ -212,29 +260,24 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
     def read_variable_sea_surface_height_above_mean_sea_level_at_time(self,t):
 
         index_t = self.find_time_index(t);
-       
+
         data = self.reader.read_variable_sea_surface_height_above_mean_sea_level_at_time(
-            self.map_mpi[self.rank]["source_global_t_min_overlap"]+index_t,
-            self.map_mpi[self.rank]["source_global_x_min_overlap"],
-            self.map_mpi[self.rank]["source_global_x_max_overlap"],
-            self.map_mpi[self.rank]["source_global_y_min_overlap"],
-            self.map_mpi[self.rank]["source_global_y_max_overlap"])
+            self.map_mpi[self.rank]["src_global_t"].start+index_t,
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
 
             data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
                                        self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=False),
-                                       self.read_axis_y(type="target", with_overlap=False),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
                                        data,
                                        Coverage.HORIZONTAL_INTERPOLATION_METHOD)
 
-            return data
-
-        else:
-            return data[
-                   self.map_mpi[self.rank]["source_y_min"]:self.map_mpi[self.rank]["source_y_max"],
-                   self.map_mpi[self.rank]["source_x_min"]:self.map_mpi[self.rank]["source_x_max"]]
+        return data[self.map_mpi[self.rank]["dst_local_y"],self.map_mpi[self.rank]["dst_local_x"]]
 
     def read_variable_sea_surface_height_above_geoid_at_time(self, t):
 

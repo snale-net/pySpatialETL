@@ -70,6 +70,9 @@ La classe SymphonieReader permet de lire les données du format Symphonie
     def get_y_size(self):
         return np.shape(self.grid.variables['latitude_t'][:])[0];
 
+    def get_z_size(self):
+        return np.shape(self.grid.variables['depth_t'][:])[0];
+
     def get_t_size(self):
         return np.shape(self.ncfile.variables['time'])[0];
 
@@ -79,11 +82,12 @@ La classe SymphonieReader permet de lire les données du format Symphonie
     def read_axis_y(self,xmin,xmax,ymin,ymax):
         return self.grid.variables['latitude_t'][ymin:ymax,xmin:xmax]
 
-    def read_axis_z(self,xmin,xmax,ymin,ymax):
-        lev = np.ma.masked_where(self.grid.variables["mask_t"][:ymin:ymax,xmin:xmax] < 1 , self.grid.variables['depth_t'][:ymin:ymax,xmin:xmax])
-        np.ma.set_fill_value(lev,np.nan)
+    def read_axis_z(self,):
+        lev = np.ma.filled(self.grid.variables["depth_t"], fill_value=np.nan)
+        #lev = np.ma.masked_where(self.grid.variables["mask_t"][:] < 1 , self.grid.variables['depth_t'][:])
+        #np.ma.set_fill_value(lev,np.nan)
         lev[::] *= -1.0  # inverse la profondeur
-        return lev.filled()
+        return lev
 
     def read_axis_t(self,tmin,tmax,timestamp):
         data = self.ncfile.variables['time'][tmin:tmax]
@@ -486,11 +490,8 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         np.ma.set_fill_value(data, np.nan)
         return data.filled()
 
-    def read_variable_sea_water_salinity_at_time_and_depth(self, index_t, index_z):
-        data = np.ma.masked_where(self.grid.variables["mask_t"][index_z][:] < 1,
-                                  self.ncfile.variables["sal"][index_t][index_z][:])
-        np.ma.set_fill_value(data, np.nan)
-        return data.filled()
+    def read_variable_sea_water_salinity_at_time_and_depth(self, index_t, index_z,xmin,xmax,ymin,ymax):
+        return np.ma.filled(self.ncfile.variables["sal"][index_t][index_z][ymin:ymax,xmin:xmax], fill_value=np.nan)
 
     def read_variable_baroclinic_sea_water_velocity_at_time_and_depth(self, index_t, index_z):
         mask_t = self.read_variable_3D_sea_binary_mask();
