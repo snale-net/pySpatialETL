@@ -34,9 +34,9 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
     TIME_DELTA = timedelta(minutes = 15)
     TIME_OVERLAPING_SIZE = 0
 
-    def __init__(self, myReader,bbox=None,resolution_x=None,resolution_y=None):
+    def __init__(self, myReader,bbox=None,resolution_x=None,resolution_y=None,rescale=False):
 
-        Coverage.__init__(self, myReader, bbox=bbox, resolution_x=resolution_x, resolution_y=resolution_y);
+        Coverage.__init__(self, myReader, bbox=bbox, resolution_x=resolution_x, resolution_y=resolution_y,rescale=rescale);
 
         self.source_global_t_size = self.reader.get_t_size()
         self.source_global_axis_t = self.reader.read_axis_t(0,self.source_global_t_size,0);

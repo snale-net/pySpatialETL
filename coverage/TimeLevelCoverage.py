@@ -20,14 +20,15 @@ from coverage.TimeCoverage import TimeCoverage
 from coverage.operator.interpolator.InterpolatorCore import resample_2d_to_grid
 from coverage.operator.interpolator.InterpolatorCore import vertical_interpolation
 import numpy as np
+import logging
 
 class TimeLevelCoverage(LevelCoverage,TimeCoverage):
     """La classe TimeLevelCoverage est une extension de la classe Coverage, LevelCoverage, TimeCoverage.
 Elle rajoute les dimensions temporelle et verticale à la couverture horizontale classique.
     """
-    def __init__(self, myReader,bbox=None,resolution_x=None,resolution_y=None,zbox=None,resolution_z=None):
+    def __init__(self, myReader,bbox=None,resolution_x=None,resolution_y=None,zbox=None,resolution_z=None,rescale=False):
 
-        LevelCoverage.__init__(self,myReader,bbox=bbox,resolution_x=resolution_x,resolution_y=resolution_y,zbox=zbox,resolution_z=resolution_z);
+        LevelCoverage.__init__(self,myReader,bbox=bbox,resolution_x=resolution_x,resolution_y=resolution_y,zbox=zbox,resolution_z=resolution_z,rescale=rescale);
         TimeCoverage.__init__(self,myReader,bbox=bbox,resolution_x=resolution_x,resolution_y=resolution_y);
 
     #################
@@ -113,7 +114,6 @@ Elle rajoute les dimensions temporelle et verticale à la couverture horizontale
 
         data = np.zeros([ymax, xmax])
         data[:] = np.NAN
-
         targetDepth = [depth]
 
         for z in range(0, len(indexes_z)):
@@ -126,8 +126,6 @@ Elle rajoute les dimensions temporelle et verticale à la couverture horizontale
 
         for y in range(0, self.get_y_size(type="source",with_overlap=True)):
             for x in range(0, self.get_x_size(type="source",with_overlap=True)):
-
-                print(vert_coord[y, x] )
 
                 if vert_coord[y, x] is not None and len(vert_coord[y, x]) == 1:
                     # Il n'y a qu'une seule couche de sélectionner donc pas d'interpolation possible
@@ -143,7 +141,7 @@ Elle rajoute les dimensions temporelle et verticale à la couverture horizontale
                     candidateValues = np.zeros([len(vert_coord[y, x])])
                     candidateDepths = np.zeros([len(vert_coord[y, x])])
 
-                    for z in range(0, len(vert_coord[y, x])):
+                    for z in range(0,len(vert_coord[y, x])):
                         # On retrouve l'index de la layer
                         array = np.asarray(indexes_z)
                         index_layer = (np.abs(array - vert_coord[y, x][z])).argmin()

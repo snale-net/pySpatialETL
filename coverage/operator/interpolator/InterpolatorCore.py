@@ -66,13 +66,16 @@ def resample_2d(sourceAxisX,sourceAxisY,data,method):
 
 def vertical_interpolation(sourceAxis,targetAxis,data,method):
     logging.debug("[InterpolatorCore][vertical_interpolation()] Looking for water depth : " + str(
-        targetAxis[0]) + " m with method '" + str(method) + "'.")
-    logging.debug("[InterpolatorCore][vertical_interpolation()] Source Axis contains: " + str(sourceAxis))
-    logging.debug("[InterpolatorCore][vertical_interpolation()] Candidates values are: " + str(data))
-    logging.debug("[InterpolatorCore][vertical_interpolation()] Target Axis contains: " + str(targetAxis))
+       targetAxis[0]) + " m with method '" + str(method) + "'.")
+    #logging.debug("[InterpolatorCore][vertical_interpolation()] Source Axis contains: " + str(sourceAxis))
+    #logging.debug("[InterpolatorCore][vertical_interpolation()] Candidates values are: " + str(data))
+    #logging.debug("[InterpolatorCore][vertical_interpolation()] Target Axis contains: " + str(targetAxis))
 
     if method is None:
         return np.nan
+
+    #if not np.isnan(data.all()):
+    #    return np.nan
 
     elif method == "mean":
         return np.mean(data)

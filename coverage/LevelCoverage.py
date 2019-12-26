@@ -24,11 +24,11 @@ class LevelCoverage(Coverage):
 La classe LevelCoverage est une extension de la classe Coverage.
 Elle rajoute une dimension verticale à la couverture horizontale classique.
 """
-    DEPTH_DELTA = 0.5; #meters
+    DEPTH_DELTA = 1.0; #meters
     VERTICAL_INTERPOLATION_METHOD = "linear"
     
-    def __init__(self, myReader,bbox=None,resolution_x=None,resolution_y=None,zbox=None,resolution_z=None):
-        Coverage.__init__(self,myReader,bbox=bbox, resolution_x=resolution_x, resolution_y=resolution_y);
+    def __init__(self, myReader,bbox=None,resolution_x=None,resolution_y=None,zbox=None,resolution_z=None,rescale=False):
+        Coverage.__init__(self,myReader,bbox=bbox, resolution_x=resolution_x, resolution_y=resolution_y,rescale=rescale);
 
         self.vertical_resampling = False
         self.srouce_sigma_coordinate = False
@@ -79,8 +79,7 @@ Elle rajoute une dimension verticale à la couverture horizontale classique.
             self.target_global_z_size = self.source_global_z_size
             self.target_sigma_coordinate = self.source_sigma_coordinate
 
-        self.last_index = None
-        self.depth_weight = []
+        self.depth_weight = {}
 
     # Axis
     def read_axis_z(self,type="target",with_horizontal_overlap=False):
@@ -151,6 +150,9 @@ Elle rajoute une dimension verticale à la couverture horizontale classique.
         vert_coord = np.empty([ymax,xmax],dtype=object)
         indexes_z = []
 
+        if depth in self.depth_weight:
+            return self.depth_weight[depth]
+
         if type(depth) == int or type(depth) == np.int32 or type(depth) == np.int64:
 
             # A déplacer dans le reader
@@ -166,7 +168,8 @@ Elle rajoute une dimension verticale à la couverture horizontale classique.
 
         elif self.is_sigma_coordinate(type="source") == True: # Cas de grille sigma
 
-            logging.debug("[LevelCoverage][find_level_index()] Looking for : " + str(depth) + " m water depth")
+            if self.rank == 0:
+                logging.debug("[LevelCoverage][find_level_index()] Looking for : " + str(depth) + " m water depth")
 
             method = "new"
 
@@ -174,59 +177,18 @@ Elle rajoute une dimension verticale à la couverture horizontale classique.
 
                 X = np.abs(self.source_global_axis_z[:,self.map_mpi[self.rank]["src_global_y_overlap"],self.map_mpi[self.rank]["src_global_x_overlap"]] - depth)
                 idx = np.where(X <= LevelCoverage.DEPTH_DELTA)
-
                 vert_coord[:] = None
 
-                # à corriger
-                #vert_coord[idx[1], idx[2]] = [idx[0]]
-                #indexes_z = np.unique(idx[0])
-
-                #vert_coord[idx[1], idx[2]]
-                for index in range(0,np.shape(idx)[1]):
-                    #print(index)
-                    #print(idx[0][index], idx[1][index], idx[2][index])
-
-                    index_z=idx[0][index]
+                for index in range(np.shape(idx)[1]):
+                    index_z = idx[0][index]
                     x =  idx[2][index]
                     y =  idx[1][index]
-                    #print(self.source_global_axis_z[idx[0][index], idx[1][index], idx[2][index]])
 
-                    vert_coord[y, x] = []
-
-                    logging.debug(
-                        "[LevelCoverage][find_level_index()] Point [" + str(x) + "," + str(y) + "] - found : " + str(
-                            self.source_global_axis_z[index_z, y, x]) + " m water depth")
+                    if vert_coord[y,x] is None:
+                        vert_coord[y, x] = []
 
                     vert_coord[y, x].append((int(index_z)))
                     indexes_z.append((int(index_z)))
-
-                    # if 2 == 0 :
-                    #
-                    #     if abs(depth - self.source_global_axis_z[index_z, y, x]) != 0.0:
-                    #         # On n'a pas trouvé exactement notre profondeur, on va chercher autour au DEPTH_DELTA près
-                    #         zz = index_z
-                    #
-                    #         while zz - 1 >= 0 and abs(self.source_global_axis_z[
-                    #                                       zz - 1, y, x] - depth) <= LevelCoverage.DEPTH_DELTA and zz - 1 not in \
-                    #                 vert_coord[y, x]:
-                    #             logging.debug(
-                    #                 "[LevelCoverage][find_level_index()] Point [" + str(x) + "," + str(
-                    #                     y) + "] - found : " + str(
-                    #                     self.source_global_axis_z[zz - 1, y, x]) + " m water depth")
-                    #             vert_coord[y, x].append((int(zz - 1)))
-                    #             indexes_z.append((int(zz - 1)))
-                    #             zz = zz - 1
-                    #
-                    #         while zz + 1 < self.get_z_size() and abs(self.source_global_axis_z[
-                    #                                                      zz + 1, y, x] - depth) <= LevelCoverage.DEPTH_DELTA and zz + 1 not in \
-                    #                 vert_coord[y, x]:
-                    #             logging.debug(
-                    #                 "[LevelCoverage][find_level_index()] Point [" + str(x) + "," + str(
-                    #                     y) + "] - found : " + str(
-                    #                     self.source_global_axis_z[zz + 1, y, x]) + " m water depth")
-                    #             vert_coord[y, x].append((int(zz + 1)))
-                    #             indexes_z.append((int(zz + 1)))
-                    #             zz = zz + 1
 
             if method=="old":
 
@@ -332,7 +294,9 @@ Elle rajoute une dimension verticale à la couverture horizontale classique.
                     LevelCoverage.DEPTH_DELTA) + " m) is too small or the depth is out of range.")
 
         # On retourne le tableau d'index
-        return [vert_coord,np.array(np.unique(indexes_z))]
+        self.depth_weight[depth] = [vert_coord,np.array(np.unique(indexes_z))]
+
+        return self.depth_weight[depth]
 
 
     def read_variable_3D_sea_binary_mask(self):
