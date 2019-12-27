@@ -28,42 +28,6 @@ def resample_2d_to_grid(gridX,gridY,newX,newY,data,method):
     xx, yy = np.meshgrid(newX, newY)
     return griddata(points, values, (xx, yy), method=method, rescale=True,fill_value=9.96921e+36)
 
-def resample_2d_to_resolution(sourceAxisX,sourceAxisY,targetResX, targetResY,data,method):
-    
-    Ymin=np.min(sourceAxisY)
-    Ymax=np.max(sourceAxisY)
-    Xmin=np.min(sourceAxisX)
-    Xmax=np.max(sourceAxisX)
-
-    res=np.mean([targetResX,targetResY])
-    
-    lon_reg,lat_reg=np.meshgrid(np.arange(Xmin, Xmax, res),np.arange(Ymin, Ymax, res))
-
-    logging.debug("[InterpolatorCore][horizontal_interpolation()] starting interpolation with method '" + str(method) + "'")
-    return griddata((sourceAxisX.ravel(),sourceAxisY.ravel()), data.ravel(),(lon_reg, lat_reg), method=method,fill_value=9.96921e+36)
-
-def resample_2d(sourceAxisX,sourceAxisY,data,method):
-    
-    size=np.shape(data)    
-    Ymin=np.min(sourceAxisY)
-    Ymax=np.max(sourceAxisY)
-    Xmin=np.min(sourceAxisX)
-    Xmax=np.max(sourceAxisX)
-
-    xres_mean=((Xmax-Xmin)/size[1])
-    yres_mean=((Ymax-Ymin)/size[0])
-
-    res=np.mean([xres_mean,yres_mean])
-    
-    lon_reg,lat_reg=np.meshgrid(np.arange(Xmin, Xmax, res),np.arange(Ymin, Ymax, res))
-
-    logging.debug(
-        "[InterpolatorCore][horizontal_interpolation()] starting interpolation with method '" + str(method) + "'")
-    logging.debug('[InterpolatorCore][horizontal_interpolation()] Source grid size : '+str(np.shape(sourceAxisX)))
-    logging.debug('[InterpolatorCore][horizontal_interpolation()] Target grid size : '+str(np.shape(lon_reg)))
-
-    return griddata((sourceAxisX.ravel(),sourceAxisY.ravel()), data.ravel(),(lon_reg, lat_reg), method=method,fill_value=9.96921e+36)
-
 def vertical_interpolation(sourceAxis,targetAxis,data,method):
     logging.debug("[InterpolatorCore][vertical_interpolation()] Looking for water depth : " + str(
        targetAxis[0]) + " m with method '" + str(method) + "'.")
