@@ -56,17 +56,17 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
         self.target_global_t_size = self.reader.get_t_size()
 
         self.map_mpi = np.empty(self.size, dtype=object)
-        target_sample = np.zeros([self.target_global_t_size, self.target_global_y_size, self.target_global_x_size])
+        target_sample = (self.target_global_t_size, self.target_global_y_size, self.target_global_x_size)
 
         # Découpage des axes
         if self.horizontal_resampling and not self.rescale:
             # Découpage sur le temps uniquemenent
-            target_slices = shape_split(target_sample.shape, self.size, axis=[0, 1, 1])
+            target_slices = shape_split(target_sample, self.size, axis=[0, 1, 1])
             # Si on feet pas le nombre de proc
             if len( target_slices.flatten()) != self.size:
-                target_slices = shape_split(target_sample.shape, self.size, axis=[0, 0, 0])
+                target_slices = shape_split(target_sample, self.size, axis=[0, 0, 0])
         else:
-            target_slices = shape_split(target_sample.shape, self.size, axis=[0, 0, 0])
+            target_slices = shape_split(target_sample, self.size, axis=[0, 0, 0])
 
         slice_index = 0
         for slyce in target_slices.flatten():
