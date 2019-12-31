@@ -94,7 +94,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         result = num2date(data, units=self.ncfile.variables['time'].units.replace('from', 'since').replace('jan',
                                                                                                            '01').replace(
             'feb', '02').replace('mar', '03').replace('apr', '04').replace('may', '05').replace('jun', '06').replace(
-            'jul', '07').replace('aug', '08').replace('sept', '09').replace('oct', '10').replace('nov', '11').replace(
+            'jul', '07').replace('aug', '08').replace('sep', '09').replace('oct', '10').replace('nov', '11').replace(
             'dec', '12'), calendar=self.ncfile.variables['time'].calendar)
 
         if timestamp == 1:
