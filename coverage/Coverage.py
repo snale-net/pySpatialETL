@@ -151,6 +151,7 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
         self.create_mpi_map()
 
         if self.horizontal_resampling:
+
             self.map_mpi[self.rank]["src_global_x"] = np.s_[0:self.source_global_x_size]
             self.map_mpi[self.rank]["src_global_y"] = np.s_[0:self.source_global_y_size]
 

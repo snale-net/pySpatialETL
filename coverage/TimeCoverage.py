@@ -46,32 +46,27 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
         self.temporal_resampling = False
 
         if self.temporal_resampling:
-            # TODO essayer de calculer un secteur sur la grille d'origine
+            # TODO à implémenter
             self.map_mpi[self.rank]["src_global_t"] = np.s_[0:self.source_global_t_size]
             self.map_mpi[self.rank]["src_global_overlap"] = np.s_[0:self.source_global_t_size]
             self.map_mpi[self.rank]["src_local_t"] = np.s_[0:self.source_global_t_size]
-
-            # self.map_mpi[self.rank]["src_global_x"] = np.s_[0:self.source_global_x_size]
-            # self.map_mpi[self.rank]["src_global_y"] = np.s_[0:self.source_global_y_size]
-            # #redure point on source
-            # Xmin = np.min(self.read_axis_x("target",with_overlap=True))
-            # Xmax = np.max(self.read_axis_x("target",with_overlap=True))
-            # Ymin = np.min(self.read_axis_y("target",with_overlap=True))
-            # Ymax = np.max(self.read_axis_y("target",with_overlap=True))
-            # c1 = self.find_point_index(Xmin,Ymin)
-            # c2 = self.find_point_index(Xmax, Ymax)
-            # self.map_mpi[self.rank]["src_global_x"] = np.s_[c1[0]:c2[0]]
-            # self.map_mpi[self.rank]["src_global_y"] = np.s_[c1[1]:c2[1]]
 
     def create_mpi_map(self):
 
         self.target_global_t_size = self.reader.get_t_size()
 
         self.map_mpi = np.empty(self.size, dtype=object)
-        target_sample = np.zeros([self.target_global_t_size, self.target_global_y_size, self.target_global_x_size])
+        target_sample = (self.target_global_t_size, self.target_global_y_size, self.target_global_x_size)
 
-        # Découpage sur 2 axes
-        target_slices = shape_split(target_sample.shape, self.size, axis=[0, 0, 0])
+        # Découpage des axes
+        if self.horizontal_resampling and not self.rescale:
+            # Découpage sur le temps uniquemenent
+            target_slices = shape_split(target_sample, self.size, axis=[0, 1, 1])
+            # Si on feet pas le nombre de proc
+            if len( target_slices.flatten()) != self.size:
+                target_slices = shape_split(target_sample, self.size, axis=[0, 0, 0])
+        else:
+            target_slices = shape_split(target_sample, self.size, axis=[0, 0, 0])
 
         slice_index = 0
         for slyce in target_slices.flatten():
