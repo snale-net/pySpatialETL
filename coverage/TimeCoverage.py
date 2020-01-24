@@ -34,9 +34,9 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
     TIME_DELTA = timedelta(minutes = 15)
     TIME_OVERLAPING_SIZE = 0
 
-    def __init__(self, myReader,bbox=None,resolution_x=None,resolution_y=None,rescale=False):
+    def __init__(self, myReader,bbox=None,resolution_x=None,resolution_y=None):
 
-        Coverage.__init__(self, myReader, bbox=bbox, resolution_x=resolution_x, resolution_y=resolution_y,rescale=rescale);
+        Coverage.__init__(self, myReader, bbox=bbox, resolution_x=resolution_x, resolution_y=resolution_y);
 
         self.source_global_t_size = self.reader.get_t_size()
         self.source_global_axis_t = self.reader.read_axis_t(0,self.source_global_t_size,0);
@@ -59,14 +59,15 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
         target_sample = (self.target_global_t_size, self.target_global_y_size, self.target_global_x_size)
 
         # Découpage des axes
-        if self.horizontal_resampling and not self.rescale:
-            # Découpage sur le temps uniquemenent
-            target_slices = shape_split(target_sample, self.size, axis=[0, 1, 1])
-            # Si on feet pas le nombre de proc
-            if len( target_slices.flatten()) != self.size:
-                target_slices = shape_split(target_sample, self.size, axis=[0, 0, 0])
-        else:
-            target_slices = shape_split(target_sample, self.size, axis=[0, 0, 0])
+        # if self.horizontal_resampling:
+        #     # Découpage sur le temps uniquemenent
+        #     target_slices = shape_split(target_sample, self.size, axis=[0, 1, 1])
+        #     # Si on feet pas le nombre de proc
+        #     if len( target_slices.flatten()) != self.size:
+        #         target_slices = shape_split(target_sample, self.size, axis=[0, 0, 0])
+        # else:
+
+        target_slices = shape_split(target_sample, self.size, axis=[0, 0, 0])
 
         slice_index = 0
         for slyce in target_slices.flatten():
@@ -295,8 +296,10 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         if self.horizontal_resampling:
 
-            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
+            print(self.rank,np.shape(self.read_axis_x(type="source_global", with_overlap=True)),np.shape(data))
+
+            data = resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
+                                       self.read_axis_y(type="source_global", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data,

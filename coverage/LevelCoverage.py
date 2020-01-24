@@ -27,11 +27,11 @@ Elle rajoute une dimension verticale à la couverture horizontale classique.
     DEPTH_DELTA = 1.0; #meters
     VERTICAL_INTERPOLATION_METHOD = "linear"
     
-    def __init__(self, myReader,bbox=None,resolution_x=None,resolution_y=None,zbox=None,resolution_z=None,rescale=False):
-        Coverage.__init__(self,myReader,bbox=bbox, resolution_x=resolution_x, resolution_y=resolution_y,rescale=rescale);
+    def __init__(self, myReader,bbox=None,resolution_x=None,resolution_y=None,zbox=None,resolution_z=None):
+        Coverage.__init__(self,myReader,bbox=bbox, resolution_x=resolution_x, resolution_y=resolution_y);
 
         self.vertical_resampling = False
-        self.srouce_sigma_coordinate = False
+        self.source_sigma_coordinate = False
         self.target_sigma_coordinate = False
 
         self.source_global_z_size = self.reader.get_z_size()
@@ -90,31 +90,30 @@ Elle rajoute une dimension verticale à la couverture horizontale classique.
         if type == "source" and with_horizontal_overlap is True:
 
             if self.is_sigma_coordinate(type):
-                return self.source_global_axis_x[self.map_mpi[self.rank]["dst_global_y_overlap"],
-                                                 self.map_mpi[self.rank]["dst_global_x_overlap"]]
+                return self.source_global_axis_z[:,self.map_mpi[self.rank]["src_global_y_overlap"],
+                                                 self.map_mpi[self.rank]["src_global_x_overlap"]]
             else:
                 return self.source_global_axis_z
 
         elif type == "source" and with_horizontal_overlap is False:
 
             if self.is_sigma_coordinate(type):
-                return self.source_global_axis_x[self.map_mpi[self.rank]["dst_global_y"],
-                                                 self.map_mpi[self.rank]["dst_global_x"]]
+                return self.source_global_axis_z[:,self.map_mpi[self.rank]["src_global_y"],
+                                                 self.map_mpi[self.rank]["src_global_x"]]
             else:
                 return self.source_global_axis_z
 
         elif type == "target" and with_horizontal_overlap is True:
 
             if self.is_sigma_coordinate(type):
-                return self.target_global_axis_x[self.map_mpi[self.rank]["dst_global_y_overlap"],
+                return self.target_global_axis_z[:,self.map_mpi[self.rank]["dst_global_y_overlap"],
                                                  self.map_mpi[self.rank]["dst_global_x_overlap"]]
             else:
                 return self.target_global_axis_z
-
         else:
 
             if self.is_sigma_coordinate(type):
-                return self.target_global_axis_x[self.map_mpi[self.rank]["dst_global_y"],
+                return self.target_global_axis_z[:,self.map_mpi[self.rank]["dst_global_y"],
                                                  self.map_mpi[self.rank]["dst_global_x"]]
             else:
                 return self.target_global_axis_z
@@ -145,8 +144,6 @@ Elle rajoute une dimension verticale à la couverture horizontale classique.
 
         xmax=self.get_x_size(type="source",with_overlap=True)
         ymax=self.get_y_size(type="source",with_overlap=True)
-        zmax = self.get_z_size()
-        #mask = self.read_variable_2D_sea_binary_mask()
         vert_coord = np.empty([ymax,xmax],dtype=object)
         indexes_z = []
 
@@ -165,8 +162,7 @@ Elle rajoute une dimension verticale à la couverture horizontale classique.
         elif self.is_sigma_coordinate(type="source") == True: # Cas de grille sigma
 
             if self.rank == 0:
-                logging.debug("[LevelCoverage][find_level_index()] Looking for : " + str(depth) + " m water depth")
-                logging.debug("[LevelCoverage][find_level_index()] Within a water depth interval of " + str(LevelCoverage.DEPTH_DELTA) + " m")
+                logging.debug("[LevelCoverage][find_level_index()] Looking for : " + str(depth) + " m water depth with an interval of +/- " + str(LevelCoverage.DEPTH_DELTA) + " m")
 
             if method == "fast":
 

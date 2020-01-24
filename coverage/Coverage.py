@@ -97,14 +97,13 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
     HORIZONTAL_INTERPOLATION_METHOD = "linear"
     HORIZONTAL_OVERLAPING_SIZE = 5
 
-    def __init__(self, myReader,bbox=None,resolution_x=None,resolution_y=None,rescale=False):
+    def __init__(self, myReader,bbox=None,resolution_x=None,resolution_y=None):
             
         self.reader = myReader;
         self.source_regular_grid = self.reader.is_regular_grid()
         self.target_regular_grid = self.source_regular_grid
         self.map_mpi = None
         self.horizontal_resampling = False
-        self.rescale=rescale
 
         self.source_global_x_size = self.reader.get_x_size()
         self.source_global_y_size = self.reader.get_y_size()
@@ -168,82 +167,78 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
 
         if self.horizontal_resampling:
 
-            self.map_mpi[self.rank]["src_global_x"] = np.s_[0:self.source_global_x_size]
-            self.map_mpi[self.rank]["src_global_y"] = np.s_[0:self.source_global_y_size]
+            # self.map_mpi[self.rank]["src_global_x"] = np.s_[0:self.source_global_x_size]
+            # self.map_mpi[self.rank]["src_global_y"] = np.s_[0:self.source_global_y_size]
+            #
+            # self.map_mpi[self.rank]["src_global_x_overlap"] = np.s_[0:self.source_global_x_size]
+            # self.map_mpi[self.rank]["src_global_y_overlap"] = np.s_[0:self.source_global_y_size]
+            #
+            # self.map_mpi[self.rank]["src_local_x"] = np.s_[0:self.source_global_x_size]
+            # self.map_mpi[self.rank]["src_local_y"] = np.s_[0:self.source_global_y_size]
+            #
+            # self.map_mpi[self.rank]["src_local_x_size"] = self.source_global_x_size
+            # self.map_mpi[self.rank]["src_local_y_size"] = self.source_global_y_size
+            #
+            # self.map_mpi[self.rank]["src_local_x_size_overlap"] = self.source_global_x_size
+            # self.map_mpi[self.rank]["src_local_y_size_overlap"] = self.source_global_y_size
 
-            self.map_mpi[self.rank]["src_global_x_overlap"] = np.s_[0:self.source_global_x_size]
-            self.map_mpi[self.rank]["src_global_y_overlap"] = np.s_[0:self.source_global_y_size]
+            idx = np.where((self.source_global_axis_x >= np.min(self.read_axis_x(type="target",with_overlap=False))) &
+                           (self.source_global_axis_x <= np.max(self.read_axis_x(type="target",with_overlap=False))) &
+                           (self.source_global_axis_y >= np.min(self.read_axis_y(type="target",with_overlap=False))) &
+                           (self.source_global_axis_y <= np.max(self.read_axis_y(type="target",with_overlap=False))))
 
-            self.map_mpi[self.rank]["src_local_x"] = np.s_[0:self.source_global_x_size]
-            self.map_mpi[self.rank]["src_local_y"] = np.s_[0:self.source_global_y_size]
+            ymin = np.min(idx[0])
+            ymax = np.max(idx[0])
+            xmin = np.min(idx[1])
+            xmax = np.max(idx[1])
 
-            self.map_mpi[self.rank]["src_local_x_size"] = self.source_global_x_size
-            self.map_mpi[self.rank]["src_local_y_size"] = self.source_global_y_size
+            # Version 2
+            # SRC GLOBAL
+            self.map_mpi[self.rank]["src_global_x"] = np.s_[xmin:xmax + 1]
+            self.map_mpi[self.rank]["src_global_x_size"] = xmax +1 - xmin
+            self.map_mpi[self.rank]["src_global_y"] = np.s_[ymin:ymax + 1]
+            self.map_mpi[self.rank]["src_global_y_size"] = ymax +1 - ymin
 
-            self.map_mpi[self.rank]["src_local_x_size_overlap"] = self.source_global_x_size
-            self.map_mpi[self.rank]["src_local_y_size_overlap"] = self.source_global_y_size
+            dst_global_x_min_overlap = max(0, self.map_mpi[self.rank][
+                "src_global_x"].start - Coverage.HORIZONTAL_OVERLAPING_SIZE)
+            dst_global_x_max_overlap = min(self.source_global_x_size,
+                                           self.map_mpi[self.rank][
+                                               "src_global_x"].stop + Coverage.HORIZONTAL_OVERLAPING_SIZE)
+            self.map_mpi[self.rank]["src_global_x_overlap"] = np.s_[
+                                                              dst_global_x_min_overlap:dst_global_x_max_overlap]
 
-            if rescale:
-                X = np.abs(self.source_global_axis_x - np.min(self.read_axis_x(with_overlap=False)))
-                idxmin = np.where(X <= self.target_global_res_x)
-                idxmin = np.where(self.source_global_axis_x == min(self.source_global_axis_x[idxmin[0],idxmin[1]]))
+            dst_global_y_min_overlap = max(0, self.map_mpi[self.rank][
+                "src_global_y"].start - Coverage.HORIZONTAL_OVERLAPING_SIZE)
+            dst_global_y_max_overlap = min(self.source_global_y_size,
+                                           self.map_mpi[self.rank][
+                                               "src_global_y"].stop + Coverage.HORIZONTAL_OVERLAPING_SIZE)
+            self.map_mpi[self.rank]["src_global_y_overlap"] = np.s_[
+                                                              dst_global_y_min_overlap:dst_global_y_max_overlap]
 
-                X = np.abs(self.source_global_axis_x - np.max(self.read_axis_x(with_overlap=False)))
-                idxmax = np.where(X <= self.target_global_res_x)
-                idxmax = np.where(self.source_global_axis_x == max(self.source_global_axis_x[idxmax[0], idxmax[1]]))
+            self.map_mpi[self.rank]["src_global_x_size_overlap"] = self.map_mpi[self.rank][
+                                                                       "src_global_x_overlap"].stop - \
+                                                                   self.map_mpi[self.rank][
+                                                                       "src_global_x_overlap"].start
+            self.map_mpi[self.rank]["src_global_y_size_overlap"] = self.map_mpi[self.rank][
+                                                                       "src_global_y_overlap"].stop - \
+                                                                   self.map_mpi[self.rank][
+                                                                       "src_global_y_overlap"].start
 
-                X = np.abs(self.source_global_axis_y - np.min(self.read_axis_y(with_overlap=False)))
-                idymin = np.where(X <= self.target_global_res_y)
-                idymin = np.where(self.source_global_axis_y == min(self.source_global_axis_y[idymin[0], idymin[1]]))
+            self.map_mpi[self.rank]["src_local_x_size"] = xmax + 1 - xmin
+            self.map_mpi[self.rank]["src_local_y_size"] = ymax + 1 - ymin
+            self.map_mpi[self.rank]["src_local_x"] = np.s_[0:self.map_mpi[self.rank]["src_local_x_size"]]
+            self.map_mpi[self.rank]["src_local_y"] = np.s_[0:self.map_mpi[self.rank]["src_local_y_size"]]
 
-                X = np.abs(self.source_global_axis_y - np.max(self.read_axis_y(with_overlap=False)))
-                idymax = np.where(X <= self.target_global_res_y)
-                idymax = np.where(self.source_global_axis_y == max(self.source_global_axis_y[idymax[0], idymax[1]]))
+            # OVERLAP
+            self.map_mpi[self.rank]["src_local_x_size_overlap"] = self.map_mpi[self.rank][
+                "src_global_x_size_overlap"]
+            self.map_mpi[self.rank]["src_local_y_size_overlap"] = self.map_mpi[self.rank][
+                "src_global_y_size_overlap"]
 
-                xmin = min(idxmin[1][0], idxmax[1][0], idymin[1][0], idymax[1][0])
-                xmax = max(idxmin[1][0], idxmax[1][0], idymin[1][0], idymax[1][0])
-                ymin = min(idxmin[0][0], idxmax[0][0], idymin[0][0], idymax[0][0])
-                ymax = max(idxmin[0][0], idxmax[0][0], idymin[0][0], idymax[0][0])
-
-                # print("target xmin",np.min(self.read_axis_x(with_overlap=True)))
-                # print("source xmin","x=",idxmin[1][0],"y=",idxmin[0][0],"value=",self.source_global_axis_x[idxmin[0],idxmin[1]])
-                # print("target xmax", np.max(self.read_axis_x(with_overlap=True)))
-                # print("source xmax", "x=",idxmax[1][0],"y=",idxmax[0][0],self.source_global_axis_x[idxmax[0], idxmax[1]])
-                # print("target ymin", np.min(self.read_axis_y(with_overlap=True)))
-                # print("source ymin","x=",idymin[1][0],"y=",idymin[0][0], self.source_global_axis_y[idymin[0], idymin[1]])
-                # print("target ymax", np.max(self.read_axis_y(with_overlap=True)))
-                # print("source ymax", "x=",idymax[1][0],"y=",idymax[0][0],self.source_global_axis_y[idymax[0], idymax[1]])
-                # print("proc n°", self.rank, "bbox=", xmin, xmax, ymin, ymax)
-
-                self.map_mpi[self.rank]["src_global_x"] = np.s_[xmin:xmax+1]
-                self.map_mpi[self.rank]["src_global_y"] = np.s_[ymin:ymax+1]
-
-                dst_global_x_min_overlap = max(0,  self.map_mpi[self.rank]["src_global_x"].start - Coverage.HORIZONTAL_OVERLAPING_SIZE)
-                dst_global_x_max_overlap = min(self.source_global_x_size,
-                                               self.map_mpi[self.rank]["src_global_x"].stop + Coverage.HORIZONTAL_OVERLAPING_SIZE)
-                self.map_mpi[self.rank]["src_global_x_overlap"] = np.s_[dst_global_x_min_overlap:dst_global_x_max_overlap]
-
-                dst_global_y_min_overlap = max(0, self.map_mpi[self.rank]["src_global_y"].start - Coverage.HORIZONTAL_OVERLAPING_SIZE)
-                dst_global_y_max_overlap = min(self.source_global_y_size,
-                                               self.map_mpi[self.rank]["src_global_y"].stop + Coverage.HORIZONTAL_OVERLAPING_SIZE)
-                self.map_mpi[self.rank]["src_global_y_overlap"] = np.s_[dst_global_y_min_overlap:dst_global_y_max_overlap]
-
-                self.map_mpi[self.rank]["src_global_x_size_overlap"] = self.map_mpi[self.rank][
-                                                                           "src_global_x_overlap"].stop - \
-                                                                       self.map_mpi[self.rank][
-                                                                           "src_global_x_overlap"].start
-                self.map_mpi[self.rank]["src_global_y_size_overlap"] = self.map_mpi[self.rank][
-                                                                           "src_global_y_overlap"].stop - \
-                                                                       self.map_mpi[self.rank][
-                                                                           "src_global_y_overlap"].start
-
-
-                self.map_mpi[self.rank]["src_local_x_size"] = xmax+1 - xmin
-                self.map_mpi[self.rank]["src_local_y_size"] = ymax+1 - ymin
-                self.map_mpi[self.rank]["src_local_x"] = np.s_[0:self.map_mpi[self.rank]["src_local_x_size"]]
-                self.map_mpi[self.rank]["src_local_y"] = np.s_[0:self.map_mpi[self.rank]["src_local_y_size"]]
-                self.map_mpi[self.rank]["src_local_x_size_overlap"] = self.source_global_x_size
-                self.map_mpi[self.rank]["src_local_y_size_overlap"] = self.source_global_y_size
+            self.map_mpi[self.rank]["src_local_x_overlap"] = np.s_[
+                                                             0:self.map_mpi[self.rank]["src_local_x_size_overlap"]]
+            self.map_mpi[self.rank]["src_local_y_overlap"] = np.s_[
+                                                             0:self.map_mpi[self.rank]["src_local_y_size_overlap"]]
 
         if self.rank==0:
             logging.debug("MPI map:")
@@ -348,7 +343,7 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
         elif type == "source" and with_overlap is False:
             return self.map_mpi[self.rank]["src_local_x_size"]
         elif type == "target" and with_overlap is True:
-            return self.map_mpi[self.rank]["dst_global_x_size_overlap"]
+            return self.map_mpi[self.rank]["dst_local_x_size_overlap"]
         else:
             return self.map_mpi[self.rank]["dst_local_x_size"]
 
@@ -362,7 +357,7 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
         elif type == "source" and with_overlap is False:
             return self.map_mpi[self.rank]["src_local_y_size"]
         elif type == "target" and with_overlap is True:
-            return self.map_mpi[self.rank]["dst_global_y_size_overlap"]
+            return self.map_mpi[self.rank]["dst_local_y_size_overlap"]
         else:
             return self.map_mpi[self.rank]["dst_local_y_size"]
 
@@ -383,12 +378,16 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
         if (type == "target_global"):
             return self.target_global_axis_x
 
+        elif type == "source_global" and with_overlap is True:
+            return self.reader.read_axis_x(self.map_mpi[self.rank]["src_global_x_overlap"].start,
+                                           self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+                                           self.map_mpi[self.rank]["src_global_y_overlap"].start,
+                                           self.map_mpi[self.rank]["src_global_y_overlap"].stop)
         elif type == "source_global":
             return self.reader.read_axis_x(self.map_mpi[self.rank]["src_global_x"].start,
                                     self.map_mpi[self.rank]["src_global_x"].stop,
                                     self.map_mpi[self.rank]["src_global_y"].start,
                                     self.map_mpi[self.rank]["src_global_y"].stop)
-
         elif type == "source":
             return self.reader.read_axis_x(self.map_mpi[self.rank]["src_local_x"].start,
                                     self.map_mpi[self.rank]["src_local_x"].stop,
@@ -416,6 +415,11 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
         if type=="target_global":
             return self.target_global_axis_y
 
+        elif type == "source_global" and with_overlap is True:
+            return self.reader.read_axis_y(self.map_mpi[self.rank]["src_global_x_overlap"].start,
+                                           self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+                                           self.map_mpi[self.rank]["src_global_y_overlap"].start,
+                                           self.map_mpi[self.rank]["src_global_y_overlap"].stop)
         elif type == "source_global":
             return self.reader.read_axis_y(self.map_mpi[self.rank]["src_global_x"].start,
                                            self.map_mpi[self.rank]["src_global_x"].stop,

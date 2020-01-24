@@ -26,10 +26,10 @@ class TimeLevelCoverage(LevelCoverage,TimeCoverage):
     """La classe TimeLevelCoverage est une extension de la classe Coverage, LevelCoverage, TimeCoverage.
 Elle rajoute les dimensions temporelle et verticale à la couverture horizontale classique.
     """
-    def __init__(self, myReader,bbox=None,resolution_x=None,resolution_y=None,zbox=None,resolution_z=None,rescale=False):
+    def __init__(self, myReader,bbox=None,resolution_x=None,resolution_y=None,zbox=None,resolution_z=None):
 
-        LevelCoverage.__init__(self,myReader,bbox=bbox,resolution_x=resolution_x,resolution_y=resolution_y,zbox=zbox,resolution_z=resolution_z,rescale=rescale);
-        TimeCoverage.__init__(self,myReader,bbox=bbox,resolution_x=resolution_x,resolution_y=resolution_y,rescale=rescale);
+        LevelCoverage.__init__(self,myReader,bbox=bbox,resolution_x=resolution_x,resolution_y=resolution_y,zbox=zbox,resolution_z=resolution_z);
+        TimeCoverage.__init__(self,myReader,bbox=bbox,resolution_x=resolution_x,resolution_y=resolution_y);
 
     #################
     # HYDRO
@@ -52,6 +52,7 @@ Elle rajoute les dimensions temporelle et verticale à la couverture horizontale
 
         xmax = self.get_x_size(type="source", with_overlap=True)
         ymax = self.get_y_size(type="source", with_overlap=True)
+        z_axis = self.read_axis_z(type="source", with_horizontal_overlap=True)
 
         layers = np.zeros([np.shape(indexes_z)[0], ymax, xmax])
         layers[::] = np.NAN
@@ -74,39 +75,43 @@ Elle rajoute les dimensions temporelle et verticale à la couverture horizontale
                 self.map_mpi[self.rank]["src_global_y_overlap"].start,
                 self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
-        for y in range(0, self.get_y_size(type="source", with_overlap=True)):
-            for x in range(0, self.get_x_size(type="source", with_overlap=True)):
+        idx = np.where(vert_coord != None)
+        for index in range(np.shape(idx)[1]):
+            x = idx[1][index]
+            y = idx[0][index]
 
-                if mask_t[y,x] == 1:
+            if mask_t[y,x] == 1:
 
-                    if vert_coord[y, x] is not None and len(vert_coord[y, x]) == 1:
+                if len(vert_coord[y, x]) == 1:
+                    # Il n'y a qu'une seule couche de sélectionner donc pas d'interpolation possible
+                    # On retrouve l'index de la layer
+                    array = np.asarray(indexes_z)
+                    index_layer = (np.abs(array - vert_coord[y, x][0])).argmin()
+                    data[y, x] = layers[index_layer, y, x]
 
-                        # Il n'y a qu'une seule couche de sélectionner donc pas d'interpolation possible
+                elif len(vert_coord[y, x]) > 1:
+
+                    candidateValues = np.zeros([len(vert_coord[y, x])])
+                    candidateDepths = np.zeros([len(vert_coord[y, x])])
+
+                    for z in range(0, len(vert_coord[y, x])):
                         # On retrouve l'index de la layer
                         array = np.asarray(indexes_z)
-                        index_layer = (np.abs(array - vert_coord[y, x][0])).argmin()
+                        index_layer = (np.abs(array - vert_coord[y, x][z])).argmin()
 
-                        data[y, x] = layers[index_layer, y, x]
+                        if self.is_sigma_coordinate(type="source"):
+                            candidateDepths[z] = z_axis[index_layer, y, x]
+                        else:
+                            candidateDepths[z] = z_axis[index_layer]
 
-                    elif vert_coord[y, x] is not None and len(vert_coord[y, x]) > 1:
+                        candidateValues[z] = layers[index_layer, y, x]
 
-                        candidateValues = np.zeros([len(vert_coord[y, x])])
-                        candidateDepths = np.zeros([len(vert_coord[y, x])])
-
-                        for z in range(0, len(vert_coord[y, x])):
-                            # On retrouve l'index de la layer
-                            array = np.asarray(indexes_z)
-                            index_layer = (np.abs(array - vert_coord[y, x][z])).argmin()
-
-                            candidateDepths[z] = self.source_global_axis_z[index_layer, y, x]
-                            candidateValues[z] = layers[index_layer, y, x]
-
-                        data[y, x] = vertical_interpolation(candidateDepths, targetDepth, candidateValues,
-                                                            LevelCoverage.VERTICAL_INTERPOLATION_METHOD)
+                    data[y, x] = vertical_interpolation(candidateDepths, targetDepth, candidateValues,
+                                                        LevelCoverage.VERTICAL_INTERPOLATION_METHOD)
 
         if self.horizontal_resampling:
-            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
+            data = resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
+                                       self.read_axis_y(type="source_global", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data,
@@ -130,6 +135,7 @@ Elle rajoute les dimensions temporelle et verticale à la couverture horizontale
 
         xmax = self.get_x_size(type="source", with_overlap=True)
         ymax = self.get_y_size(type="source", with_overlap=True)
+        z_axis = self.read_axis_z(type="source", with_horizontal_overlap=True)
 
         layers = np.zeros([np.shape(indexes_z)[0], ymax, xmax])
         layers[::] = np.NAN
@@ -152,39 +158,43 @@ Elle rajoute les dimensions temporelle et verticale à la couverture horizontale
                 self.map_mpi[self.rank]["src_global_y_overlap"].start,
                 self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
-        for y in range(0, self.get_y_size(type="source", with_overlap=True)):
-            for x in range(0, self.get_x_size(type="source", with_overlap=True)):
+        idx = np.where(vert_coord != None)
+        for index in range(np.shape(idx)[1]):
+            x = idx[1][index]
+            y = idx[0][index]
 
-                if mask_t[y, x] == 1:
+            if mask_t[y, x] == 1:
 
-                    if vert_coord[y, x] is not None and len(vert_coord[y, x]) == 1:
+                if len(vert_coord[y, x]) == 1:
+                    # Il n'y a qu'une seule couche de sélectionner donc pas d'interpolation possible
+                    # On retrouve l'index de la layer
+                    array = np.asarray(indexes_z)
+                    index_layer = (np.abs(array - vert_coord[y, x][0])).argmin()
+                    data[y, x] = layers[index_layer, y, x]
 
-                        # Il n'y a qu'une seule couche de sélectionner donc pas d'interpolation possible
+                elif len(vert_coord[y, x]) > 1:
+
+                    candidateValues = np.zeros([len(vert_coord[y, x])])
+                    candidateDepths = np.zeros([len(vert_coord[y, x])])
+
+                    for z in range(0, len(vert_coord[y, x])):
                         # On retrouve l'index de la layer
                         array = np.asarray(indexes_z)
-                        index_layer = (np.abs(array - vert_coord[y, x][0])).argmin()
+                        index_layer = (np.abs(array - vert_coord[y, x][z])).argmin()
 
-                        data[y, x] = layers[index_layer, y, x]
+                        if self.is_sigma_coordinate(type="source"):
+                            candidateDepths[z] = z_axis[index_layer, y, x]
+                        else:
+                            candidateDepths[z] = z_axis[index_layer]
 
-                    elif vert_coord[y, x] is not None and len(vert_coord[y, x]) > 1:
+                        candidateValues[z] = layers[index_layer, y, x]
 
-                        candidateValues = np.zeros([len(vert_coord[y, x])])
-                        candidateDepths = np.zeros([len(vert_coord[y, x])])
-
-                        for z in range(0, len(vert_coord[y, x])):
-                            # On retrouve l'index de la layer
-                            array = np.asarray(indexes_z)
-                            index_layer = (np.abs(array - vert_coord[y, x][z])).argmin()
-
-                            candidateDepths[z] = self.source_global_axis_z[index_layer, y, x]
-                            candidateValues[z] = layers[index_layer, y, x]
-
-                        data[y, x] = vertical_interpolation(candidateDepths, targetDepth, candidateValues,
-                                                            LevelCoverage.VERTICAL_INTERPOLATION_METHOD)
+                    data[y, x] = vertical_interpolation(candidateDepths, targetDepth, candidateValues,
+                                                        LevelCoverage.VERTICAL_INTERPOLATION_METHOD)
 
         if self.horizontal_resampling:
-            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
+            data = resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
+                                       self.read_axis_y(type="source_global", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data,

@@ -54,8 +54,10 @@ def vertical_interpolation(sourceAxis,targetAxis,data,method):
             return f(targetAxis)
         except ValueError as ex:
             logging.warning("[InterpolatorCore][vertical_interpolation()] Error: " + str(ex))
-            logging.warning("[InterpolatorCore][vertical_interpolation()] Often, this error occurs when you request a water depth out of range.")
-            logging.warning("[InterpolatorCore][vertical_interpolation()] Maybe " + str(targetAxis[0])+" m is out of range. More details in the DEBUG log.")
-            logging.warning("[InterpolatorCore][vertical_interpolation()] To solve this problem, you can change your zbox range or use 'nearest' vertical interpolation to avoid this error.")
+            logging.warning("[InterpolatorCore][vertical_interpolation()] This error may occur when you ask for a water depth out of range : "+ str(targetAxis[0])+" m")
+            logging.warning("[InterpolatorCore][vertical_interpolation()] We continue by using an extrapolation method.")
+            logging.warning("[InterpolatorCore][vertical_interpolation()] To avoid this error, you can change your zbox range or use another vertical interpolation method.")
             logging.warning("[InterpolatorCore][vertical_interpolation()] ----------------------------------------")
-            return np.nan
+            f = interp1d(sourceAxis, data, kind=method,  fill_value = "extrapolate")
+            return f(targetAxis)
+
