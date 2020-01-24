@@ -236,7 +236,22 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         index_t = self.find_time_index(t);
 
-        return self.reader.read_variable_2D_sea_binary_mask_at_time(index_t)
+        data = self.reader.read_variable_2D_sea_binary_mask_at_time(
+            self.map_mpi[self.rank]["src_global_t"].start + index_t,
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data,
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
     def read_variable_2D_wet_binary_mask_at_time(self, t):
         """Retourne le masque à la date souhaitée sur toute la couverture horizontale.
@@ -246,7 +261,22 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         index_t = self.find_time_index(t);
 
-        return self.reader.read_variable_2D_wet_binary_mask_at_time(index_t)
+        data = self.reader.read_variable_2D_wet_binary_mask_at_time(
+            self.map_mpi[self.rank]["src_global_t"].start + index_t,
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data,
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
     #################
     # HYDRO
@@ -278,7 +308,22 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         index_t = self.find_time_index(t);
 
-        return self.reader.read_variable_sea_surface_height_above_geoid_at_time(index_t)
+        data = self.reader.read_variable_sea_surface_height_above_geoid_at_time(
+            self.map_mpi[self.rank]["src_global_t"].start + index_t,
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data,
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
     def read_variable_sea_surface_temperature_at_time(self, t):
         """Retourne la temperature de surface à la date souhaitée
@@ -288,7 +333,22 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         index_t = self.find_time_index(t);
 
-        return self.reader.read_variable_sea_surface_temperature_at_time(index_t)
+        data = self.reader.read_variable_sea_surface_temperature_at_time(
+            self.map_mpi[self.rank]["src_global_t"].start + index_t,
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data,
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
     def read_variable_sea_surface_salinity_at_time(self, t):
         """Retourne la salinité de surface à la date souhaitée
@@ -298,7 +358,22 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         index_t = self.find_time_index(t);
 
-        return self.reader.read_variable_sea_surface_salinity_at_time(index_t)
+        data = self.reader.read_variable_sea_surface_salinity_at_time(
+            self.map_mpi[self.rank]["src_global_t"].start + index_t,
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data,
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
     def read_variable_sea_surface_pressure_at_time(self, t):
         """Retourne la pression à la surface de la mer (sea surface pressure) à la date souhaitée sur toute la couverture horizontale.
@@ -308,7 +383,22 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         index_t = self.find_time_index(t);
 
-        return self.reader.read_variable_sea_surface_pressure_at_time(index_t)
+        data = self.reader.read_variable_sea_surface_pressure_at_time(
+            self.map_mpi[self.rank]["src_global_t"].start + index_t,
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data,
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
     def read_variable_sea_surface_density_at_time(self, t):
         """Retourne la densité de l'eau de surface à la date souhaitée
@@ -318,7 +408,22 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         index_t = self.find_time_index(t);
 
-        return self.reader.read_variable_sea_surface_density_at_time(index_t)
+        data = self.reader.read_variable_sea_surface_density_at_time(
+            self.map_mpi[self.rank]["src_global_t"].start + index_t,
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data,
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
     def read_variable_sea_water_turbidity_at_time(self, t):
         """Retourne la turbidité de l'eau de surface à la date souhaitée
@@ -328,7 +433,22 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         index_t = self.find_time_index(t);
 
-        return self.reader.read_variable_sea_water_turbidity_at_time(index_t)
+        data = self.reader.read_variable_sea_water_turbidity_at_time(
+            self.map_mpi[self.rank]["src_global_t"].start + index_t,
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data,
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
 
     def read_variable_sea_water_velocity_at_sea_water_surface_at_time(self, t):
@@ -339,7 +459,30 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         index_t = self.find_time_index(t);
 
-        return self.reader.read_variable_sea_water_velocity_at_sea_water_surface_at_time(index_t)
+        data = self.reader.read_variable_sea_water_velocity_at_sea_water_surface_at_time(
+            self.map_mpi[self.rank]["src_global_t"].start + index_t,
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            data[0] = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                          self.read_axis_y(type="source", with_overlap=True),
+                                          self.read_axis_x(type="target", with_overlap=True),
+                                          self.read_axis_y(type="target", with_overlap=True),
+                                          data[0],
+                                          Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+            data[1] = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                          self.read_axis_y(type="source", with_overlap=True),
+                                          self.read_axis_x(type="target", with_overlap=True),
+                                          self.read_axis_y(type="target", with_overlap=True),
+                                          data[1],
+                                          Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return [data[0][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]],
+                data[1][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]]
 
     #################
     # HYDRO
@@ -354,7 +497,22 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         index_t = self.find_time_index(t);
 
-        return self.reader.read_variable_sea_water_temperature_at_ground_level_at_time(index_t)
+        data = self.reader.read_variable_sea_water_temperature_at_ground_level_at_time(
+            self.map_mpi[self.rank]["src_global_t"].start + index_t,
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data,
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
     def read_variable_sea_water_salinity_at_ground_level_at_time(self, t):
         """Retourne la salinité de surface à la date souhaitée
@@ -364,7 +522,22 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         index_t = self.find_time_index(t);
 
-        return self.reader.read_variable_sea_water_salinity_at_ground_level_at_time(index_t)
+        data = self.reader.read_variable_sea_water_salinity_at_ground_level_at_time(
+            self.map_mpi[self.rank]["src_global_t"].start + index_t,
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data,
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
     def read_variable_sea_water_velocity_at_ground_level_at_time(self, t):
         """Retourne les composantes u,v du courant à la date souhaitée
@@ -374,7 +547,30 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         index_t = self.find_time_index(t);
 
-        return self.reader.read_variable_sea_water_velocity_at_ground_level_at_time(index_t)
+        data = self.reader.read_variable_sea_water_velocity_at_ground_level_at_time(
+            self.map_mpi[self.rank]["src_global_t"].start + index_t,
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            data[0] = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                          self.read_axis_y(type="source", with_overlap=True),
+                                          self.read_axis_x(type="target", with_overlap=True),
+                                          self.read_axis_y(type="target", with_overlap=True),
+                                          data[0],
+                                          Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+            data[1] = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                          self.read_axis_y(type="source", with_overlap=True),
+                                          self.read_axis_x(type="target", with_overlap=True),
+                                          self.read_axis_y(type="target", with_overlap=True),
+                                          data[1],
+                                          Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return [data[0][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]],
+                data[1][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]]
 
     #################
     # HYDRO
@@ -388,7 +584,29 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         index_t = self.find_time_index(t);
 
-        return self.reader.read_variable_barotropic_sea_water_velocity_at_time(index_t)
+        data = self.reader.read_variable_barotropic_sea_water_velocity_at_time(
+            self.map_mpi[self.rank]["src_global_t"].start + index_t,
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            data[0] = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data[0],
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+            data[1] = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                         self.read_axis_y(type="source", with_overlap=True),
+                                         self.read_axis_x(type="target", with_overlap=True),
+                                         self.read_axis_y(type="target", with_overlap=True),
+                                         data[1],
+                                         Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return [data[0][self.map_mpi[self.rank]["dst_local_y"],self.map_mpi[self.rank]["dst_local_x"]],data[1][self.map_mpi[self.rank]["dst_local_y"],self.map_mpi[self.rank]["dst_local_x"]]]
 
     #################
     # WAVES
@@ -402,7 +620,22 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         index_t = self.find_time_index(t);
 
-        return self.reader.read_variable_sea_surface_wave_significant_height_at_time(index_t)
+        data = self.reader.read_variable_sea_surface_wave_significant_height_at_time(
+            self.map_mpi[self.rank]["src_global_t"].start + index_t,
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data,
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
     def read_variable_sea_surface_wave_breaking_height_at_time(self, t):
         """Retourne la hauteur de déferlement des vagues à la date souhaitée sur toute la couverture horizontale.
@@ -412,31 +645,106 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         index_t = self.find_time_index(t);
 
-        return self.reader.read_variable_sea_surface_wave_breaking_height_at_time(index_t)
+        data = self.reader.read_variable_sea_surface_wave_breaking_height_at_time(
+            self.map_mpi[self.rank]["src_global_t"].start + index_t,
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data,
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
     
     def read_variable_sea_surface_wave_mean_period_at_time(self,t):
 
         index_t = self.find_time_index(t);
 
-        return self.reader.read_variable_sea_surface_wave_mean_period_at_time(index_t)
+        data = self.reader.read_variable_sea_surface_wave_mean_period_at_time(
+            self.map_mpi[self.rank]["src_global_t"].start + index_t,
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data,
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
     def read_variable_sea_surface_wave_peak_period_at_time(self,t):
 
         index_t = self.find_time_index(t);
 
-        return self.reader.read_variable_sea_surface_wave_peak_period_at_time(index_t)
+        data = self.reader.read_variable_sea_surface_wave_peak_period_at_time(
+            self.map_mpi[self.rank]["src_global_t"].start + index_t,
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data,
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
     def read_variable_sea_surface_wave_from_direction_at_time(self,t):
 
         index_t = self.find_time_index(t);
 
-        return self.reader.read_variable_sea_surface_wave_from_direction_at_time(index_t)
+        data = self.reader.read_variable_sea_surface_wave_from_direction_at_time(
+            self.map_mpi[self.rank]["src_global_t"].start + index_t,
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data,
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
     def read_variable_sea_surface_wave_to_direction_at_time(self,t):
 
         index_t = self.find_time_index(t);
 
-        return self.reader.read_variable_sea_surface_wave_to_direction_at_time(index_t)
+        data = self.reader.read_variable_sea_surface_wave_to_direction_at_time(
+            self.map_mpi[self.rank]["src_global_t"].start + index_t,
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data,
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
     def read_variable_sea_surface_wave_stokes_drift_velocity_at_time(self, t):
         """Retourne la dérive de Stokes en surface à la date souhaitée sur toute la couverture horizontale.
@@ -446,7 +754,30 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         index_t = self.find_time_index(t);
 
-        return self.reader.read_variable_sea_surface_wave_stokes_drift_velocity_at_time(index_t)
+        data = self.reader.read_variable_sea_surface_wave_stokes_drift_velocity_at_time(
+            self.map_mpi[self.rank]["src_global_t"].start + index_t,
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            data[0] = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                          self.read_axis_y(type="source", with_overlap=True),
+                                          self.read_axis_x(type="target", with_overlap=True),
+                                          self.read_axis_y(type="target", with_overlap=True),
+                                          data[0],
+                                          Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+            data[1] = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                          self.read_axis_y(type="source", with_overlap=True),
+                                          self.read_axis_x(type="target", with_overlap=True),
+                                          self.read_axis_y(type="target", with_overlap=True),
+                                          data[1],
+                                          Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return [data[0][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]],
+                data[1][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]]
 
     def read_variable_radiation_pressure_bernouilli_head_at_time(self, t):
         """Retourne la pression J due aux vagues à la date souhaitée sur toute la couverture horizontale.
@@ -456,7 +787,22 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         index_t = self.find_time_index(t);
 
-        return self.reader.read_variable_radiation_pressure_bernouilli_head_at_time(index_t)
+        data = self.reader.read_variable_radiation_pressure_bernouilli_head_at_time(
+            self.map_mpi[self.rank]["src_global_t"].start + index_t,
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data,
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
     def read_variable_sea_surface_wave_energy_flux_to_ocean_at_time(self, t):
         """Retourne la waves_to_ocean_energy_flux à la date souhaitée sur toute la couverture horizontale.
@@ -466,7 +812,30 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         index_t = self.find_time_index(t);
 
-        return self.reader.read_variable_sea_surface_wave_energy_flux_to_ocean_at_time(index_t)
+        data = self.reader.read_variable_sea_surface_wave_energy_flux_to_ocean_at_time(
+            self.map_mpi[self.rank]["src_global_t"].start + index_t,
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            data[0] = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                          self.read_axis_y(type="source", with_overlap=True),
+                                          self.read_axis_x(type="target", with_overlap=True),
+                                          self.read_axis_y(type="target", with_overlap=True),
+                                          data[0],
+                                          Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+            data[1] = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                          self.read_axis_y(type="source", with_overlap=True),
+                                          self.read_axis_x(type="target", with_overlap=True),
+                                          self.read_axis_y(type="target", with_overlap=True),
+                                          data[1],
+                                          Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return [data[0][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]],
+                data[1][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]]
 
     def read_variable_sea_surface_wave_energy_dissipation_at_ground_level_at_time(self, t):
         """Retourne la l'énergie des vagues dissipée par le fond à la date souhaitée sur toute la couverture horizontale.
@@ -476,8 +845,22 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         index_t = self.find_time_index(t);
 
-        return self.reader.read_variable_sea_surface_wave_energy_dissipation_at_ground_level_at_time(index_t)
+        data = self.reader.read_variable_sea_surface_wave_energy_dissipation_at_ground_level_at_time(
+            self.map_mpi[self.rank]["src_global_t"].start + index_t,
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
+        if self.horizontal_resampling:
+            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data,
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
     #################
     # WAVES
@@ -491,8 +874,31 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         index_t = self.find_time_index(t);
 
-        return self.reader.read_variable_atmosphere_momentum_flux_to_waves_at_time(index_t)
-    
+        data = self.reader.read_variable_atmosphere_momentum_flux_to_waves_at_time(
+            self.map_mpi[self.rank]["src_global_t"].start + index_t,
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            data[0] = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                          self.read_axis_y(type="source", with_overlap=True),
+                                          self.read_axis_x(type="target", with_overlap=True),
+                                          self.read_axis_y(type="target", with_overlap=True),
+                                          data[0],
+                                          Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+            data[1] = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                          self.read_axis_y(type="source", with_overlap=True),
+                                          self.read_axis_x(type="target", with_overlap=True),
+                                          self.read_axis_y(type="target", with_overlap=True),
+                                          data[1],
+                                          Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return [data[0][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]],
+                data[1][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]]
+
     def read_variable_waves_momentum_flux_to_ocean_at_time(self,t):
         """Retourne la composante u du tau vagues->ocean à la date souhaitée sur toute la couverture horizontale.
     @type t: datetime ou l'index
@@ -501,7 +907,30 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         index_t = self.find_time_index(t);
 
-        return self.reader.read_variable_waves_momentum_flux_to_ocean_at_time(index_t)
+        data = self.reader.read_variable_waves_momentum_flux_to_ocean_at_time(
+            self.map_mpi[self.rank]["src_global_t"].start + index_t,
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            data[0] = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                          self.read_axis_y(type="source", with_overlap=True),
+                                          self.read_axis_x(type="target", with_overlap=True),
+                                          self.read_axis_y(type="target", with_overlap=True),
+                                          data[0],
+                                          Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+            data[1] = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                          self.read_axis_y(type="source", with_overlap=True),
+                                          self.read_axis_x(type="target", with_overlap=True),
+                                          self.read_axis_y(type="target", with_overlap=True),
+                                          data[1],
+                                          Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return [data[0][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]],
+                data[1][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]]
 
     #################
     # METEO
@@ -515,7 +944,22 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         index_t = self.find_time_index(t);
 
-        return self.reader.read_variable_rainfall_amount_at_time(index_t)
+        data = self.reader.read_variable_rainfall_amount_at_time(
+            self.map_mpi[self.rank]["src_global_t"].start + index_t,
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data,
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
     #################
     # METEO
@@ -530,7 +974,22 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         index_t = self.find_time_index(t);
 
-        return self.reader.read_variable_surface_air_pressure_at_time(index_t)
+        data = self.reader.read_variable_surface_air_pressure_at_time(
+            self.map_mpi[self.rank]["src_global_t"].start + index_t,
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data,
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
     def read_variable_sea_surface_air_pressure_at_time(self, t):
         """Retourne la pression à la surface à la date souhaitée sur toute la couverture horizontale.
@@ -540,7 +999,22 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         index_t = self.find_time_index(t);
 
-        return self.reader.read_variable_sea_surface_air_pressure_at_time(index_t)
+        data = self.reader.read_variable_sea_surface_air_pressure_at_time(
+            self.map_mpi[self.rank]["src_global_t"].start + index_t,
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data,
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
     def read_variable_wind_stress_at_time(self, t):
         """Retourne les composantes u,v de la contrainte de vent à la date souhaitée
@@ -550,7 +1024,30 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         index_t = self.find_time_index(t);
 
-        return self.reader.read_variable_wind_stress_at_time(index_t)
+        data = self.reader.read_variable_wind_stress_at_time(
+            self.map_mpi[self.rank]["src_global_t"].start + index_t,
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            data[0] = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                          self.read_axis_y(type="source", with_overlap=True),
+                                          self.read_axis_x(type="target", with_overlap=True),
+                                          self.read_axis_y(type="target", with_overlap=True),
+                                          data[0],
+                                          Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+            data[1] = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                          self.read_axis_y(type="source", with_overlap=True),
+                                          self.read_axis_x(type="target", with_overlap=True),
+                                          self.read_axis_y(type="target", with_overlap=True),
+                                          data[1],
+                                          Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return [data[0][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]],
+                data[1][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]]
 
     def read_variable_surface_downward_sensible_heat_flux_at_time(self, t):
         """Retourne les composantes u,v de surface sensible heat flux à la date souhaitée
@@ -560,7 +1057,22 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         index_t = self.find_time_index(t);
 
-        return self.reader.read_variable_surface_downward_sensible_heat_flux_at_time(index_t)
+        data = self.rreader.read_variable_surface_downward_sensible_heat_flux_at_time(
+            self.map_mpi[self.rank]["src_global_t"].start + index_t,
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data,
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
     def read_variable_surface_downward_latent_heat_flux_at_time(self, t):
         """Retourne les composantes u,v de surface latente heat flux à la date souhaitée
@@ -570,7 +1082,22 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         index_t = self.find_time_index(t);
 
-        return self.reader.read_variable_surface_downward_latent_heat_flux_at_time(index_t)
+        data = self.reader.read_variable_surface_downward_latent_heat_flux_at_time(
+            self.map_mpi[self.rank]["src_global_t"].start + index_t,
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data,
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
     def read_variable_surface_air_temperature_at_time(self, t):
         """Retourne les composantes u,v de surface air temperature à la date souhaitée
@@ -580,7 +1107,22 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         index_t = self.find_time_index(t);
 
-        return self.reader.read_variable_surface_air_temperature_at_time(index_t)
+        data = self.reader.read_variable_surface_air_temperature_at_time(
+            self.map_mpi[self.rank]["src_global_t"].start + index_t,
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data,
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
     def read_variable_dew_point_temperature_at_time(self, t):
         """Retourne les composantes u,v de dewpoint temperature à la date souhaitée
@@ -590,7 +1132,22 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         index_t = self.find_time_index(t);
 
-        return self.reader.read_variable_dew_point_temperature_at_time(index_t)
+        data = self.reader.read_variable_dew_point_temperature_at_time(
+            self.map_mpi[self.rank]["src_global_t"].start + index_t,
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data,
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
     def read_variable_surface_downwards_solar_radiation_at_time(self, t):
         """Retourne les composantes u,v de surface solar radiation downwards à la date souhaitée
@@ -600,9 +1157,24 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         index_t = self.find_time_index(t);
 
-        return self.reader.read_variable_surface_downwards_solar_radiation_at_time(index_t)
+        data = self.reader.read_variable_surface_downwards_solar_radiation_at_time(
+            self.map_mpi[self.rank]["src_global_t"].start + index_t,
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
-    def read_variable_surface_downwards_thermal_radiatio_at_time(self, t):
+        if self.horizontal_resampling:
+            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data,
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+
+    def read_variable_surface_downwards_thermal_radiation_at_time(self, t):
         """Retourne les composantes u,v de surface thermal radiation downwards à la date souhaitée
     @type t: datetime ou l'index
     @param t: date souhaitée
@@ -610,7 +1182,22 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         index_t = self.find_time_index(t);
 
-        return self.reader.read_variable_surface_downwards_thermal_radiatio_at_time(index_t)
+        data = self.reader.read_variable_surface_downwards_thermal_radiation_at_time(
+            self.map_mpi[self.rank]["src_global_t"].start + index_t,
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data,
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
     def read_variable_surface_solar_radiation_at_time(self, t):
         """Retourne les composantes u,v de surface solar radiation à la date souhaitée
@@ -620,7 +1207,22 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         index_t = self.find_time_index(t);
 
-        return self.reader.read_variable_surface_solar_radiation_at_time(index_t)
+        data = self.reader.read_variable_surface_solar_radiation_at_time(
+            self.map_mpi[self.rank]["src_global_t"].start + index_t,
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data,
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
     def read_variable_surface_thermal_radiation_at_time(self, t):
         """Retourne les composantes u,v de surface thermal radiation à la date souhaitée
@@ -630,7 +1232,22 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         index_t = self.find_time_index(t);
 
-        return self.reader.read_variable_surface_thermal_radiation_at_time(index_t)
+        data = self.reader.read_variable_surface_thermal_radiation_at_time(
+            self.map_mpi[self.rank]["src_global_t"].start + index_t,
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data,
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
     #################
     # METEO
@@ -644,7 +1261,30 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         index_t = self.find_time_index(t);
 
-        return self.reader.read_variable_wind_10m_at_time(index_t)
+        data = self.reader.read_variable_wind_10m_at_time(
+            self.map_mpi[self.rank]["src_global_t"].start + index_t,
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            data[0] = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                          self.read_axis_y(type="source", with_overlap=True),
+                                          self.read_axis_x(type="target", with_overlap=True),
+                                          self.read_axis_y(type="target", with_overlap=True),
+                                          data[0],
+                                          Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+            data[1] = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                          self.read_axis_y(type="source", with_overlap=True),
+                                          self.read_axis_x(type="target", with_overlap=True),
+                                          self.read_axis_y(type="target", with_overlap=True),
+                                          data[1],
+                                          Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return [data[0][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]],
+                data[1][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]]
 
     def read_variable_wind_speed_10m_at_time(self, date):
         comp = self.read_variable_wind_10m_at_time(date)

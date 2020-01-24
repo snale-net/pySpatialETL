@@ -50,47 +50,69 @@ Elle rajoute les dimensions temporelle et verticale à la couverture horizontale
         vert_coord = tmp[0]
         indexes_z = tmp[1]
 
-        xmax = self.get_x_size()
-        ymax = self.get_y_size()
+        xmax = self.get_x_size(type="source", with_overlap=True)
+        ymax = self.get_y_size(type="source", with_overlap=True)
+
         layers = np.zeros([np.shape(indexes_z)[0], ymax, xmax])
         layers[::] = np.NAN
 
-        results = np.zeros([ymax, xmax])
-        results[:] = np.NAN
-
+        data = np.zeros([ymax, xmax])
+        data[:] = np.NAN
         targetDepth = [depth]
 
+        mask_t = self.reader.read_variable_2D_sea_binary_mask(
+                self.map_mpi[self.rank]["src_global_x_overlap"].start,
+                self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+                self.map_mpi[self.rank]["src_global_y_overlap"].start,
+                self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
         for z in range(0, len(indexes_z)):
-            layers[z] = self.reader.read_variable_sea_water_temperature_at_time_and_depth(index_t, indexes_z[z])
+            layers[z] = self.reader.read_variable_sea_water_temperature_at_time_and_depth(
+                self.map_mpi[self.rank]["src_global_t"].start + index_t, indexes_z[z],
+                self.map_mpi[self.rank]["src_global_x_overlap"].start,
+                self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+                self.map_mpi[self.rank]["src_global_y_overlap"].start,
+                self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
-        for y in range(0, ymax):
-            for x in range(0, xmax):
+        for y in range(0, self.get_y_size(type="source", with_overlap=True)):
+            for x in range(0, self.get_x_size(type="source", with_overlap=True)):
 
-                if len(vert_coord[y, x]) == 1:
-                    # Il n'y a qu'une seule couche de sélectionner donc pas d'interpolation possible
+                if mask_t[y,x] == 1:
 
-                    # On retrouve l'index de la layer
-                    array = np.asarray(indexes_z)
-                    index_layer = (np.abs(array - vert_coord[y, x][0])).argmin()
+                    if vert_coord[y, x] is not None and len(vert_coord[y, x]) == 1:
 
-                    results[y, x] = layers[index_layer, y, x]
-
-                elif len(vert_coord[y, x]) > 1:
-
-                    candidateValues = np.zeros([len(vert_coord[y, x])])
-                    candidateDepths = np.zeros([len(vert_coord[y, x])])
-
-                    for z in range(0, len(vert_coord[y, x])):
+                        # Il n'y a qu'une seule couche de sélectionner donc pas d'interpolation possible
                         # On retrouve l'index de la layer
                         array = np.asarray(indexes_z)
-                        index_layer = (np.abs(array - vert_coord[y, x][z])).argmin()
+                        index_layer = (np.abs(array - vert_coord[y, x][0])).argmin()
 
-                        candidateDepths[z] = self.levels[index_layer, y, x]
-                        candidateValues[z] = layers[index_layer, y, x]
+                        data[y, x] = layers[index_layer, y, x]
 
-                    results[y, x] = vertical_interpolation(candidateDepths, targetDepth, candidateValues,LevelCoverage.VERTICAL_INTERPOLATION_METHOD)
+                    elif vert_coord[y, x] is not None and len(vert_coord[y, x]) > 1:
 
-        return results
+                        candidateValues = np.zeros([len(vert_coord[y, x])])
+                        candidateDepths = np.zeros([len(vert_coord[y, x])])
+
+                        for z in range(0, len(vert_coord[y, x])):
+                            # On retrouve l'index de la layer
+                            array = np.asarray(indexes_z)
+                            index_layer = (np.abs(array - vert_coord[y, x][z])).argmin()
+
+                            candidateDepths[z] = self.source_global_axis_z[index_layer, y, x]
+                            candidateValues[z] = layers[index_layer, y, x]
+
+                        data[y, x] = vertical_interpolation(candidateDepths, targetDepth, candidateValues,
+                                                            LevelCoverage.VERTICAL_INTERPOLATION_METHOD)
+
+        if self.horizontal_resampling:
+            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data,
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
     def read_variable_sea_water_salinity_at_time_and_depth(self, time, depth):
         """Retourne la salinité à la date souhaitée et au niveau souhaité sur toute la couverture horizontale.
@@ -106,8 +128,8 @@ Elle rajoute les dimensions temporelle et verticale à la couverture horizontale
         vert_coord = tmp[0]
         indexes_z = tmp[1]
 
-        xmax = self.get_x_size(type="source",with_overlap=True)
-        ymax = self.get_y_size(type="source",with_overlap=True)
+        xmax = self.get_x_size(type="source", with_overlap=True)
+        ymax = self.get_y_size(type="source", with_overlap=True)
 
         layers = np.zeros([np.shape(indexes_z)[0], ymax, xmax])
         layers[::] = np.NAN
@@ -116,43 +138,51 @@ Elle rajoute les dimensions temporelle et verticale à la couverture horizontale
         data[:] = np.NAN
         targetDepth = [depth]
 
+        mask_t = self.reader.read_variable_2D_sea_binary_mask(
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
         for z in range(0, len(indexes_z)):
             layers[z] = self.reader.read_variable_sea_water_salinity_at_time_and_depth(
-                self.map_mpi[self.rank]["src_global_t"].start+index_t, indexes_z[z],
+                self.map_mpi[self.rank]["src_global_t"].start + index_t, indexes_z[z],
                 self.map_mpi[self.rank]["src_global_x_overlap"].start,
                 self.map_mpi[self.rank]["src_global_x_overlap"].stop,
                 self.map_mpi[self.rank]["src_global_y_overlap"].start,
                 self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
-        for y in range(0, self.get_y_size(type="source",with_overlap=True)):
-            for x in range(0, self.get_x_size(type="source",with_overlap=True)):
+        for y in range(0, self.get_y_size(type="source", with_overlap=True)):
+            for x in range(0, self.get_x_size(type="source", with_overlap=True)):
 
-                if vert_coord[y, x] is not None and len(vert_coord[y, x]) == 1:
-                    # Il n'y a qu'une seule couche de sélectionner donc pas d'interpolation possible
+                if mask_t[y, x] == 1:
 
-                    # On retrouve l'index de la layer
-                    array = np.asarray(indexes_z)
-                    index_layer = (np.abs(array - vert_coord[y, x][0])).argmin()
+                    if vert_coord[y, x] is not None and len(vert_coord[y, x]) == 1:
 
-                    data[y, x] = layers[index_layer, y, x]
-
-                elif vert_coord[y, x] is not None and len(vert_coord[y, x]) > 1:
-
-                    candidateValues = np.zeros([len(vert_coord[y, x])])
-                    candidateDepths = np.zeros([len(vert_coord[y, x])])
-
-                    for z in range(0,len(vert_coord[y, x])):
+                        # Il n'y a qu'une seule couche de sélectionner donc pas d'interpolation possible
                         # On retrouve l'index de la layer
                         array = np.asarray(indexes_z)
-                        index_layer = (np.abs(array - vert_coord[y, x][z])).argmin()
+                        index_layer = (np.abs(array - vert_coord[y, x][0])).argmin()
 
-                        candidateDepths[z] = self.source_global_axis_z[index_layer, y, x]
-                        candidateValues[z] = layers[index_layer, y, x]
+                        data[y, x] = layers[index_layer, y, x]
 
-                    data[y, x] = vertical_interpolation(candidateDepths, targetDepth, candidateValues,LevelCoverage.VERTICAL_INTERPOLATION_METHOD)
+                    elif vert_coord[y, x] is not None and len(vert_coord[y, x]) > 1:
+
+                        candidateValues = np.zeros([len(vert_coord[y, x])])
+                        candidateDepths = np.zeros([len(vert_coord[y, x])])
+
+                        for z in range(0, len(vert_coord[y, x])):
+                            # On retrouve l'index de la layer
+                            array = np.asarray(indexes_z)
+                            index_layer = (np.abs(array - vert_coord[y, x][z])).argmin()
+
+                            candidateDepths[z] = self.source_global_axis_z[index_layer, y, x]
+                            candidateValues[z] = layers[index_layer, y, x]
+
+                        data[y, x] = vertical_interpolation(candidateDepths, targetDepth, candidateValues,
+                                                            LevelCoverage.VERTICAL_INTERPOLATION_METHOD)
 
         if self.horizontal_resampling:
-
             data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
                                        self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
@@ -177,63 +207,78 @@ Elle rajoute les dimensions temporelle et verticale à la couverture horizontale
         vert_coord = tmp[0]
         indexes_z = tmp[1]
 
-        xmax = self.get_x_size()
-        ymax = self.get_y_size()
-        layers = np.zeros([np.shape(indexes_z)[0],2, ymax, xmax])
+        xmax = self.get_x_size(type="source", with_overlap=True)
+        ymax = self.get_y_size(type="source", with_overlap=True)
+
+        layers = np.zeros([np.shape(indexes_z)[0], ymax, xmax])
         layers[::] = np.NAN
 
-        results = np.zeros([2,ymax, xmax])
-        results[:] = np.NAN
-
+        data = np.zeros([2,ymax, xmax])
+        data[:] = np.NAN
         targetDepth = [depth]
 
+        mask_t = self.reader.read_variable_2D_sea_binary_mask(
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
         for z in range(0, len(indexes_z)):
-            layers[z] = self.reader.read_variable_baroclinic_sea_water_velocity_at_time_and_depth(index_t, indexes_z[z])
+            layers[z] = self.reader.read_variable_baroclinic_sea_water_velocity_at_time_and_depth(
+                self.map_mpi[self.rank]["src_global_t"].start + index_t, indexes_z[z],
+                self.map_mpi[self.rank]["src_global_x_overlap"].start,
+                self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+                self.map_mpi[self.rank]["src_global_y_overlap"].start,
+                self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
-        for y in range(0, ymax):
-            for x in range(0, xmax):
+        for y in range(0, self.get_y_size(type="source", with_overlap=True)):
+            for x in range(0, self.get_x_size(type="source", with_overlap=True)):
 
-                if len(vert_coord[y, x]) == 1:
-                    # Il n'y a qu'une seule couche de sélectionner donc pas d'interpolation possible
+                if mask_t[y, x] == 1:
 
-                    # On retrouve l'index de la layer
-                    array = np.asarray(indexes_z)
-                    index_layer = (np.abs(array - vert_coord[y, x][0])).argmin()
+                    if vert_coord[y, x] is not None and len(vert_coord[y, x]) == 1:
 
-                    results[0][y, x] = layers[index_layer,0, y, x]
-                    results[1][y, x] = layers[index_layer,1, y, x]
-
-                elif len(vert_coord[y, x]) > 1:
-
-                    candidateValues = np.zeros([2,len(vert_coord[y, x])])
-                    candidateDepths = np.zeros([len(vert_coord[y, x])])
-
-                    for z in range(0, len(vert_coord[y, x])):
-
+                        # Il n'y a qu'une seule couche de sélectionner donc pas d'interpolation possible
                         # On retrouve l'index de la layer
                         array = np.asarray(indexes_z)
-                        index_layer = (np.abs(array - vert_coord[y, x][z])).argmin()
+                        index_layer = (np.abs(array - vert_coord[y, x][0])).argmin()
 
-                        if self.is_sigma_coordinate():
-                            candidateDepths[z] = self.levels[index_layer, y, x]
-                        else:
-                            candidateDepths[z] = self.levels[index_layer]
+                        data[0][y, x] = layers[index_layer,0, y, x]
+                        data[1][y, x] = layers[index_layer,1, y, x]
 
+                    elif vert_coord[y, x] is not None and len(vert_coord[y, x]) > 1:
 
-                        candidateValues[0][z] = layers[index_layer,0, y, x]
-                        candidateValues[1][z] = layers[index_layer,1, y, x]
+                        candidateValues = np.zeros([2,len(vert_coord[y, x])])
+                        candidateDepths = np.zeros([len(vert_coord[y, x])])
 
-                    results[0][y, x] = vertical_interpolation(candidateDepths, targetDepth, candidateValues[0],LevelCoverage.VERTICAL_INTERPOLATION_METHOD)
-                    results[1][y, x] = vertical_interpolation(candidateDepths, targetDepth,  candidateValues[1],LevelCoverage.VERTICAL_INTERPOLATION_METHOD)
+                        for z in range(0, len(vert_coord[y, x])):
+                            # On retrouve l'index de la layer
+                            array = np.asarray(indexes_z)
+                            index_layer = (np.abs(array - vert_coord[y, x][z])).argmin()
 
-        return results
+                            candidateDepths[0][z] = self.source_global_axis_z[index_layer,0, y, x]
+                            candidateValues[1][z] = layers[index_layer,1, y, x]
 
+                        data[0][y, x] = vertical_interpolation(candidateDepths, targetDepth, candidateValues[0],
+                                                            LevelCoverage.VERTICAL_INTERPOLATION_METHOD)
 
+                        data[1][y, x] = vertical_interpolation(candidateDepths, targetDepth, candidateValues[1],
+                                                               LevelCoverage.VERTICAL_INTERPOLATION_METHOD)
 
-       
+        if self.horizontal_resampling:
+            data[0] = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                          self.read_axis_y(type="source", with_overlap=True),
+                                          self.read_axis_x(type="target", with_overlap=True),
+                                          self.read_axis_y(type="target", with_overlap=True),
+                                          data[0],
+                                          Coverage.HORIZONTAL_INTERPOLATION_METHOD)
 
-            
-        
-        
-    
+            data[1] = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                          self.read_axis_y(type="source", with_overlap=True),
+                                          self.read_axis_x(type="target", with_overlap=True),
+                                          self.read_axis_y(type="target", with_overlap=True),
+                                          data[1],
+                                          Coverage.HORIZONTAL_INTERPOLATION_METHOD)
 
+        return [data[0][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]],
+                data[1][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]]

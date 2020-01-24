@@ -53,13 +53,13 @@ Elle rajoute une dimension verticale à la couverture horizontale classique.
 
             if zbox == None:
                 # we compute the destination grid
-                Zmin = np.min(self.source_global_axis_z)
-                Zmax = np.max(self.source_global_axis_z)
+                zmin = np.min(self.source_global_axis_z)
+                zmax = np.max(self.source_global_axis_z)
             else:
-                Zmin = zbox[0]
-                Zmax = zbox[1]
+                zmin = zbox[0]
+                zmax = zbox[1]
 
-            self.target_global_axis_z = np.arange(Zmin, Zmax, resolution_z)
+            self.target_global_axis_z = np.arange(zmin, zmax, resolution_z)
             self.target_global_z_size = len(self.target_global_axis_z)
 
             if self.rank == 0:
@@ -136,7 +136,7 @@ Elle rajoute une dimension verticale à la couverture horizontale classique.
         else:
             return self.target_global_z_size
     
-    def find_level_index(self,depth):
+    def find_level_index(self,depth,method="fast"):
         """Retourne l'index de la profondeur la plus proche selon le point le plus proche.
     @type depth : integer ou flottant
     @param depth: Profondeur en mètre souhaitée ou index de la profondeur souhaitée
@@ -155,10 +155,6 @@ Elle rajoute une dimension verticale à la couverture horizontale classique.
 
         if type(depth) == int or type(depth) == np.int32 or type(depth) == np.int64:
 
-            # A déplacer dans le reader
-            #if depth < min or depth >= max:
-            #    raise ValueError("Depth index have to range between "+str(min)+" and "+str(max)+". Actually depth index = "+str(depth))
-
             for y in range(0, ymax):
                 for x in range(0, xmax):
                     vert_coord[y, x] = []
@@ -170,10 +166,9 @@ Elle rajoute une dimension verticale à la couverture horizontale classique.
 
             if self.rank == 0:
                 logging.debug("[LevelCoverage][find_level_index()] Looking for : " + str(depth) + " m water depth")
+                logging.debug("[LevelCoverage][find_level_index()] Within a water depth interval of " + str(LevelCoverage.DEPTH_DELTA) + " m")
 
-            method = "new"
-
-            if method == "new":
+            if method == "fast":
 
                 X = np.abs(self.source_global_axis_z[:,self.map_mpi[self.rank]["src_global_y_overlap"],self.map_mpi[self.rank]["src_global_x_overlap"]] - depth)
                 idx = np.where(X <= LevelCoverage.DEPTH_DELTA)
@@ -188,10 +183,11 @@ Elle rajoute une dimension verticale à la couverture horizontale classique.
                         vert_coord[y, x] = []
 
                     vert_coord[y, x].append((int(index_z)))
-                    indexes_z.append((int(index_z)))
 
-            if method=="old":
+                    if int(index_z) not in indexes_z:
+                        indexes_z.append((int(index_z)))
 
+            elif method=="classic":
 
                 for y in range(0,ymax):
                     for x in range(0,xmax):
@@ -241,6 +237,9 @@ Elle rajoute une dimension verticale à la couverture horizontale classique.
 
                             vert_coord[y,x] = np.array(np.unique(vert_coord[y,x]))
 
+            else:
+                raise ValueError("Unable to decode method between 'fast' or 'classic'.")
+
         else: # Cas de grille classique
 
             logging.debug("[LevelCoverage][find_level_index()] Looking for : " + str(depth) + " m water depth")
@@ -288,16 +287,17 @@ Elle rajoute une dimension verticale à la couverture horizontale classique.
                 logging.debug("[LevelCoverage] " + str(depth) + " m water depth was not found on the Z axis.")
 
         if len(indexes_z)==0:
-            raise ValueError(
-                "[LevelCoverage] " + str(
-                    depth) + " m water depth was not found in the grid. Maybe the LevelCoverage.DEPTH_DELTA (+/- " + str(
+            logging.warning("[LevelCoverage] " + str(
+                    depth) + " m water depth was not found in the grid (proc n° "+str(self.rank)+"). Maybe the LevelCoverage.DEPTH_DELTA (+/- " + str(
                     LevelCoverage.DEPTH_DELTA) + " m) is too small or the depth is out of range.")
+
+        if self.rank == 0:
+            logging.debug("[LevelCoverage][find_level_index()] Found " + str(len(indexes_z)) + " candidate level(s)")
 
         # On retourne le tableau d'index
         self.depth_weight[depth] = [vert_coord,np.array(np.unique(indexes_z))]
 
         return self.depth_weight[depth]
-
 
     def read_variable_3D_sea_binary_mask(self):
         """Retourne le masque terre/mer sur toute la couverture selon la profondeur z

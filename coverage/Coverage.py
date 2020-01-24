@@ -66,6 +66,20 @@ def distance_on_unit_sphere(long1, lat1,long2, lat2):
     # in your favorite set of units to get length.
     return arc*6373
 
+
+def check_bbox(candidate):
+    Ymin = candidate[2]
+    Ymax = candidate[3]
+    Xmin = candidate[0]
+    Xmax = candidate[1]
+
+    if Xmax <= Xmin:
+        return False
+    if Ymax <= Ymin:
+        return False
+
+    return True
+
 class Coverage(object):
     """
 La classe Coverage représente une couverture spatiale sur l'horizontale. Les point qui représentent cette couverture
@@ -125,6 +139,9 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
                 Xmin = np.min(self.source_global_axis_x)
                 Xmax = np.max(self.source_global_axis_x)
             else:
+                if check_bbox(bbox) is False:
+                    raise Error("Pas bon")
+
                 Ymin = bbox[2]
                 Ymax = bbox[3]
                 Xmin = bbox[0]
@@ -141,7 +158,6 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
                     self.source_global_y_size) + ")")
                 logging.info('[horizontal_interpolation] Target grid size : (' + str(self.target_global_x_size) + ", " + str(
                     self.target_global_y_size) + ")")
-
         else:
             self.target_global_axis_x = self.source_global_axis_x
             self.target_global_axis_y = self.source_global_axis_y
@@ -239,8 +255,76 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
         self.read_metadata()
 
     def create_mpi_map(self):
-        print("à copier from timecoverage")
+        self.map_mpi = np.empty(self.size, dtype=object)
+        target_sample = (self.target_global_y_size, self.target_global_x_size)
 
+        # Découpage des axes
+        target_slices = shape_split(target_sample, self.size, axis=[0, 0])
+
+        slice_index = 0
+        for slyce in target_slices.flatten():
+            slice = tuple(slyce)
+
+            map = {}
+            # Grille source
+            map["dst_global_x"] = slice[1]
+            map["dst_global_y"] = slice[0]
+
+            map["dst_local_x_size"] = map["dst_global_x"].stop - map["dst_global_x"].start
+            map["dst_local_y_size"] = map["dst_global_y"].stop - map["dst_global_y"].start
+
+            dst_global_x_min_overlap = max(0, map["dst_global_x"].start - Coverage.HORIZONTAL_OVERLAPING_SIZE)
+            dst_global_x_max_overlap = min(self.target_global_x_size,
+                                           map["dst_global_x"].stop + Coverage.HORIZONTAL_OVERLAPING_SIZE)
+            map["dst_global_x_overlap"] = np.s_[dst_global_x_min_overlap:dst_global_x_max_overlap]
+
+            dst_global_y_min_overlap = max(0, map["dst_global_y"].start - Coverage.HORIZONTAL_OVERLAPING_SIZE)
+            dst_global_y_max_overlap = min(self.target_global_y_size,
+                                           map["dst_global_y"].stop + Coverage.HORIZONTAL_OVERLAPING_SIZE)
+            map["dst_global_y_overlap"] = np.s_[dst_global_y_min_overlap:dst_global_y_max_overlap]
+
+            map["dst_global_x_size_overlap"] = map["dst_global_x_overlap"].stop - map["dst_global_x_overlap"].start
+            map["dst_global_y_size_overlap"] = map["dst_global_y_overlap"].stop - map["dst_global_y_overlap"].start
+
+            dst_x_min = Coverage.HORIZONTAL_OVERLAPING_SIZE
+            dst_x_max = map["dst_global_x_size_overlap"] - Coverage.HORIZONTAL_OVERLAPING_SIZE
+            dst_y_min = Coverage.HORIZONTAL_OVERLAPING_SIZE
+            dst_y_max = map["dst_global_y_size_overlap"] - Coverage.HORIZONTAL_OVERLAPING_SIZE
+
+            if map["dst_global_x"].start == 0:
+                dst_x_min = 0
+
+            if map["dst_global_x"].stop == self.target_global_x_size:
+                dst_x_max = map["dst_global_x_size_overlap"]
+
+            if map["dst_global_y"].start == 0:
+                dst_y_min = 0
+
+            if map["dst_global_y"].stop == self.target_global_y_size:
+                dst_y_max = map["dst_global_y_size_overlap"]
+
+            map["dst_local_x"] = np.s_[dst_x_min:dst_x_max]
+            map["dst_local_y"] = np.s_[dst_y_min:dst_y_max]
+
+            # Source grille
+            map["src_global_x"] = map["dst_global_x"]
+            map["src_global_y"] = map["dst_global_y"]
+
+            map["src_global_x_overlap"] = map["dst_global_x_overlap"]
+            map["src_global_y_overlap"] = map["dst_global_y_overlap"]
+
+            map["src_local_x"] = map["dst_local_x"]
+            map["src_local_y"] = map["dst_local_y"]
+
+            map["src_local_x_size"] = map["dst_local_x_size"]
+            map["src_local_y_size"] = map["dst_local_y_size"]
+
+            map["src_local_x_size_overlap"] = map["dst_global_x_size_overlap"]
+            map["src_local_y_size_overlap"] = map["dst_global_y_size_overlap"]
+
+            self.map_mpi[slice_index] = map
+
+            slice_index = slice_index + 1
 
     # Read metadata
     def read_metadata(self):
@@ -436,12 +520,59 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
     def read_variable_bathymetry(self):     
         """Retourne la bathymétrie sur toute la couverture
     @return: un tableau en deux dimensions [y,x]."""
-        return self.reader.read_variable_bathymetry()
+        data = self.reader.read_variable_bathymetry(
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data,
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+
+    def read_variable_topography(self):
+        """Retourne la topographie sur toute la couverture
+    @return: un tableau en deux dimensions [y,x]."""
+        data = self.reader.read_variable_topography(
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data,
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
     
     def read_variable_mesh_size(self):     
         """Retourne la taille de la grille sur toute la couverture
     @return: un tableau en deux dimensions [y,x]."""
-        return self.reader.read_variable_mesh_size()
+        data = self.reader.read_variable_mesh_size(
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data,
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
     
     def read_variable_2D_sea_binary_mask(self):
         """Retourne le masque terre/mer sur toute la couverture
@@ -449,55 +580,42 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
             0 = Terre
             1 = Mer
     """
-
         data = self.reader.read_variable_2D_sea_binary_mask(
-            self.map_mpi[self.rank]["source_global_x_min_overlap"],
-            self.map_mpi[self.rank]["source_global_x_max_overlap"],
-            self.map_mpi[self.rank]["source_global_y_min_overlap"],
-            self.map_mpi[self.rank]["source_global_y_max_overlap"])
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
 
-            data = resample_2d_to_grid(self.read_axis_x(type="source",with_overlap=True),
-                                       self.read_axis_y(type="source",with_overlap=True),
-                                       self.read_axis_x(type="target",with_overlap=False),
-                                       self.read_axis_y(type="target",with_overlap=False),
+            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
                                        data,
                                        Coverage.HORIZONTAL_INTERPOLATION_METHOD)
 
+        return data[self.map_mpi[self.rank]["dst_local_y"],self.map_mpi[self.rank]["dst_local_x"]]
 
-            return data
-
-        else:
-            return data[
-               self.map_mpi[self.rank]["source_y_min"]:self.map_mpi[self.rank]["source_y_max"],
-               self.map_mpi[self.rank]["source_x_min"]:self.map_mpi[self.rank]["source_x_max"]]
-
-
-    #################
-    # METEO
-    # 2D
-    #################
-    def read_variable_topography(self):     
-        """Retourne la topographie sur toute la couverture
-    @return: un tableau en deux dimensions [y,x]."""
-        return self.reader.read_variable_topography()
-
-    #OTHERS
     def read_variable_Ha(self):
         """Retourne l'amplitude de la réanalyse
     @return: un tableau en deux dimensions [y,x]."""
-        return self.reader.read_variable_Ha()
+        data = self.reader.read_variable_Ha(
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
-    # def read_variable_sea_surface_density(self):
-    #     """Retourne la densité de l'eau de surface
-    #         @return: un tableau en deux dimensions [y,x]."""
-    #     return self.reader.read_variable_sea_surface_density()
-    #
-    # def read_variable_sea_water_turbidity(self):
-    #     """Retourne la turbidité de l'eau de surface
-    #                 @return: un tableau en deux dimensions [y,x]."""
-    #     return self.reader.read_variable_sea_water_turbidity()
+        if self.horizontal_resampling:
+            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data,
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
 
-        
-        
+        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+
+
+
+
