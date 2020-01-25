@@ -16,10 +16,12 @@
 from __future__ import division, print_function, absolute_import
 from coverage.io.CoverageReader import CoverageReader
 from coverage.io.netcdf.symphonie.SymphonieReader import SymphonieReader
+from utils.VariableDefinition import VariableDefinition
 from exception.VariableNameError import VariableNameError
 from netCDF4 import Dataset, MFDataset, num2date
 import numpy as np
 import os
+import logging
 
 class SymphonieOfflineReader(SymphonieReader):
 

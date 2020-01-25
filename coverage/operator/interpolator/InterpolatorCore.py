@@ -18,6 +18,7 @@ from scipy.interpolate import griddata
 from scipy.interpolate import interp1d
 import logging
 import numpy as np
+from numpy import int8,int16,int32,int64
 
 def resample_2d_to_grid(gridX,gridY,newX,newY,data,method):
 
@@ -26,7 +27,12 @@ def resample_2d_to_grid(gridX,gridY,newX,newY,data,method):
     points = np.array([gridX.flatten(), gridY.flatten()]).T
     values = data.flatten()
     xx, yy = np.meshgrid(newX, newY)
-    return griddata(points, values, (xx, yy), method=method, rescale=True,fill_value=9.96921e+36)
+    if data.dtype == int8 or data.dtype == int16 or data.dtype == int32 or data.dtype == int64:
+        fill_value = -9999
+    else:
+        fill_value = 9.96921e+36
+
+    return griddata(points, values, (xx, yy), method=method, rescale=True,fill_value=fill_value)
 
 def vertical_interpolation(sourceAxis,targetAxis,data,method):
     #logging.debug("[InterpolatorCore][vertical_interpolation()] Looking for water depth : " + str(
