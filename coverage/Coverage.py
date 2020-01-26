@@ -66,20 +66,6 @@ def distance_on_unit_sphere(long1, lat1,long2, lat2):
     # in your favorite set of units to get length.
     return arc*6373
 
-
-def check_bbox(candidate):
-    Ymin = candidate[2]
-    Ymax = candidate[3]
-    Xmin = candidate[0]
-    Xmax = candidate[1]
-
-    if Xmax <= Xmin:
-        return False
-    if Ymax <= Ymin:
-        return False
-
-    return True
-
 class Coverage(object):
     """
 La classe Coverage représente une couverture spatiale sur l'horizontale. Les point qui représentent cette couverture
@@ -111,12 +97,41 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
                                                             self.source_global_y_size)
         self.source_global_axis_y = self.reader.read_axis_y(0, self.source_global_x_size, 0,
                                                             self.source_global_y_size)
+        if bbox is None:
+            # we compute the destination grid
+            Ymin = np.min(self.source_global_axis_y)
+            Ymax = np.max(self.source_global_axis_y)
+            Xmin = np.min(self.source_global_axis_x)
+            Xmax = np.max(self.source_global_axis_x)
+        else:
+            if self.check_bbox_validity(bbox) is False:
+                raise ValueError("Your Bbox is not valid or is out side the coverage")
+            Ymin = bbox[2]
+            Ymax = bbox[3]
+            Xmin = bbox[0]
+            Xmax = bbox[1]
+
+        idx = np.where((self.source_global_axis_x >= Xmin) &
+                       (self.source_global_axis_x <= Xmax) &
+                       (self.source_global_axis_y >= Ymin) &
+                       (self.source_global_axis_y <= Ymax))
+
+        ymin = np.min(idx[0])
+        ymax = np.max(idx[0])
+        xmin = np.min(idx[1])
+        xmax = np.max(idx[1])
+
+        self.source_global_axis_x = self.source_global_axis_x[ymin:ymax, xmin:xmax]
+        self.source_global_axis_y = self.source_global_axis_y[ymin:ymax, xmin:xmax]
+        self.source_global_x_size = xmax  - xmin
+        self.source_global_y_size = ymax  - ymin
+
         self.target_global_res_x = None
         self.target_global_res_y = None
-        self.target_global_axis_x = None
-        self.target_global_axis_y = None
-        self.target_global_x_size = None
-        self.target_global_y_size = None
+        self.target_global_axis_x = self.source_global_axis_x
+        self.target_global_axis_y = self.source_global_axis_y
+        self.target_global_x_size = self.source_global_x_size
+        self.target_global_y_size = self.source_global_y_size
 
         self.comm = MPI.COMM_WORLD
         self.size = self.comm.Get_size()
@@ -131,21 +146,6 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
             self.target_global_res_x = res
             self.target_global_res_y = res
 
-            if bbox == None:
-                # we compute the destination grid
-                Ymin = np.min(self.source_global_axis_y)
-                Ymax = np.max(self.source_global_axis_y)
-                Xmin = np.min(self.source_global_axis_x)
-                Xmax = np.max(self.source_global_axis_x)
-            else:
-                if check_bbox(bbox) is False:
-                    raise Error("Pas bon")
-
-                Ymin = bbox[2]
-                Ymax = bbox[3]
-                Xmin = bbox[0]
-                Xmax = bbox[1]
-
             self.target_global_axis_x = np.arange(Xmin, Xmax, res)
             self.target_global_axis_y = np.arange(Ymin, Ymax, res)
 
@@ -157,31 +157,11 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
                     self.source_global_y_size) + ")")
                 logging.info('[horizontal_interpolation] Target grid size : (' + str(self.target_global_x_size) + ", " + str(
                     self.target_global_y_size) + ")")
-        else:
-            self.target_global_axis_x = self.source_global_axis_x
-            self.target_global_axis_y = self.source_global_axis_y
-            self.target_global_x_size = self.source_global_x_size
-            self.target_global_y_size = self.source_global_y_size
 
         self.create_mpi_map()
 
         if self.horizontal_resampling:
-
-            # self.map_mpi[self.rank]["src_global_x"] = np.s_[0:self.source_global_x_size]
-            # self.map_mpi[self.rank]["src_global_y"] = np.s_[0:self.source_global_y_size]
-            #
-            # self.map_mpi[self.rank]["src_global_x_overlap"] = np.s_[0:self.source_global_x_size]
-            # self.map_mpi[self.rank]["src_global_y_overlap"] = np.s_[0:self.source_global_y_size]
-            #
-            # self.map_mpi[self.rank]["src_local_x"] = np.s_[0:self.source_global_x_size]
-            # self.map_mpi[self.rank]["src_local_y"] = np.s_[0:self.source_global_y_size]
-            #
-            # self.map_mpi[self.rank]["src_local_x_size"] = self.source_global_x_size
-            # self.map_mpi[self.rank]["src_local_y_size"] = self.source_global_y_size
-            #
-            # self.map_mpi[self.rank]["src_local_x_size_overlap"] = self.source_global_x_size
-            # self.map_mpi[self.rank]["src_local_y_size_overlap"] = self.source_global_y_size
-
+            
             idx = np.where((self.source_global_axis_x >= np.min(self.read_axis_x(type="target",with_overlap=False))) &
                            (self.source_global_axis_x <= np.max(self.read_axis_x(type="target",with_overlap=False))) &
                            (self.source_global_axis_y >= np.min(self.read_axis_y(type="target",with_overlap=False))) &
@@ -248,6 +228,28 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
 
         # try to fill metadata
         self.read_metadata()
+
+    def check_bbox_validity(self,candidate):
+        Ymin = candidate[2]
+        Ymax = candidate[3]
+        Xmin = candidate[0]
+        Xmax = candidate[1]
+
+        if Xmax <= Xmin:
+            return False
+        if Ymax <= Ymin:
+            return False
+
+        if Ymin < np.min(self.source_global_axis_y):
+            return False
+        if Ymax > np.max(self.source_global_axis_y):
+            return False
+        if Xmin < np.min(self.source_global_axis_x):
+            return False
+        if Xmax > np.max(self.source_global_axis_x):
+            return False
+
+        return True
 
     def create_mpi_map(self):
         self.map_mpi = np.empty(self.size, dtype=object)

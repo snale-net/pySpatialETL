@@ -296,8 +296,6 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         if self.horizontal_resampling:
 
-            print(self.rank,np.shape(self.read_axis_x(type="source_global", with_overlap=True)),np.shape(data))
-
             data = resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
                                        self.read_axis_y(type="source_global", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
