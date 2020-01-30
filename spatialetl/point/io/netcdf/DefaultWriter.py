@@ -14,11 +14,11 @@
 # Author : Fabien Rétif - fabien.retif@zoho.com
 #
 from __future__ import division, print_function, absolute_import
-from spatialetl.point.io import MultiPointWriter
+from spatialetl.point.io.MultiPointWriter import MultiPointWriter
 from spatialetl.point.TimeMultiPoint import TimeMultiPoint
 from spatialetl.point.LevelMultiPoint import LevelMultiPoint
 from spatialetl.point.TimeLevelMultiPoint import TimeLevelMultiPoint
-from spatialetl.utils import VariableDefinition
+from spatialetl.utils.VariableDefinition import VariableDefinition
 from netCDF4 import Dataset
 from netCDF4 import date2num
 from numpy import float32,float64,int32

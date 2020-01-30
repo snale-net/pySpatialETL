@@ -17,8 +17,8 @@ from __future__ import division, print_function, absolute_import
 from spatialetl.coverage.Coverage import  Coverage
 from spatialetl.coverage.LevelCoverage import LevelCoverage
 from spatialetl.coverage.TimeCoverage import TimeCoverage
-from spatialetl.coverage.operator.interpolator.InterpolatorCore import resample_2d_to_grid
-from spatialetl.coverage.operator.interpolator.InterpolatorCore import vertical_interpolation
+from spatialetl.operator.interpolator.InterpolatorCore import resample_2d_to_grid
+from spatialetl.operator.interpolator.InterpolatorCore import vertical_interpolation
 import numpy as np
 import logging
 
@@ -26,10 +26,18 @@ class TimeLevelCoverage(LevelCoverage,TimeCoverage):
     """La classe TimeLevelCoverage est une extension de la classe Coverage, LevelCoverage, TimeCoverage.
 Elle rajoute les dimensions temporelle et verticale à la couverture horizontale classique.
     """
-    def __init__(self, myReader,bbox=None,resolution_x=None,resolution_y=None,zbox=None,resolution_z=None):
+    def __init__(self, myReader,bbox=None,resolution_x=None,resolution_y=None,zbox=None,resolution_z=None,start_time=None,end_time=None):
 
         LevelCoverage.__init__(self,myReader,bbox=bbox,resolution_x=resolution_x,resolution_y=resolution_y,zbox=zbox,resolution_z=resolution_z);
-        TimeCoverage.__init__(self,myReader,bbox=bbox,resolution_x=resolution_x,resolution_y=resolution_y);
+        TimeCoverage.__init__(self,myReader,bbox=bbox,resolution_x=resolution_x,resolution_y=resolution_y,start_time=start_time,end_time=end_time);
+
+        if self.horizontal_resampling and self.rank == 0:
+            logging.info(
+                '[horizontal_interpolation] Source grid size : (' + str(self.source_global_x_size) + ", " + str(
+                    self.source_global_y_size) + ")")
+            logging.info(
+                '[horizontal_interpolation] Target grid size : (' + str(self.target_global_x_size) + ", " + str(
+                    self.target_global_y_size) + ")")
 
     #################
     # HYDRO

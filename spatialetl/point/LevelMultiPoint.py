@@ -15,7 +15,7 @@
 #
 from __future__ import division, print_function, absolute_import
 from spatialetl.point.MultiPoint import MultiPoint
-from spatialetl.point.operators import vertical_interpolation
+from spatialetl.operator.interpolator.InterpolatorCore import vertical_interpolation
 import numpy as np
 from datetime import datetime,timedelta
 import logging

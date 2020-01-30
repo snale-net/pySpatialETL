@@ -14,12 +14,11 @@
 # Author : Fabien Rétif - fabien.retif@zoho.com
 #
 from __future__ import division, print_function, absolute_import
-from spatialetl.point.io import MultiPointReader
+from spatialetl.point.io.MultiPointReader import MultiPointReader
 from spatialetl.point.TimeMultiPoint import TimeMultiPoint
 from netCDF4 import Dataset, num2date
 import numpy as np
-from spatialetl.utils import VariableDefinition
-
+from spatialetl.utils.VariableDefinition import VariableDefinition
 
 class DefaultTimeLevelMultiPointReader(MultiPointReader):
 

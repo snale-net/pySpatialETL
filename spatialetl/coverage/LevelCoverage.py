@@ -81,6 +81,14 @@ Elle rajoute une dimension verticale à la couverture horizontale classique.
 
         self.depth_weight = {}
 
+        if type(self) == LevelCoverage and self.horizontal_resampling and self.rank == 0:
+            logging.info(
+                '[horizontal_interpolation] Source grid size : (' + str(self.source_global_x_size) + ", " + str(
+                    self.source_global_y_size) + ")")
+            logging.info(
+                '[horizontal_interpolation] Target grid size : (' + str(self.target_global_x_size) + ", " + str(
+                    self.target_global_y_size) + ")")
+
     # Axis
     def read_axis_z(self,type="target",with_horizontal_overlap=False):
         """Retourne les valeurs (souvent en mètre) de l'axe z.

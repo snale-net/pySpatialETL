@@ -19,6 +19,7 @@ from scipy.interpolate import interp1d
 import logging
 import numpy as np
 from numpy import int8,int16,int32,int64
+from datetime import datetime
 
 def resample_2d_to_grid(gridX,gridY,newX,newY,data,method):
 
@@ -69,4 +70,28 @@ def vertical_interpolation(sourceAxis,targetAxis,data,method):
             logging.warning("[InterpolatorCore][vertical_interpolation()] ----------------------------------------")
             f = interp1d(sourceAxis, data, kind=method,  fill_value = "extrapolate")
             return f(targetAxis)
+
+def time_1d_interpolation(sourceAxis,targetAxis,data,method):
+    logging.debug("[InterpolatorCore][time_interpolation()] Looking for time : "+str(datetime.utcfromtimestamp(targetAxis[0]))+" with method '"+str(method)+"'.")
+    for time in sourceAxis:
+        logging.debug("[InterpolatorCore][time_interpolation()] Source Axis contains: "+str(datetime.utcfromtimestamp(time)))
+
+    for time in targetAxis:
+        logging.debug("[InterpolatorCore][time_interpolation()] Target Axis contains: "+str(datetime.utcfromtimestamp(time)))
+
+    if method is None:
+        return np.nan
+
+    elif method == "mean":
+        return np.mean(data)
+
+    elif method == "nearest":
+
+        array = np.asarray(sourceAxis)
+        nearest_index_t = (np.abs(array - targetAxis[0])).argmin()
+        return data[nearest_index_t]
+
+    else:
+        f = interp1d(sourceAxis, data, kind=method, bounds_error=True)
+        return f(targetAxis)
 

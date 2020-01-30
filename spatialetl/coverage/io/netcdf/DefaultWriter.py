@@ -455,7 +455,7 @@ class DefaultWriter (CoverageWriter):
             time_index = 0
             for time in self.coverage.read_axis_t():
 
-                logging.debug(
+                logging.info(
                     '[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['sea_water_temperature']) + '\' at time \'' + str(time) + '\'')
 
                 level_index = 0

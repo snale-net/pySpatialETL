@@ -15,7 +15,7 @@
 #
 from __future__ import division, print_function, absolute_import
 from spatialetl.point.MultiPoint import MultiPoint
-from spatialetl.point.operators import time_interpolation
+from spatialetl.operator.interpolator.InterpolatorCore import time_1d_interpolation
 from numpy import int,int32,int64
 import numpy as np
 from datetime import datetime,timedelta,timezone
@@ -105,30 +105,15 @@ class TimeMultiPoint(MultiPoint):
 
             logging.debug("[TimeMultiPoint][find_time_index()] Looking for : "+str(t))
 
-            # On cherche l'index le plus proche
-            array = np.asarray(self.read_axis_t(timestamp=1,raw=1))
-            index_t = (np.abs(array - t.replace(tzinfo=timezone.utc).timestamp())).argmin()
+            #X = np.abs(self.read_axis_t(timestamp=1,raw=1) - t.replace(tzinfo=timezone.utc).timestamp())
+            X = np.abs(self.read_axis_t(timestamp=1,raw=1) - t)
+            #index_t = (np.abs(array - t.replace(tzinfo=timezone.utc).timestamp())).argmin()
+            idx = np.where(X <= TimeMultiPoint.TIME_DELTA)
 
-            if abs(t - self.raw_times[index_t]).total_seconds() <= TimeMultiPoint.TIME_DELTA.total_seconds():
-                # On a trouvé une date qui correspond au delta près.
-
-                logging.debug("[TimeMultiPoint][find_time_index()] Found : "+str(self.raw_times[index_t]))
+            for index in range(np.shape(idx)[1]):
+                index_t = idx[0][index]
                 indexes_t.append(int(index_t))
-
-                if abs((t - self.raw_times[index_t]).total_seconds()) != zero_delta.total_seconds():
-                    logging.debug("[TimeMultiPoint][find_time_index()] Looking for others dates with time delta of "+str(TimeMultiPoint.TIME_DELTA))
-                    # On n'a trouvé exactement notre temps, on cherche autour les dates avant et après au TIME_DELTA  près
-                    tt = index_t
-                    while tt - 1 >= 0 and abs((t - self.raw_times[tt-1]).total_seconds()) <= TimeMultiPoint.TIME_DELTA.total_seconds() and tt - 1 not in indexes_t:
-                        logging.debug("[TimeMultiPoint][find_time_index()] Found : "+str(self.raw_times[tt - 1]))
-                        indexes_t.append(int(tt - 1))
-                        tt = tt -1
-
-                    tt = index_t
-                    while tt + 1 < self.get_t_size(raw=True) and abs((t - self.raw_times[tt+1]).total_seconds()) <= TimeMultiPoint.TIME_DELTA.total_seconds() and tt + 1 not in indexes_t:
-                        logging.debug("[TimeMultiPoint][find_time_index()] Found : "+str(self.raw_times[tt + 1]))
-                        indexes_t.append(int(tt + 1))
-                        tt= tt +1
+                logging.debug("[TimeMultiPoint][find_time_index()] Found : "+str(self.raw_times[index_t]))
 
             else:
                 logging.debug("[TimeMultiPoint] " + str(t) + " was not found on the T axis.")
@@ -197,7 +182,8 @@ class TimeMultiPoint(MultiPoint):
             candidateTimes[:] = np.nan
 
             for t in range(0, len(indexes_t)):
-                candidateTimes[t] = rawTime[indexes_t[t]]
+                print(rawTime[indexes_t[t]])
+                candidateTimes[t] = datetime.timestamp(rawTime[indexes_t[t]])
                 candidateValues[t] = layers[t][x]
 
             # We remove NaN values
@@ -207,7 +193,7 @@ class TimeMultiPoint(MultiPoint):
 
             if len(finalCandidateValues) > 1:
                 # We have more than 1 value, we interpole them
-                results[x] = time_interpolation(finalCandidateTimes, targetTime, finalCandidateValues,TimeMultiPoint.TIME_INTERPOLATION_METHOD)
+                results[x] = time_1d_interpolation(finalCandidateTimes, targetTime, finalCandidateValues,TimeMultiPoint.TIME_INTERPOLATION_METHOD)
             else:
                 # We take the only value
                 results[x] = candidateValues[0]

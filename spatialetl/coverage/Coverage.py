@@ -19,7 +19,7 @@ import math
 from mpi4py import MPI
 from array_split import shape_split
 from scipy.spatial.distance import cdist
-from spatialetl.coverage.operator.interpolator.InterpolatorCore import resample_2d_to_grid
+from spatialetl.operator.interpolator.InterpolatorCore import resample_2d_to_grid
 import logging
  
 def distance_on_unit_sphere(long1, lat1,long2, lat2):
@@ -84,11 +84,15 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
     HORIZONTAL_OVERLAPING_SIZE = 5
 
     def __init__(self, myReader,bbox=None,resolution_x=None,resolution_y=None):
-            
         self.reader = myReader;
+        # MPI
+        self.map_mpi = None
+        self.comm = MPI.COMM_WORLD
+        self.size = self.comm.Get_size()
+        self.rank = self.comm.Get_rank()
+
         self.source_regular_grid = self.reader.is_regular_grid()
         self.target_regular_grid = self.source_regular_grid
-        self.map_mpi = None
         self.horizontal_resampling = False
 
         self.source_global_x_size = self.reader.get_x_size()
@@ -97,6 +101,8 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
                                                             self.source_global_y_size)
         self.source_global_axis_y = self.reader.read_axis_y(0, self.source_global_x_size, 0,
                                                             self.source_global_y_size)
+
+        # On réduit en fonction de la bbox
         if bbox is None:
             # we compute the destination grid
             Ymin = np.min(self.source_global_axis_y)
@@ -125,7 +131,9 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
             ymax = np.max(idx[0]) + 1
 
             self.source_global_axis_x = self.source_global_axis_x[xmin:xmax]
+            self.source_global_x_size = xmax - xmin
             self.source_global_axis_y = self.source_global_axis_y[ymin:ymax]
+            self.source_global_y_size = ymax - ymin
 
         else:
 
@@ -140,21 +148,19 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
             xmax = np.max(idx[1])+1
 
             self.source_global_axis_x = self.source_global_axis_x[ymin:ymax, xmin:xmax]
+            self.source_global_x_size = xmax - xmin
             self.source_global_axis_y = self.source_global_axis_y[ymin:ymax, xmin:xmax]
+            self.source_global_y_size = ymax - ymin
 
-        self.source_global_x_size = xmax  - xmin
-        self.source_global_y_size = ymax  - ymin
+        # source_global sont réduit au zoom
 
+        # On calcule la grille de destination
         self.target_global_res_x = None
         self.target_global_res_y = None
         self.target_global_axis_x = self.source_global_axis_x
         self.target_global_axis_y = self.source_global_axis_y
         self.target_global_x_size = self.source_global_x_size
         self.target_global_y_size = self.source_global_y_size
-
-        self.comm = MPI.COMM_WORLD
-        self.size = self.comm.Get_size()
-        self.rank = self.comm.Get_rank()
 
         if resolution_x is not None and resolution_y is not None:
 
@@ -171,95 +177,21 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
             self.target_global_x_size=len(self.target_global_axis_x)
             self.target_global_y_size=len(self.target_global_axis_y)
 
-            if self.rank == 0:
-                logging.info('[horizontal_interpolation] Source grid size : (' + str(self.source_global_x_size) + ", " + str(
-                    self.source_global_y_size) + ")")
-                logging.info('[horizontal_interpolation] Target grid size : (' + str(self.target_global_x_size) + ", " + str(
-                    self.target_global_y_size) + ")")
+            if type(self) == Coverage:
+                if self.rank == 0:
+                    logging.info('[horizontal_interpolation] Source grid size : (' + str(self.source_global_x_size) + ", " + str(
+                        self.source_global_y_size) + ")")
+                    logging.info('[horizontal_interpolation] Target grid size : (' + str(self.target_global_x_size) + ", " + str(
+                        self.target_global_y_size) + ")")
 
-        self.create_mpi_map()
-
-        if self.horizontal_resampling:
-
-            if self.is_regular_grid(type="source"):
-
-                idx = np.where((self.source_global_axis_x >= Xmin) &
-                               (self.source_global_axis_x <= Xmax))
-
-                xmin = np.min(idx[0])
-                xmax = np.max(idx[0])+1
-
-                idx = np.where((self.source_global_axis_y >= Ymin) &
-                               (self.source_global_axis_y <= Ymax))
-
-                ymin = np.min(idx[0])
-                ymax = np.max(idx[0])+1
-
-            else:
-            
-                idx = np.where((self.source_global_axis_x >= np.min(self.read_axis_x(type="target",with_overlap=False))) &
-                               (self.source_global_axis_x <= np.max(self.read_axis_x(type="target",with_overlap=False))) &
-                               (self.source_global_axis_y >= np.min(self.read_axis_y(type="target",with_overlap=False))) &
-                               (self.source_global_axis_y <= np.max(self.read_axis_y(type="target",with_overlap=False))))
-
-                ymin = np.min(idx[0])
-                ymax = np.max(idx[0])+1
-                xmin = np.min(idx[1])
-                xmax = np.max(idx[1])+1
-
-            # Version 2
-            # SRC GLOBAL
-            self.map_mpi[self.rank]["src_global_x"] = np.s_[xmin:xmax]
-            self.map_mpi[self.rank]["src_global_x_size"] = xmax - xmin
-            self.map_mpi[self.rank]["src_global_y"] = np.s_[ymin:ymax]
-            self.map_mpi[self.rank]["src_global_y_size"] = ymax - ymin
-
-            dst_global_x_min_overlap = max(0, self.map_mpi[self.rank][
-                "src_global_x"].start - Coverage.HORIZONTAL_OVERLAPING_SIZE)
-            dst_global_x_max_overlap = min(self.source_global_x_size,
-                                           self.map_mpi[self.rank][
-                                               "src_global_x"].stop + Coverage.HORIZONTAL_OVERLAPING_SIZE)
-            self.map_mpi[self.rank]["src_global_x_overlap"] = np.s_[
-                                                              dst_global_x_min_overlap:dst_global_x_max_overlap]
-
-            dst_global_y_min_overlap = max(0, self.map_mpi[self.rank][
-                "src_global_y"].start - Coverage.HORIZONTAL_OVERLAPING_SIZE)
-            dst_global_y_max_overlap = min(self.source_global_y_size,
-                                           self.map_mpi[self.rank][
-                                               "src_global_y"].stop + Coverage.HORIZONTAL_OVERLAPING_SIZE)
-            self.map_mpi[self.rank]["src_global_y_overlap"] = np.s_[
-                                                              dst_global_y_min_overlap:dst_global_y_max_overlap]
-
-            self.map_mpi[self.rank]["src_global_x_size_overlap"] = self.map_mpi[self.rank][
-                                                                       "src_global_x_overlap"].stop - \
-                                                                   self.map_mpi[self.rank][
-                                                                       "src_global_x_overlap"].start
-            self.map_mpi[self.rank]["src_global_y_size_overlap"] = self.map_mpi[self.rank][
-                                                                       "src_global_y_overlap"].stop - \
-                                                                   self.map_mpi[self.rank][
-                                                                       "src_global_y_overlap"].start
-
-            self.map_mpi[self.rank]["src_local_x_size"] = xmax - xmin
-            self.map_mpi[self.rank]["src_local_y_size"] = ymax - ymin
-            self.map_mpi[self.rank]["src_local_x"] = np.s_[0:self.map_mpi[self.rank]["src_local_x_size"]]
-            self.map_mpi[self.rank]["src_local_y"] = np.s_[0:self.map_mpi[self.rank]["src_local_y_size"]]
-
-            # OVERLAP
-            self.map_mpi[self.rank]["src_local_x_size_overlap"] = self.map_mpi[self.rank][
-                "src_global_x_size_overlap"]
-            self.map_mpi[self.rank]["src_local_y_size_overlap"] = self.map_mpi[self.rank][
-                "src_global_y_size_overlap"]
-
-            self.map_mpi[self.rank]["src_local_x_overlap"] = np.s_[
-                                                             0:self.map_mpi[self.rank]["src_local_x_size_overlap"]]
-            self.map_mpi[self.rank]["src_local_y_overlap"] = np.s_[
-                                                             0:self.map_mpi[self.rank]["src_local_y_size_overlap"]]
-
-        if self.rank==0:
-            logging.debug("MPI map:")
-        for key in self.map_mpi[self.rank]:
-            logging.debug("Proc n°"+str(self.rank)+" "+str(key)+"="+str(self.map_mpi[self.rank][key]))
-        logging.debug("---------")
+        if type(self)== Coverage:
+            self.create_mpi_map()
+            self.update_mpi_map()
+            if self.rank==0:
+                logging.debug("MPI map:")
+            for key in self.map_mpi[self.rank]:
+                logging.debug("Proc n°"+str(self.rank)+" "+str(key)+"="+str(self.map_mpi[self.rank][key]))
+            logging.debug("---------")
 
         # try to fill metadata
         self.read_metadata()
@@ -357,6 +289,85 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
             self.map_mpi[slice_index] = map
 
             slice_index = slice_index + 1
+
+    def update_mpi_map(self):
+
+        if self.horizontal_resampling:
+
+            if self.is_regular_grid(type="source"):
+
+                idx = np.where((self.source_global_axis_x >= Xmin) &
+                               (self.source_global_axis_x <= Xmax))
+
+                xmin = np.min(idx[0])
+                xmax = np.max(idx[0]) + 1
+
+                idx = np.where((self.source_global_axis_y >= Ymin) &
+                               (self.source_global_axis_y <= Ymax))
+
+                ymin = np.min(idx[0])
+                ymax = np.max(idx[0]) + 1
+
+            else:
+
+                idx = np.where(
+                    (self.source_global_axis_x >= np.min(self.read_axis_x(type="target", with_overlap=False))) &
+                    (self.source_global_axis_x <= np.max(self.read_axis_x(type="target", with_overlap=False))) &
+                    (self.source_global_axis_y >= np.min(self.read_axis_y(type="target", with_overlap=False))) &
+                    (self.source_global_axis_y <= np.max(self.read_axis_y(type="target", with_overlap=False))))
+
+                ymin = np.min(idx[0])
+                ymax = np.max(idx[0]) + 1
+                xmin = np.min(idx[1])
+                xmax = np.max(idx[1]) + 1
+
+            # Version 2
+            # SRC GLOBAL
+            self.map_mpi[self.rank]["src_global_x"] = np.s_[xmin:xmax]
+            self.map_mpi[self.rank]["src_global_x_size"] = xmax - xmin
+            self.map_mpi[self.rank]["src_global_y"] = np.s_[ymin:ymax]
+            self.map_mpi[self.rank]["src_global_y_size"] = ymax - ymin
+
+            dst_global_x_min_overlap = max(0, self.map_mpi[self.rank][
+                "src_global_x"].start - Coverage.HORIZONTAL_OVERLAPING_SIZE)
+            dst_global_x_max_overlap = min(self.source_global_x_size,
+                                           self.map_mpi[self.rank][
+                                               "src_global_x"].stop + Coverage.HORIZONTAL_OVERLAPING_SIZE)
+            self.map_mpi[self.rank]["src_global_x_overlap"] = np.s_[
+                                                              dst_global_x_min_overlap:dst_global_x_max_overlap]
+
+            dst_global_y_min_overlap = max(0, self.map_mpi[self.rank][
+                "src_global_y"].start - Coverage.HORIZONTAL_OVERLAPING_SIZE)
+            dst_global_y_max_overlap = min(self.source_global_y_size,
+                                           self.map_mpi[self.rank][
+                                               "src_global_y"].stop + Coverage.HORIZONTAL_OVERLAPING_SIZE)
+            self.map_mpi[self.rank]["src_global_y_overlap"] = np.s_[
+                                                              dst_global_y_min_overlap:dst_global_y_max_overlap]
+
+            self.map_mpi[self.rank]["src_global_x_size_overlap"] = self.map_mpi[self.rank][
+                                                                       "src_global_x_overlap"].stop - \
+                                                                   self.map_mpi[self.rank][
+                                                                       "src_global_x_overlap"].start
+            self.map_mpi[self.rank]["src_global_y_size_overlap"] = self.map_mpi[self.rank][
+                                                                       "src_global_y_overlap"].stop - \
+                                                                   self.map_mpi[self.rank][
+                                                                       "src_global_y_overlap"].start
+
+            self.map_mpi[self.rank]["src_local_x_size"] = xmax - xmin
+            self.map_mpi[self.rank]["src_local_y_size"] = ymax - ymin
+            self.map_mpi[self.rank]["src_local_x"] = np.s_[0:self.map_mpi[self.rank]["src_local_x_size"]]
+            self.map_mpi[self.rank]["src_local_y"] = np.s_[0:self.map_mpi[self.rank]["src_local_y_size"]]
+
+            # OVERLAP
+            self.map_mpi[self.rank]["src_local_x_size_overlap"] = self.map_mpi[self.rank][
+                "src_global_x_size_overlap"]
+            self.map_mpi[self.rank]["src_local_y_size_overlap"] = self.map_mpi[self.rank][
+                "src_global_y_size_overlap"]
+
+            self.map_mpi[self.rank]["src_local_x_overlap"] = np.s_[
+                                                             0:self.map_mpi[self.rank]["src_local_x_size_overlap"]]
+            self.map_mpi[self.rank]["src_local_y_overlap"] = np.s_[
+                                                             0:self.map_mpi[self.rank]["src_local_y_size_overlap"]]
 
     # Read metadata
     def read_metadata(self):
@@ -483,7 +494,7 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
             else:
                 return self.target_global_axis_y[self.map_mpi[self.rank]["dst_global_y"],self.map_mpi[self.rank]["dst_global_x"]]
         
-    def find_point_index(self,target_lon,target_lat,method="classic"):
+    def find_point_index(self,target_lon,target_lat,method="classic",only_mask_value=True):
         """Retourne le point le plus proche du point donné en paramètre.
     @param target_lon: Coordonnée longitude du point
     @param target_lat: Coordonnée latitude du point
@@ -496,7 +507,7 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
      [4] : la distance du point le plus proche en kilomètre."""
         lon = self.read_axis_x(type="source_global")
         lat = self.read_axis_y(type="source_global")
-        #mask = self.read_variable_2D_sea_binary_mask()
+        mask = self.read_variable_2D_sea_binary_mask()
         dist = np.zeros([self.source_global_y_size, self.source_global_x_size])
         dist[:] = 100000
 
@@ -504,11 +515,17 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
             for x in range(0, self.source_global_x_size):
                 for y in range(0, self.source_global_y_size):
 
-                    #if(mask[y,x] == 1): #=Terre
-                    if self.reader.is_regular_grid():
-                        dist[y,x] = distance_on_unit_sphere(target_lon,target_lat,lon[x],lat[y])
+                    if only_mask_value:
+                        if(mask[y,x] == 1): #=Terre
+                            if self.reader.is_regular_grid():
+                                dist[y,x] = distance_on_unit_sphere(target_lon,target_lat,lon[x],lat[y])
+                            else:
+                                dist[y,x] = distance_on_unit_sphere(target_lon,target_lat,lon[y,x],lat[y,x])
                     else:
-                        dist[y,x] = distance_on_unit_sphere(target_lon,target_lat,lon[y,x],lat[y,x])
+                        if self.reader.is_regular_grid():
+                            dist[y, x] = distance_on_unit_sphere(target_lon, target_lat, lon[x], lat[y])
+                        else:
+                            dist[y, x] = distance_on_unit_sphere(target_lon, target_lat, lon[y, x], lat[y, x])
 
             nearest_y_index,nearest_x_index = np.where(dist == np.min(dist))
 

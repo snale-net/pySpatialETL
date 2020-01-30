@@ -22,7 +22,7 @@ from numpy import int,int32,int64
 import math
 import numpy as np
 from array_split import shape_split
-from spatialetl.coverage.operator.interpolator.InterpolatorCore import resample_2d_to_grid
+from spatialetl.operator.interpolator.InterpolatorCore import resample_2d_to_grid
 import logging
 
 class TimeCoverage(Coverage):
@@ -34,26 +34,85 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
     TIME_DELTA = timedelta(minutes = 15)
     TIME_OVERLAPING_SIZE = 0
 
-    def __init__(self, myReader,bbox=None,resolution_x=None,resolution_y=None):
+    def __init__(self, myReader,bbox=None,resolution_x=None,resolution_y=None,start_time=None,end_time=None):
 
         Coverage.__init__(self, myReader, bbox=bbox, resolution_x=resolution_x, resolution_y=resolution_y);
 
         self.source_global_t_size = self.reader.get_t_size()
         self.source_global_axis_t = self.reader.read_axis_t(0,self.source_global_t_size,0);
-        self.target_global_t_size = self.source_global_t_size
-        self.target_global_axis_t = self.source_global_axis_t
 
         self.temporal_resampling = False
+        tmin = 0
+        tmax = self.source_global_t_size
+        zero_delta = timedelta(minutes=00)
 
-        if self.temporal_resampling:
-            # TODO à implémenter
-            self.map_mpi[self.rank]["src_global_t"] = np.s_[0:self.source_global_t_size]
-            self.map_mpi[self.rank]["src_global_overlap"] = np.s_[0:self.source_global_t_size]
-            self.map_mpi[self.rank]["src_local_t"] = np.s_[0:self.source_global_t_size]
+        if start_time is not None:
+
+            if type(start_time) == datetime or type(start_time) == cftime._cftime.real_datetime:
+                time = start_time
+            elif type(start_time) == str:
+                try:
+                    time = datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S')
+                except ValueError as ex:
+                    raise ValueError("start_time is not well formated " + str(ex))
+            else:
+                raise ValueError("start_time have to be string or datetime. Found " + str(type(start_time)))
+
+            nearest_t_index = (np.abs(self.source_global_axis_t - time)).argmin()
+
+            if time - self.source_global_axis_t[nearest_t_index] == zero_delta or abs(time - self.source_global_axis_t[nearest_t_index]) < TimeCoverage.TIME_DELTA:
+                tmin = nearest_t_index
+            else:
+                raise ValueError(str(time) + " not found. Maybe the TimeCoverage.TIME_DELTA (" + str(
+                TimeCoverage.TIME_DELTA) + ") is too small or the date is out the range.")
+
+        if end_time is not None:
+
+            self.temporal_resampling = True
+
+            if type(end_time) == datetime or type(end_time) == cftime._cftime.real_datetime:
+                time = end_time
+            elif type(end_time) == str:
+                try:
+                    time = datetime.strptime(end_time, '%Y-%m-%d %H:%M:%S')
+                except ValueError as ex:
+                    raise ValueError("end_time is not well formated "+str(ex))
+            else:
+                raise ValueError("end_time have to be string or datetime. Found " + str(type(end_time)))
+
+            nearest_t_index = (np.abs(self.source_global_axis_t - time)).argmin()
+
+            if time - self.source_global_axis_t[nearest_t_index] == zero_delta or abs(time - self.source_global_axis_t[nearest_t_index]) < TimeCoverage.TIME_DELTA:
+                tmax = nearest_t_index +1
+            else:
+                raise ValueError(str(time) + " not found. Maybe the TimeCoverage.TIME_DELTA (" + str(
+                    TimeCoverage.TIME_DELTA) + ") is too small or the date is out the range.")
+
+        self.target_global_axis_t = self.source_global_axis_t[tmin:tmax]
+        self.target_global_t_size = tmax - tmin
+
+        self.create_mpi_map()
+        self.update_mpi_map()
+
+        if type(self) == TimeCoverage and self.horizontal_resampling and self.rank == 0:
+                logging.info(
+                    '[horizontal_interpolation] Source grid size : (' + str(self.source_global_x_size) + ", " + str(
+                        self.source_global_y_size) + ")")
+                logging.info(
+                    '[horizontal_interpolation] Target grid size : (' + str(self.target_global_x_size) + ", " + str(
+                        self.target_global_y_size) + ")")
+
+        #self.map_mpi[self.rank]["src_global_t"] = np.s_[tmin:tmax]
+        #self.map_mpi[self.rank]["src_global_overlap"] = np.s_[tmin:tmax]
+        #self.map_mpi[self.rank]["src_local_t"] = np.s_[0:self.source_global_t_size]
+
+        if self.rank == 0:
+            logging.debug("MPI map:")
+        for key in self.map_mpi[self.rank]:
+            logging.debug("Proc n°" + str(self.rank) + " " + str(key) + "=" + str(self.map_mpi[self.rank][key]))
+        logging.debug("---------")
 
     def create_mpi_map(self):
-
-        self.target_global_t_size = self.reader.get_t_size()
 
         self.map_mpi = np.empty(self.size, dtype=object)
         target_sample = (self.target_global_t_size, self.target_global_y_size, self.target_global_x_size)
@@ -179,14 +238,14 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             if method == "classic":
 
                 for i in range(0,self.get_t_size()):
-                    if t - array[i] == zero_delta or t - array[i] < TimeCoverage.TIME_DELTA:
+                    if t - array[i] == zero_delta or abs(t - array[i]) < TimeCoverage.TIME_DELTA:
                         return i
 
             elif method == "quick":
 
                 nearest_t_index = (np.abs(array - t)).argmin()
 
-                if t - array[nearest_t_index] == zero_delta or t - array[nearest_t_index] < TimeCoverage.TIME_DELTA:
+                if t - array[nearest_t_index] == zero_delta or abs(t - array[nearest_t_index]) < TimeCoverage.TIME_DELTA:
                     return nearest_t_index
             else:
                 raise NotImplementedError("Method " + str(method) + " is not implemented for regular grid.")

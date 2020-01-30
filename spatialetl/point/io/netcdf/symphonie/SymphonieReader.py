@@ -220,7 +220,7 @@ class SymphonieReader(MultiPointReader):
     def read_variable_sea_water_temperature_at_time_and_depth(self,index_t,index_z):
         data = np.zeros([self.nbPoints])
         data[:] = np.nan
-        all_data = self.coverage.reader.read_variable_sea_water_temperature_at_time_and_depth(index_t, index_z)
+        all_data = self.coverage.reader.read_variable_sea_water_temperature_at_time_and_depth(index_t, index_z,0,self.coverage.get_x_size(),0,self.coverage.get_y_size())
 
         for index_x in range(0, self.nbPoints):
             data[index_x] = all_data[self.xy_coords[index_x][1], self.xy_coords[index_x][0]]
@@ -231,7 +231,7 @@ class SymphonieReader(MultiPointReader):
         data = np.zeros([self.nbPoints])
         data[:] = np.nan
 
-        all_data = self.coverage.reader.read_variable_sea_water_salinity_at_time_and_depth(index_t, index_z)
+        all_data = self.coverage.reader.read_variable_sea_water_salinity_at_time_and_depth(index_t, index_z,0,self.coverage.get_x_size(),0,self.coverage.get_y_size())
 
         for index_x in range(0, self.nbPoints):
             data[index_x] = all_data[self.xy_coords[index_x][1], self.xy_coords[index_x][0]]
