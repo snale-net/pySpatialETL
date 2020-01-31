@@ -29,90 +29,119 @@ from mpi4py import MPI
 
 class DefaultWriter (CoverageWriter):
 
-    def __init__(self,cov,myFile):
+    def __init__(self,cov,myFile,mode='w'):
         CoverageWriter.__init__(self,cov,myFile);
+        self.mode=mode
         format = 'NETCDF3_CLASSIC'
         #format = 'NETCDF4_CLASSIC'
-        self.ncfile = Dataset(self.filename, 'w', parallel=True, comm=self.coverage.comm, info=MPI.Info(), format=format)
-        self.ncfile.description = 'Generated with pySpatialETL'
 
-        # dimensions
-        self.ncfile.createDimension(VariableDefinition.VARIABLE_NAME['latitude'], self.coverage.get_y_size(type="target_global"))
-        self.ncfile.createDimension(VariableDefinition.VARIABLE_NAME['longitude'], self.coverage.get_x_size(type="target_global"))
+        if self.mode=='w':
+            self.ncfile = Dataset(self.filename, 'w', parallel=True, comm=self.coverage.comm, info=MPI.Info(), format=format)
+            self.ncfile.description = 'Generated with pySpatialETL'
 
-        if self.coverage.is_regular_grid()==True:
+            # dimensions
+            self.ncfile.createDimension(VariableDefinition.VARIABLE_NAME['latitude'], self.coverage.get_y_size(type="target_global"))
+            self.ncfile.createDimension(VariableDefinition.VARIABLE_NAME['longitude'], self.coverage.get_x_size(type="target_global"))
 
-            # variables
-            latitudes = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['latitude'], float32, (VariableDefinition.VARIABLE_NAME['latitude'],))
-            latitudes.long_name = VariableDefinition.LONG_NAME['latitude'] ;
-            latitudes.standard_name = VariableDefinition.STANDARD_NAME['latitude'] ;
-            latitudes.valid_min = -90.;
-            latitudes.valid_max = 90. ;
-            latitudes.axis = "Y" ;
-            latitudes.units = VariableDefinition.CANONICAL_UNITS['latitude'];
+            if self.coverage.is_regular_grid()==True:
 
-            longitudes = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['longitude'], float32, (VariableDefinition.VARIABLE_NAME['longitude'],))
-            longitudes.long_name = VariableDefinition.LONG_NAME['longitude'] ;
-            longitudes.standard_name = VariableDefinition.STANDARD_NAME['longitude'] ;
-            longitudes.valid_min = -180. ;
-            longitudes.valid_max = 180. ;
-            longitudes.axis = "X" ;
-            longitudes.units = VariableDefinition.CANONICAL_UNITS['longitude'];
+                # variables
+                latitudes = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['latitude'], float32, (VariableDefinition.VARIABLE_NAME['latitude'],))
+                latitudes.long_name = VariableDefinition.LONG_NAME['latitude'] ;
+                latitudes.standard_name = VariableDefinition.STANDARD_NAME['latitude'] ;
+                latitudes.valid_min = -90.;
+                latitudes.valid_max = 90. ;
+                latitudes.axis = "Y" ;
+                latitudes.units = VariableDefinition.CANONICAL_UNITS['latitude'];
 
-            latitudes[self.coverage.map_mpi[self.coverage.rank]["dst_global_y"]] = self.coverage.read_axis_y()
-            longitudes[self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = self.coverage.read_axis_x()
+                longitudes = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['longitude'], float32, (VariableDefinition.VARIABLE_NAME['longitude'],))
+                longitudes.long_name = VariableDefinition.LONG_NAME['longitude'] ;
+                longitudes.standard_name = VariableDefinition.STANDARD_NAME['longitude'] ;
+                longitudes.valid_min = -180. ;
+                longitudes.valid_max = 180. ;
+                longitudes.axis = "X" ;
+                longitudes.units = VariableDefinition.CANONICAL_UNITS['longitude'];
 
-        else:
+                latitudes[self.coverage.map_mpi[self.coverage.rank]["dst_global_y"]] = self.coverage.read_axis_y()
+                longitudes[self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = self.coverage.read_axis_x()
 
-            latitudes = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['latitude'], float32, (VariableDefinition.VARIABLE_NAME['latitude'],VariableDefinition.VARIABLE_NAME['longitude'],))
-            latitudes.long_name = VariableDefinition.LONG_NAME['latitude'];
-            latitudes.standard_name = VariableDefinition.STANDARD_NAME['latitude'];
-            latitudes.valid_min = -90.;
-            latitudes.valid_max = 90.;
-            latitudes.axis = "Y";
-            latitudes.units = VariableDefinition.CANONICAL_UNITS['latitude'];
+            else:
 
-            longitudes = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['longitude'], float32, (VariableDefinition.VARIABLE_NAME['latitude'],VariableDefinition.VARIABLE_NAME['longitude'],))
-            longitudes.long_name = VariableDefinition.LONG_NAME['longitude'];
-            longitudes.standard_name = VariableDefinition.STANDARD_NAME['longitude'];
-            longitudes.valid_min = -180.;
-            longitudes.valid_max = 180.;
-            longitudes.axis = "X";
-            longitudes.units = VariableDefinition.CANONICAL_UNITS['longitude'];
+                latitudes = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['latitude'], float32, (VariableDefinition.VARIABLE_NAME['latitude'],VariableDefinition.VARIABLE_NAME['longitude'],))
+                latitudes.long_name = VariableDefinition.LONG_NAME['latitude'];
+                latitudes.standard_name = VariableDefinition.STANDARD_NAME['latitude'];
+                latitudes.valid_min = -90.;
+                latitudes.valid_max = 90.;
+                latitudes.axis = "Y";
+                latitudes.units = VariableDefinition.CANONICAL_UNITS['latitude'];
 
-            # data
-            latitudes[
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = self.coverage.read_axis_y()
+                longitudes = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['longitude'], float32, (VariableDefinition.VARIABLE_NAME['latitude'],VariableDefinition.VARIABLE_NAME['longitude'],))
+                longitudes.long_name = VariableDefinition.LONG_NAME['longitude'];
+                longitudes.standard_name = VariableDefinition.STANDARD_NAME['longitude'];
+                longitudes.valid_min = -180.;
+                longitudes.valid_max = 180.;
+                longitudes.axis = "X";
+                longitudes.units = VariableDefinition.CANONICAL_UNITS['longitude'];
 
-            longitudes[
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = self.coverage.read_axis_x()
+                # data
+                latitudes[
+                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = self.coverage.read_axis_y()
 
-        if(isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
+                longitudes[
+                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = self.coverage.read_axis_x()
 
-            self.ncfile.createDimension(VariableDefinition.VARIABLE_NAME['time'], self.coverage.get_t_size(type="target_global"))
-            times = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['time'], float64, (VariableDefinition.VARIABLE_NAME['time'],))
-            times.units= 'seconds since 1970-01-01 00:00:00'
-            times.calendar= 'gregorian'
-            times.standard_name= 'time'
-            times.axis='T'
-            times.conventions = "UTC time"
+            if(isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
-            times[
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_t"]] = date2num(self.coverage.read_axis_t(), units = times.units, calendar = times.calendar)
+                self.ncfile.createDimension(VariableDefinition.VARIABLE_NAME['time'], self.coverage.get_t_size(type="target_global"))
+                times = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['time'], float64, (VariableDefinition.VARIABLE_NAME['time'],))
+                times.units= 'seconds since 1970-01-01 00:00:00'
+                times.calendar= 'gregorian'
+                times.standard_name= 'time'
+                times.axis='T'
+                times.conventions = "UTC time"
 
-        if(isinstance(self.coverage, LevelCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
+                times[
+                self.coverage.map_mpi[self.coverage.rank]["dst_global_t"]] = date2num(self.coverage.read_axis_t(), units = times.units, calendar = times.calendar)
 
-            if self.coverage.is_sigma_coordinate():
-                raise ValueError("This writer supports only Coverage with a regular vertical axis.")
+            if(isinstance(self.coverage, LevelCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
-            self.ncfile.createDimension(VariableDefinition.VARIABLE_NAME['depth'], self.coverage.get_z_size(type="target"))
-            levels = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['depth'], float64, (VariableDefinition.VARIABLE_NAME['depth'],))
-            levels.standard_name= 'depth'
-            levels.long_name="Positive depth"
-            levels.axis='Z'
-            levels.units = VariableDefinition.CANONICAL_UNITS['depth'];
+                if self.coverage.is_sigma_coordinate():
+                    raise ValueError("This writer supports only Coverage with a regular vertical axis.")
 
-            levels[:] = self.coverage.read_axis_z()
+                self.ncfile.createDimension(VariableDefinition.VARIABLE_NAME['depth'], self.coverage.get_z_size(type="target"))
+                levels = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['depth'], float64, (VariableDefinition.VARIABLE_NAME['depth'],))
+                levels.standard_name= 'depth'
+                levels.long_name="Positive depth"
+                levels.axis='Z'
+                levels.units = VariableDefinition.CANONICAL_UNITS['depth'];
+
+                levels[:] = self.coverage.read_axis_z()
+
+        if self.mode=="a":
+
+            self.ncfile = Dataset(self.filename, 'a', parallel=True, comm=self.coverage.comm, info=MPI.Info(),
+                                  format=format)
+            #self.ncfile.description = 'Generated with pySpatialETL'
+
+            # dimensions
+            if self.ncfile.dimensions['latitude'].size != self.coverage.get_y_size(type="target_global"):
+                raise ValueError("Latitude dimension hasn't the same size than the Coverage. Unable to append the file.")
+
+            if self.ncfile.dimensions['longitude'].size != self.coverage.get_x_size(type="target_global"):
+                raise ValueError("Longitude dimension hasn't the same size than the Coverage. Unable to append the file.")
+
+            if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
+
+                if self.ncfile.dimensions['time'].size != self.coverage.get_t_size(type="target_global"):
+                    raise ValueError("Time dimension hasn't the same size than the Coverage. Unable to append the file.")
+
+            if (isinstance(self.coverage, LevelCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
+
+                if self.coverage.is_sigma_coordinate():
+                    raise ValueError("This writer supports only Coverage with a regular vertical axis.")
+
+                if self.ncfile.dimensions['depth'].size != self.coverage.get_z_size(type="target"):
+                    raise ValueError("Depth dimensions hasn't the same size than the Coverage. Unable to append the file.")
 
     def close(self):
         self.ncfile.close()
@@ -120,7 +149,10 @@ class DefaultWriter (CoverageWriter):
     # Variables
     def write_variable_mesh_size(self):
 
-        var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['mesh_size'], float32, (VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],), fill_value=9.96921e+36)
+        if VariableDefinition.VARIABLE_NAME['mesh_size'] in self.ncfile.variables:
+            var = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['mesh_size']]
+        else:
+            var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['mesh_size'], float32, (VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],), fill_value=9.96921e+36)
         var.long_name = VariableDefinition.LONG_NAME['mesh_size']
         var.standard_name = VariableDefinition.STANDARD_NAME['mesh_size']
         var.units = VariableDefinition.CANONICAL_UNITS['mesh_size']
@@ -135,7 +167,10 @@ class DefaultWriter (CoverageWriter):
 
     def write_variable_2D_sea_binary_mask(self):
 
-        var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['2d_sea_binary_mask'], int16, (VariableDefinition.VARIABLE_NAME['latitude'],VariableDefinition.VARIABLE_NAME['longitude'],), fill_value=-9999)
+        if VariableDefinition.VARIABLE_NAME['2d_sea_binary_mask'] in self.ncfile.variables:
+            var = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['2d_sea_binary_mask']]
+        else:
+            var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['2d_sea_binary_mask'], int16, (VariableDefinition.VARIABLE_NAME['latitude'],VariableDefinition.VARIABLE_NAME['longitude'],), fill_value=-9999)
         var.long_name = VariableDefinition.LONG_NAME['2d_sea_binary_mask']
         var.standard_name = VariableDefinition.STANDARD_NAME['2d_sea_binary_mask']
         var.units = VariableDefinition.CANONICAL_UNITS['2d_sea_binary_mask']
@@ -153,7 +188,10 @@ class DefaultWriter (CoverageWriter):
 
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
-            var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['wet_binary_mask'], float32, (VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],),
+            if VariableDefinition.VARIABLE_NAME['wet_binary_mask'] in self.ncfile.variables:
+                var = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['wet_binary_mask']]
+            else:
+                var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['wet_binary_mask'], float32, (VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],),
                                              fill_value=9.96921e+36)
             var.long_name = VariableDefinition.LONG_NAME['wet_binary_mask']
             var.standard_name = VariableDefinition.STANDARD_NAME['wet_binary_mask']
@@ -184,7 +222,10 @@ class DefaultWriter (CoverageWriter):
     #################
     def write_variable_bathymetry(self):
 
-        var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['bathymetry'], float32, (VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],),fill_value=9.96921e+36)
+        if VariableDefinition.VARIABLE_NAME['bathymetry'] in self.ncfile.variables:
+            var = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['bathymetry']]
+        else:
+            var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['bathymetry'], float32, (VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],),fill_value=9.96921e+36)
         var.long_name = VariableDefinition.LONG_NAME['bathymetry']
         var.standard_name = VariableDefinition.STANDARD_NAME['bathymetry']
         var.units = VariableDefinition.CANONICAL_UNITS['bathymetry']
@@ -201,7 +242,10 @@ class DefaultWriter (CoverageWriter):
 
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
-            ucur = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['barotropic_eastward_sea_water_velocity'],
+            if VariableDefinition.VARIABLE_NAME['barotropic_eastward_sea_water_velocity'] in self.ncfile.variables:
+                ucur = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['barotropic_eastward_sea_water_velocity']]
+            else:
+                ucur = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['barotropic_eastward_sea_water_velocity'],
                                               float32,
                                               (VariableDefinition.VARIABLE_NAME['time'],
                                                VariableDefinition.VARIABLE_NAME['latitude'],
@@ -211,7 +255,10 @@ class DefaultWriter (CoverageWriter):
             ucur.units = VariableDefinition.CANONICAL_UNITS['barotropic_eastward_sea_water_velocity']
             ucur.comment = "cur=sqrt(U**2+V**2)";
 
-            vcur = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['barotropic_northward_sea_water_velocity'],
+            if VariableDefinition.VARIABLE_NAME['barotropic_northward_sea_water_velocity'] in self.ncfile.variables:
+                vcur = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['barotropic_northward_sea_water_velocity']]
+            else:
+                vcur = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['barotropic_northward_sea_water_velocity'],
                                               float32,
                                               (VariableDefinition.VARIABLE_NAME['time'],
                                                VariableDefinition.VARIABLE_NAME['latitude'],
@@ -251,8 +298,12 @@ class DefaultWriter (CoverageWriter):
     def write_variable_sea_surface_height_above_mean_sea_level(self):
 
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
-            
-            var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_surface_height_above_mean_sea_level'], float32, (VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],),fill_value=9.96921e+36)
+
+            if VariableDefinition.VARIABLE_NAME['sea_surface_height_above_mean_sea_level'] in self.ncfile.variables:
+                var = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['sea_surface_height_above_mean_sea_level']]
+            else:
+                var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_surface_height_above_mean_sea_level'], float32, (VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],),fill_value=9.96921e+36)
+
             var.long_name = VariableDefinition.LONG_NAME['sea_surface_height_above_mean_sea_level']
             var.standard_name = VariableDefinition.STANDARD_NAME['sea_surface_height_above_mean_sea_level']
             var.units = VariableDefinition.CANONICAL_UNITS['sea_surface_height_above_mean_sea_level']
@@ -279,7 +330,10 @@ class DefaultWriter (CoverageWriter):
 
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
-            var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_surface_height_above_geoid'], float32,
+            if VariableDefinition.VARIABLE_NAME['sea_surface_height_above_geoid'] in self.ncfile.variables:
+                var = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['sea_surface_height_above_geoid']]
+            else:
+                var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_surface_height_above_geoid'], float32,
                                              (VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],), fill_value=9.96921e+36)
             var.long_name = VariableDefinition.LONG_NAME['sea_surface_height_above_geoid']
             var.standard_name = VariableDefinition.STANDARD_NAME['sea_surface_height_above_geoid']
@@ -307,7 +361,10 @@ class DefaultWriter (CoverageWriter):
 
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
-            var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_surface_temperature'], float32, (
+            if VariableDefinition.VARIABLE_NAME['sea_surface_temperature'] in self.ncfile.variables:
+                var = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['sea_surface_temperature']]
+            else:
+                var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_surface_temperature'], float32, (
             VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['latitude'],
             VariableDefinition.VARIABLE_NAME['longitude'],),
                                              fill_value=9.96921e+36)
@@ -339,7 +396,10 @@ class DefaultWriter (CoverageWriter):
 
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
-            var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_surface_salinity'], float32, (
+            if VariableDefinition.VARIABLE_NAME['sea_surface_salinity'] in self.ncfile.variables:
+                var = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['sea_surface_salinity']]
+            else:
+                var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_surface_salinity'], float32, (
             VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['latitude'],
             VariableDefinition.VARIABLE_NAME['longitude'],),
                                              fill_value=9.96921e+36)
@@ -375,7 +435,10 @@ class DefaultWriter (CoverageWriter):
 
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
-            var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_water_temperature_at_ground_level'], float32, (
+            if VariableDefinition.VARIABLE_NAME['sea_water_temperature_at_ground_level'] in self.ncfile.variables:
+                var = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['sea_water_temperature_at_ground_level']]
+            else:
+                var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_water_temperature_at_ground_level'], float32, (
             VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['latitude'],
             VariableDefinition.VARIABLE_NAME['longitude'],),
                                              fill_value=9.96921e+36)
@@ -407,7 +470,10 @@ class DefaultWriter (CoverageWriter):
 
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
-            var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_water_salinity_at_ground_level'], float32, (
+            if VariableDefinition.VARIABLE_NAME['sea_water_salinity_at_ground_level'] in self.ncfile.variables:
+                var = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['sea_water_salinity_at_ground_level']]
+            else:
+                var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_water_salinity_at_ground_level'], float32, (
             VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['latitude'],
             VariableDefinition.VARIABLE_NAME['longitude'],),
                                              fill_value=9.96921e+36)
@@ -443,7 +509,10 @@ class DefaultWriter (CoverageWriter):
 
         if (isinstance(self.coverage, TimeLevelCoverage)):
 
-            var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_water_temperature'], float32,
+            if VariableDefinition.VARIABLE_NAME['sea_water_temperature'] in self.ncfile.variables:
+                var = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['sea_water_temperature']]
+            else:
+                var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_water_temperature'], float32,
                                              (VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['depth'], VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],), fill_value=9.96921e+36)
             var.long_name = VariableDefinition.LONG_NAME['sea_water_temperature']
             var.standard_name = VariableDefinition.STANDARD_NAME['sea_water_temperature']
@@ -479,7 +548,10 @@ class DefaultWriter (CoverageWriter):
 
         if (isinstance(self.coverage, TimeLevelCoverage)):
 
-            var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_water_salinity'], float32,
+            if VariableDefinition.VARIABLE_NAME['sea_water_salinity'] in self.ncfile.variables:
+                var = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['sea_water_salinity']]
+            else:
+                var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_water_salinity'], float32,
                                              (VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['depth'], VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],), fill_value=9.96921e+36)
             var.long_name = VariableDefinition.LONG_NAME['sea_water_salinity']
             var.standard_name = VariableDefinition.STANDARD_NAME['sea_water_salinity']
@@ -515,7 +587,10 @@ class DefaultWriter (CoverageWriter):
 
         if (isinstance(self.coverage, TimeLevelCoverage)):
 
-            ucur = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['baroclinic_eastward_sea_water_velocity'],
+            if VariableDefinition.VARIABLE_NAME['baroclinic_eastward_sea_water_velocity'] in self.ncfile.variables:
+                ucur = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['baroclinic_eastward_sea_water_velocity']]
+            else:
+                ucur = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['baroclinic_eastward_sea_water_velocity'],
                                               float32,
                                               (VariableDefinition.VARIABLE_NAME['time'],
                                                VariableDefinition.VARIABLE_NAME['depth'],
@@ -526,7 +601,10 @@ class DefaultWriter (CoverageWriter):
             ucur.units = VariableDefinition.CANONICAL_UNITS['baroclinic_eastward_sea_water_velocity']
             ucur.comment = "cur=sqrt(U**2+V**2)";
 
-            vcur = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['baroclinic_northward_sea_water_velocity'],
+            if VariableDefinition.VARIABLE_NAME['baroclinic_northward_sea_water_velocity'] in self.ncfile.variables:
+                vcur = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['baroclinic_northward_sea_water_velocity']]
+            else:
+                vcur = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['baroclinic_northward_sea_water_velocity'],
                                               float32,
                                               (VariableDefinition.VARIABLE_NAME['time'],
                                                VariableDefinition.VARIABLE_NAME['depth'],
@@ -579,7 +657,10 @@ class DefaultWriter (CoverageWriter):
 
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
-            var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_surface_wave_significant_height'], float32, (VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],),fill_value=9.96921e+36)
+            if VariableDefinition.VARIABLE_NAME['sea_surface_wave_significant_height'] in self.ncfile.variables:
+                var = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['sea_surface_wave_significant_height']]
+            else:
+                var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_surface_wave_significant_height'], float32, (VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],),fill_value=9.96921e+36)
             var.long_name = VariableDefinition.LONG_NAME['sea_surface_wave_significant_height']
             var.standard_name = VariableDefinition.STANDARD_NAME['sea_surface_wave_significant_height']
             var.units = VariableDefinition.CANONICAL_UNITS['sea_surface_wave_significant_height']
@@ -607,7 +688,10 @@ class DefaultWriter (CoverageWriter):
 
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
-            var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_surface_wave_breaking_height'], float32,
+            if VariableDefinition.VARIABLE_NAME['sea_surface_wave_breaking_height'] in self.ncfile.variables:
+                var = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['sea_surface_wave_breaking_height']]
+            else:
+                var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_surface_wave_breaking_height'], float32,
                                              (VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],), fill_value=9.96921e+36)
             var.long_name = VariableDefinition.LONG_NAME['sea_surface_wave_breaking_height']
             var.standard_name = VariableDefinition.STANDARD_NAME['sea_surface_wave_breaking_height']
@@ -636,7 +720,10 @@ class DefaultWriter (CoverageWriter):
 
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
-            var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_surface_wave_mean_period'], float32,
+            if VariableDefinition.VARIABLE_NAME['sea_surface_wave_mean_period'] in self.ncfile.variables:
+                var = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['sea_surface_wave_mean_period']]
+            else:
+                var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_surface_wave_mean_period'], float32,
                                              (VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],), fill_value=9.96921e+36)
             var.long_name = VariableDefinition.LONG_NAME['sea_surface_wave_mean_period']
             var.standard_name = VariableDefinition.STANDARD_NAME['sea_surface_wave_mean_period']
@@ -666,7 +753,10 @@ class DefaultWriter (CoverageWriter):
 
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
-            var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_surface_wave_peak_period'], float32,
+            if VariableDefinition.VARIABLE_NAME['sea_surface_wave_peak_period'] in self.ncfile.variables:
+                var = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['sea_surface_wave_peak_period']]
+            else:
+                var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_surface_wave_peak_period'], float32,
                                              (VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],), fill_value=9.96921e+36)
             var.long_name = VariableDefinition.LONG_NAME['sea_surface_wave_peak_period']
             var.standard_name = VariableDefinition.STANDARD_NAME['sea_surface_wave_peak_period']
@@ -696,7 +786,10 @@ class DefaultWriter (CoverageWriter):
 
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
-            var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_surface_wave_from_direction'], float32,
+            if VariableDefinition.VARIABLE_NAME['sea_surface_wave_from_direction'] in self.ncfile.variables:
+                var = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['sea_surface_wave_from_direction']]
+            else:
+                var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_surface_wave_from_direction'], float32,
                                              (VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],), fill_value=9.96921e+36)
             var.long_name = VariableDefinition.LONG_NAME['sea_surface_wave_from_direction']
             var.standard_name = VariableDefinition.STANDARD_NAME['sea_surface_wave_from_direction']
@@ -726,7 +819,10 @@ class DefaultWriter (CoverageWriter):
 
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
-            var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_surface_wave_to_direction'], float32,
+            if VariableDefinition.VARIABLE_NAME['sea_surface_wave_to_direction'] in self.ncfile.variables:
+                var = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['sea_surface_wave_to_direction']]
+            else:
+                var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_surface_wave_to_direction'], float32,
                                              (VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],), fill_value=9.96921e+36)
             var.long_name = VariableDefinition.LONG_NAME['sea_surface_wave_to_direction']
             var.standard_name = VariableDefinition.STANDARD_NAME['sea_surface_wave_to_direction']
@@ -756,12 +852,18 @@ class DefaultWriter (CoverageWriter):
 
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
-            ucur = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['eastward_sea_surface_wave_stokes_drift_velocity'], float32, (VariableDefinition.VARIABLE_NAME['time'],VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],),fill_value=9.96921e+36)
+            if VariableDefinition.VARIABLE_NAME['eastward_sea_surface_wave_stokes_drift_velocity'] in self.ncfile.variables:
+                ucur = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['eastward_sea_surface_wave_stokes_drift_velocity']]
+            else:
+                ucur = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['eastward_sea_surface_wave_stokes_drift_velocity'], float32, (VariableDefinition.VARIABLE_NAME['time'],VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],),fill_value=9.96921e+36)
             ucur.long_name = VariableDefinition.LONG_NAME['eastward_sea_surface_wave_stokes_drift_velocity']
             ucur.standard_name = VariableDefinition.STANDARD_NAME['eastward_sea_surface_wave_stokes_drift_velocity']
             ucur.units = VariableDefinition.CANONICAL_UNITS['eastward_sea_surface_wave_stokes_drift_velocity']
 
-            vcur = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['northward_sea_surface_wave_stokes_drift_velocity'], float32, (VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],),fill_value=9.96921e+36)
+            if VariableDefinition.VARIABLE_NAME['northward_sea_surface_wave_stokes_drift_velocity'] in self.ncfile.variables:
+                vcur = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['northward_sea_surface_wave_stokes_drift_velocity']]
+            else:
+                vcur = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['northward_sea_surface_wave_stokes_drift_velocity'], float32, (VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],),fill_value=9.96921e+36)
             vcur.long_name = VariableDefinition.LONG_NAME['northward_sea_surface_wave_stokes_drift_velocity']
             vcur.standard_name = VariableDefinition.STANDARD_NAME['northward_sea_surface_wave_stokes_drift_velocity']
             vcur.units = VariableDefinition.CANONICAL_UNITS['northward_sea_surface_wave_stokes_drift_velocity']
@@ -797,7 +899,10 @@ class DefaultWriter (CoverageWriter):
 
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
-            var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['radiation_pressure_bernouilli_head'], float32,
+            if VariableDefinition.VARIABLE_NAME['radiation_pressure_bernouilli_head'] in self.ncfile.variables:
+                var = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['radiation_pressure_bernouilli_head']]
+            else:
+                var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['radiation_pressure_bernouilli_head'], float32,
                                              (VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],), fill_value=9.96921e+36)
             var.long_name = VariableDefinition.LONG_NAME['radiation_pressure_bernouilli_head']
             var.standard_name = VariableDefinition.STANDARD_NAME['radiation_pressure_bernouilli_head']
@@ -826,7 +931,10 @@ class DefaultWriter (CoverageWriter):
 
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
-            var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_surface_wave_energy_flux_to_ocean'],
+            if VariableDefinition.VARIABLE_NAME['sea_surface_wave_energy_flux_to_ocean'] in self.ncfile.variables:
+                var = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['sea_surface_wave_energy_flux_to_ocean']]
+            else:
+                var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_surface_wave_energy_flux_to_ocean'],
                                              float32,
                                              (VariableDefinition.VARIABLE_NAME['time'],
                                               VariableDefinition.VARIABLE_NAME['latitude'],
@@ -865,7 +973,10 @@ class DefaultWriter (CoverageWriter):
 
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
-            var = self.ncfile.createVariable(
+            if VariableDefinition.VARIABLE_NAME['sea_surface_wave_energy_dissipation_at_ground_level'] in self.ncfile.variables:
+                var = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['sea_surface_wave_energy_dissipation_at_ground_level']]
+            else:
+                var = self.ncfile.createVariable(
                 VariableDefinition.VARIABLE_NAME['sea_surface_wave_energy_dissipation_at_ground_level'], float32,
                 (VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['latitude'],
                  VariableDefinition.VARIABLE_NAME['longitude'],), fill_value=9.96921e+36)
@@ -903,12 +1014,18 @@ class DefaultWriter (CoverageWriter):
 
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
-            ucur = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['eastward_atmosphere_momentum_flux_to_waves'], float32, (VariableDefinition.VARIABLE_NAME['time'],VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],),fill_value=9.96921e+36)
+            if VariableDefinition.VARIABLE_NAME['eastward_atmosphere_momentum_flux_to_waves'] in self.ncfile.variables:
+                ucur = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['eastward_atmosphere_momentum_flux_to_waves']]
+            else:
+                ucur = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['eastward_atmosphere_momentum_flux_to_waves'], float32, (VariableDefinition.VARIABLE_NAME['time'],VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],),fill_value=9.96921e+36)
             ucur.long_name = VariableDefinition.LONG_NAME['eastward_atmosphere_momentum_flux_to_waves']
             ucur.standard_name = VariableDefinition.STANDARD_NAME['eastward_atmosphere_momentum_flux_to_waves']
             ucur.units = VariableDefinition.CANONICAL_UNITS['eastward_atmosphere_momentum_flux_to_waves']
 
-            vcur = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['northward_atmosphere_momentum_flux_to_waves'], float32, (VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],),fill_value=9.96921e+36)
+            if VariableDefinition.VARIABLE_NAME['northward_atmosphere_momentum_flux_to_waves'] in self.ncfile.variables:
+                vcur = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['northward_atmosphere_momentum_flux_to_waves']]
+            else:
+                vcur = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['northward_atmosphere_momentum_flux_to_waves'], float32, (VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],),fill_value=9.96921e+36)
             vcur.long_name = VariableDefinition.LONG_NAME['northward_atmosphere_momentum_flux_to_waves']
             vcur.standard_name = VariableDefinition.STANDARD_NAME['northward_atmosphere_momentum_flux_to_waves']
             vcur.units =VariableDefinition.CANONICAL_UNITS['northward_atmosphere_momentum_flux_to_waves']
@@ -944,12 +1061,18 @@ class DefaultWriter (CoverageWriter):
 
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
-            ucur = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['eastward_waves_momentum_flux_to_ocean'], float32, (VariableDefinition.VARIABLE_NAME['time'],VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],),fill_value=9.96921e+36)
+            if VariableDefinition.VARIABLE_NAME['eastward_waves_momentum_flux_to_ocean'] in self.ncfile.variables:
+                ucur = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['eastward_waves_momentum_flux_to_ocean']]
+            else:
+                ucur = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['eastward_waves_momentum_flux_to_ocean'], float32, (VariableDefinition.VARIABLE_NAME['time'],VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],),fill_value=9.96921e+36)
             ucur.long_name = VariableDefinition.LONG_NAME['eastward_waves_momentum_flux_to_ocean']
             ucur.standard_name = VariableDefinition.STANDARD_NAME['eastward_waves_momentum_flux_to_ocean']
             ucur.units = VariableDefinition.CANONICAL_UNITS['eastward_waves_momentum_flux_to_ocean']
 
-            vcur = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['northward_waves_momentum_flux_to_ocean'], float32, (VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],),fill_value=9.96921e+36)
+            if VariableDefinition.VARIABLE_NAME['northward_waves_momentum_flux_to_ocean'] in self.ncfile.variables:
+                vcurr = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['northward_waves_momentum_flux_to_ocean']]
+            else:
+                vcur = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['northward_waves_momentum_flux_to_ocean'], float32, (VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],),fill_value=9.96921e+36)
             vcur.long_name = VariableDefinition.LONG_NAME['northward_waves_momentum_flux_to_ocean']
             vcur.standard_name = VariableDefinition.STANDARD_NAME['northward_waves_momentum_flux_to_ocean']
             vcur.units = VariableDefinition.CANONICAL_UNITS['northward_waves_momentum_flux_to_ocean']
@@ -994,7 +1117,10 @@ class DefaultWriter (CoverageWriter):
 
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
-            ucur = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['eastward_wind_stress'], float32, (
+            if VariableDefinition.VARIABLE_NAME['eastward_wind_stress'] in self.ncfile.variables:
+                ucur = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['eastward_wind_stress']]
+            else:
+                ucur = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['eastward_wind_stress'], float32, (
             VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['latitude'],
             VariableDefinition.VARIABLE_NAME['longitude'],),
                                               fill_value=9.96921e+36)
@@ -1002,7 +1128,10 @@ class DefaultWriter (CoverageWriter):
             ucur.standard_name = VariableDefinition.STANDARD_NAME['eastward_wind_stress']
             ucur.units = VariableDefinition.CANONICAL_UNITS['eastward_wind_stress']
 
-            vcur = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['northward_wind_stress'], float32, (
+            if VariableDefinition.VARIABLE_NAME['northward_wind_stress'] in self.ncfile.variables:
+                vcur = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['northward_wind_stress']]
+            else:
+                vcur = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['northward_wind_stress'], float32, (
             VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['latitude'],
             VariableDefinition.VARIABLE_NAME['longitude'],),
                                               fill_value=9.96921e+36)
@@ -1044,12 +1173,18 @@ class DefaultWriter (CoverageWriter):
 
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
-            ucur = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['eastward_wind_10m'], float32, (VariableDefinition.VARIABLE_NAME['time'],VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],),fill_value=9.96921e+36)
+            if VariableDefinition.VARIABLE_NAME['eastward_wind_10m'] in self.ncfile.variables:
+                ucur = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['eastward_wind_10m']]
+            else:
+                ucur = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['eastward_wind_10m'], float32, (VariableDefinition.VARIABLE_NAME['time'],VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],),fill_value=9.96921e+36)
             ucur.long_name = VariableDefinition.LONG_NAME['eastward_wind_10m']
             ucur.standard_name = VariableDefinition.STANDARD_NAME['eastward_wind_10m']
             ucur.units = VariableDefinition.CANONICAL_UNITS['eastward_wind_10m']
 
-            vcur = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['northward_wind_10m'], float32, (VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],),fill_value=9.96921e+36)
+            if VariableDefinition.VARIABLE_NAME['northward_wind_10m'] in self.ncfile.variables:
+                vcur = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['northward_wind_10m']]
+            else:
+                vcur = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['northward_wind_10m'], float32, (VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],),fill_value=9.96921e+36)
             vcur.long_name = VariableDefinition.LONG_NAME['northward_wind_10m']
             vcur.standard_name = VariableDefinition.STANDARD_NAME['northward_wind_10m']
             vcur.units = VariableDefinition.CANONICAL_UNITS['northward_wind_10m']
@@ -1085,7 +1220,10 @@ class DefaultWriter (CoverageWriter):
 
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
-            var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['wind_speed_10m'], float32,
+            if VariableDefinition.VARIABLE_NAME['wind_speed_10m'] in self.ncfile.variables:
+                var = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['wind_speed_10m']]
+            else:
+                var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['wind_speed_10m'], float32,
                                              (VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],), fill_value=9.96921e+36)
             var.long_name = VariableDefinition.LONG_NAME['wind_speed_10m']
             var.standard_name = VariableDefinition.STANDARD_NAME['wind_speed_10m']
@@ -1114,7 +1252,10 @@ class DefaultWriter (CoverageWriter):
 
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
-            var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['wind_to_direction_10m'], float32,
+            if VariableDefinition.VARIABLE_NAME['wind_to_direction_10m'] in self.ncfile.variables:
+                var = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['wind_to_direction_10m']]
+            else:
+                var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['wind_to_direction_10m'], float32,
                                              (VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],), fill_value=9.96921e+36)
             var.long_name = VariableDefinition.LONG_NAME['wind_to_direction_10m']
             var.standard_name = VariableDefinition.STANDARD_NAME['wind_to_direction_10m']
@@ -1143,7 +1284,10 @@ class DefaultWriter (CoverageWriter):
 
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
-            var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['wind_from_direction_10m'], float32,
+            if VariableDefinition.VARIABLE_NAME['wind_from_direction_10m'] in self.ncfile.variables:
+                var = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['wind_from_direction_10m']]
+            else:
+                var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['wind_from_direction_10m'], float32,
                                              (VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],), fill_value=9.96921e+36)
             var.long_name = VariableDefinition.LONG_NAME['wind_from_direction_10m']
             var.standard_name = VariableDefinition.STANDARD_NAME['wind_from_direction_10m']

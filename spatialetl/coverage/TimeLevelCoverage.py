@@ -26,10 +26,10 @@ class TimeLevelCoverage(LevelCoverage,TimeCoverage):
     """La classe TimeLevelCoverage est une extension de la classe Coverage, LevelCoverage, TimeCoverage.
 Elle rajoute les dimensions temporelle et verticale à la couverture horizontale classique.
     """
-    def __init__(self, myReader,bbox=None,resolution_x=None,resolution_y=None,zbox=None,resolution_z=None,start_time=None,end_time=None):
+    def __init__(self, myReader,bbox=None,resolution_x=None,resolution_y=None,zbox=None,resolution_z=None,start_time=None,end_time=None,freq=None):
 
         LevelCoverage.__init__(self,myReader,bbox=bbox,resolution_x=resolution_x,resolution_y=resolution_y,zbox=zbox,resolution_z=resolution_z);
-        TimeCoverage.__init__(self,myReader,bbox=bbox,resolution_x=resolution_x,resolution_y=resolution_y,start_time=start_time,end_time=end_time);
+        TimeCoverage.__init__(self,myReader,bbox=bbox,resolution_x=resolution_x,resolution_y=resolution_y,start_time=start_time,end_time=end_time,freq=freq);
 
         if self.horizontal_resampling and self.rank == 0:
             logging.info(
@@ -284,15 +284,15 @@ Elle rajoute les dimensions temporelle et verticale à la couverture horizontale
                                                                LevelCoverage.VERTICAL_INTERPOLATION_METHOD)
 
         if self.horizontal_resampling:
-            data[0] = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                          self.read_axis_y(type="source", with_overlap=True),
+            data[0] = resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
+                                          self.read_axis_y(type="source_global", with_overlap=True),
                                           self.read_axis_x(type="target", with_overlap=True),
                                           self.read_axis_y(type="target", with_overlap=True),
                                           data[0],
                                           Coverage.HORIZONTAL_INTERPOLATION_METHOD)
 
-            data[1] = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                          self.read_axis_y(type="source", with_overlap=True),
+            data[1] = resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
+                                          self.read_axis_y(type="source_global", with_overlap=True),
                                           self.read_axis_x(type="target", with_overlap=True),
                                           self.read_axis_y(type="target", with_overlap=True),
                                           data[1],

@@ -585,8 +585,8 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
+            data = resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
+                                       self.read_axis_y(type="source_global", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data,
@@ -604,8 +604,8 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
+            data = resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
+                                       self.read_axis_y(type="source_global", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data,
@@ -623,8 +623,8 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
+            data = resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
+                                       self.read_axis_y(type="source_global", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data,
@@ -646,8 +646,8 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
 
         if self.horizontal_resampling:
 
-            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
+            data = resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
+                                       self.read_axis_y(type="source_global", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data,
@@ -665,8 +665,8 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
+            data = resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
+                                       self.read_axis_y(type="source_global", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data,
