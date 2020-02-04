@@ -30,7 +30,7 @@ class WW3UnstructuredReader (CoverageReader):
         self.ncfile = Dataset(self.filename, 'r')
 
         if xsize is None and ysize is None:
-            temp =np.reshape(self.ncfile.variables["MAPSTA"][:], (-1, 2))
+            temp =np.reshape(self.ncfile.variables["MAPSTA"][:], (-1, 1))
             self.x_size =  np.shape(temp)[0]
             self.y_size =  np.shape(temp)[1]
         else:

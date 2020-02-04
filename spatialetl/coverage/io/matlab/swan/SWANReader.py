@@ -36,7 +36,7 @@ class SWANReader(CoverageReader):
 
         self.mat = loadmat(self.filename)
 
-        temp = np.reshape(self.mat['Xp'][0], (-1, 2))
+        temp = np.reshape(self.mat['Xp'][0], (-1, 1))
         self.x_size = np.shape(temp)[0]
         self.y_size = np.shape(temp)[1]
 
