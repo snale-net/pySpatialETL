@@ -39,6 +39,10 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             self.ncfile = Dataset(self.filename, 'r')
         elif os.path.isdir(self.filename):
             self.ncfile = MFDataset(os.path.join(self.filename,"*.nc"), 'r')
+        elif "*" in self.filename:
+            self.ncfile = MFDataset(self.filename+".nc", 'r')
+        else:
+            raise ValueError("Unable to decode file "+str(self.filename))
 
         self.grid = Dataset(myGrid, 'r')
 
