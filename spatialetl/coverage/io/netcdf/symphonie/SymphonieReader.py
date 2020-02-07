@@ -39,7 +39,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             self.ncfile = Dataset(self.filename, 'r')
         elif os.path.isdir(self.filename):
             self.ncfile = MFDataset(os.path.join(self.filename,"*.nc"), 'r')
-        elif "*" in self.filename:
+        elif self.filename.endswith("*"):
             self.ncfile = MFDataset(self.filename+".nc", 'r')
         else:
             raise ValueError("Unable to decode file "+str(self.filename))
@@ -120,7 +120,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         index_z = self.get_z_size() - 1 # At surface level
         try:
             if "mask_t" in self.grid.variables:
-                return np.ma.filled(self.grid.variables["mask_t"][index_z][ymin:ymax, xmin:xmax], fill_value=np.nan)
+                return np.ma.filled(self.grid.variables["mask_t"][index_z,ymin:ymax, xmin:xmax], fill_value=np.nan)
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
@@ -147,7 +147,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
     def read_variable_wet_binary_mask_at_time(self, index_t):
         try:
             if "wetmask_t" in self.ncfile.variables:
-                return np.ma.filled(self.ncfile.variables["wetmask_t"][index_t][ymin:ymax, xmin:xmax], fill_value=np.nan)
+                return np.ma.filled(self.ncfile.variables["wetmask_t"][index_t,ymin:ymax, xmin:xmax], fill_value=np.nan)
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
@@ -179,7 +179,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
     def read_variable_sea_surface_height_above_mean_sea_level_at_time(self, index_t,xmin,xmax,ymin,ymax):
         try:
             if "ssh_w" in self.ncfile.variables:
-                return np.ma.filled(self.ncfile.variables["ssh_w"][index_t][ymin:ymax, xmin:xmax], fill_value=np.nan)
+                return np.ma.filled(self.ncfile.variables["ssh_w"][index_t,ymin:ymax, xmin:xmax], fill_value=np.nan)
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
@@ -195,7 +195,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             index_z = self.get_z_size() - 1
 
             if "tem" in self.ncfile.variables:
-                return np.ma.filled(self.ncfile.variables["tem"][index_t][index_z][ymin:ymax, xmin:xmax], fill_value=np.nan)
+                return np.ma.filled(self.ncfile.variables["tem"][index_t,index_z,ymin:ymax, xmin:xmax], fill_value=np.nan)
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
@@ -212,7 +212,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             index_z = self.get_z_size() - 1
 
             if "sal" in self.ncfile.variables:
-                return np.ma.filled(self.ncfile.variables["sal"][index_t][index_z][ymin:ymax, xmin:xmax],
+                return np.ma.filled(self.ncfile.variables["sal"][index_t,index_z,ymin:ymax, xmin:xmax],
                                     fill_value=np.nan)
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
@@ -228,10 +228,10 @@ La classe SymphonieReader permet de lire les données du format Symphonie
     def read_variable_sea_water_velocity_at_sea_water_surface_at_time(self, index_t,xmin,xmax,ymin,ymax):
         index_z = self.zmax - 1
         mask_t = self.read_variable_3D_sea_binary_mask();
-        mask_u = self.grid.variables["mask_u"][index_z][:];
-        mask_v = self.grid.variables["mask_v"][index_z][:];
-        data_u = self.ncfile.variables["vel_u"][index_t][index_z][:]
-        data_v = self.ncfile.variables["vel_v"][index_t][index_z][:]
+        mask_u = self.grid.variables["mask_u"][index_z,:];
+        mask_v = self.grid.variables["mask_v"][index_z,:];
+        data_u = self.ncfile.variables["vel_u"][index_t,index_z,:]
+        data_v = self.ncfile.variables["vel_v"][index_t,index_z,:]
 
         u = np.zeros([self.ymax, self.xmax])
         u[:] = np.NAN
@@ -313,7 +313,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             index_z = 0
 
             if "tem" in self.ncfile.variables:
-                return np.ma.filled(self.ncfile.variables["tem"][index_t][index_z][ymin:ymax, xmin:xmax],
+                return np.ma.filled(self.ncfile.variables["tem"][index_t,index_z,ymin:ymax, xmin:xmax],
                                     fill_value=np.nan)
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
@@ -331,7 +331,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             index_z = 0
 
             if "sal" in self.ncfile.variables:
-                return np.ma.filled(self.ncfile.variables["sal"][index_t][index_z][ymin:ymax, xmin:xmax],
+                return np.ma.filled(self.ncfile.variables["sal"][index_t,index_z,ymin:ymax, xmin:xmax],
                                     fill_value=np.nan)
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
@@ -347,10 +347,10 @@ La classe SymphonieReader permet de lire les données du format Symphonie
     def read_variable_sea_water_velocity_at_ground_level_at_time(self, index_t,xmin,xmax,ymin,ymax):
         index_z = 0
         mask_t = self.read_variable_3D_sea_binary_mask();
-        mask_u = self.grid.variables["mask_u"][index_z][:];
-        mask_v = self.grid.variables["mask_v"][index_z][:];
-        data_u = self.ncfile.variables["vel_u"][index_t][index_z][:]
-        data_v = self.ncfile.variables["vel_v"][index_t][index_z][:]
+        mask_u = self.grid.variables["mask_u"][index_z,:];
+        mask_v = self.grid.variables["mask_v"][index_z,:];
+        data_u = self.ncfile.variables["vel_u"][index_t,index_z,:]
+        data_v = self.ncfile.variables["vel_v"][index_t,index_z,:]
 
         u = np.zeros([self.ymax, self.xmax])
         u[:] = np.NAN
@@ -567,7 +567,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
     def read_variable_sea_water_temperature_at_time_and_depth(self, index_t, index_z,xmin,xmax,ymin,ymax):
         try:
             if "tem" in self.ncfile.variables:
-                return np.ma.filled(self.ncfile.variables["tem"][index_t][index_z][ymin:ymax, xmin:xmax],
+                return np.ma.filled(self.ncfile.variables["tem"][index_t,index_z,ymin:ymax, xmin:xmax],
                                     fill_value=np.nan)
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
@@ -583,7 +583,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
     def read_variable_sea_water_salinity_at_time_and_depth(self, index_t,index_z,xmin,xmax,ymin,ymax):
         try:
             if "sal" in self.ncfile.variables:
-                return np.ma.filled(self.ncfile.variables["sal"][index_t][index_z][ymin:ymax, xmin:xmax],
+                return np.ma.filled(self.ncfile.variables["sal"][index_t,index_z,ymin:ymax, xmin:xmax],
                                     fill_value=np.nan)
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
@@ -598,10 +598,10 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
     def read_variable_baroclinic_sea_water_velocity_at_time_and_depth(self, index_t, index_z,xmin,xmax,ymin,ymax):
         mask_t = self.read_variable_3D_sea_binary_mask(xmin,xmax,ymin,ymax);
-        mask_u = self.grid.variables["mask_u"][index_z][:];
-        mask_v = self.grid.variables["mask_v"][index_z][:];
-        data_u = self.ncfile.variables["vel_u"][index_t][index_z][:]
-        data_v = self.ncfile.variables["vel_v"][index_t][index_z][:]
+        mask_u = self.grid.variables["mask_u"][index_z,:];
+        mask_v = self.grid.variables["mask_v"][index_z,:];
+        data_u = self.ncfile.variables["vel_u"][index_t,index_z,:]
+        data_v = self.ncfile.variables["vel_v"][index_t,index_z,:]
 
         u = np.zeros([self.ymax, self.xmax])
         u[:] = np.NAN
@@ -679,7 +679,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
     def read_variable_sea_surface_wave_significant_height_at_time(self, index_t,xmin,xmax,ymin,ymax):
         try:
             if "hs_wave_t" in self.ncfile.variables:
-                return np.ma.filled(self.ncfile.variables["hs_wave_t"][index_t][ymin:ymax, xmin:xmax], fill_value=np.nan)
+                return np.ma.filled(self.ncfile.variables["hs_wave_t"][index_t,ymin:ymax, xmin:xmax], fill_value=np.nan)
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
@@ -693,7 +693,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
     def read_variable_sea_surface_wave_mean_period_at_time(self, index_t,xmin,xmax,ymin,ymax):
         try:
             if "t_wave_t" in self.ncfile.variables:
-                return np.ma.filled(self.ncfile.variables["t_wave_t"][index_t][ymin:ymax, xmin:xmax], fill_value=np.nan)
+                return np.ma.filled(self.ncfile.variables["t_wave_t"][index_t,ymin:ymax, xmin:xmax], fill_value=np.nan)
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
@@ -707,7 +707,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
     def read_variable_sea_surface_wave_to_direction_at_time(self, index_t,xmin,xmax,ymin,ymax):
         try:
             if "dir_wave_t" in self.ncfile.variables:
-                return np.ma.filled(self.ncfile.variables["dir_wate_t"][index_t][ymin:ymax, xmin:xmax], fill_value=np.nan)
+                return np.ma.filled(self.ncfile.variables["dir_wate_t"][index_t,ymin:ymax, xmin:xmax], fill_value=np.nan)
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
@@ -721,10 +721,10 @@ La classe SymphonieReader permet de lire les données du format Symphonie
     def read_variable_sea_surface_wave_stokes_drift_velocity_at_time(self, index_t,xmin,xmax,ymin,ymax):
         index_z = self.zmax - 1
         mask_t = self.read_variable_2D_sea_binary_mask();
-        mask_u = self.grid.variables["mask_u"][index_z][:];
-        mask_v = self.grid.variables["mask_v"][index_z][:];
-        data_u = self.ncfile.variables["velbarstokes_u"][index_t][::]
-        data_v = self.ncfile.variables["velbarstokes_v"][index_t][::]
+        mask_u = self.grid.variables["mask_u"][index_z,:];
+        mask_v = self.grid.variables["mask_v"][index_z,:];
+        data_u = self.ncfile.variables["velbarstokes_u"][index_t,::]
+        data_v = self.ncfile.variables["velbarstokes_v"][index_t,::]
 
         u = np.zeros([self.ymax, self.xmax])
         u[:] = np.NAN
@@ -803,10 +803,10 @@ La classe SymphonieReader permet de lire les données du format Symphonie
     def read_variable_atmosphere_momentum_flux_to_waves_at_time(self, index_t,xmin,xmax,ymin,ymax):
         index_z = self.zmax - 1
         mask_t = self.read_variable_2D_sea_binary_mask();
-        mask_u = self.grid.variables["mask_u"][index_z][:];
-        mask_v = self.grid.variables["mask_v"][index_z][:];
-        data_u = self.ncfile.variables["tawx"][index_t][::]
-        data_v = self.ncfile.variables["tawy"][index_t][::]
+        mask_u = self.grid.variables["mask_u"][index_z,:];
+        mask_v = self.grid.variables["mask_v"][index_z,:];
+        data_u = self.ncfile.variables["tawx"][index_t,::]
+        data_v = self.ncfile.variables["tawy"][index_t,::]
 
         u = np.zeros([self.ymax, self.xmax])
         u[:] = np.NAN
@@ -880,10 +880,10 @@ La classe SymphonieReader permet de lire les données du format Symphonie
     def read_variable_waves_momentum_flux_to_ocean_at_time(self, index_t,xmin,xmax,ymin,ymax):
         index_z = self.zmax - 1
         mask_t = self.read_variable_2D_sea_binary_mask();
-        mask_u = self.grid.variables["mask_u"][index_z][:];
-        mask_v = self.grid.variables["mask_v"][index_z][:];
-        data_u = self.ncfile.variables["twox"][index_t][::]
-        data_v = self.ncfile.variables["twoy"][index_t][::]
+        mask_u = self.grid.variables["mask_u"][index_z,:];
+        mask_v = self.grid.variables["mask_v"][index_z,:];
+        data_u = self.ncfile.variables["twox"][index_t,::]
+        data_v = self.ncfile.variables["twoy"][index_t,::]
 
         u = np.zeros([self.ymax, self.xmax])
         u[:] = np.NAN
@@ -967,10 +967,10 @@ La classe SymphonieReader permet de lire les données du format Symphonie
     def read_variable_wind_stress_at_time(self, index_t,xmin,xmax,ymin,ymax):
         index_z = self.zmax - 1
         mask_t = self.read_variable_2D_sea_binary_mask();
-        mask_u = self.grid.variables["mask_u"][index_z][:];
-        mask_v = self.grid.variables["mask_v"][index_z][:];
-        data_u = self.ncfile.variables["wstress_u"][index_t][::]
-        data_v = self.ncfile.variables["wstress_v"][index_t][::]
+        mask_u = self.grid.variables["mask_u"][index_z,:];
+        mask_v = self.grid.variables["mask_v"][index_z,:];
+        data_u = self.ncfile.variables["wstress_u"][index_t,::]
+        data_v = self.ncfile.variables["wstress_v"][index_t,::]
 
         u = np.zeros([self.ymax, self.xmax])
         u[:] = np.NAN
@@ -1049,8 +1049,8 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         mask_t = self.read_variable_2D_sea_binary_mask();
         lon_t = self.read_axis_x();
         lat_t = self.read_axis_y();
-        data_u = self.ncfile.variables["uwind_t"][index_t][::]
-        data_v = self.ncfile.variables["vwind_t"][index_t][::]
+        data_u = self.ncfile.variables["uwind_t"][index_t,::]
+        data_v = self.ncfile.variables["vwind_t"][index_t,::]
 
         u_rot = np.zeros([self.ymax, self.xmax])
         u_rot[:] = np.NAN
@@ -1102,7 +1102,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
     def read_variable_bathy_ssh_at_time(self,index_t,xmin,xmax,ymin,ymax):
         try:
             if "hssh" in self.ncfile.variables:
-                return np.ma.filled(self.ncfile.variables["hssh"][index_t][ymin:ymax, xmin:xmax],
+                return np.ma.filled(self.ncfile.variables["hssh"][index_t,ymin:ymax, xmin:xmax],
                                     fill_value=np.nan)
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")

@@ -15,131 +15,137 @@
 #
 from __future__ import division, print_function, absolute_import
 from spatialetl.coverage.io.CoverageReader import CoverageReader
+from spatialetl.utils.VariableDefinition import VariableDefinition
 from spatialetl.coverage.TimeCoverage import TimeCoverage
-from netCDF4 import Dataset, num2date
+from netCDF4 import Dataset, MFDataset, num2date
+from spatialetl.exception.VariableNameError import VariableNameError
 import numpy as np
+import os
+import logging
 
 class MercatorReader(CoverageReader):
     
-    def __init__(self,m,d,t,u,v):
-        CoverageReader.__init__(self,m)
-        self.mask = Dataset(m, 'r')
-        self.grid2D = Dataset(d, 'r')
-        self.gridT = Dataset(t, 'r') 
-        self.gridU = Dataset(u, 'r')  
-        self.gridV = Dataset(v, 'r') 
-     
-    # Axis
-    def read_axis_t(self,timestamp):
-        """Attention si gridT, U,V,2D ont un time_counter different"""
-        data = self.gridT.variables['time_counter'][:]
-        result = num2date(data, units = self.gridT.variables['time_counter'].units, calendar = self.gridT.variables['time_counter'].calendar)
-        
-        if timestamp ==1:           
-            return [ (t - TimeCoverage.TIME_DATUM).total_seconds() \
-                for t in result];
-        else:            
+    def __init__(self,myFile):
+        CoverageReader.__init__(self,myFile)
+
+        if os.path.isfile(self.filename):
+            self.ncfile = Dataset(self.filename, 'r')
+        elif os.path.isdir(self.filename):
+            self.ncfile = MFDataset(os.path.join(self.filename,"*.nc"), 'r')
+        elif self.filename.endswith("*"):
+            self.ncfile = MFDataset(self.filename+".nc", 'r')
+        else:
+            raise ValueError("Unable to decode file "+str(self.filename))
+
+    def is_regular_grid(self):
+        return True
+
+    def get_x_size(self):
+        return np.shape(self.ncfile.variables['longitude'][:])[0];
+
+    def get_y_size(self):
+        return np.shape(self.ncfile.variables['latitude'][:])[0];
+
+    def get_z_size(self):
+        return np.shape(self.ncfile.variables['depth'][:])[0];
+
+    def get_t_size(self):
+        return np.shape(self.ncfile.variables['time'])[0];
+
+    def read_axis_x(self, xmin, xmax, ymin, ymax):
+        return self.ncfile.variables['longitude'][xmin:xmax]
+
+    def read_axis_y(self, xmin, xmax, ymin, ymax):
+        return self.ncfile.variables['latitude'][ymin:ymax]
+
+    def read_axis_z(self, ):
+        lev = self.ncfile.variables["depth"][:]
+        # lev = np.ma.filled(self.grid.variables["depth_t"], fill_value=np.nan)
+        # lev = np.ma.filled(mx, fill_value=np.nan)
+        return lev
+
+    def read_axis_t(self, tmin, tmax, timestamp):
+        data = self.ncfile.variables['time'][tmin:tmax]
+        result = num2date(data, units=self.ncfile.variables['time'].units, calendar=self.ncfile.variables['time'].calendar)
+
+        if timestamp == 1:
+            return [(t - TimeCoverage.TIME_DATUM).total_seconds() \
+                    for t in result];
+        else:
             return result
-    
-    def read_axis_x(self):        
-        return self.gridT.variables['nav_lon'][:]
-    
-    def read_axis_y(self):        
-        return self.gridT.variables['nav_lat'][:]
-    
-    def read_axis_z(self):       
-        return self.gridT.variables['deptht']
-    
-    # Data    
-    def read_variable_2D_sea_binary_mask(self):
-        return self.mask.variables["tmask"][0][0][:]
 
-    def read_variable_3D_sea_binary_mask(self):
-        return self.mask.variables["tmask"][0][:]
+    def read_variable_2D_sea_binary_mask(self, xmin, xmax, ymin, ymax):
+        try:
+            if "zos" in self.ncfile.variables:
+                mask = np.ma.filled(self.ncfile.variables["zos"][0,ymin:ymax, xmin:xmax], fill_value=np.nan)
+                mask[mask != np.nan]=1
+                return mask
+        except Exception as ex:
+            logging.debug("Error '" + str(ex) + "'")
+            raise (VariableNameError("MercatorReader", "An error occured : '" + str(ex) + "'", 1000))
 
-    def read_variable_4D_sea_binary_mask(self):
-        return self.mask.variables["tmask"]
-    
-    def read_variable_sea_surface_height_above_sea_level_at_time(self,t):
-        return self.grid2D.variables["sossheig"][t][:]
-     
-    def read_variable_baroclinic_sea_water_velocity_at_time_and_depth(self,index_t,index_z,depth):
+        logging.debug("No variables found for '" + str(VariableDefinition.LONG_NAME['2d_sea_binary_mask']) + "'")
+        raise (VariableNameError("MercatorReader",
+                                 "No variables found for '" + str(
+                                     VariableDefinition.LONG_NAME['2d_sea_binary_mask']) + "'",
+                                 1000))
 
-        mask_t = self.read_variable_4D_sea_binary_mask();
-        mask_u = self.mask.variables["umask"][:];
-        mask_v = self.mask.variables["vmask"][:];
-        lon_t = self.read_axis_x();
-        lat_t = self.read_axis_y();
-        data_u = self.gridU.variables["vozocrtx"][index_t][::]
-        data_v = self.gridV.variables["vomecrty"][index_t][::]
-        
-        # compute and apply rotation matrix
-        xmax=np.shape(lon_t)[1]
-        ymax=np.shape(lon_t)[0]
-        gridrotcos_t = np.zeros([ymax,xmax])
-        gridrotsin_t = np.zeros([ymax,xmax])       
-        
-        u = np.zeros([ymax,xmax])
-        u[:] = np.NAN
-        v = np.zeros([ymax,xmax])
-        v[:] = np.NAN
-        u_rot = np.zeros([ymax,xmax])
-        u_rot[:] = np.NAN
-        v_rot = np.zeros([ymax,xmax])
-        v_rot[:] = np.NAN
+    #################
+    # HYDRO
+    # Sea Surface
+    #################
 
-        # We process point inside the domain
-        for y in range(1,ymax-1):
-            for x in range(1,xmax-1):
-                
-                x1=(lon_t[y,x+1]-lon_t[y,x-1])*np.pi/180.
-                if(x1<-np.pi): x1=x1+2.*np.pi
-                if(x1> np.pi): x1=x1-2.*np.pi
-                x0=-np.arctan2((lat_t[y,x+1]-lat_t[y,x-1])*np.pi/180.,x1*np.cos(lat_t[y,x]*np.pi/180.))
-                gridrotcos_t[y,x]=np.cos(x0)
-                gridrotsin_t[y,x]=np.sin(x0)
+    def read_variable_sea_surface_height_above_geoid_at_time(self, index_t, xmin, xmax, ymin, ymax):
+        try:
+            if "zos" in self.ncfile.variables:
+                return np.ma.filled(self.ncfile.variables["zos"][index_t,ymin:ymax, xmin:xmax], fill_value=np.nan)
+        except Exception as ex:
+            logging.debug("Error '" + str(ex) + "'")
+            raise (VariableNameError("MercatorReader", "An error occured : '" + str(ex) + "'", 1000))
 
-                if (mask_t[0,index_z[y,x],y,x] == 1.):
-                    
-                    u_left = 0
-                    u_right = 0
-                    v_down = 0
-                    v_up = 0
-                   
-                    if (mask_u[0,index_z[y,x-1],y,x-1] == 1.):
-                        u_left = data_u[index_z[y,x-1],y,x-1];
+        logging.debug("No variables found for '" + str(
+            VariableDefinition.LONG_NAME['sea_surface_height_above_geoid']) + "'")
+        raise (VariableNameError("MercatorReader",
+                                 "No variables found for '" + str(
+                                     VariableDefinition.LONG_NAME['sea_surface_height_above_geoid']) + "'",
+                                 1000))
 
-                    if (mask_u[0,index_z[y,x],y,x] == 1.):
-                        u_right = data_u[index_z[y,x],y,x];
+        #################
+        # HYDRO
+        # 3D
+        #################
 
-                    if (mask_v[0,index_z[y-1,x],y-1,x] == 1.):
-                        v_down = data_v[index_z[y-1,x],y-1,x];
+    def read_variable_sea_water_temperature_at_time_and_depth(self, index_t, index_z, xmin, xmax, ymin, ymax):
+        try:
+            if "thetao" in self.ncfile.variables:
+                return np.ma.filled(self.ncfile.variables["thetao"][index_t,index_z,ymin:ymax, xmin:xmax],
+                                    fill_value=np.nan)
+        except Exception as ex:
+            logging.debug("Error '" + str(ex) + "'")
+            raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
 
-                    if (mask_v[0,index_z[y,x],y,x] == 1.):
-                        v_up = data_v[index_z[y,x],y,x];
+        logging.debug("No variables found for '" + str(
+            VariableDefinition.LONG_NAME['sea_surface_temperature']) + "'")
+        raise (VariableNameError("SymphonieReader",
+                                 "No variables found for '" + str(
+                                     VariableDefinition.LONG_NAME['sea_surface_temperature']) + "'",
+                                 1000))
 
-                    # compute an half-value
-                    u[y,x]=0.5*(u_left+u_right)
-                    v[y,x]=0.5*(v_down+v_up)
-                    
-                    # apply rotation                
-                    u_rot[y,x]=u[y,x]*gridrotcos_t[y,x]+v[y,x]*gridrotsin_t[y,x]
-                    v_rot[y,x]=-u[y,x]*gridrotsin_t[y,x]+v[y,x]*gridrotcos_t[y,x]   
-          
-        # We process boundaries point
-        # bottom        
-        u_rot[0,0:xmax]=u_rot[1,0:xmax]   
-        v_rot[0,0:xmax]=v_rot[1,0:xmax] 
-        # up
-        u_rot[ymax-1,0:xmax]=u_rot[ymax-2,0:xmax] 
-        v_rot[ymax-1,0:xmax]=v_rot[ymax-2,0:xmax] 
-        
-        # left
-        u_rot[0:ymax,0]=u_rot[0:ymax,1]   
-        v_rot[0:ymax,0]=v_rot[0:ymax,1]   
-        # right
-        u_rot[0:ymax,xmax-1]=u_rot[0:ymax,xmax-2]  
-        v_rot[0:ymax,xmax-1]=v_rot[0:ymax,xmax-2]  
+    def read_variable_sea_water_salinity_at_time_and_depth(self, index_t, index_z, xmin, xmax, ymin, ymax):
+        try:
+            if "so" in self.ncfile.variables:
+                return np.ma.filled(self.ncfile.variables["so"][index_t,index_z,ymin:ymax, xmin:xmax],
+                                    fill_value=np.nan)
+        except Exception as ex:
+            logging.debug("Error '" + str(ex) + "'")
+            raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
 
-        return [u_rot,v_rot]
+        logging.debug("No variables found for '" + str(
+            VariableDefinition.LONG_NAME['sea_surface_salinity']) + "'")
+        raise (VariableNameError("SymphonieReader",
+                                 "No variables found for '" + str(
+                                     VariableDefinition.LONG_NAME['sea_surface_salinity']) + "'",
+                                 1000))
 
+    def read_variable_baroclinic_sea_water_velocity_at_time_and_depth(self, index_t, index_z, xmin, xmax, ymin, ymax):
+        return [self.ncfile.variables["uo"][index_t,index_z,ymin:ymax, xmin:xmax], self.ncfile.variables["vo"][index_t,index_z,ymin:ymax, xmin:xmax]]

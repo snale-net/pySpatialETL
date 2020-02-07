@@ -19,6 +19,7 @@ from spatialetl.coverage.LevelCoverage import LevelCoverage
 from spatialetl.coverage.TimeCoverage import TimeCoverage
 from spatialetl.operator.interpolator.InterpolatorCore import resample_2d_to_grid
 from spatialetl.operator.interpolator.InterpolatorCore import vertical_interpolation
+from itertools import product
 import numpy as np
 import logging
 
@@ -93,8 +94,7 @@ Elle rajoute les dimensions temporelle et verticale à la couverture horizontale
                 if len(vert_coord[y, x]) == 1:
                     # Il n'y a qu'une seule couche de sélectionner donc pas d'interpolation possible
                     # On retrouve l'index de la layer
-                    array = np.asarray(indexes_z)
-                    index_layer = (np.abs(array - vert_coord[y, x][0])).argmin()
+                    index_layer = (np.abs(indexes_z - vert_coord[y, x][0])).argmin()
                     data[y, x] = layers[index_layer, y, x]
 
                 elif len(vert_coord[y, x]) > 1:
@@ -104,8 +104,7 @@ Elle rajoute les dimensions temporelle et verticale à la couverture horizontale
 
                     for z in range(0, len(vert_coord[y, x])):
                         # On retrouve l'index de la layer
-                        array = np.asarray(indexes_z)
-                        index_layer = (np.abs(array - vert_coord[y, x][z])).argmin()
+                        index_layer = (np.abs(indexes_z - vert_coord[y, x][z])).argmin()
 
                         if self.is_sigma_coordinate(type="source"):
                             candidateDepths[z] = z_axis[index_layer, y, x]
@@ -152,6 +151,7 @@ Elle rajoute les dimensions temporelle et verticale à la couverture horizontale
         data[:] = np.NAN
         targetDepth = [depth]
 
+
         mask_t = self.reader.read_variable_2D_sea_binary_mask(
             self.map_mpi[self.rank]["src_global_x_overlap"].start,
             self.map_mpi[self.rank]["src_global_x_overlap"].stop,
@@ -176,8 +176,7 @@ Elle rajoute les dimensions temporelle et verticale à la couverture horizontale
                 if len(vert_coord[y, x]) == 1:
                     # Il n'y a qu'une seule couche de sélectionner donc pas d'interpolation possible
                     # On retrouve l'index de la layer
-                    array = np.asarray(indexes_z)
-                    index_layer = (np.abs(array - vert_coord[y, x][0])).argmin()
+                    index_layer = (np.abs(indexes_z - vert_coord[y, x][0])).argmin()
                     data[y, x] = layers[index_layer, y, x]
 
                 elif len(vert_coord[y, x]) > 1:
@@ -187,8 +186,7 @@ Elle rajoute les dimensions temporelle et verticale à la couverture horizontale
 
                     for z in range(0, len(vert_coord[y, x])):
                         # On retrouve l'index de la layer
-                        array = np.asarray(indexes_z)
-                        index_layer = (np.abs(array - vert_coord[y, x][z])).argmin()
+                        index_layer = (np.abs(indexes_z - vert_coord[y, x][z])).argmin()
 
                         if self.is_sigma_coordinate(type="source"):
                             candidateDepths[z] = z_axis[index_layer, y, x]
@@ -258,8 +256,7 @@ Elle rajoute les dimensions temporelle et verticale à la couverture horizontale
 
                         # Il n'y a qu'une seule couche de sélectionner donc pas d'interpolation possible
                         # On retrouve l'index de la layer
-                        array = np.asarray(indexes_z)
-                        index_layer = (np.abs(array - vert_coord[y, x][0])).argmin()
+                        index_layer = (np.abs(indexes_z - vert_coord[y, x][0])).argmin()
 
                         data[0][y, x] = layers[index_layer,0, y, x]
                         data[1][y, x] = layers[index_layer,1, y, x]
@@ -271,8 +268,7 @@ Elle rajoute les dimensions temporelle et verticale à la couverture horizontale
 
                         for z in range(0, len(vert_coord[y, x])):
                             # On retrouve l'index de la layer
-                            array = np.asarray(indexes_z)
-                            index_layer = (np.abs(array - vert_coord[y, x][z])).argmin()
+                            index_layer = (np.abs(indexes_z - vert_coord[y, x][z])).argmin()
 
                             candidateDepths[0][z] = self.source_global_axis_z[index_layer,0, y, x]
                             candidateValues[1][z] = layers[index_layer,1, y, x]

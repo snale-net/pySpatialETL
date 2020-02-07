@@ -47,18 +47,14 @@ def vertical_interpolation(sourceAxis,targetAxis,data,method):
     logging.debug("[InterpolatorCore][vertical_interpolation()] Method: " + str(method))
     logging.debug("[InterpolatorCore][vertical_interpolation()] ----------------------------------------")
 
-    if method is None:
-        return np.nan
-
-    elif method == "mean":
+    if method == "mean":
         return np.mean(data)
 
     elif method == "nearest":
         array = np.asarray(sourceAxis)
         nearest_index_t = (np.abs(array - targetAxis[0])).argmin()
         return data[nearest_index_t]
-
-    else:
+    elif method == "linear" or method == "cubic":
         try:
             f = interp1d(sourceAxis, data, kind=method, bounds_error=True)
             return f(targetAxis)
@@ -70,6 +66,8 @@ def vertical_interpolation(sourceAxis,targetAxis,data,method):
             logging.warning("[InterpolatorCore][vertical_interpolation()] ----------------------------------------")
             f = interp1d(sourceAxis, data, kind=method,  fill_value = "extrapolate")
             return f(targetAxis)
+    else:
+        raise ValueError("Unable to decode vertical interpolation method : "+str(method))
 
 def time_1d_interpolation(sourceAxis,targetAxis,data,method):
     logging.debug("[InterpolatorCore][time_interpolation()] Looking for time : "+str(datetime.utcfromtimestamp(targetAxis[0]))+" with method '"+str(method)+"'.")
