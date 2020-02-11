@@ -89,7 +89,22 @@ def time_1d_interpolation(sourceAxis,targetAxis,data,method):
         nearest_index_t = (np.abs(array - targetAxis[0])).argmin()
         return data[nearest_index_t]
 
+    elif method == "linear" or method == "cubic":
+
+        try:
+            f = interp1d(sourceAxis, data, kind=method, bounds_error=True)
+            return f(targetAxis)
+        except ValueError as ex:
+            logging.warning("[InterpolatorCore][time_interpolation()] Error: " + str(ex))
+            logging.warning("[InterpolatorCore][time_interpolation()] This error may occur when you ask for a datetime  out of range : " + str(
+                    datetime.utcfromtimestamp(targetAxis[0])))
+            logging.warning("[InterpolatorCore][time_interpolation()] We continue by using an extrapolation method.")
+            logging.warning("[InterpolatorCore][time_interpolation()] To avoid this error, you can change your time range or use another time interpolation method.")
+            logging.warning("[InterpolatorCore][time_interpolation()] ----------------------------------------")
+
+            f = interp1d(sourceAxis, data, kind=method, fill_value="extrapolate")
+
+            return f(targetAxis)
     else:
-        f = interp1d(sourceAxis, data, kind=method, bounds_error=True)
-        return f(targetAxis)
+        raise ValueError("Unable to decode vertical interpolation method : " + str(method))
 

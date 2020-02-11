@@ -47,4 +47,38 @@ class SymphonieOfflineReader(SymphonieReader):
                                  "No variables found for \'Barotropic Sea Water Velocity\'",
                                  1000))
 
+    def read_variable_baroclinic_sea_water_velocity_at_time_and_depth(self, index_t, index_z, xmin, xmax, ymin, ymax):
+        try:
+            xmin_overlap, xmax_overlap, ymin_overlap, ymax_overlap, new_xmin, new_xmax, new_ymin, new_ymax = self.compute_overlap_indexes(
+                xmin, xmax, ymin, ymax)
+
+            mask_t = self.grid.variables["mask_t"][index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+            mask_u = self.grid.variables["mask_u"][index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+            mask_v = self.grid.variables["mask_v"][index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+
+            if "u" in self.ncfile.variables:
+                data_u = np.ma.filled(
+                    self.ncfile.variables["u"][index_t, index_z, ymin_overlap:ymax_overlap,
+                    xmin_overlap:xmax_overlap],
+                    fill_value=np.nan)
+            if "v" in self.ncfile.variables:
+                data_v = np.ma.filled(
+                    self.ncfile.variables["v"][index_t, index_z, ymin_overlap:ymax_overlap,
+                    xmin_overlap:xmax_overlap],
+                    fill_value=np.nan)
+
+            u_t, v_t = self.compute_to_tracer(data_u, data_v, mask_t, mask_u, mask_v)
+
+            return [u_t[new_ymin:new_ymax, new_xmin:new_xmax], v_t[new_ymin:new_ymax, new_xmin:new_xmax]]
+
+        except Exception as ex:
+            logging.debug("Error '" + str(ex) + "'")
+            raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
+
+        logging.debug("No variables found for \'Baroclinic Sea Water Velocity\'")
+        raise (VariableNameError("SymphonieReader",
+                                 "No variables found for \'Baroclinic Sea Water Velocity\'",
+                                 1000))
+
+
         

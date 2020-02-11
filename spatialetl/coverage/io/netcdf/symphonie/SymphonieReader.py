@@ -30,7 +30,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 @param  myGrid : lien vers le fichier de grille (que l'on trouve dans le RDIR/tmp/grid.nc)
 @param myFile : lien vers le fichier de données (que l'on trouve dans GRAPHIQUES)
 """
-    HORIZONTAL_OVERLAPING_SIZE = 1
+    HORIZONTAL_OVERLAPING_SIZE = 2
 
     def __init__(self,myGrid, myFile):   
         CoverageReader.__init__(self,myFile);
@@ -69,6 +69,170 @@ La classe SymphonieReader permet de lire les données du format Symphonie
                                  x1 * np.cos(lat_t[y, x] * np.pi / 180.))
                 self.gridrotcos_t[y, x] = np.cos(x0)
                 self.gridrotsin_t[y, x] = np.sin(x0)
+
+    def compute_to_tracer(self, data_u, data_v, mask_t, mask_u, mask_v):
+
+        x_size = np.shape(mask_t)[1]
+        y_size = np.shape(mask_t)[0]
+
+        u_t = np.zeros([y_size, x_size])
+        u_t[:] = np.nan
+        v_t = np.zeros([y_size, x_size])
+        v_t[:] = np.nan
+
+        # 1. On calcule les point à l'intérieur du domaine en excluant les bords
+        for y in range(1, y_size - 1):
+            for x in range(1, x_size - 1):
+
+                if mask_t[y, x] == 1.:
+
+                    # 1.2 On récupère les valeurs aux point encadrant X pour faire la demi-somme
+                    ##############################
+                    #           v_up
+                    #
+                    #   u_left   X     u_right
+                    #
+                    #         v_bottom
+                    #############################
+
+                    # u_left
+                    u_left = 0
+                    if mask_u[y, x - 1] == 1.:
+                        u_left = data_u[y, x - 1];
+
+                    # u_right
+                    u_right = 0
+                    if mask_u[y, x] == 1.:
+                        u_right = data_u[y, x];
+
+                    # v_down
+                    v_down = 0
+                    if mask_v[y - 1, x] == 1.:
+                        v_down = data_v[y - 1, x];
+
+                    # v_up
+                    v_up = 0
+                    if mask_v[y, x] == 1.:
+                        v_up = data_v[y, x];
+
+                    # 1.3 On calcule la demi-somme
+                    u_t[y, x] = 0.5 * (u_left + u_right)
+                    v_t[y, x] = 0.5 * (v_down + v_up)
+
+        # 2. On duplique les point sur les bords.
+        # bottom
+        u_t[0, 0:x_size] = u_t[1, 0:x_size]
+        v_t[0, 0:x_size] = v_t[1, 0:x_size]
+        # up
+        u_t[y_size - 1, 0:x_size] = u_t[y_size - 2, 0:x_size]
+        v_t[y_size - 1, 0:x_size] = v_t[y_size - 2, 0:x_size]
+
+        # left
+        u_t[0:y_size, 0] = u_t[0:y_size, 1]
+        v_t[0:y_size, 0] = v_t[0:y_size, 1]
+        # right
+        u_t[0:y_size, x_size - 1] = u_t[0:y_size, x_size - 2]
+        v_t[0:y_size, x_size - 1] = v_t[0:y_size, x_size - 2]
+
+        return u_t, v_t
+
+    def compute_vector_rotation(self, data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v):
+
+        x_size = np.shape(mask_t)[1]
+        y_size = np.shape(mask_t)[0]
+
+        u = np.zeros([y_size, x_size])
+        u[:] = np.nan
+        v = np.zeros([y_size, x_size])
+        v[:] = np.nan
+        u_rot = np.zeros([y_size, x_size])
+        u_rot[:] = np.nan
+        v_rot = np.zeros([y_size, x_size])
+        v_rot[:] = np.nan
+
+        # 1. On calcule les point à l'intérieur du domaine en excluant les bords
+        for y in range(1, y_size - 1):
+            for x in range(1, x_size - 1):
+
+                if mask_t[y, x] == 1.:
+
+                    # 1.2 On récupère les valeurs aux point encadrant X pour faire la demi-somme
+                    ##############################
+                    #           v_up
+                    #
+                    #   u_left   X     u_right
+                    #
+                    #         v_bottom
+                    #############################
+
+                    # u_left
+                    u_left = 0
+                    if mask_u[y, x - 1] == 1.:
+                        u_left = data_u[y, x - 1];
+
+                    # u_right
+                    u_right = 0
+                    if mask_u[y, x] == 1.:
+                        u_right = data_u[y, x];
+
+                    # v_down
+                    v_down = 0
+                    if mask_v[y - 1, x] == 1.:
+                        v_down = data_v[y - 1, x];
+
+                    # v_up
+                    v_up = 0
+                    if mask_v[y, x] == 1.:
+                        v_up = data_v[y, x];
+
+                    # 1.3 On calcule la demi-somme
+                    u[y, x] = 0.5 * (u_left + u_right)
+                    v[y, x] = 0.5 * (v_down + v_up)
+
+                    # 1.4 On applique la rotation
+                    u_rot[y, x] = u[y, x] * rotcos[y, x] + v[y, x] * rotsin[y, x]
+                    v_rot[y, x] = -u[y, x] * rotsin[y, x] + v[y, x] * rotcos[y, x]
+
+        # 2. On duplique les point sur les bords.
+        # bottom
+        u_rot[0, 0:x_size] = u_rot[1, 0:x_size]
+        v_rot[0, 0:x_size] = v_rot[1, 0:x_size]
+        # up
+        u_rot[y_size - 1, 0:x_size] = u_rot[y_size - 2, 0:x_size]
+        v_rot[y_size - 1, 0:x_size] = v_rot[y_size - 2, 0:x_size]
+
+        # left
+        u_rot[0:y_size, 0] = u_rot[0:y_size, 1]
+        v_rot[0:y_size, 0] = v_rot[0:y_size, 1]
+        # right
+        u_rot[0:y_size, x_size - 1] = u_rot[0:y_size, x_size - 2]
+        v_rot[0:y_size, x_size - 1] = v_rot[0:y_size, x_size - 2]
+
+        return u_rot,v_rot
+
+    def compute_overlap_indexes(self, xmin, xmax, ymin, ymax):
+
+        xmin_overlap = max(0, xmin - SymphonieReader.HORIZONTAL_OVERLAPING_SIZE)
+        new_xmin = SymphonieReader.HORIZONTAL_OVERLAPING_SIZE
+        if xmin_overlap == 0:
+            new_xmin = 0
+
+        xmax_overlap = min(self.get_x_size(), xmax + SymphonieReader.HORIZONTAL_OVERLAPING_SIZE)
+        new_xmax = xmax_overlap - xmin_overlap - SymphonieReader.HORIZONTAL_OVERLAPING_SIZE
+        if xmax_overlap == self.get_x_size():
+            new_xmax = self.get_x_size()
+
+        ymin_overlap = max(0, ymin - SymphonieReader.HORIZONTAL_OVERLAPING_SIZE)
+        new_ymin = SymphonieReader.HORIZONTAL_OVERLAPING_SIZE
+        if ymin_overlap == 0:
+            new_ymin = 0
+
+        ymax_overlap = min(self.get_y_size(), ymax + SymphonieReader.HORIZONTAL_OVERLAPING_SIZE)
+        new_ymax = ymax_overlap - ymin_overlap - SymphonieReader.HORIZONTAL_OVERLAPING_SIZE
+        if ymax_overlap == self.get_y_size():
+            new_ymax = self.get_y_size()
+
+        return xmin_overlap,xmax_overlap,ymin_overlap,ymax_overlap,new_xmin,new_xmax,new_ymin,new_ymax
 
     def is_regular_grid(self):
         return False
@@ -227,80 +391,31 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
     def read_variable_sea_water_velocity_at_sea_water_surface_at_time(self, index_t,xmin,xmax,ymin,ymax):
         index_z = self.zmax - 1
-        mask_t = self.read_variable_3D_sea_binary_mask();
-        mask_u = self.grid.variables["mask_u"][index_z,:];
-        mask_v = self.grid.variables["mask_v"][index_z,:];
-        data_u = self.ncfile.variables["vel_u"][index_t,index_z,:]
-        data_v = self.ncfile.variables["vel_v"][index_t,index_z,:]
+        xmin_overlap, xmax_overlap, ymin_overlap, ymax_overlap, new_xmin, new_xmax, new_ymin, new_ymax = self.compute_overlap_indexes(
+            xmin, xmax, ymin, ymax)
 
-        u = np.zeros([self.ymax, self.xmax])
-        u[:] = np.NAN
-        v = np.zeros([self.ymax, self.xmax])
-        v[:] = np.NAN
-        u_rot = np.zeros([self.ymax, self.xmax])
-        u_rot[:] = np.NAN
-        v_rot = np.zeros([self.ymax, self.xmax])
-        v_rot[:] = np.NAN
+        mask_t = self.grid.variables["mask_t"][index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+        mask_u = self.grid.variables["mask_u"][index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+        mask_v = self.grid.variables["mask_v"][index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
 
-        # 1. On calcule les point à l'intérieur du domaine en excluant les bords
-        for y in range(1, self.ymax - 1):
-            for x in range(1, self.xmax - 1):
+        if self.gridrotcos_t is None and self.gridrotsin_t is None:
+            self.compute_rot()
 
-                if mask_t[index_z, y, x] == 1.:
+        rotcos = self.gridrotcos_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+        rotsin = self.gridrotsin_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
 
-                    # 1.2 On récupère les valeurs aux point encadrant X pour faire la demi-somme
-                    ##############################
-                    #           v_up
-                    #
-                    #   u_left   X     u_right
-                    #
-                    #         v_bottom
-                    #############################
+        if "vel_u" in self.ncfile.variables:
+            data_u = np.ma.filled(
+                self.ncfile.variables["vel_u"][index_t, index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
+                fill_value=np.nan)
+        if "vel_v" in self.ncfile.variables:
+            data_v = np.ma.filled(
+                self.ncfile.variables["vel_v"][index_t, index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
+                fill_value=np.nan)
 
-                    # u_left
-                    u_left = 0
-                    if mask_u[y, x - 1] == 1.:
-                        u_left = data_u[y, x - 1];
+        u_rot, v_rot = self.compute_vector_rotation(data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v)
 
-                    # u_right
-                    u_right = 0
-                    if mask_u[y, x] == 1.:
-                        u_right = data_u[y, x];
-
-                    # v_down
-                    v_down = 0
-                    if mask_v[y - 1, x] == 1.:
-                        v_down = data_v[y - 1, x];
-
-                    # v_up
-                    v_up = 0
-                    if mask_v[y, x] == 1.:
-                        v_up = data_v[y, x];
-
-                    # 1.3 On calcule la demi-somme
-                    u[y, x] = 0.5 * (u_left + u_right)
-                    v[y, x] = 0.5 * (v_down + v_up)
-
-                    # 1.4 On applique la rotation
-                    u_rot[y, x] = u[y, x] * self.gridrotcos_t[y, x] + v[y, x] * self.gridrotsin_t[y, x]
-                    v_rot[y, x] = -u[y, x] * self.gridrotsin_t[y, x] + v[y, x] * self.gridrotcos_t[y, x]
-
-        # 2. On duplique les point sur les bords.
-        # bottom
-        u_rot[0, 0:self.xmax] = u_rot[1, 0:self.xmax]
-        v_rot[0, 0:self.xmax] = v_rot[1, 0:self.xmax]
-        # up
-        u_rot[self.ymax - 1, 0:self.xmax] = u_rot[self.ymax - 2, 0:self.xmax]
-        v_rot[self.ymax - 1, 0:self.xmax] = v_rot[self.ymax - 2, 0:self.xmax]
-
-        # left
-        u_rot[0:self.ymax, 0] = u_rot[0:self.ymax, 1]
-        v_rot[0:self.ymax, 0] = v_rot[0:self.ymax, 1]
-        # right
-        u_rot[0:self.ymax, self.xmax - 1] = u_rot[0:self.ymax, self.xmax - 2]
-        v_rot[0:self.ymax, self.xmax - 1] = v_rot[0:self.ymax, self.xmax - 2]
-
-        return [u_rot, v_rot]
+        return [u_rot[new_ymin:new_ymax, new_xmin:new_xmax], v_rot[new_ymin:new_ymax, new_xmin:new_xmax]]
 
 
     #################
@@ -345,81 +460,44 @@ La classe SymphonieReader permet de lire les données du format Symphonie
                                  1000))
 
     def read_variable_sea_water_velocity_at_ground_level_at_time(self, index_t,xmin,xmax,ymin,ymax):
-        index_z = 0
-        mask_t = self.read_variable_3D_sea_binary_mask();
-        mask_u = self.grid.variables["mask_u"][index_z,:];
-        mask_v = self.grid.variables["mask_v"][index_z,:];
-        data_u = self.ncfile.variables["vel_u"][index_t,index_z,:]
-        data_v = self.ncfile.variables["vel_v"][index_t,index_z,:]
 
-        u = np.zeros([self.ymax, self.xmax])
-        u[:] = np.NAN
-        v = np.zeros([self.ymax, self.xmax])
-        v[:] = np.NAN
-        u_rot = np.zeros([self.ymax, self.xmax])
-        u_rot[:] = np.NAN
-        v_rot = np.zeros([self.ymax, self.xmax])
-        v_rot[:] = np.NAN
+        try:
+            index_z = 0
+            xmin_overlap, xmax_overlap, ymin_overlap, ymax_overlap, new_xmin, new_xmax, new_ymin, new_ymax = self.compute_overlap_indexes(
+                xmin, xmax, ymin, ymax)
 
-        # 1. On calcule les point à l'intérieur du domaine en excluant les bords
-        for y in range(1, self.ymax - 1):
-            for x in range(1, self.xmax - 1):
+            mask_t = self.grid.variables["mask_t"][index_z,ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+            mask_u = self.grid.variables["mask_u"][index_z,ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+            mask_v = self.grid.variables["mask_v"][index_z,ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
 
-                if mask_t[index_z, y, x] == 1.:
+            if self.gridrotcos_t is None and self.gridrotsin_t is None:
+                self.compute_rot()
 
-                    # 1.2 On récupère les valeurs aux point encadrant X pour faire la demi-somme
-                    ##############################
-                    #           v_up
-                    #
-                    #   u_left   X     u_right
-                    #
-                    #         v_bottom
-                    #############################
+            rotcos = self.gridrotcos_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+            rotsin = self.gridrotsin_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
 
-                    # u_left
-                    u_left = 0
-                    if mask_u[y, x - 1] == 1.:
-                        u_left = data_u[y, x - 1];
+            if "vel_u" in self.ncfile.variables:
+                data_u = np.ma.filled(
+                    self.ncfile.variables["vel_u"][index_t,index_z,ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
+                    fill_value=np.nan)
+            if "vel_v" in self.ncfile.variables:
+                data_v = np.ma.filled(
+                    self.ncfile.variables["vel_v"][index_t,index_z,ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
+                    fill_value=np.nan)
 
-                    # u_right
-                    u_right = 0
-                    if mask_u[y, x] == 1.:
-                        u_right = data_u[y, x];
+            u_rot, v_rot = self.compute_vector_rotation(data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v)
 
-                    # v_down
-                    v_down = 0
-                    if mask_v[y - 1, x] == 1.:
-                        v_down = data_v[y - 1, x];
+            return [u_rot[new_ymin:new_ymax, new_xmin:new_xmax], v_rot[new_ymin:new_ymax, new_xmin:new_xmax]]
 
-                    # v_up
-                    v_up = 0
-                    if mask_v[y, x] == 1.:
-                        v_up = data_v[y, x];
+        except Exception as ex:
+            logging.debug("Error '" + str(ex) + "'")
+            raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
 
-                    # 1.3 On calcule la demi-somme
-                    u[y, x] = 0.5 * (u_left + u_right)
-                    v[y, x] = 0.5 * (v_down + v_up)
 
-                    # 1.4 On applique la rotation
-                    u_rot[y, x] = u[y, x] * self.gridrotcos_t[y, x] + v[y, x] * self.gridrotsin_t[y, x]
-                    v_rot[y, x] = -u[y, x] * self.gridrotsin_t[y, x] + v[y, x] * self.gridrotcos_t[y, x]
-
-        # 2. On duplique les point sur les bords.
-        # bottom
-        u_rot[0, 0:self.xmax] = u_rot[1, 0:self.xmax]
-        v_rot[0, 0:self.xmax] = v_rot[1, 0:self.xmax]
-        # up
-        u_rot[self.ymax - 1, 0:self.xmax] = u_rot[self.ymax - 2, 0:self.xmax]
-        v_rot[self.ymax - 1, 0:self.xmax] = v_rot[self.ymax - 2, 0:self.xmax]
-
-        # left
-        u_rot[0:self.ymax, 0] = u_rot[0:self.ymax, 1]
-        v_rot[0:self.ymax, 0] = v_rot[0:self.ymax, 1]
-        # right
-        u_rot[0:self.ymax, self.xmax - 1] = u_rot[0:self.ymax, self.xmax - 2]
-        v_rot[0:self.ymax, self.xmax - 1] = v_rot[0:self.ymax, self.xmax - 2]
-
-        return [u_rot, v_rot]
+        logging.debug("No variables found for \'Sea Water Velocity at Ground level\'")
+        raise (VariableNameError("SymphonieReader",
+                             "No variables found for \'Sea Water Velocity at Ground level\'",
+                             1000))
 
     #################
     # HYDRO
@@ -443,33 +521,11 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
         try:
             index_z = self.get_z_size()-1
+            xmin_overlap,xmax_overlap,ymin_overlap,ymax_overlap,new_xmin,new_xmax,new_ymin,new_ymax = self.compute_overlap_indexes(xmin, xmax, ymin, ymax)
 
-            xmin_overlap = max(0, xmin - SymphonieReader.HORIZONTAL_OVERLAPING_SIZE)
-            xmin = SymphonieReader.HORIZONTAL_OVERLAPING_SIZE
-            if xmin_overlap == 0:
-                xmin = 0
-
-            xmax_overlap = min(self.get_x_size(), xmax + SymphonieReader.HORIZONTAL_OVERLAPING_SIZE)
-            xmax = xmax_overlap - SymphonieReader.HORIZONTAL_OVERLAPING_SIZE
-            if xmax_overlap == self.get_x_size():
-                xmax = xmax_overlap
-
-            ymin_overlap = max(0, ymin - SymphonieReader.HORIZONTAL_OVERLAPING_SIZE)
-            ymin = SymphonieReader.HORIZONTAL_OVERLAPING_SIZE
-            if ymin_overlap == 0:
-                ymin = 0
-
-            ymax_overlap = min(self.get_y_size(), ymax + SymphonieReader.HORIZONTAL_OVERLAPING_SIZE)
-            ymax = ymax_overlap - SymphonieReader.HORIZONTAL_OVERLAPING_SIZE
-            if ymax_overlap == self.get_y_size():
-                ymax = ymax_overlap
-
-            x_size = xmax_overlap - xmin_overlap
-            y_size = ymax_overlap - ymin_overlap
-
-            mask_t = self.grid.variables["mask_t"][index_z][ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
-            mask_u = self.grid.variables["mask_u"][index_z][ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
-            mask_v = self.grid.variables["mask_v"][index_z][ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+            mask_t = self.grid.variables["mask_t"][index_z,ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+            mask_u = self.grid.variables["mask_u"][index_z,ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+            mask_v = self.grid.variables["mask_v"][index_z,ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
 
             if self.gridrotcos_t is None and self.gridrotsin_t is None:
                 self.compute_rot()
@@ -478,78 +534,13 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             rotsin = self.gridrotsin_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
 
             if "velbar_u" in self.ncfile.variables:
-                data_u = np.ma.filled(self.ncfile.variables["velbar_u"][index_t][ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap], fill_value=np.nan)
+                data_u = np.ma.filled(self.ncfile.variables["velbar_u"][index_t,ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap], fill_value=np.nan)
             if "velbar_v" in self.ncfile.variables:
-                data_v = np.ma.filled(self.ncfile.variables["velbar_v"][index_t][ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap], fill_value=np.nan)
+                data_v = np.ma.filled(self.ncfile.variables["velbar_v"][index_t,ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap], fill_value=np.nan)
 
-            u = np.zeros([y_size,x_size])
-            u[:] = np.NAN
-            v = np.zeros([y_size,x_size])
-            v[:] = np.NAN
-            u_rot = np.zeros([y_size,x_size])
-            u_rot[:] = np.NAN
-            v_rot = np.zeros([y_size,x_size])
-            v_rot[:] = np.NAN
+            u_rot,v_rot= self.compute_vector_rotation(data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v)
 
-            # 1. On calcule les point à l'intérieur du domaine en excluant les bords
-            for y in range(1, y_size-1):
-                for x in range(1, x_size-1):
-
-                    if mask_t[y, x] == 1.:
-
-                        # 1.2 On récupère les valeurs aux point encadrant X pour faire la demi-somme
-                        ##############################
-                        #           v_up
-                        #
-                        #   u_left   X     u_right
-                        #
-                        #         v_bottom
-                        #############################
-
-                        # u_left
-                        u_left = 0
-                        if mask_u[y, x - 1] == 1.:
-                            u_left = data_u[y, x - 1];
-
-                        # u_right
-                        u_right = 0
-                        if mask_u[y, x] == 1.:
-                            u_right = data_u[y, x];
-
-                        # v_down
-                        v_down = 0
-                        if mask_v[y - 1, x] == 1.:
-                            v_down = data_v[y - 1, x];
-
-                        # v_up
-                        v_up = 0
-                        if mask_v[y, x] == 1.:
-                            v_up = data_v[y, x];
-
-                        # 1.3 On calcule la demi-somme
-                        u[y, x] = 0.5 * (u_left + u_right)
-                        v[y, x] = 0.5 * (v_down + v_up)
-
-                        # 1.4 On applique la rotation
-                        u_rot[y, x] = u[y, x] * rotcos[y, x] + v[y, x] * rotsin[y, x]
-                        v_rot[y, x] = -u[y, x] * rotsin[y, x] + v[y, x] * rotcos[y, x]
-
-            # 2. On duplique les point sur les bords.
-            # bottom
-            u_rot[0, 0:x_size] = u_rot[1, 0:x_size]
-            v_rot[0, 0:x_size] = v_rot[1, 0:x_size]
-            # up
-            u_rot[y_size - 1, 0:x_size] = u_rot[y_size - 2, 0:x_size]
-            v_rot[y_size - 1, 0:x_size] = v_rot[y_size - 2, 0:x_size]
-
-            # left
-            u_rot[0:y_size, 0] = u_rot[0:y_size, 1]
-            v_rot[0:y_size, 0] = v_rot[0:y_size, 1]
-            # right
-            u_rot[0:y_size, x_size - 1] = u_rot[0:y_size, x_size - 2]
-            v_rot[0:y_size, x_size - 1] = v_rot[0:y_size, x_size - 2]
-
-            return [u_rot[ymin:ymax,xmin:xmax], v_rot[ymin:ymax,xmin:xmax]]
+            return [u_rot[new_ymin:new_ymax,new_xmin:new_xmax], v_rot[new_ymin:new_ymax,new_xmin:new_xmax]]
 
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
@@ -597,80 +588,41 @@ La classe SymphonieReader permet de lire les données du format Symphonie
                                  1000))
 
     def read_variable_baroclinic_sea_water_velocity_at_time_and_depth(self, index_t, index_z,xmin,xmax,ymin,ymax):
-        mask_t = self.read_variable_3D_sea_binary_mask(xmin,xmax,ymin,ymax);
-        mask_u = self.grid.variables["mask_u"][index_z,:];
-        mask_v = self.grid.variables["mask_v"][index_z,:];
-        data_u = self.ncfile.variables["vel_u"][index_t,index_z,:]
-        data_v = self.ncfile.variables["vel_v"][index_t,index_z,:]
+        try:
+            xmin_overlap, xmax_overlap, ymin_overlap, ymax_overlap, new_xmin, new_xmax, new_ymin, new_ymax = self.compute_overlap_indexes(
+                xmin, xmax, ymin, ymax)
 
-        u = np.zeros([self.ymax, self.xmax])
-        u[:] = np.NAN
-        v = np.zeros([self.ymax, self.xmax])
-        v[:] = np.NAN
-        u_rot = np.zeros([self.ymax, self.xmax])
-        u_rot[:] = np.NAN
-        v_rot = np.zeros([self.ymax, self.xmax])
-        v_rot[:] = np.NAN
+            mask_t = self.grid.variables["mask_t"][index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+            mask_u = self.grid.variables["mask_u"][index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+            mask_v = self.grid.variables["mask_v"][index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
 
-        # 1. On calcule les point à l'intérieur du domaine en excluant les bords
-        for y in range(1, self.ymax - 1):
-            for x in range(1, self.xmax - 1):
+            if self.gridrotcos_t is None and self.gridrotsin_t is None:
+                self.compute_rot()
 
-                if mask_t[index_z, y, x] == 1.:
+            rotcos = self.gridrotcos_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+            rotsin = self.gridrotsin_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
 
-                    # 1.2 On récupère les valeurs aux point encadrant X pour faire la demi-somme
-                    ##############################
-                    #           v_up
-                    #
-                    #   u_left   X     u_right
-                    #
-                    #         v_bottom
-                    #############################
+            if "vel_u" in self.ncfile.variables:
+                data_u = np.ma.filled(
+                    self.ncfile.variables["vel_u"][index_t, index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
+                    fill_value=np.nan)
+            if "vel_v" in self.ncfile.variables:
+                data_v = np.ma.filled(
+                    self.ncfile.variables["vel_v"][index_t, index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
+                    fill_value=np.nan)
 
-                    # u_left
-                    u_left = 0
-                    if mask_u[y, x - 1] == 1.:
-                        u_left = data_u[y, x - 1];
+            u_rot, v_rot = self.compute_vector_rotation(data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v)
 
-                    # u_right
-                    u_right = 0
-                    if mask_u[y, x] == 1.:
-                        u_right = data_u[y, x];
+            return [u_rot[new_ymin:new_ymax, new_xmin:new_xmax], v_rot[new_ymin:new_ymax, new_xmin:new_xmax]]
 
-                    # v_down
-                    v_down = 0
-                    if mask_v[y - 1, x] == 1.:
-                        v_down = data_v[y - 1, x];
+        except Exception as ex:
+            logging.debug("Error '" + str(ex) + "'")
+            raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
 
-                    # v_up
-                    v_up = 0
-                    if mask_v[y, x] == 1.:
-                        v_up = data_v[y, x];
-
-                    # 1.3 On calcule la demi-somme
-                    u[y, x] = 0.5 * (u_left + u_right)
-                    v[y, x] = 0.5 * (v_down + v_up)
-
-                    # 1.4 On applique la rotation
-                    u_rot[y, x] = u[y, x] * self.gridrotcos_t[y, x] + v[y, x] * self.gridrotsin_t[y, x]
-                    v_rot[y, x] = -u[y, x] * self.gridrotsin_t[y, x] + v[y, x] * self.gridrotcos_t[y, x]
-
-        # 2. On duplique les point sur les bords.
-        # bottom
-        u_rot[0, 0:self.xmax] = u_rot[1, 0:self.xmax]
-        v_rot[0, 0:self.xmax] = v_rot[1, 0:self.xmax]
-        # up
-        u_rot[self.ymax - 1, 0:self.xmax] = u_rot[self.ymax - 2, 0:self.xmax]
-        v_rot[self.ymax - 1, 0:self.xmax] = v_rot[self.ymax - 2, 0:self.xmax]
-
-        # left
-        u_rot[0:self.ymax, 0] = u_rot[0:self.ymax, 1]
-        v_rot[0:self.ymax, 0] = v_rot[0:self.ymax, 1]
-        # right
-        u_rot[0:self.ymax, self.xmax - 1] = u_rot[0:self.ymax, self.xmax - 2]
-        v_rot[0:self.ymax, self.xmax - 1] = v_rot[0:self.ymax, self.xmax - 2]
-
-        return [u_rot, v_rot]
+        logging.debug("No variables found for \'Baroclinic Sea Water Velocity\'")
+        raise (VariableNameError("SymphonieReader",
+                                 "No variables found for \'Baroclinic Sea Water Velocity\'",
+                                 1000))
 
     #################
     # WAVES
@@ -719,81 +671,42 @@ La classe SymphonieReader permet de lire les données du format Symphonie
                                  1000))
 
     def read_variable_sea_surface_wave_stokes_drift_velocity_at_time(self, index_t,xmin,xmax,ymin,ymax):
-        index_z = self.zmax - 1
-        mask_t = self.read_variable_2D_sea_binary_mask();
-        mask_u = self.grid.variables["mask_u"][index_z,:];
-        mask_v = self.grid.variables["mask_v"][index_z,:];
-        data_u = self.ncfile.variables["velbarstokes_u"][index_t,::]
-        data_v = self.ncfile.variables["velbarstokes_v"][index_t,::]
+        try:
+            index_z = self.get_z_size()-1
+            xmin_overlap, xmax_overlap, ymin_overlap, ymax_overlap, new_xmin, new_xmax, new_ymin, new_ymax = self.compute_overlap_indexes(
+                xmin, xmax, ymin, ymax)
 
-        u = np.zeros([self.ymax, self.xmax])
-        u[:] = np.NAN
-        v = np.zeros([self.ymax, self.xmax])
-        v[:] = np.NAN
-        u_rot = np.zeros([self.ymax, self.xmax])
-        u_rot[:] = np.NAN
-        v_rot = np.zeros([self.ymax, self.xmax])
-        v_rot[:] = np.NAN
+            mask_t = self.grid.variables["mask_t"][index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+            mask_u = self.grid.variables["mask_u"][index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+            mask_v = self.grid.variables["mask_v"][index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
 
-        # 1. On calcule les point à l'intérieur du domaine en excluant les bords
-        for y in range(1, self.ymax - 1):
-            for x in range(1, self.xmax - 1):
+            if self.gridrotcos_t is None and self.gridrotsin_t is None:
+                self.compute_rot()
 
-                if mask_t[y, x] == 1.:
+            rotcos = self.gridrotcos_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+            rotsin = self.gridrotsin_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
 
-                    # 1.2 On récupère les valeurs aux point encadrant X pour faire la demi-somme.
-                    ##############################
-                    #           v_up
-                    #
-                    #   u_left   X     u_right
-                    #
-                    #         v_bottom
-                    #############################
+            if "velbarstokes_u" in self.ncfile.variables:
+                data_u = np.ma.filled(
+                    self.ncfile.variables["velbarstokes_u"][index_t, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
+                    fill_value=np.nan)
+            if "velbarstokes_v" in self.ncfile.variables:
+                data_v = np.ma.filled(
+                    self.ncfile.variables["velbarstokes_v"][index_t, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
+                    fill_value=np.nan)
 
-                    # u_left
-                    u_left = 0
-                    if mask_u[y, x - 1] == 1.:
-                        u_left = data_u[y, x - 1];
+            u_rot, v_rot = self.compute_vector_rotation(data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v)
 
-                    # u_right
-                    u_right = 0
-                    if mask_u[y, x] == 1.:
-                        u_right = data_u[y, x];
+            return [u_rot[new_ymin:new_ymax, new_xmin:new_xmax], v_rot[new_ymin:new_ymax, new_xmin:new_xmax]]
 
-                    # v_down
-                    v_down = 0
-                    if mask_v[y - 1, x] == 1.:
-                        v_down = data_v[y - 1, x];
+        except Exception as ex:
+            logging.debug("Error '" + str(ex) + "'")
+            raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
 
-                    # v_up
-                    v_up = 0
-                    if mask_v[y, x] == 1.:
-                        v_up = data_v[y, x];
-
-                    # 1.3 On calcule la demi-somme
-                    u[y, x] = 0.5 * (u_left + u_right)
-                    v[y, x] = 0.5 * (v_down + v_up)
-
-                    # 1.4 On applique la rotation
-                    u_rot[y, x] = u[y, x] * self.gridrotcos_t[y, x] + v[y, x] * self.gridrotsin_t[y, x]
-                    v_rot[y, x] = -u[y, x] * self.gridrotsin_t[y, x] + v[y, x] * self.gridrotcos_t[y, x]
-
-        # 2. On duplique les point sur les bords.
-        # bottom
-        u_rot[0, 0:self.xmax] = u_rot[1, 0:self.xmax]
-        v_rot[0, 0:self.xmax] = v_rot[1, 0:self.xmax]
-        # up
-        u_rot[self.ymax - 1, 0:self.xmax] = u_rot[self.ymax - 2, 0:self.xmax]
-        v_rot[self.ymax - 1, 0:self.xmax] = v_rot[self.ymax - 2, 0:self.xmax]
-
-        # left
-        u_rot[0:self.ymax, 0] = u_rot[0:self.ymax, 1]
-        v_rot[0:self.ymax, 0] = v_rot[0:self.ymax, 1]
-        # right
-        u_rot[0:self.ymax, self.xmax - 1] = u_rot[0:self.ymax, self.xmax - 2]
-        v_rot[0:self.ymax, self.xmax - 1] = v_rot[0:self.ymax, self.xmax - 2]
-
-        return [u_rot, v_rot]
+        logging.debug("No variables found for \'Surface Stokes Drift Velocity\'")
+        raise (VariableNameError("SymphonieReader",
+                                 "No variables found for \'Surface Stokes Drift Velocity\'",
+                                 1000))
 
 
     #################
@@ -801,157 +714,80 @@ La classe SymphonieReader permet de lire les données du format Symphonie
     # Momentum flux
     #################
     def read_variable_atmosphere_momentum_flux_to_waves_at_time(self, index_t,xmin,xmax,ymin,ymax):
-        index_z = self.zmax - 1
-        mask_t = self.read_variable_2D_sea_binary_mask();
-        mask_u = self.grid.variables["mask_u"][index_z,:];
-        mask_v = self.grid.variables["mask_v"][index_z,:];
-        data_u = self.ncfile.variables["tawx"][index_t,::]
-        data_v = self.ncfile.variables["tawy"][index_t,::]
+        try:
+            index_z = self.get_z_size()-1
+            xmin_overlap, xmax_overlap, ymin_overlap, ymax_overlap, new_xmin, new_xmax, new_ymin, new_ymax = self.compute_overlap_indexes(
+                xmin, xmax, ymin, ymax)
 
-        u = np.zeros([self.ymax, self.xmax])
-        u[:] = np.NAN
-        v = np.zeros([self.ymax, self.xmax])
-        v[:] = np.NAN
-        u_rot = np.zeros([self.ymax, self.xmax])
-        u_rot[:] = np.NAN
-        v_rot = np.zeros([self.ymax, self.xmax])
-        v_rot[:] = np.NAN
+            mask_t = self.grid.variables["mask_t"][index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+            mask_u = self.grid.variables["mask_u"][index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+            mask_v = self.grid.variables["mask_v"][index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
 
-        # 1. On calcule les point à l'intérieur du domaine en excluant les bords
-        for y in range(1, self.ymax - 1):
-            for x in range(1, self.xmax - 1):
+            if self.gridrotcos_t is None and self.gridrotsin_t is None:
+                self.compute_rot()
 
-                if mask_t[y, x] == 1.:
+            rotcos = self.gridrotcos_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+            rotsin = self.gridrotsin_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
 
-                    # 1.2 On récupère les valeurs aux point encadrant X pour faire la demi-somme
-                    ##############################
-                    #           v_up
-                    #
-                    #   u_left   X     u_right
-                    #
-                    #         v_bottom
-                    #############################
+            if "tawx" in self.ncfile.variables:
+                data_u = np.ma.filled(
+                    self.ncfile.variables["tawx"][index_t, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
+                    fill_value=np.nan)
+            if "tawy" in self.ncfile.variables:
+                data_v = np.ma.filled(
+                    self.ncfile.variables["tawy"][index_t, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
+                    fill_value=np.nan)
 
-                    # u_left
-                    u_left = 0
-                    if mask_u[y, x - 1] == 1.:
-                        u_left = data_u[y, x - 1];
+            u_rot, v_rot = self.compute_vector_rotation(data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v)
 
-                    # u_right
-                    u_right = 0
-                    if mask_u[y, x] == 1.:
-                        u_right = data_u[y, x];
+            return [u_rot[new_ymin:new_ymax, new_xmin:new_xmax], v_rot[new_ymin:new_ymax, new_xmin:new_xmax]]
 
-                    # v_down
-                    v_down = 0
-                    if mask_v[y - 1, x] == 1.:
-                        v_down = data_v[y - 1, x];
+        except Exception as ex:
+            logging.debug("Error '" + str(ex) + "'")
+            raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
 
-                    # v_up
-                    v_up = 0
-                    if mask_v[y, x] == 1.:
-                        v_up = data_v[y, x];
-
-                    # 1.3 On calcule la demi-somme
-                    u[y, x] = 0.5 * (u_left + u_right)
-                    v[y, x] = 0.5 * (v_down + v_up)
-
-                    # 1.4 On applique la rotation
-                    u_rot[y, x] = u[y, x] * self.gridrotcos_t[y, x] + v[y, x] * self.gridrotsin_t[y, x]
-                    v_rot[y, x] = -u[y, x] * self.gridrotsin_t[y, x] + v[y, x] * self.gridrotcos_t[y, x]
-
-        # 2. On duplique les point sur les bords.
-        # bottom
-        u_rot[0, 0:self.xmax] = u_rot[1, 0:self.xmax]
-        v_rot[0, 0:self.xmax] = v_rot[1, 0:self.xmax]
-        # up
-        u_rot[self.ymax - 1, 0:self.xmax] = u_rot[self.ymax - 2, 0:self.xmax]
-        v_rot[self.ymax - 1, 0:self.xmax] = v_rot[self.ymax - 2, 0:self.xmax]
-
-        # left
-        u_rot[0:self.ymax, 0] = u_rot[0:self.ymax, 1]
-        v_rot[0:self.ymax, 0] = v_rot[0:self.ymax, 1]
-        # right
-        u_rot[0:self.ymax, self.xmax - 1] = u_rot[0:self.ymax, self.xmax - 2]
-        v_rot[0:self.ymax, self.xmax - 1] = v_rot[0:self.ymax, self.xmax - 2]
-
-        return [u_rot, v_rot]
+        logging.debug("No variables found for \'Atmosphere Momentum Flux to Waves\'")
+        raise (VariableNameError("SymphonieReader",
+                                 "No variables found for \'Atmosphere Momentum Flux to Waves\'",
+                                 1000))
 
     def read_variable_waves_momentum_flux_to_ocean_at_time(self, index_t,xmin,xmax,ymin,ymax):
-        index_z = self.zmax - 1
-        mask_t = self.read_variable_2D_sea_binary_mask();
-        mask_u = self.grid.variables["mask_u"][index_z,:];
-        mask_v = self.grid.variables["mask_v"][index_z,:];
-        data_u = self.ncfile.variables["twox"][index_t,::]
-        data_v = self.ncfile.variables["twoy"][index_t,::]
+        try:
+            index_z = self.get_z_size()-1
+            xmin_overlap, xmax_overlap, ymin_overlap, ymax_overlap, new_xmin, new_xmax, new_ymin, new_ymax = self.compute_overlap_indexes(
+                xmin, xmax, ymin, ymax)
 
-        u = np.zeros([self.ymax, self.xmax])
-        u[:] = np.NAN
-        v = np.zeros([self.ymax, self.xmax])
-        v[:] = np.NAN
-        u_rot = np.zeros([self.ymax, self.xmax])
-        u_rot[:] = np.NAN
-        v_rot = np.zeros([self.ymax, self.xmax])
-        v_rot[:] = np.NAN
+            mask_t = self.grid.variables["mask_t"][index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+            mask_u = self.grid.variables["mask_u"][index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+            mask_v = self.grid.variables["mask_v"][index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
 
-        # 1. On calcule les point à l'intérieur du domaine en excluant les bords
-        for y in range(1, self.ymax - 1):
-            for x in range(1, self.xmax - 1):
+            if self.gridrotcos_t is None and self.gridrotsin_t is None:
+                self.compute_rot()
 
-                if mask_t[y, x] == 1.:
+            rotcos = self.gridrotcos_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+            rotsin = self.gridrotsin_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
 
-                    # 1.2 On récupère les valeurs aux point encadrant X pour faire la demi-somme
-                    ##############################
-                    #           v_up
-                    #
-                    #   u_left   X     u_right
-                    #
-                    #         v_bottom
-                    #############################
+            if "twox" in self.ncfile.variables:
+                data_u = np.ma.filled(
+                    self.ncfile.variables["twox"][index_t, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
+                    fill_value=np.nan)
+            if "twoy" in self.ncfile.variables:
+                data_v = np.ma.filled(
+                    self.ncfile.variables["twoy"][index_t, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
+                    fill_value=np.nan)
 
-                    # u_left
-                    u_left = 0
-                    if mask_u[y, x - 1] == 1.:
-                        u_left = data_u[y, x - 1];
+            u_rot, v_rot = self.compute_vector_rotation(data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v)
 
-                    # u_right
-                    u_right = 0
-                    if mask_u[y, x] == 1.:
-                        u_right = data_u[y, x];
+            return [u_rot[new_ymin:new_ymax, new_xmin:new_xmax], v_rot[new_ymin:new_ymax, new_xmin:new_xmax]]
 
-                    # v_down
-                    v_down = 0
-                    if mask_v[y - 1, x] == 1.:
-                        v_down = data_v[y - 1, x];
+        except Exception as ex:
+            logging.debug("Error '" + str(ex) + "'")
+            raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
 
-                    # v_up
-                    v_up = 0
-                    if mask_v[y, x] == 1.:
-                        v_up = data_v[y, x];
-
-                    # 1.3 On calcule la demi-somme
-                    u[y, x] = 0.5 * (u_left + u_right)
-                    v[y, x] = 0.5 * (v_down + v_up)
-
-                    # 1.4 On applique la rotation
-                    u_rot[y, x] = u[y, x] * self.gridrotcos_t[y, x] + v[y, x] * self.gridrotsin_t[y, x]
-                    v_rot[y, x] = -u[y, x] * self.gridrotsin_t[y, x] + v[y, x] * self.gridrotcos_t[y, x]
-
-        # 2. On duplique les point sur les bords.
-        # bottom
-        u_rot[0, 0:self.xmax] = u_rot[1, 0:self.xmax]
-        v_rot[0, 0:self.xmax] = v_rot[1, 0:self.xmax]
-        # up
-        u_rot[self.ymax - 1, 0:self.xmax] = u_rot[self.ymax - 2, 0:self.xmax]
-        v_rot[self.ymax - 1, 0:self.xmax] = v_rot[self.ymax - 2, 0:self.xmax]
-
-        # left
-        u_rot[0:self.ymax, 0] = u_rot[0:self.ymax, 1]
-        v_rot[0:self.ymax, 0] = v_rot[0:self.ymax, 1]
-        # right
-        u_rot[0:self.ymax, self.xmax - 1] = u_rot[0:self.ymax, self.xmax - 2]
-        v_rot[0:self.ymax, self.xmax - 1] = v_rot[0:self.ymax, self.xmax - 2]
-        return [u_rot, v_rot]
+        logging.debug("No variables found for \'Waves Momentum Flux To Ocean\'")
+        raise (VariableNameError("SymphonieReader",
+                                 "No variables found for \'Waves Momentum Flux To Ocean\'",
+                                 1000))
 
     #################
     # METEO
@@ -965,123 +801,84 @@ La classe SymphonieReader permet de lire les données du format Symphonie
     #################
 
     def read_variable_wind_stress_at_time(self, index_t,xmin,xmax,ymin,ymax):
-        index_z = self.zmax - 1
-        mask_t = self.read_variable_2D_sea_binary_mask();
-        mask_u = self.grid.variables["mask_u"][index_z,:];
-        mask_v = self.grid.variables["mask_v"][index_z,:];
-        data_u = self.ncfile.variables["wstress_u"][index_t,::]
-        data_v = self.ncfile.variables["wstress_v"][index_t,::]
+        try:
+            index_z = self.get_z_size()-1
+            xmin_overlap, xmax_overlap, ymin_overlap, ymax_overlap, new_xmin, new_xmax, new_ymin, new_ymax = self.compute_overlap_indexes(
+                xmin, xmax, ymin, ymax)
 
-        u = np.zeros([self.ymax, self.xmax])
-        u[:] = np.NAN
-        v = np.zeros([self.ymax, self.xmax])
-        v[:] = np.NAN
-        u_rot = np.zeros([self.ymax, self.xmax])
-        u_rot[:] = np.NAN
-        v_rot = np.zeros([self.ymax, self.xmax])
-        v_rot[:] = np.NAN
+            mask_t = self.grid.variables["mask_t"][index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+            mask_u = self.grid.variables["mask_u"][index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+            mask_v = self.grid.variables["mask_v"][index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
 
-        # 1. On calcule les point à l'intérieur du domaine en excluant les bords
-        for y in range(1, self.ymax - 1):
-            for x in range(1, self.xmax - 1):
+            if self.gridrotcos_t is None and self.gridrotsin_t is None:
+                self.compute_rot()
 
-                if mask_t[y, x] == 1.:
+            rotcos = self.gridrotcos_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+            rotsin = self.gridrotsin_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
 
-                    # 1.2 On récupère les valeurs aux point encadrant X pour faire la demi-somme
-                    ##############################
-                    #           v_up
-                    #
-                    #   u_left   X     u_right
-                    #
-                    #         v_bottom
-                    #############################
+            if "wstress_u" in self.ncfile.variables:
+                data_u = np.ma.filled(
+                    self.ncfile.variables["wstress_u"][index_t, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
+                    fill_value=np.nan)
+            if "wstress_v" in self.ncfile.variables:
+                data_v = np.ma.filled(
+                    self.ncfile.variables["wstress_v"][index_t, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
+                    fill_value=np.nan)
 
-                    # u_left
-                    u_left = 0
-                    if mask_u[y, x - 1] == 1.:
-                        u_left = data_u[y, x - 1];
+            u_rot, v_rot = self.compute_vector_rotation(data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v)
 
-                    # u_right
-                    u_right = 0
-                    if mask_u[y, x] == 1.:
-                        u_right = data_u[y, x];
+            return [u_rot[new_ymin:new_ymax, new_xmin:new_xmax], v_rot[new_ymin:new_ymax, new_xmin:new_xmax]]
 
-                    # v_down
-                    v_down = 0
-                    if mask_v[y - 1, x] == 1.:
-                        v_down = data_v[y - 1, x];
+        except Exception as ex:
+            logging.debug("Error '" + str(ex) + "'")
+            raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
 
-                    # v_up
-                    v_up = 0
-                    if mask_v[y, x] == 1.:
-                        v_up = data_v[y, x];
-
-                    # 1.3 On calcule la demi-somme
-                    u[y, x] = 0.5 * (u_left + u_right)
-                    v[y, x] = 0.5 * (v_down + v_up)
-
-                    # 1.4 On applique la rotation
-                    u_rot[y, x] = u[y, x] * self.gridrotcos_t[y, x] + v[y, x] * self.gridrotsin_t[y, x]
-                    v_rot[y, x] = -u[y, x] * self.gridrotsin_t[y, x] + v[y, x] * self.gridrotcos_t[y, x]
-
-        # 2. On duplique les point sur les bords.
-        # bottom
-        u_rot[0, 0:self.xmax] = u_rot[1, 0:self.xmax]
-        v_rot[0, 0:self.xmax] = v_rot[1, 0:self.xmax]
-        # up
-        u_rot[self.ymax - 1, 0:self.xmax] = u_rot[self.ymax - 2, 0:self.xmax]
-        v_rot[self.ymax - 1, 0:self.xmax] = v_rot[self.ymax - 2, 0:self.xmax]
-
-        # left
-        u_rot[0:self.ymax, 0] = u_rot[0:self.ymax, 1]
-        v_rot[0:self.ymax, 0] = v_rot[0:self.ymax, 1]
-        # right
-        u_rot[0:self.ymax, self.xmax - 1] = u_rot[0:self.ymax, self.xmax - 2]
-        v_rot[0:self.ymax, self.xmax - 1] = v_rot[0:self.ymax, self.xmax - 2]
-
-        return [u_rot, v_rot]
+        logging.debug("No variables found for \'Wind Stress\'")
+        raise (VariableNameError("SymphonieReader",
+                                 "No variables found for \'Wind Stress\'",
+                                 1000))
 
     #################
     # METEO
     # At 10 m
     #################
     def read_variable_wind_10m_at_time(self, index_t,xmin,xmax,ymin,ymax):
-        mask_t = self.read_variable_2D_sea_binary_mask();
-        lon_t = self.read_axis_x();
-        lat_t = self.read_axis_y();
-        data_u = self.ncfile.variables["uwind_t"][index_t,::]
-        data_v = self.ncfile.variables["vwind_t"][index_t,::]
+        try:
+            index_z = self.get_z_size()-1
+            xmin_overlap, xmax_overlap, ymin_overlap, ymax_overlap, new_xmin, new_xmax, new_ymin, new_ymax = self.compute_overlap_indexes(
+                xmin, xmax, ymin, ymax)
 
-        u_rot = np.zeros([self.ymax, self.xmax])
-        u_rot[:] = np.NAN
-        v_rot = np.zeros([self.ymax, self.xmax])
-        v_rot[:] = np.NAN
+            mask_t = self.grid.variables["mask_t"][index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+            mask_u = self.grid.variables["mask_u"][index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+            mask_v = self.grid.variables["mask_v"][index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
 
-        # 1. On calcule les point à l'intérieur du domaine en excluant les bords
-        for y in range(1, self.ymax - 1):
-            for x in range(1, self.xmax - 1):
+            if self.gridrotcos_t is None and self.gridrotsin_t is None:
+                self.compute_rot()
 
-                if mask_t[y, x] == 1.:
-                    # 1.4 On applique la rotation
-                    u_rot[y, x] = data_u[y, x] * self.gridrotcos_t[y, x] + data_v[y, x] * self.gridrotsin_t[y, x]
-                    v_rot[y, x] = -data_u[y, x] * self.gridrotsin_t[y, x] + data_v[y, x] * self.gridrotcos_t[y, x]
+            rotcos = self.gridrotcos_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+            rotsin = self.gridrotsin_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
 
-        # 2. On duplique les point sur les bords.
-        # bottom
-        u_rot[0, 0:self.xmax] = u_rot[1, 0:self.xmax]
-        v_rot[0, 0:self.xmax] = v_rot[1, 0:self.xmax]
-        # up
-        u_rot[self.ymax - 1, 0:self.xmax] = u_rot[self.ymax - 2, 0:self.xmax]
-        v_rot[self.ymax - 1, 0:self.xmax] = v_rot[self.ymax - 2, 0:self.xmax]
+            if "uwind_t" in self.ncfile.variables:
+                data_u = np.ma.filled(
+                    self.ncfile.variables["uwind_t"][index_t, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
+                    fill_value=np.nan)
+            if "vwind_t" in self.ncfile.variables:
+                data_v = np.ma.filled(
+                    self.ncfile.variables["vwind_t"][index_t, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
+                    fill_value=np.nan)
 
-        # left
-        u_rot[0:self.ymax, 0] = u_rot[0:self.ymax, 1]
-        v_rot[0:self.ymax, 0] = v_rot[0:self.ymax, 1]
-        # right
-        u_rot[0:self.ymax, self.xmax - 1] = u_rot[0:self.ymax, self.xmax - 2]
-        v_rot[0:self.ymax, self.xmax - 1] = v_rot[0:self.ymax, self.xmax - 2]
+            u_rot, v_rot = self.compute_vector_rotation(data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v)
 
-        return [u_rot, v_rot]
+            return [u_rot[new_ymin:new_ymax, new_xmin:new_xmax], v_rot[new_ymin:new_ymax, new_xmin:new_xmax]]
+
+        except Exception as ex:
+            logging.debug("Error '" + str(ex) + "'")
+            raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
+
+        logging.debug("No variables found for \'Wind 10m\'")
+        raise (VariableNameError("SymphonieReader",
+                                 "No variables found for \'Wind 10m\'",
+                                 1000))
         
     # Others
     def read_variable_Ha(self,xmin,xmax,ymin,ymax):

@@ -499,13 +499,20 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
      [4] : la distance du point le plus proche en kilomètre."""
         lon = self.read_axis_x(type="source_global")
         lat = self.read_axis_y(type="source_global")
-        mask = self.read_variable_2D_sea_binary_mask()
-        dist = np.zeros([self.source_global_y_size, self.source_global_x_size])
+
+        try:
+            mask = self.read_variable_2D_sea_binary_mask()
+        except NotImplementedError:
+            logging.warning("No 2D sea binary mask found")
+            #mask = np.ones([self.source_global_y_size, self.source_global_x_size])
+            only_mask_value = False
+
+        dist = np.zeros([self.get_y_size(type="source_global"), self.get_x_size(type="source_global")])
         dist[:] = 100000
 
         if method=="classic":
-            for x in range(0, self.source_global_x_size):
-                for y in range(0, self.source_global_y_size):
+            for x in range(0, self.get_x_size(type="source_global")):
+                for y in range(0, self.get_y_size(type="source_global")):
 
                     if only_mask_value:
                         if(mask[y,x] == 1): #=Terre

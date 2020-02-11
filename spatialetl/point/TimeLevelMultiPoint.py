@@ -27,9 +27,9 @@ import logging
 class TimeLevelMultiPoint(LevelMultiPoint, TimeMultiPoint):
     """"""
 
-    def __init__(self,myReader,depth=None,time_range=None):
-        LevelMultiPoint.__init__(self, myReader,depth)
-        TimeMultiPoint.__init__(self, myReader,time_range=time_range)
+    def __init__(self,myReader,zbox=None,resolution_z=None,start_time=None,end_time=None,freq=None,time_range=None):
+        LevelMultiPoint.__init__(self, myReader,zbox=zbox,resolution_z=resolution_z)
+        TimeMultiPoint.__init__(self, myReader,start_time=start_time,end_time=end_time,freq=freq,time_range=time_range)
 
     # Scalar
     def read_variable_baroclinic_sea_water_velocity_at_time_and_depth(self,time,depth):

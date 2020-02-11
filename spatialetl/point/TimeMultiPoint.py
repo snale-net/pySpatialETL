@@ -22,67 +22,99 @@ from datetime import datetime,timedelta,timezone
 import logging
 import pandas
 import math
-
+import cftime
 
 class TimeMultiPoint(MultiPoint):
     """"""
 
     TIME_DATUM = datetime(1970, 1, 1)
-    TIME_DELTA = timedelta(seconds=5)
-    #TIME_INTERPOLATION_METHOD = None
-    TIME_INTERPOLATION_METHOD = "nearest"
-    #TIME_INTERPOLATION_METHOD = "pad"
-    #TIME_INTERPOLATION_METHOD = "backfill"
-    #TIME_INTERPOLATION_METHOD = "linear"
+    TIME_DELTA = timedelta(minutes=5)
+    TIME_INTERPOLATION_METHOD = "linear"
 
-    def __init__(self,myReader,freq=None,start=None,end=None,time_range=None):
+    def __init__(self,myReader,start_time=None,end_time=None,freq=None,time_range=None):
         MultiPoint.__init__(self, myReader)
 
-        self.raw_times = self.reader.read_axis_t(timestamp=0)
-        self.raw_tmax = np.shape(self.raw_times)[0]
+        self.source_axis_t = self.reader.read_axis_t(timestamp=0)
+        self.source_t_size = np.shape(self.source_axis_t)[0]
+        tmin = 0
+        tmax = self.source_t_size
+        zero_delta = timedelta(minutes=00)
 
-        self.target_times = self.raw_times
-        self.target_tmax = self.raw_tmax
-
-        self.is_raw_times = True
+        self.temporal_resampling = False
 
         if time_range is not None:
-            self.target_times = time_range
-            self.target_tmax = np.shape(self.target_times)[0]
-            self.is_raw_times = False
+            self.target_axis_t = time_range
+            self.target_t_size = np.shape(self.target_axis_t)[0]
+            self.temporal_resampling = True
 
-        elif freq is not None and start is None and end is None:
-            self.freq = freq
-            t_index = [self.raw_times[0], self.raw_times[self.raw_tmax - 1]]
-            # we sort by dates
-            t_index.sort()
+        if start_time is not None:
 
-            self.target_times = pandas.date_range(start=t_index[0],
-                                                end=t_index[1], freq=self.freq).to_pydatetime();
-            self.target_tmax = np.shape(self.target_times)[0]
-            self.is_raw_times = False
+            if type(start_time) == datetime or type(start_time) == cftime._cftime.real_datetime:
+                time = start_time
+            elif type(start_time) == str:
+                try:
+                    time = datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S')
+                except ValueError as ex:
+                    raise ValueError("start_time is not well formated " + str(ex))
+            else:
+                raise ValueError("start_time have to be string or datetime. Found " + str(type(start_time)))
 
-        elif freq is not None and start is not None or end is not None:
-            self.target_times = pandas.date_range(start=start, end=end, freq=freq).to_pydatetime()
-            self.target_tmax = np.shape(self.target_times)[0]
-            self.is_raw_times = False
+            nearest_t_index = (np.abs(np.asarray(self.source_axis_t) - time)).argmin()
+
+            if time - self.source_axis_t[nearest_t_index] == zero_delta or abs(
+                    time - self.source_axis_t[nearest_t_index]) < TimeMultiPoint.TIME_DELTA:
+                tmin = nearest_t_index
+            else:
+                raise ValueError(str(time) + " not found. Maybe the TimeMultiPoint.TIME_DELTA (" + str(
+                    TimeMultiPoint.TIME_DELTA) + ") is too small or the date is out the range.")
+
+        if end_time is not None:
+
+            if type(end_time) == datetime or type(end_time) == cftime._cftime.real_datetime:
+                time = end_time
+            elif type(end_time) == str:
+                try:
+                    time = datetime.strptime(end_time, '%Y-%m-%d %H:%M:%S')
+                except ValueError as ex:
+                    raise ValueError("end_time is not well formated " + str(ex))
+            else:
+                raise ValueError("end_time have to be string or datetime. Found " + str(type(end_time)))
+
+            nearest_t_index = (np.abs(np.asarray(self.source_axis_t) - time)).argmin()
+
+            if time - self.source_axis_t[nearest_t_index] == zero_delta or abs(
+                    time - self.source_axis_t[nearest_t_index]) < TimeMultiPoint.TIME_DELTA:
+                tmax = nearest_t_index + 1
+            else:
+                raise ValueError(str(time) + " not found. Maybe the TimeMultiPoint.TIME_DELTA (" + str(
+                    TimeMultiPoint.TIME_DELTA) + ") is too small or the date is out the range.")
+
+        if freq is not None:
+            self.temporal_resampling = True
+            self.target_axis_t = pandas.date_range(start=self.source_axis_t[tmin],
+                                                          end=self.source_axis_t[tmax - 1],
+                                                          freq=freq).to_pydatetime();
+            self.target_t_size = np.shape(self.target_axis_t)[0]
+        else:
+            self.target_axis_t = self.source_axis_t[tmin:tmax]
+            self.target_t_size = tmax - tmin
 
     # Axis
-    def read_axis_t(self,timestamp=0,raw=False):
+    def read_axis_t(self,timestamp=0,type="target"):
 
-        if timestamp==1 and raw == True:
+        if  type=="source" and timestamp==1:
             return self.reader.read_axis_t(timestamp)
-        elif raw:
-            return self.raw_times
+        elif type=="source":
+            return self.source_axis_t
         else:
-            return self.target_times
+            return self.target_axis_t
 
-    def get_t_size(self,raw=False):
+    def get_t_size(self,type="target"):
 
-        if raw:
-            return self.raw_tmax
+        if type=="source":
+            return self.source_t_size
         else:
-            return self.target_tmax
+            return self.target_t_size
 
     def find_time_index(self, t):
         """Retourne l'index de la date la plus proche à TIME_DELTA_MIN prêt.
@@ -95,28 +127,27 @@ class TimeMultiPoint(MultiPoint):
 
         if type(t) == int or type(t) == int32 or type(t)== int64:
 
-            if t < 0 or t >= self.get_t_size(raw=True):
+            if t < 0 or t >= self.get_t_size(type="source"):
                 raise ValueError("Time index have to range between 0 and " + str(
-                    self.get_t_size(raw=True) - 1) + ". Actually Time index = " + str(t))
+                    self.get_t_size(type="source") - 1) + ". Actually Time index = " + str(t))
 
             indexes_t.append(int(t));
 
-        elif type(t) == datetime:
+        elif type(t) == datetime or type(t) == cftime._cftime.real_datetime:
 
             logging.debug("[TimeMultiPoint][find_time_index()] Looking for : "+str(t))
 
+            array = np.asarray(self.read_axis_t(timestamp=1,type="source"))
             #X = np.abs(self.read_axis_t(timestamp=1,raw=1) - t.replace(tzinfo=timezone.utc).timestamp())
-            X = np.abs(self.read_axis_t(timestamp=1,raw=1) - t)
+
+            X = np.abs(array - t)
             #index_t = (np.abs(array - t.replace(tzinfo=timezone.utc).timestamp())).argmin()
             idx = np.where(X <= TimeMultiPoint.TIME_DELTA)
 
             for index in range(np.shape(idx)[1]):
                 index_t = idx[0][index]
                 indexes_t.append(int(index_t))
-                logging.debug("[TimeMultiPoint][find_time_index()] Found : "+str(self.raw_times[index_t]))
-
-            else:
-                logging.debug("[TimeMultiPoint] " + str(t) + " was not found on the T axis.")
+                logging.debug("[TimeMultiPoint][find_time_index()] Found : " + str(self.source_axis_t[index_t]))
 
             if not indexes_t:
                 raise ValueError("" + str(t) + " was not found. Maybe the TimeMultiPoint.TIME_DELTA (" + str(
@@ -125,17 +156,19 @@ class TimeMultiPoint(MultiPoint):
         else:
             raise ValueError("" + str(t) + " have to be an integer or a datetime.")
 
+        logging.debug("[TimeMultiPoint][find_time_index()] Found " + str(len(indexes_t)) + " candidate datetime(s)")
+
         # On retourne le tableau d'index
         return np.array(np.unique(indexes_t))
 
     def interpolate_all_times(self, values):
 
-        raw_index = pandas.DatetimeIndex(self.read_axis_t(raw=True))
-        target_index = pandas.DatetimeIndex(self.read_axis_t(raw=False))
+        source_index = pandas.DatetimeIndex(self.read_axis_t(type="source"))
+        target_index = pandas.DatetimeIndex(self.read_axis_t(type="target"))
 
         for index_x in range(0,self.get_nb_points()):
 
-            data = pandas.DataFrame({'point_'+str(index_x): pandas.Series(values[index_x], index=raw_index)})
+            data = pandas.DataFrame({'point_'+str(index_x): pandas.Series(values[index_x], index=source_index)})
 
         # we process time record (drop duplicate...)
         duplicates = np.where(data.index.duplicated() == True)[0]
@@ -171,7 +204,7 @@ class TimeMultiPoint(MultiPoint):
         results[:] = np.NAN
 
         targetTime = [date.replace(tzinfo=timezone.utc).timestamp()]
-        rawTime = self.read_axis_t(timestamp=1, raw=True)
+        rawTime = self.read_axis_t(timestamp=1, type="source")
 
         candidateTimes = np.zeros([len(indexes_t)])
         candidateValues = np.zeros([len(indexes_t)])
@@ -182,7 +215,6 @@ class TimeMultiPoint(MultiPoint):
             candidateTimes[:] = np.nan
 
             for t in range(0, len(indexes_t)):
-                print(rawTime[indexes_t[t]])
                 candidateTimes[t] = datetime.timestamp(rawTime[indexes_t[t]])
                 candidateValues[t] = layers[t][x]
 

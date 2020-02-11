@@ -29,6 +29,9 @@ class DefaultTimeLevelMultiPointReader(MultiPointReader):
         self.zmax = np.shape(self.ncfile["depth"])[0]
         self.tmax = np.shape(self.ncfile["time"])[0]
 
+    def get_z_size(self):
+        return np.shape(self.ncfile["depth"])[0]
+
     # Axis
     def read_axis_x(self):
         return self.ncfile["longitude"]

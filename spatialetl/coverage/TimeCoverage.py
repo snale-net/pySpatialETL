@@ -59,7 +59,7 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             else:
                 raise ValueError("start_time have to be string or datetime. Found " + str(type(start_time)))
 
-            nearest_t_index = (np.abs(self.source_global_axis_t - time)).argmin()
+            nearest_t_index = (np.abs(np.asarray(self.source_global_axis_t) - time)).argmin()
 
             if time - self.source_global_axis_t[nearest_t_index] == zero_delta or abs(time - self.source_global_axis_t[nearest_t_index]) < TimeCoverage.TIME_DELTA:
                 tmin = nearest_t_index
@@ -68,8 +68,6 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
                 TimeCoverage.TIME_DELTA) + ") is too small or the date is out the range.")
 
         if end_time is not None:
-
-            self.temporal_resampling = True
 
             if type(end_time) == datetime or type(end_time) == cftime._cftime.real_datetime:
                 time = end_time
@@ -81,7 +79,7 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             else:
                 raise ValueError("end_time have to be string or datetime. Found " + str(type(end_time)))
 
-            nearest_t_index = (np.abs(self.source_global_axis_t - time)).argmin()
+            nearest_t_index = (np.abs(np.asarray(self.source_global_axis_t) - time)).argmin()
 
             if time - self.source_global_axis_t[nearest_t_index] == zero_delta or abs(time - self.source_global_axis_t[nearest_t_index]) < TimeCoverage.TIME_DELTA:
                 tmax = nearest_t_index +1
@@ -238,13 +236,13 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             zero_delta = timedelta(minutes=00)
             array = np.asarray(self.target_global_axis_t[self.map_mpi[self.rank]["src_global_t"]])
 
-            #logging.debug("[TimeCoverage][find_time_index()] Looking for : " + str(t))
-            #logging.debug("[TimeCovergae][find_time_index()] Proc [" + str(self.rank) + "] - datetime candidates are : " + str(array))
+            logging.debug("[TimeCoverage][find_time_index()] Looking for : " + str(t))
 
             if method == "classic":
 
                 for i in range(0,self.get_t_size()):
                     if t - array[i] == zero_delta or abs(t - array[i]) < TimeCoverage.TIME_DELTA:
+                        logging.debug("[TimeCoverage][find_time_index()] Nearest datetime found : " + str(array[i]))
                         return i
 
             elif method == "quick":
@@ -252,6 +250,8 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
                 nearest_t_index = (np.abs(array - t)).argmin()
 
                 if t - array[nearest_t_index] == zero_delta or abs(t - array[nearest_t_index]) < TimeCoverage.TIME_DELTA:
+                    logging.debug("[TimeCoverage][find_time_index()] Nearest datetime found : " + str(
+                        array[nearest_t_index]))
                     return nearest_t_index
             else:
                 raise NotImplementedError("Method " + str(method) + " is not implemented for regular grid.")
@@ -533,22 +533,22 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            data[0] = resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                          self.read_axis_y(type="source_global", with_overlap=True),
-                                          self.read_axis_x(type="target", with_overlap=True),
-                                          self.read_axis_y(type="target", with_overlap=True),
-                                          data[0],
-                                          Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
+                                       self.read_axis_y(type="source_global", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data[0],
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
+                       self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]], \
+                   resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
+                                       self.read_axis_y(type="source_global", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data[1],
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
+                       self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
-            data[1] = resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                          self.read_axis_y(type="source_global", with_overlap=True),
-                                          self.read_axis_x(type="target", with_overlap=True),
-                                          self.read_axis_y(type="target", with_overlap=True),
-                                          data[1],
-                                          Coverage.HORIZONTAL_INTERPOLATION_METHOD)
-
-        return [data[0][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]],
-                data[1][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]]
+        return data[0][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]],data[1][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
     #################
     # HYDRO
@@ -621,22 +621,22 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            data[0] = resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                          self.read_axis_y(type="source_global", with_overlap=True),
-                                          self.read_axis_x(type="target", with_overlap=True),
-                                          self.read_axis_y(type="target", with_overlap=True),
-                                          data[0],
-                                          Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
+                                       self.read_axis_y(type="source_global", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data[0],
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
+                       self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]], \
+                   resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
+                                       self.read_axis_y(type="source_global", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data[1],
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
+                       self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
-            data[1] = resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                          self.read_axis_y(type="source_global", with_overlap=True),
-                                          self.read_axis_x(type="target", with_overlap=True),
-                                          self.read_axis_y(type="target", with_overlap=True),
-                                          data[1],
-                                          Coverage.HORIZONTAL_INTERPOLATION_METHOD)
-
-        return [data[0][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]],
-                data[1][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]]
+        return data[0][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]],data[1][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
     #################
     # HYDRO
@@ -658,21 +658,22 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            data[0] = resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
                                        self.read_axis_y(type="source_global", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data[0],
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
+                       self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]], \
+                   resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
+                                       self.read_axis_y(type="source_global", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data[1],
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
+                       self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
-            data[1] = resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                         self.read_axis_y(type="source_global", with_overlap=True),
-                                         self.read_axis_x(type="target", with_overlap=True),
-                                         self.read_axis_y(type="target", with_overlap=True),
-                                         data[1],
-                                         Coverage.HORIZONTAL_INTERPOLATION_METHOD)
-
-        return [data[0][self.map_mpi[self.rank]["dst_local_y"],self.map_mpi[self.rank]["dst_local_x"]],data[1][self.map_mpi[self.rank]["dst_local_y"],self.map_mpi[self.rank]["dst_local_x"]]]
+        return data[0][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]],data[1][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
     #################
     # WAVES
@@ -828,22 +829,22 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            data[0] = resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                          self.read_axis_y(type="source_global", with_overlap=True),
-                                          self.read_axis_x(type="target", with_overlap=True),
-                                          self.read_axis_y(type="target", with_overlap=True),
-                                          data[0],
-                                          Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
+                                       self.read_axis_y(type="source_global", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data[0],
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
+                       self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]], \
+                   resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
+                                       self.read_axis_y(type="source_global", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data[1],
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
+                       self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
-            data[1] = resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                          self.read_axis_y(type="source_global", with_overlap=True),
-                                          self.read_axis_x(type="target", with_overlap=True),
-                                          self.read_axis_y(type="target", with_overlap=True),
-                                          data[1],
-                                          Coverage.HORIZONTAL_INTERPOLATION_METHOD)
-
-        return [data[0][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]],
-                data[1][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]]
+        return data[0][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]],data[1][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
     def read_variable_radiation_pressure_bernouilli_head_at_time(self, t):
         """Retourne la pression J due aux vagues à la date souhaitée sur toute la couverture horizontale.
@@ -886,22 +887,22 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            data[0] = resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                          self.read_axis_y(type="source_global", with_overlap=True),
-                                          self.read_axis_x(type="target", with_overlap=True),
-                                          self.read_axis_y(type="target", with_overlap=True),
-                                          data[0],
-                                          Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
+                                       self.read_axis_y(type="source_global", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data[0],
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
+                       self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]], \
+                   resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
+                                       self.read_axis_y(type="source_global", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data[1],
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
+                       self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
-            data[1] = resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                          self.read_axis_y(type="source_global", with_overlap=True),
-                                          self.read_axis_x(type="target", with_overlap=True),
-                                          self.read_axis_y(type="target", with_overlap=True),
-                                          data[1],
-                                          Coverage.HORIZONTAL_INTERPOLATION_METHOD)
-
-        return [data[0][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]],
-                data[1][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]]
+        return data[0][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]],data[1][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
     def read_variable_sea_surface_wave_energy_dissipation_at_ground_level_at_time(self, t):
         """Retourne la l'énergie des vagues dissipée par le fond à la date souhaitée sur toute la couverture horizontale.
@@ -948,22 +949,22 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            data[0] = resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                          self.read_axis_y(type="source_global", with_overlap=True),
-                                          self.read_axis_x(type="target", with_overlap=True),
-                                          self.read_axis_y(type="target", with_overlap=True),
-                                          data[0],
-                                          Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
+                                       self.read_axis_y(type="source_global", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data[0],
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
+                       self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]], \
+                   resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
+                                       self.read_axis_y(type="source_global", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data[1],
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
+                       self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
-            data[1] = resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                          self.read_axis_y(type="source_global", with_overlap=True),
-                                          self.read_axis_x(type="target", with_overlap=True),
-                                          self.read_axis_y(type="target", with_overlap=True),
-                                          data[1],
-                                          Coverage.HORIZONTAL_INTERPOLATION_METHOD)
-
-        return [data[0][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]],
-                data[1][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]]
+        return data[0][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]],data[1][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
     def read_variable_waves_momentum_flux_to_ocean_at_time(self,t):
         """Retourne la composante u du tau vagues->ocean à la date souhaitée sur toute la couverture horizontale.
@@ -981,22 +982,22 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            data[0] = resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                          self.read_axis_y(type="source_global", with_overlap=True),
-                                          self.read_axis_x(type="target", with_overlap=True),
-                                          self.read_axis_y(type="target", with_overlap=True),
-                                          data[0],
-                                          Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
+                                       self.read_axis_y(type="source_global", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data[0],
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
+                       self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]], \
+                   resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
+                                       self.read_axis_y(type="source_global", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data[1],
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
+                       self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
-            data[1] = resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                          self.read_axis_y(type="source_global", with_overlap=True),
-                                          self.read_axis_x(type="target", with_overlap=True),
-                                          self.read_axis_y(type="target", with_overlap=True),
-                                          data[1],
-                                          Coverage.HORIZONTAL_INTERPOLATION_METHOD)
-
-        return [data[0][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]],
-                data[1][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]]
+        return data[0][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]],data[1][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
     #################
     # METEO
@@ -1098,22 +1099,23 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            data[0] = resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                          self.read_axis_y(type="source_global", with_overlap=True),
-                                          self.read_axis_x(type="target", with_overlap=True),
-                                          self.read_axis_y(type="target", with_overlap=True),
-                                          data[0],
-                                          Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
+                                       self.read_axis_y(type="source_global", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data[0],
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
+                       self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]], \
+                   resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
+                                       self.read_axis_y(type="source_global", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data[1],
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
+                       self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
-            data[1] = resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                          self.read_axis_y(type="source_global", with_overlap=True),
-                                          self.read_axis_x(type="target", with_overlap=True),
-                                          self.read_axis_y(type="target", with_overlap=True),
-                                          data[1],
-                                          Coverage.HORIZONTAL_INTERPOLATION_METHOD)
-
-        return [data[0][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]],
-                data[1][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]]
+        return data[0][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]], data[1][
+            self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
     def read_variable_surface_downward_sensible_heat_flux_at_time(self, t):
         """Retourne les composantes u,v de surface sensible heat flux à la date souhaitée
@@ -1335,22 +1337,23 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            data[0] = resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                          self.read_axis_y(type="source_global", with_overlap=True),
-                                          self.read_axis_x(type="target", with_overlap=True),
-                                          self.read_axis_y(type="target", with_overlap=True),
-                                          data[0],
-                                          Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
+                                       self.read_axis_y(type="source_global", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data[0],
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
+                       self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]], \
+                   resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
+                                       self.read_axis_y(type="source_global", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data[1],
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
+                       self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
-            data[1] = resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                          self.read_axis_y(type="source_global", with_overlap=True),
-                                          self.read_axis_x(type="target", with_overlap=True),
-                                          self.read_axis_y(type="target", with_overlap=True),
-                                          data[1],
-                                          Coverage.HORIZONTAL_INTERPOLATION_METHOD)
-
-        return [data[0][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]],
-                data[1][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]]
+        return data[0][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]], data[1][
+            self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
     def read_variable_wind_speed_10m_at_time(self, date):
         comp = self.read_variable_wind_10m_at_time(date)

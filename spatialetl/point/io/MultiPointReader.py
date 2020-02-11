@@ -22,8 +22,8 @@ class MultiPointReader(object):
     
     def __init__(self, myFile):
 
-        if myFile is not None and not os.path.isfile(myFile):
-                raise IOError(str(myFile) + " doesn't exists. Abort")
+        if myFile is not None and not myFile.endswith("*") and not os.path.exists(myFile):
+            raise IOError(str(myFile) + " doesn't exists. Abort")
 
         self.filename = myFile;
 

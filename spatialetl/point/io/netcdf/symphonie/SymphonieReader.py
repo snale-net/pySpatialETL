@@ -16,6 +16,7 @@
 from __future__ import division, print_function, absolute_import
 from spatialetl.point.io.MultiPointReader import MultiPointReader
 from spatialetl.point.TimeMultiPoint import TimeMultiPoint
+from spatialetl.coverage.TimeCoverage import TimeCoverage
 from spatialetl.coverage.TimeLevelCoverage import TimeLevelCoverage
 from spatialetl.coverage.io.netcdf.symphonie.SymphonieReader import SymphonieReader as CovReader
 from netCDF4 import num2date
@@ -55,6 +56,9 @@ class SymphonieReader(MultiPointReader):
         self.names = names
 
     # Axis
+    def get_z_size(self):
+        return self.coverage.reader.get_z_size()
+
     def read_axis_x(self):
         return self.xy_values[:,0]
 
@@ -106,10 +110,8 @@ class SymphonieReader(MultiPointReader):
         data = np.zeros([self.nbPoints])
         data[:] = np.nan
 
-        all_data = self.coverage.reader.read_variable_sea_surface_height_above_mean_sea_level_at_time(index_t)
-
         for index_x in range(0, self.nbPoints):
-            data[index_x] = all_data[self.xy_coords[index_x][1], self.xy_coords[index_x][0]]
+            data[index_x] = self.coverage.reader.read_variable_sea_surface_height_above_mean_sea_level_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)
 
         return data
 
@@ -117,10 +119,8 @@ class SymphonieReader(MultiPointReader):
         data = np.zeros([self.nbPoints])
         data[:] = np.nan
 
-        all_data = self.coverage.reader.read_variable_sea_surface_temperature_at_time(index_t)
-
         for index_x in range(0, self.nbPoints):
-            data[index_x] = all_data[self.xy_coords[index_x][1], self.xy_coords[index_x][0]]
+            data[index_x] = self.coverage.reader.read_variable_sea_surface_temperature_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)
 
         return data
 
@@ -128,10 +128,8 @@ class SymphonieReader(MultiPointReader):
         data = np.zeros([self.nbPoints])
         data[:] = np.nan
 
-        all_data = self.coverage.reader.read_variable_sea_surface_salinity_at_time(index_t)
-
         for index_x in range(0, self.nbPoints):
-            data[index_x] = all_data[self.xy_coords[index_x][1], self.xy_coords[index_x][0]]
+            data[index_x] = self.coverage.reader.read_variable_sea_surface_salinity_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)
 
         return data
 
@@ -140,11 +138,9 @@ class SymphonieReader(MultiPointReader):
         data = np.zeros([2, self.nbPoints])
         data[:] = np.nan
 
-        all_data = self.coverage.reader.read_variable_sea_water_velocity_at_sea_water_surface_at_time(index_t)
-
         for index_x in range(0, self.nbPoints):
-            data[0][index_x] = all_data[0][self.xy_coords[index_x][1], self.xy_coords[index_x][0]]
-            data[1][index_x] = all_data[1][self.xy_coords[index_x][1], self.xy_coords[index_x][0]]
+            data[0][index_x] = self.coverage.reader.read_variable_sea_water_velocity_at_sea_water_surface_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)[0]
+            data[1][index_x] = self.coverage.reader.read_variable_sea_water_velocity_at_sea_water_surface_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)[1]
 
         return data
 
@@ -156,20 +152,16 @@ class SymphonieReader(MultiPointReader):
         data = np.zeros([self.nbPoints])
         data[:] = np.nan
 
-        all_data = self.coverage.reader.read_variable_sea_water_temperature_at_ground_level_at_time(index_t)
-
         for index_x in range(0, self.nbPoints):
-            data[index_x] = all_data[self.xy_coords[index_x][1], self.xy_coords[index_x][0]]
+            data[index_x] = self.coverage.reader.read_variable_sea_water_temperature_at_ground_level_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)
 
         return data
     def read_variable_sea_water_salinity_at_ground_level_at_time(self,index_t):
         data = np.zeros([self.nbPoints])
         data[:] = np.nan
 
-        all_data = self.coverage.reader.read_variable_sea_water_salinity_at_ground_level_at_time(index_t)
-
         for index_x in range(0, self.nbPoints):
-            data[index_x] = all_data[self.xy_coords[index_x][1], self.xy_coords[index_x][0]]
+            data[index_x] = self.coverage.reader.read_variable_sea_water_salinity_at_ground_level_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)
 
         return data
 
@@ -178,11 +170,9 @@ class SymphonieReader(MultiPointReader):
         data = np.zeros([2, self.nbPoints])
         data[:] = np.nan
 
-        all_data = self.coverage.reader.read_variable_sea_water_velocity_at_ground_level_at_time(index_t)
-
         for index_x in range(0, self.nbPoints):
-            data[0][index_x] = all_data[0][self.xy_coords[index_x][1], self.xy_coords[index_x][0]]
-            data[1][index_x] = all_data[1][self.xy_coords[index_x][1], self.xy_coords[index_x][0]]
+            data[0][index_x] = self.coverage.reader.read_variable_sea_water_velocity_at_ground_level_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)[0]
+            data[1][index_x] = self.coverage.reader.read_variable_sea_water_velocity_at_ground_level_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)[1]
 
         return data
 
@@ -194,10 +184,8 @@ class SymphonieReader(MultiPointReader):
         data = np.zeros([self.nbPoints])
         data[:] = np.nan
 
-        all_data = self.coverage.reader.read_variable_bathymetry()
-
         for index_x in range(0, self.nbPoints):
-            data[index_x] = all_data[self.xy_coords[index_x][1], self.xy_coords[index_x][0]]
+            data[index_x] = self.coverage.reader.read_variable_bathymetry(self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)
 
         return data
 
@@ -205,11 +193,9 @@ class SymphonieReader(MultiPointReader):
         data = np.zeros([2, self.nbPoints])
         data[:] = np.nan
 
-        all_data = self.coverage.reader.read_variable_barotropic_sea_water_velocity_at_time(index_t)
-
         for index_x in range(0, self.nbPoints):
-            data[0][index_x] = all_data[0][self.xy_coords[index_x][1], self.xy_coords[index_x][0]]
-            data[1][index_x] = all_data[1][self.xy_coords[index_x][1], self.xy_coords[index_x][0]]
+            data[0][index_x] = self.coverage.reader.read_variable_barotropic_sea_water_velocity_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)[0]
+            data[1][index_x] = self.coverage.reader.read_variable_barotropic_sea_water_velocity_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)[1]
 
         return data
 
@@ -220,10 +206,9 @@ class SymphonieReader(MultiPointReader):
     def read_variable_sea_water_temperature_at_time_and_depth(self,index_t,index_z):
         data = np.zeros([self.nbPoints])
         data[:] = np.nan
-        all_data = self.coverage.reader.read_variable_sea_water_temperature_at_time_and_depth(index_t, index_z,0,self.coverage.get_x_size(),0,self.coverage.get_y_size())
 
         for index_x in range(0, self.nbPoints):
-            data[index_x] = all_data[self.xy_coords[index_x][1], self.xy_coords[index_x][0]]
+            data[index_x] = self.coverage.reader.read_variable_sea_water_temperature_at_time_and_depth(index_t,index_z,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)
 
         return data
 
@@ -231,10 +216,8 @@ class SymphonieReader(MultiPointReader):
         data = np.zeros([self.nbPoints])
         data[:] = np.nan
 
-        all_data = self.coverage.reader.read_variable_sea_water_salinity_at_time_and_depth(index_t, index_z,0,self.coverage.get_x_size(),0,self.coverage.get_y_size())
-
         for index_x in range(0, self.nbPoints):
-            data[index_x] = all_data[self.xy_coords[index_x][1], self.xy_coords[index_x][0]]
+            data[index_x] = self.coverage.reader.read_variable_sea_water_salinity_at_time_and_depth(index_t, index_z,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)
 
         return data
 
@@ -242,11 +225,9 @@ class SymphonieReader(MultiPointReader):
         data = np.zeros([2, self.nbPoints])
         data[:] = np.nan
 
-        all_data = self.coverage.reader.read_variable_baroclinic_sea_water_velocity_at_time_and_depth(index_t, index_z)
-
         for index_x in range(0, self.nbPoints):
-            data[0][index_x] = all_data[0][self.xy_coords[index_x][1], self.xy_coords[index_x][0]]
-            data[1][index_x] = all_data[1][self.xy_coords[index_x][1], self.xy_coords[index_x][0]]
+            data[0][index_x] = self.coverage.reader.read_variable_baroclinic_sea_water_velocity_at_time_and_depth(index_t, index_z,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)[0]
+            data[1][index_x] = self.coverage.reader.read_variable_baroclinic_sea_water_velocity_at_time_and_depth(index_t, index_z,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)[1]
 
         return data
 
@@ -258,10 +239,8 @@ class SymphonieReader(MultiPointReader):
         data = np.zeros([self.nbPoints])
         data[:] = np.nan
 
-        all_data = self.coverage.reader.read_variable_sea_surface_wave_significant_height_at_time(index_t)
-
         for index_x in range(0, self.nbPoints):
-            data[index_x] = all_data[self.xy_coords[index_x][1], self.xy_coords[index_x][0]]
+            data[index_x] = self.coverage.reader.read_variable_sea_surface_wave_significant_height_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)
 
         return data
 
@@ -269,10 +248,8 @@ class SymphonieReader(MultiPointReader):
         data = np.zeros([self.nbPoints])
         data[:] = np.nan
 
-        all_data = self.coverage.reader.read_variable_sea_surface_wave_mean_period_at_time(index_t)
-
         for index_x in range(0, self.nbPoints):
-            data[index_x] = all_data[self.xy_coords[index_x][1], self.xy_coords[index_x][0]]
+            data[index_x] = self.coverage.reader.read_variable_sea_surface_wave_mean_period_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)
 
         return data
 
@@ -280,10 +257,8 @@ class SymphonieReader(MultiPointReader):
         data = np.zeros([self.nbPoints])
         data[:] = np.nan
 
-        all_data = self.coverage.reader.read_variable_sea_surface_wave_to_direction_at_time(index_t)
-
         for index_x in range(0, self.nbPoints):
-            data[index_x] = all_data[self.xy_coords[index_x][1], self.xy_coords[index_x][0]]
+            data[index_x] = self.coverage.reader.read_variable_sea_surface_wave_to_direction_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)
 
         return data
 
@@ -291,11 +266,9 @@ class SymphonieReader(MultiPointReader):
         data = np.zeros([2, self.nbPoints])
         data[:] = np.nan
 
-        all_data = self.coverage.reader.read_variable_sea_surface_wave_stokes_drift_velocity_at_time(index_t)
-
         for index_x in range(0, self.nbPoints):
-            data[0][index_x] = all_data[0][self.xy_coords[index_x][1], self.xy_coords[index_x][0]]
-            data[1][index_x] = all_data[1][self.xy_coords[index_x][1], self.xy_coords[index_x][0]]
+            data[0][index_x] = self.coverage.reader.read_variable_sea_surface_wave_stokes_drift_velocity_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)[0]
+            data[1][index_x] = self.coverage.reader.read_variable_sea_surface_wave_stokes_drift_velocity_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)[1]
 
         return data
 
@@ -307,11 +280,9 @@ class SymphonieReader(MultiPointReader):
         data = np.zeros([2, self.nbPoints])
         data[:] = np.nan
 
-        all_data = self.coverage.reader.read_variable_atmosphere_momentum_flux_to_waves_at_time(index_t)
-
         for index_x in range(0, self.nbPoints):
-            data[0][index_x] = all_data[0][self.xy_coords[index_x][1], self.xy_coords[index_x][0]]
-            data[1][index_x] = all_data[1][self.xy_coords[index_x][1], self.xy_coords[index_x][0]]
+            data[0][index_x] = self.coverage.reader.read_variable_atmosphere_momentum_flux_to_waves_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)[0]
+            data[1][index_x] = self.coverage.reader.read_variable_atmosphere_momentum_flux_to_waves_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)[1]
 
         return data
 
@@ -319,11 +290,9 @@ class SymphonieReader(MultiPointReader):
         data = np.zeros([2, self.nbPoints])
         data[:] = np.nan
 
-        all_data = self.coverage.reader.read_variable_waves_momentum_flux_to_ocean_at_time(index_t)
-
         for index_x in range(0, self.nbPoints):
-            data[0][index_x] = all_data[0][self.xy_coords[index_x][1], self.xy_coords[index_x][0]]
-            data[1][index_x] = all_data[1][self.xy_coords[index_x][1], self.xy_coords[index_x][0]]
+            data[0][index_x] = self.coverage.reader.read_variable_waves_momentum_flux_to_ocean_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)[0]
+            data[1][index_x] = self.coverage.reader.read_variable_waves_momentum_flux_to_ocean_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)[1]
 
         return data
 
@@ -335,11 +304,9 @@ class SymphonieReader(MultiPointReader):
         data = np.zeros([2, self.nbPoints])
         data[:] = np.nan
 
-        all_data = self.coverage.reader.read_variable_wind_stress_at_time(index_t)
-
         for index_x in range(0, self.nbPoints):
-            data[0][index_x] = all_data[0][self.xy_coords[index_x][1], self.xy_coords[index_x][0]]
-            data[1][index_x] = all_data[1][self.xy_coords[index_x][1], self.xy_coords[index_x][0]]
+            data[0][index_x] = self.coverage.reader.read_variable_wind_stress_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)[0]
+            data[1][index_x] = self.coverage.reader.read_variable_wind_stress_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)[1]
 
         return data
 
@@ -351,11 +318,9 @@ class SymphonieReader(MultiPointReader):
         data = np.zeros([2, self.nbPoints])
         data[:] = np.nan
 
-        all_data = self.coverage.reader.read_variable_wind_10m_at_time(index_t)
-
         for index_x in range(0, self.nbPoints):
-            data[0][index_x] = all_data[0][self.xy_coords[index_x][1], self.xy_coords[index_x][0]]
-            data[1][index_x] = all_data[1][self.xy_coords[index_x][1], self.xy_coords[index_x][0]]
+            data[0][index_x] = self.coverage.reader.read_variable_wind_10m_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)[0]
+            data[1][index_x] = self.coverage.reader.read_variable_wind_10m_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)[1]
 
         return data
 
