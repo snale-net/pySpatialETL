@@ -32,8 +32,8 @@ class DefaultWriter (CoverageWriter):
     def __init__(self,cov,myFile,mode='w'):
         CoverageWriter.__init__(self,cov,myFile);
         self.mode=mode
-        format = 'NETCDF3_CLASSIC'
-        #format = 'NETCDF4_CLASSIC'
+        #format = 'NETCDF3_CLASSIC'
+        format = 'NETCDF4_CLASSIC'
 
         if self.mode=='w':
             self.ncfile = Dataset(self.filename, 'w', parallel=True, comm=self.coverage.comm, info=MPI.Info(), format=format)
