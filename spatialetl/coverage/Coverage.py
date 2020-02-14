@@ -81,7 +81,7 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
 """
 
     HORIZONTAL_INTERPOLATION_METHOD = "linear"
-    HORIZONTAL_OVERLAPING_SIZE = 5
+    HORIZONTAL_OVERLAPING_SIZE = 2
 
     def __init__(self, myReader,bbox=None,resolution_x=None,resolution_y=None):
         self.reader = myReader;
