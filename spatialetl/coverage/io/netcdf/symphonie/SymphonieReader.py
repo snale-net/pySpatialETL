@@ -344,6 +344,8 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         try:
             if "ssh_w" in self.ncfile.variables:
                 return np.ma.filled(self.ncfile.variables["ssh_w"][index_t,ymin:ymax, xmin:xmax], fill_value=np.nan)
+            if "ssh" in self.ncfile.variables:
+                return np.ma.filled(self.ncfile.variables["ssh"][index_t,ymin:ymax, xmin:xmax], fill_value=np.nan)
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
