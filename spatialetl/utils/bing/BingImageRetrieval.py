@@ -17,7 +17,7 @@ from __future__ import division, print_function, absolute_import
 import logging
 from tempfile import NamedTemporaryFile
 from osgeo import gdal
-from spatialetl.utils.bing import AerialImageRetrieval
+from spatialetl.utils.bing.core.AerialImageRetrieval import AerialImageRetrieval
 
 class BingImageRetrieval():
 

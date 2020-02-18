@@ -32,7 +32,6 @@ class DefaultWriter (CoverageWriter):
     def __init__(self,cov,myFile,mode='w'):
         CoverageWriter.__init__(self,cov,myFile);
         self.mode=mode
-        #format = 'NETCDF3_CLASSIC'
         format = 'NETCDF4_CLASSIC'
 
         if self.mode=='w':

@@ -18,7 +18,7 @@ Return an aerial imagery (with maximum resolution available) downloaded from Bin
 import os
 from urllib import request
 from PIL import Image
-from spatialetl.utils.bing import TileSystem
+from spatialetl.utils.bing.core.tilesystem import TileSystem
 import logging
 from tempfile import NamedTemporaryFile
 
