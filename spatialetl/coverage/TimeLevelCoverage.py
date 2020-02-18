@@ -94,7 +94,7 @@ Elle rajoute les dimensions temporelle et verticale à la couverture horizontale
                     else:
                         candidateDepths[z] = self.read_axis_z(type="source", with_horizontal_overlap=True)[index_layer]
 
-                    candidateValues[z] = self.layers_temp[index_layer, y, x]
+                    candidateValues[z] = self.layers_temp[index_layer,0, y, x]
 
                 self.data_temp[0,y, x] = vertical_interpolation(candidateDepths, targetDepth, candidateValues,
                                                     LevelCoverage.VERTICAL_INTERPOLATION_METHOD)
