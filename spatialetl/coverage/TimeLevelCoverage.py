@@ -214,7 +214,7 @@ Elle rajoute les dimensions temporelle et verticale à la couverture horizontale
 
                 for z in range(0, len(vert_coord[y, x])):
                     # On retrouve l'index de la layer
-                    index_layer = (np.abs(indexes_z - vert_coord[y, x,z])).argmin()
+                    index_layer = (np.abs(indexes_z - vert_coord[y, x][z])).argmin()
 
                     if self.is_sigma_coordinate(type="source"):
                         candidateDepths[z] = self.read_axis_z(type="source", with_horizontal_overlap=True)[index_layer, y, x]
