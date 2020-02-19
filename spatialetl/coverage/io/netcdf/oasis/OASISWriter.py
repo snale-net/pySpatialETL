@@ -19,8 +19,8 @@ from netCDF4 import date2num
 from numpy import float32
 from numpy import float64
 import numpy as np
-import logging
-from spatialetl.coverage.io import WW3UnstructuredReader
+from spatialetl.utils.logger import logging
+from spatialetl.coverage.io.netcdf.ww3.WW3UnstructuredReader import WW3UnstructuredReader
 
 class OASISWriter(object):
 

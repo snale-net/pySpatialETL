@@ -17,7 +17,7 @@ from __future__ import division, print_function, absolute_import
 from spatialetl.coverage.Coverage import Coverage
 from scipy import spatial
 import numpy as np
-import logging
+from spatialetl.utils.logger import logging
 from itertools import product
 
 class LevelCoverage(Coverage):    

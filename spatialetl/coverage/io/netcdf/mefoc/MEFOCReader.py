@@ -12,8 +12,7 @@ import numpy as np
 from datetime import datetime
 from time import strftime
 import os
-import logging
-
+from spatialetl.utils.logger import logging
 
 class MEFOCReader(CoverageReader):
 

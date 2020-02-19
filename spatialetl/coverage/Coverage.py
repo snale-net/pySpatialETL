@@ -20,7 +20,7 @@ from mpi4py import MPI
 from array_split import shape_split
 from scipy.spatial.distance import cdist
 from spatialetl.operator.interpolator.InterpolatorCore import resample_2d_to_grid
-import logging
+from spatialetl.utils.logger import logging
  
 def distance_on_unit_sphere(long1, lat1,long2, lat2):
     """

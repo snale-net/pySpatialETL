@@ -23,7 +23,7 @@ from scipy.io import loadmat
 import numpy as np
 from datetime import datetime,timedelta,timezone
 import pytz
-import logging
+from spatialetl.utils.logger import logging
 
 
 class ECMWFReader(MultiPointReader):

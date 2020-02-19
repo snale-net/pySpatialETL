@@ -28,7 +28,7 @@ import copy
 import numpy as np
 import os
 import struct
-import logging
+from spatialetl.utils.logger import logging
 from datetime import datetime,timedelta
 from spatialetl.coverage.io.serafin.SerafinHeader import SerafinHeader
 

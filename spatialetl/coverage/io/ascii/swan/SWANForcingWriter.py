@@ -16,7 +16,7 @@
 from __future__ import division, print_function, absolute_import
 from spatialetl.coverage.io.CoverageWriter import CoverageWriter
 import numpy as np
-import logging
+from spatialetl.utils.logger import logging
 
 class SWANForcingWriter(CoverageWriter):
 

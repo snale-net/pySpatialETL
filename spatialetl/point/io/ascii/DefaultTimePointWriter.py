@@ -22,7 +22,7 @@ from netCDF4 import date2num
 from numpy import float32
 from numpy import float64
 import numpy as np
-import logging
+from spatialetl.utils.logger import logging
 import pandas
 
 

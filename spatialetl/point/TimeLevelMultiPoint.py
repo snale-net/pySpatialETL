@@ -21,8 +21,7 @@ from spatialetl.point.MultiPoint import MultiPoint
 
 import numpy as np
 from datetime import datetime,timedelta
-import logging
-
+from spatialetl.utils.logger import logging
 
 class TimeLevelMultiPoint(LevelMultiPoint, TimeMultiPoint):
     """"""

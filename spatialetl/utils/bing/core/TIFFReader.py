@@ -16,7 +16,7 @@
 import numpy as np
 from datetime import datetime
 from time import strftime
-import logging
+from spatialetl.utils.logger import logging
 from osgeo import gdal
 
 class TIFFReader ():

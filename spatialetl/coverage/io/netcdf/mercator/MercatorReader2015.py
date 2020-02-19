@@ -18,6 +18,7 @@ from spatialetl.coverage.io.CoverageReader import CoverageReader
 from spatialetl.coverage.TimeCoverage import TimeCoverage
 from netCDF4 import Dataset, num2date
 import numpy as np
+from spatialetl.utils.logger import logging
 
 class MercatorReader2015(CoverageReader):
     

@@ -18,7 +18,7 @@ import copy
 import numpy as np
 import os
 import struct
-import logging
+from spatialetl.utils.logger import logging
 
 # Encoding Information Type (EIT) for Serafin title, variable names and units
 SLF_EIT = 'iso-8859-1'

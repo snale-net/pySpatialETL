@@ -15,7 +15,7 @@
 
 import numpy as np
 from datetime import datetime
-import logging
+from spatialetl.utils.logger import logging
 from osgeo import gdal
 from osgeo.gdalconst import *
 

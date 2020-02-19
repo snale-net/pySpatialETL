@@ -21,7 +21,7 @@ from spatialetl.exception.VariableNameError import VariableNameError
 from netCDF4 import Dataset, MFDataset, num2date
 import numpy as np
 import os
-import logging
+from spatialetl.utils.logger import logging
 
 class SymphonieOfflineReader(SymphonieReader):
 

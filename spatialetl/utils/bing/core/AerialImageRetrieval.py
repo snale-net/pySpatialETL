@@ -19,7 +19,7 @@ import os
 from urllib import request
 from PIL import Image
 from spatialetl.utils.bing.core.tilesystem import TileSystem
-import logging
+from spatialetl.utils.logger import logging
 from tempfile import NamedTemporaryFile
 
 

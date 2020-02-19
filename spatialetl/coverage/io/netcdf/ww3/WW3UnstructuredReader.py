@@ -21,7 +21,7 @@ from spatialetl.utils.VariableDefinition import VariableDefinition
 from spatialetl.exception.VariableNameError import VariableNameError
 import numpy as np
 import cftime
-import logging
+from spatialetl.utils.logger import logging
 
 class WW3UnstructuredReader (CoverageReader):
 

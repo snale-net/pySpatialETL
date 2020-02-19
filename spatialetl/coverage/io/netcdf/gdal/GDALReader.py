@@ -20,7 +20,7 @@ from netCDF4 import Dataset, num2date
 import numpy as np
 from datetime import datetime
 from time import strftime
-import logging
+from spatialetl.utils.logger import logging
 
 class GDALReader (CoverageReader):
 

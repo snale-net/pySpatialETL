@@ -20,7 +20,7 @@ from netCDF4 import Dataset
 from netCDF4 import date2num
 from numpy import int16,float32,float64
 import numpy as np
-import logging
+from spatialetl.utils.logger import logging
 from spatialetl.coverage.TimeCoverage import TimeCoverage
 from spatialetl.coverage.LevelCoverage import LevelCoverage
 from spatialetl.coverage.TimeLevelCoverage import TimeLevelCoverage

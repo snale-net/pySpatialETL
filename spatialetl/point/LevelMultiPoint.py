@@ -18,7 +18,7 @@ from spatialetl.point.MultiPoint import MultiPoint
 from spatialetl.operator.interpolator.InterpolatorCore import vertical_interpolation
 import numpy as np
 from datetime import datetime,timedelta
-import logging
+from spatialetl.utils.logger import logging
 
 class LevelMultiPoint(MultiPoint):
     """"""

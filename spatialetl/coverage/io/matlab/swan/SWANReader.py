@@ -22,7 +22,7 @@ import numpy as np
 from datetime import datetime,timedelta,timezone
 import pytz
 from time import strftime
-import logging
+from spatialetl.utils.logger import logging
 import re
 import cftime
 

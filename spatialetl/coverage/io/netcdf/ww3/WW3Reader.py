@@ -23,7 +23,7 @@ import cftime
 import numpy as np
 from datetime import datetime
 from time import strftime
-import logging
+from spatialetl.utils.logger import logging
 import os
 
 class WW3Reader (CoverageReader):

@@ -18,7 +18,7 @@ from spatialetl.point.io.MultiPointReader import MultiPointReader
 from spatialetl.point.TimeMultiPoint import TimeMultiPoint
 import os.path
 import pandas
-import logging
+from spatialetl.utils.logger import logging
 import math
 import numpy as np
 from datetime import datetime

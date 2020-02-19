@@ -23,7 +23,7 @@ import math
 import numpy as np
 from array_split import shape_split
 from spatialetl.operator.interpolator.InterpolatorCore import resample_2d_to_grid
-import logging
+from spatialetl.utils.logger import logging
 import pandas
 
 class TimeCoverage(Coverage):

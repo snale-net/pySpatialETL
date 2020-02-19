@@ -21,7 +21,8 @@ from spatialetl.operator.interpolator.InterpolatorCore import resample_2d_to_gri
 from spatialetl.operator.interpolator.InterpolatorCore import vertical_interpolation
 from itertools import product
 import numpy as np
-import logging
+from spatialetl.utils.logger import logging
+from spatialetl.utils.timing import timing
 
 class TimeLevelCoverage(LevelCoverage,TimeCoverage):
     """La classe TimeLevelCoverage est une extension de la classe Coverage, LevelCoverage, TimeCoverage.
@@ -171,7 +172,7 @@ Elle rajoute les dimensions temporelle et verticale à la couverture horizontale
 
         return self.data_temp[0,self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
-
+    @timing
     def read_variable_baroclinic_sea_water_velocity_at_time_and_depth(self,time,depth):
         """Retourne les composantes u,v du courant à la date souhaitée et au niveau souhaité sur toute la couverture horizontale.
     @type time: datetime ou l'index

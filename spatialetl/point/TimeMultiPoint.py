@@ -19,7 +19,7 @@ from spatialetl.operator.interpolator.InterpolatorCore import time_1d_interpolat
 from numpy import int,int32,int64
 import numpy as np
 from datetime import datetime,timedelta,timezone
-import logging
+from spatialetl.utils.logger import logging
 import pandas
 import math
 import cftime

@@ -17,7 +17,7 @@ from __future__ import division, print_function, absolute_import
 from spatialetl.point.io.MultiPointReader import MultiPointReader
 import os.path
 import pandas
-import logging
+from spatialetl.utils.logger import logging
 import math
 import numpy as np
 

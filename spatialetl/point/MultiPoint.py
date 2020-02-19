@@ -19,7 +19,7 @@ import math
 import pandas
 from pandas import DatetimeIndex
 from datetime import datetime,timedelta
-import logging
+from spatialetl.utils.logger import logging
 
 
 def distance_on_unit_sphere(long1, lat1, long2, lat2):

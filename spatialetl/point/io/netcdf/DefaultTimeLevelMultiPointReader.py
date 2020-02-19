@@ -19,6 +19,7 @@ from spatialetl.point.TimeMultiPoint import TimeMultiPoint
 from netCDF4 import Dataset, num2date
 import numpy as np
 from spatialetl.utils.VariableDefinition import VariableDefinition
+from spatialetl.utils.logger import logging
 
 class DefaultTimeLevelMultiPointReader(MultiPointReader):
 

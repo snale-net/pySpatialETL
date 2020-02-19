@@ -24,7 +24,7 @@ from netCDF4 import date2num
 from numpy import float32,float64,int32
 
 import numpy as np
-import logging
+from spatialetl.utils.logger import logging
 
 class DefaultWriter(MultiPointWriter):
 

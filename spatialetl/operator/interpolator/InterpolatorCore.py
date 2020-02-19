@@ -16,7 +16,7 @@
 from __future__ import division, print_function, absolute_import
 from scipy.interpolate import griddata
 from scipy.interpolate import interp1d
-import logging
+from spatialetl.utils.logger import logging
 import numpy as np
 from numpy import int8,int16,int32,int64
 from datetime import datetime
