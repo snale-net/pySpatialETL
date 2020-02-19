@@ -25,7 +25,6 @@ class myLogger(log.Logger):
             self._log(self.INFO, msg, args, **kwargs)
 
     def warning(self, msg, *args, **kwargs):
-        print(self.isEnabledFor(self.RUN))
         if self.isEnabledFor(self.WARNING) and self.isEnabledFor(self.INFO) or not self.isEnabledFor(self.RUN):
             self._log(self.WARNING, msg, args, **kwargs)
 
