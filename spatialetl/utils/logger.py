@@ -2,7 +2,7 @@ import logging as log
 
 class myLogger(log.Logger):
 
-    TIMING = 22
+    TIMING = 200
     INFO = log.INFO
     DEBUG = log.DEBUG
     WARN = log.WARN
@@ -11,7 +11,7 @@ class myLogger(log.Logger):
 
     def __init__(self,name):
         log.Logger.__init__(self,name)
-        log.addLevelName(22, 'TIMING')
+        log.addLevelName(self.TIMING, 'TIMING')
         log.basicConfig(format='[%(levelname)s] %(message)s')
 
     def debug(self, msg, *args, **kwargs):
