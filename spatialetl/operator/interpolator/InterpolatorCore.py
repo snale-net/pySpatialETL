@@ -39,7 +39,7 @@ def resample_2d_to_grid(gridX,gridY,newX,newY,data,method):
 
     return griddata(points, values, (xx, yy), method=method, rescale=True,fill_value=fill_value)
 
-def vertical_interpolation(sourceAxis,targetAxis,data,method):
+def vertical_interpolation(sourceAxis,targetAxis,data,method,extrapolate=False):
     #logging.debug("[InterpolatorCore][vertical_interpolation()] Looking for water depth : " + str(
     #   targetAxis[0]) + " m with method '" + str(method) + "'.")
     logging.debug("[InterpolatorCore][vertical_interpolation()] Source Axis contains: " + str(sourceAxis))
@@ -63,11 +63,18 @@ def vertical_interpolation(sourceAxis,targetAxis,data,method):
             logging.warning("[InterpolatorCore][vertical_interpolation()] Error: " + str(ex))
             logging.warning("[InterpolatorCore][vertical_interpolation()] This error may occur when you ask for a water depth out of range: "+ str(targetAxis[0])+" m")
             logging.warning("[InterpolatorCore][vertical_interpolation()] We found these water depth candidates: " + str(sourceAxis))
-            logging.warning("[InterpolatorCore][vertical_interpolation()] We continue by using an extrapolation method.")
             logging.warning("[InterpolatorCore][vertical_interpolation()] To avoid this error, you can change your zbox range or use another vertical interpolation method.")
-            logging.warning("[InterpolatorCore][vertical_interpolation()] ----------------------------------------")
-            f = interp1d(sourceAxis, data, kind=method,  fill_value = "extrapolate")
-            return f(targetAxis)
+            if extrapolate:
+                logging.warning("[InterpolatorCore][vertical_interpolation()] We continue by using an extrapolation method.")
+                logging.warning("[InterpolatorCore][vertical_interpolation()] ----------------------------------------")
+                f = interp1d(sourceAxis, data, kind=method,  fill_value = "extrapolate")
+                return f(targetAxis)
+            else:
+                logging.warning("[InterpolatorCore][vertical_interpolation()] We continue by using the nearest method.")
+                logging.warning("[InterpolatorCore][vertical_interpolation()] ----------------------------------------")
+                array = np.asarray(sourceAxis)
+                nearest_index_t = (np.abs(array - targetAxis[0])).argmin()
+                return data[nearest_index_t]
     else:
         raise ValueError("Unable to decode vertical interpolation method : "+str(method))
 
