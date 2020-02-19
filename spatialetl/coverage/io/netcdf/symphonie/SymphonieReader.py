@@ -22,6 +22,7 @@ from spatialetl.exception.VariableNameError import VariableNameError
 import numpy as np
 import os
 from spatialetl.utils.logger import logging
+from spatialetl.utils.timing import timing
 
 class SymphonieReader(CoverageReader):
     """
@@ -215,7 +216,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         xmin_overlap = max(0, xmin - SymphonieReader.HORIZONTAL_OVERLAPING_SIZE)
         new_xmin = SymphonieReader.HORIZONTAL_OVERLAPING_SIZE
         if xmin_overlap == 0:
-            new_xmin = 0
+            new_xmin = xmin
 
         xmax_overlap = min(self.get_x_size(), xmax + SymphonieReader.HORIZONTAL_OVERLAPING_SIZE)
         new_xmax = xmax_overlap - xmin_overlap - SymphonieReader.HORIZONTAL_OVERLAPING_SIZE
@@ -225,7 +226,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         ymin_overlap = max(0, ymin - SymphonieReader.HORIZONTAL_OVERLAPING_SIZE)
         new_ymin = SymphonieReader.HORIZONTAL_OVERLAPING_SIZE
         if ymin_overlap == 0:
-            new_ymin = 0
+            new_ymin = ymin
 
         ymax_overlap = min(self.get_y_size(), ymax + SymphonieReader.HORIZONTAL_OVERLAPING_SIZE)
         new_ymax = ymax_overlap - ymin_overlap - SymphonieReader.HORIZONTAL_OVERLAPING_SIZE

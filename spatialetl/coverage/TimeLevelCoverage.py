@@ -172,7 +172,7 @@ Elle rajoute les dimensions temporelle et verticale à la couverture horizontale
 
         return self.data_temp[0,self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
-    @timing
+
     def read_variable_baroclinic_sea_water_velocity_at_time_and_depth(self,time,depth):
         """Retourne les composantes u,v du courant à la date souhaitée et au niveau souhaité sur toute la couverture horizontale.
     @type time: datetime ou l'index
@@ -189,12 +189,6 @@ Elle rajoute les dimensions temporelle et verticale à la couverture horizontale
         targetDepth = [depth]
 
         for z in range(0, len(indexes_z)):
-            print(np.shape(self.reader.read_variable_baroclinic_sea_water_velocity_at_time_and_depth(
-                self.map_mpi[self.rank]["src_global_t"].start + index_t, indexes_z[z],
-                self.map_mpi[self.rank]["src_global_x_overlap"].start,
-                self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-                self.map_mpi[self.rank]["src_global_y_overlap"].start,
-                self.map_mpi[self.rank]["src_global_y_overlap"].stop)),np.shape(self.layers_temp[z]))
             self.layers_temp[z] = self.reader.read_variable_baroclinic_sea_water_velocity_at_time_and_depth(
                 self.map_mpi[self.rank]["src_global_t"].start + index_t, indexes_z[z],
                 self.map_mpi[self.rank]["src_global_x_overlap"].start,
@@ -214,7 +208,6 @@ Elle rajoute les dimensions temporelle et verticale à la couverture horizontale
 
                 self.data_temp[0, y, x] = self.layers_temp[index_layer, 0, y, x]
                 self.data_temp[1, y, x] = self.layers_temp[index_layer, 1, y, x]
-
             else:
                 candidateValues = np.zeros([2,len(vert_coord[y, x])])
                 candidateDepths = np.zeros([len(vert_coord[y, x])])

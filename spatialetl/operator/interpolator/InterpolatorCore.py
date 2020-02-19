@@ -39,7 +39,6 @@ def resample_2d_to_grid(gridX,gridY,newX,newY,data,method):
 
     return griddata(points, values, (xx, yy), method=method, rescale=True,fill_value=fill_value)
 
-@timing
 def vertical_interpolation(sourceAxis,targetAxis,data,method):
     #logging.debug("[InterpolatorCore][vertical_interpolation()] Looking for water depth : " + str(
     #   targetAxis[0]) + " m with method '" + str(method) + "'.")
