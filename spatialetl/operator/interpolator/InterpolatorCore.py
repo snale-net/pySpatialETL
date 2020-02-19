@@ -62,6 +62,7 @@ def vertical_interpolation(sourceAxis,targetAxis,data,method):
         except ValueError as ex:
             logging.warning("[InterpolatorCore][vertical_interpolation()] Error: " + str(ex))
             logging.warning("[InterpolatorCore][vertical_interpolation()] This error may occur when you ask for a water depth out of range : "+ str(targetAxis[0])+" m")
+            #logging.warning("[InterpolatorCore][vertical_interpolation()] Source Axis contains: " + str(sourceAxis))
             logging.warning("[InterpolatorCore][vertical_interpolation()] We continue by using an extrapolation method.")
             logging.warning("[InterpolatorCore][vertical_interpolation()] To avoid this error, you can change your zbox range or use another vertical interpolation method.")
             logging.warning("[InterpolatorCore][vertical_interpolation()] ----------------------------------------")

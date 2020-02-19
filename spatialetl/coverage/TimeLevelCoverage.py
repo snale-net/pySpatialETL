@@ -91,9 +91,11 @@ Elle rajoute les dimensions temporelle et verticale à la couverture horizontale
                     index_layer = (np.abs(indexes_z - vert_coord[y, x][z])).argmin()
 
                     if self.is_sigma_coordinate(type="source"):
-                        candidateDepths[z] = self.read_axis_z(type="source", with_horizontal_overlap=True)[index_layer, y, x]
+                        candidateDepths[z] = self.read_axis_z(type="source", with_horizontal_overlap=True)[
+                            vert_coord[y, x][z], y, x]
                     else:
-                        candidateDepths[z] = self.read_axis_z(type="source", with_horizontal_overlap=True)[index_layer]
+                        candidateDepths[z] = self.read_axis_z(type="source", with_horizontal_overlap=True)[
+                            vert_coord[y, x][z]]
 
                     candidateValues[z] = self.layers_temp[index_layer,0, y, x]
 
@@ -153,9 +155,11 @@ Elle rajoute les dimensions temporelle et verticale à la couverture horizontale
                     index_layer = (np.abs(indexes_z - vert_coord[y, x][z])).argmin()
 
                     if self.is_sigma_coordinate(type="source"):
-                        candidateDepths[z] = self.read_axis_z(type="source", with_horizontal_overlap=True)[index_layer, y, x]
+                        candidateDepths[z] = self.read_axis_z(type="source", with_horizontal_overlap=True)[
+                            vert_coord[y, x][z], y, x]
                     else:
-                        candidateDepths[z] = self.read_axis_z(type="source", with_horizontal_overlap=True)[index_layer]
+                        candidateDepths[z] = self.read_axis_z(type="source", with_horizontal_overlap=True)[
+                            vert_coord[y, x][z]]
 
                     candidateValues[z] = self.layers_temp[index_layer,0, y, x]
 
@@ -217,9 +221,9 @@ Elle rajoute les dimensions temporelle et verticale à la couverture horizontale
                     index_layer = (np.abs(indexes_z - vert_coord[y, x][z])).argmin()
 
                     if self.is_sigma_coordinate(type="source"):
-                        candidateDepths[z] = self.read_axis_z(type="source", with_horizontal_overlap=True)[index_layer, y, x]
+                        candidateDepths[z] = self.read_axis_z(type="source", with_horizontal_overlap=True)[vert_coord[y, x][z], y, x]
                     else:
-                        candidateDepths[z] = self.read_axis_z(type="source", with_horizontal_overlap=True)[index_layer]
+                        candidateDepths[z] = self.read_axis_z(type="source", with_horizontal_overlap=True)[vert_coord[y, x][z]]
 
                     candidateValues[0,z] = self.layers_temp[index_layer, 0, y, x]
                     candidateValues[1,z] = self.layers_temp[index_layer, 1, y, x]

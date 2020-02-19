@@ -182,6 +182,10 @@ Elle rajoute une dimension verticale à la couverture horizontale classique.
 
         if type(depth) == int or type(depth) == np.int32 or type(depth) == np.int64:
 
+            if depth < 0 or depth >= self.get_z_size(type="source"):
+                raise ValueError("Depth index have to range between 0 and " + str(
+                    self.get_z_size(type="source") - 1) + ". Actually Depth index = " + str(depth))
+
             for y in range(0, ymax):
                 for x in range(0, xmax):
                     vert_coord[y, x] = []
@@ -283,6 +287,10 @@ Elle rajoute une dimension verticale à la couverture horizontale classique.
                     for y,x in product(range(0,ymax),range(0,xmax)):
                         if vert_coord[y, x] is None:  # first time
                             vert_coord[y, x] = []
+
+                        #logging.debug(
+                        #    "[LevelCoverage][find_level_index()] found : " + str(
+                        #        self.source_global_axis_z[index_z]) + " m water depth")
 
                         vert_coord[y, x].append((int(index_z)))
 

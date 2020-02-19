@@ -148,4 +148,13 @@ class MercatorReader(CoverageReader):
                                  1000))
 
     def read_variable_baroclinic_sea_water_velocity_at_time_and_depth(self, index_t, index_z, xmin, xmax, ymin, ymax):
-        return [self.ncfile.variables["uo"][index_t,index_z,ymin:ymax, xmin:xmax], self.ncfile.variables["vo"][index_t,index_z,ymin:ymax, xmin:xmax]]
+        if "uo" in self.ncfile.variables:
+            data_u = np.ma.filled(
+                self.ncfile.variables["uo"][index_t,index_z,ymin:ymax, xmin:xmax],
+                fill_value=np.nan)
+        if "vo" in self.ncfile.variables:
+            data_v = np.ma.filled(
+                self.ncfile.variables["vo"][index_t,index_z,ymin:ymax, xmin:xmax],
+                fill_value=np.nan)
+
+        return [data_u,data_v]
