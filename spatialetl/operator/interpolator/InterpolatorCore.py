@@ -20,6 +20,7 @@ from spatialetl.utils.logger import logging
 import numpy as np
 from numpy import int8,int16,int32,int64
 from datetime import datetime
+from spatialetl.utils.timing import timing
 
 def resample_2d_to_grid(gridX,gridY,newX,newY,data,method):
 
@@ -38,6 +39,7 @@ def resample_2d_to_grid(gridX,gridY,newX,newY,data,method):
 
     return griddata(points, values, (xx, yy), method=method, rescale=True,fill_value=fill_value)
 
+@timing
 def vertical_interpolation(sourceAxis,targetAxis,data,method):
     #logging.debug("[InterpolatorCore][vertical_interpolation()] Looking for water depth : " + str(
     #   targetAxis[0]) + " m with method '" + str(method) + "'.")

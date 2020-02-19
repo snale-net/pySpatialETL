@@ -189,6 +189,12 @@ Elle rajoute les dimensions temporelle et verticale à la couverture horizontale
         targetDepth = [depth]
 
         for z in range(0, len(indexes_z)):
+            print(np.shape(self.reader.read_variable_baroclinic_sea_water_velocity_at_time_and_depth(
+                self.map_mpi[self.rank]["src_global_t"].start + index_t, indexes_z[z],
+                self.map_mpi[self.rank]["src_global_x_overlap"].start,
+                self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+                self.map_mpi[self.rank]["src_global_y_overlap"].start,
+                self.map_mpi[self.rank]["src_global_y_overlap"].stop)),np.shape(self.layers_temp[z]))
             self.layers_temp[z] = self.reader.read_variable_baroclinic_sea_water_velocity_at_time_and_depth(
                 self.map_mpi[self.rank]["src_global_t"].start + index_t, indexes_z[z],
                 self.map_mpi[self.rank]["src_global_x_overlap"].start,
