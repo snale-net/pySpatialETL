@@ -136,7 +136,7 @@ class DefaultWriter(MultiPointWriter):
 
         time_index = 0
         for time in self.points.read_axis_t():
-            logging.debug(
+            logging.info(
                 '[DefaultTimeMultiPointWriter] Writing variable \'' + str(
                     VariableDefinition.LONG_NAME['sea_surface_height_above_mean_sea_level']) + '\' at time \'' + str(time) + '\'')
 
@@ -176,7 +176,7 @@ class DefaultWriter(MultiPointWriter):
 
         time_index = 0
         for time in self.points.read_axis_t():
-            logging.debug(
+            logging.info(
                 '[DefaultTimeMultiPointWriter] Writing variable \'' + str(
                     VariableDefinition.LONG_NAME['wind_from_direction_10m']) + '\' at time \'' + str(time) + '\'')
 
@@ -196,7 +196,7 @@ class DefaultWriter(MultiPointWriter):
 
         time_index = 0
         for time in self.points.read_axis_t():
-            logging.debug(
+            logging.info(
                 '[DefaultTimeMultiPointWriter] Writing variable \'' + str(
                     VariableDefinition.LONG_NAME['wind_to_direction_10m']) + '\' at time \'' + str(
                     time) + '\'')
@@ -217,7 +217,7 @@ class DefaultWriter(MultiPointWriter):
 
         time_index = 0
         for time in self.points.read_axis_t():
-            logging.debug(
+            logging.info(
                 '[DefaultTimeMultiPointWriter] Writing variable \'' + str(
                     VariableDefinition.LONG_NAME['rainfall_amount']) + '\' at time \'' + str(time) + '\'')
 
@@ -236,7 +236,7 @@ class DefaultWriter(MultiPointWriter):
 
         time_index = 0
         for time in self.points.read_axis_t():
-            logging.debug(
+            logging.info(
                 '[DefaultTimeMultiPointWriter] Writing variable \'' + str(
                     VariableDefinition.LONG_NAME['surface_air_pressure']) + '\' at time \'' + str(time) + '\'')
 
@@ -255,7 +255,7 @@ class DefaultWriter(MultiPointWriter):
 
         time_index = 0
         for time in self.points.read_axis_t():
-            logging.debug(
+            logging.info(
                 '[DefaultTimeMultiPointWriter] Writing variable \'' + str(
                     VariableDefinition.LONG_NAME['sea_surface_temperature']) + '\' at time \'' + str(time) + '\'')
 
@@ -274,7 +274,7 @@ class DefaultWriter(MultiPointWriter):
 
         time_index = 0
         for time in self.points.read_axis_t():
-            logging.debug(
+            logging.info(
                 '[DefaultTimeMultiPointWriter] Writing variable \'' + str(
                     VariableDefinition.LONG_NAME['sea_water_temperature_at_ground_level']) + '\' at time \'' + str(time) + '\'')
 
@@ -293,7 +293,7 @@ class DefaultWriter(MultiPointWriter):
 
         time_index = 0
         for time in self.points.read_axis_t():
-            logging.debug(
+            logging.info(
                 '[DefaultTimeMultiPointWriter] Writing variable \'' + str(
                     VariableDefinition.LONG_NAME['sea_surface_salinity']) + '\' at time \'' + str(
                     time) + '\'')
@@ -313,7 +313,7 @@ class DefaultWriter(MultiPointWriter):
 
         time_index = 0
         for time in self.points.read_axis_t():
-            logging.debug(
+            logging.info(
                 '[DefaultTimeMultiPointWriter] Writing variable \'' + str(
                     VariableDefinition.LONG_NAME['sea_water_salinity_at_ground_level']) + '\' at time \'' + str(
                     time) + '\'')
@@ -334,7 +334,7 @@ class DefaultWriter(MultiPointWriter):
 
         time_index = 0
         for time in self.points.read_axis_t():
-            logging.debug(
+            logging.info(
                 '[DefaultTimeMultiPointWriter] Writing variable \'' + str(
                     VariableDefinition.LONG_NAME['barotropic_sea_water_speed']) + '\' at time \'' + str(time) + '\'')
 
@@ -355,7 +355,7 @@ class DefaultWriter(MultiPointWriter):
 
         time_index = 0
         for time in self.points.read_axis_t():
-            logging.debug(
+            logging.info(
                 '[DefaultTimeMultiPointWriter] Writing variable \'' + str(
                     VariableDefinition.LONG_NAME['barotropic_sea_water_from_direction']) + '\' at time \'' + str(
                     time) + '\'')
@@ -377,7 +377,7 @@ class DefaultWriter(MultiPointWriter):
 
         time_index = 0
         for time in self.points.read_axis_t():
-            logging.debug(
+            logging.info(
                 '[DefaultTimeMultiPointWriter] Writing variable \'' + str(
                     VariableDefinition.LONG_NAME['barotropic_sea_water_to_direction']) + '\' at time \'' + str(
                     time) + '\'')
@@ -400,7 +400,7 @@ class DefaultWriter(MultiPointWriter):
 
         time_index = 0
         for time in self.points.read_axis_t():
-            logging.debug(
+            logging.info(
                 '[DefaultTimeMultiPointWriter] Writing variable \'' + str(
                     VariableDefinition.LONG_NAME['sea_water_pressure_at_sea_water_surface']) + '\' at time \'' + str(
                     time) + '\'')
@@ -429,7 +429,7 @@ class DefaultWriter(MultiPointWriter):
 
         time_index = 0
         for time in self.points.read_axis_t():
-            logging.debug(
+            logging.info(
                 '[DefaultTimeLevelMultiPointWriter] Writing variable \'Baroclinic Sea Water Velocity\' at time \'' + str(time) + '\'')
 
             z_index = 0
@@ -494,7 +494,7 @@ class DefaultWriter(MultiPointWriter):
 
         time_index = 0
         for time in self.points.read_axis_t():
-            logging.debug(
+            logging.info(
                 '[DefaultTimeLevelMultiPointWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['sea_water_density']) + '\' at time \'' + str(time) + '\'')
 
             z_index = 0
@@ -515,7 +515,7 @@ class DefaultWriter(MultiPointWriter):
 
         time_index = 0
         for time in self.points.read_axis_t():
-            logging.debug(
+            logging.info(
                 '[DefaultTimeLevelMultiPointWriter] Writing variable \'' +  str(VariableDefinition.LONG_NAME['sea_water_turbidity']) + '\' at time \'' + str(time) + '\'')
 
             z_index = 0
@@ -538,7 +538,7 @@ class DefaultWriter(MultiPointWriter):
 
         time_index = 0
         for time in self.points.read_axis_t():
-            logging.debug(
+            logging.info(
                 '[DefaultTimeLevelMultiPointWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['sea_water_electrical_conductivity']) + '\' at time \'' + str(time) + '\'')
 
             z_index = 0
@@ -562,7 +562,7 @@ class DefaultWriter(MultiPointWriter):
 
         time_index = 0
         for time in self.points.read_axis_t():
-            logging.debug(
+            logging.info(
                 '[DefaultTimeMultiPointWriter] Writing variable \'' + str(
                     VariableDefinition.LONG_NAME['water_volume_transport_into_sea_water_from_rivers']) + '\' at time \'' + str(
                     time) + '\'')

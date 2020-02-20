@@ -137,7 +137,7 @@ class TimeMultiPoint(MultiPoint):
 
             logging.debug("[TimeMultiPoint][find_time_index()] Looking for : "+str(t))
 
-            array = np.asarray(self.read_axis_t(timestamp=1,type="source"))
+            array = np.asarray(self.read_axis_t(timestamp=0,type="source"))
             #X = np.abs(self.read_axis_t(timestamp=1,raw=1) - t.replace(tzinfo=timezone.utc).timestamp())
 
             X = np.abs(array - t)
@@ -204,7 +204,7 @@ class TimeMultiPoint(MultiPoint):
         results[:] = np.NAN
 
         targetTime = [date.replace(tzinfo=timezone.utc).timestamp()]
-        rawTime = self.read_axis_t(timestamp=1, type="source")
+        rawTime = self.read_axis_t(timestamp=0, type="source")
 
         candidateTimes = np.zeros([len(indexes_t)])
         candidateValues = np.zeros([len(indexes_t)])

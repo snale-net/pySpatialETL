@@ -18,7 +18,7 @@ from spatialetl.point.io.MultiPointReader import MultiPointReader
 from spatialetl.point.TimeMultiPoint import TimeMultiPoint
 from spatialetl.coverage.TimeCoverage import TimeCoverage
 from spatialetl.coverage.TimeLevelCoverage import TimeLevelCoverage
-from spatialetl.coverage.io.netcdf.symphonie.SymphonieReader import SymphonieReader as CovReader
+from spatialetl.coverage.io.netcdf.symphonie.SymphonieBigDataReader import SymphonieBigDataReader as CovReader
 from netCDF4 import num2date
 from scipy.io import loadmat
 import numpy as np
@@ -72,7 +72,7 @@ def distance_on_unit_sphere(long1, lat1, long2, lat2):
     return arc * 6373
 
 
-class SymphonieReader(MultiPointReader):
+class SymphonieBigDataReader(MultiPointReader):
 
     def __init__(self,myGrid,myFile,xy,names=None):
         MultiPointReader.__init__(self, myFile);

@@ -75,16 +75,11 @@ class DefaultTimePointWriter(MultiPointWriter):
         data[:] = np.nan
         time_index = 0
         for time in self.points.read_axis_t():
-            logging.debug(
+            logging.info(
                 '[DefaultTimePointWriter] Writing variable \'' + str(
                     VariableDefinition.LONG_NAME['sea_surface_height_above_mean_sea_level']) + '\' at time \'' + str(
                     time) + '\'')
-
-            if self.points.is_raw_times:
-                # Inutile de rechercher la date si l'axe du temps est le même que la donnée brute
-                data[time_index] = self.points.read_variable_sea_surface_height_above_mean_sea_level_at_time(time_index)[self.index_x]
-            else:
-                data[time_index] = self.points.read_variable_sea_surface_height_above_mean_sea_level_at_time(time)[self.index_x]
+            data[time_index] = self.points.read_variable_sea_surface_height_above_mean_sea_level_at_time(time)[self.index_x]
 
             time_index += 1
 
