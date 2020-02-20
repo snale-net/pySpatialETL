@@ -267,91 +267,10 @@ class TimeMultiPoint(MultiPoint):
 
         return data
 
+    #################
     # HYDRO
-    def read_variable_sea_surface_temperature_at_time(self, date):
-        index_t = self.find_time_index(date)
-
-        if len(index_t) > 1:
-            layers = np.zeros([len(index_t), self.get_nb_points()])
-            layers[::] = np.NAN
-
-            for t in range(0, len(index_t)):
-                layers[t] = self.reader.read_variable_sea_surface_temperature_at_time(index_t[t])
-
-            data = self.interpolate_time(date,index_t,layers)
-
-        else:
-            data = self.reader.read_variable_sea_surface_temperature_at_time(index_t[0])
-
-        return data
-
-    def read_variable_sea_water_temperature_at_ground_level_at_time(self, date):
-        index_t = self.find_time_index(date)
-
-        if len(index_t) > 1:
-            layers = np.zeros([len(index_t), self.get_nb_points()])
-            layers[::] = np.NAN
-
-            for t in range(0, len(index_t)):
-                layers[t] = self.reader.read_variable_sea_water_temperature_at_ground_level_at_time(index_t[t])
-
-            data = self.interpolate_time(date, index_t, layers)
-
-        else:
-            data = self.reader.read_variable_sea_water_temperature_at_ground_level_at_time(index_t[0])
-
-        return data
-
-    def read_variable_sea_surface_salinity_at_time(self, date):
-        index_t = self.find_time_index(date)
-
-        if len(index_t) > 1:
-            layers = np.zeros([len(index_t), self.get_nb_points()])
-            layers[::] = np.NAN
-
-            for t in range(0, len(index_t)):
-                layers[t] = self.reader.read_variable_sea_surface_salinity_at_time(index_t[t])
-
-            data = self.interpolate_time(date,index_t,layers)
-
-        else:
-            data = self.reader.read_variable_sea_surface_salinity_at_time(index_t[0])
-
-        return data
-
-    def read_variable_sea_water_salinity_at_ground_level_at_time(self, date):
-        index_t = self.find_time_index(date)
-
-        if len(index_t) > 1:
-            layers = np.zeros([len(index_t), self.get_nb_points()])
-            layers[::] = np.NAN
-
-            for t in range(0, len(index_t)):
-                layers[t] = self.reader.read_variable_sea_water_salinity_at_ground_level_at_time(index_t[t])
-
-            data = self.interpolate_time(date, index_t, layers)
-
-        else:
-            data = self.reader.read_variable_sea_water_salinity_at_ground_level_at_time(index_t[0])
-
-        return data
-
-    def read_variable_sea_water_pressure_at_sea_water_surface_at_time(self, date):
-        index_t = self.find_time_index(date)
-
-        if len(index_t) > 1:
-            layers = np.zeros([len(index_t), self.get_nb_points()])
-            layers[::] = np.NAN
-
-            for t in range(0, len(index_t)):
-                layers[t] = self.reader.read_variable_sea_water_pressure_at_sea_water_surface_at_time(index_t[t])
-
-            data = self.interpolate_time(date,index_t,layers)
-
-        else:
-            data = self.reader.read_variable_sea_water_pressure_at_sea_water_surface_at_time(index_t[0])
-
-        return data
+    # 2D
+    #################
 
     def read_variable_sea_surface_height_above_mean_sea_level_at_time(self, date):
         index_t = self.find_time_index(date)
@@ -438,7 +357,6 @@ class TimeMultiPoint(MultiPoint):
 
         return data
 
-
     def read_variable_barotropic_sea_water_velocity_at_time(self, date):
         index_t = self.find_time_index(date)
 
@@ -495,63 +413,255 @@ class TimeMultiPoint(MultiPoint):
 
         return data
 
-    # METEO
-    def read_variable_wind_10m_at_time(self, date):
+    #################
+    # HYDRO
+    # Sea Surface
+    #################
+
+    def read_variable_sea_surface_temperature_at_time(self, date):
+        index_t = self.find_time_index(date)
+
+        if len(index_t) > 1:
+            layers = np.zeros([len(index_t), self.get_nb_points()])
+            layers[::] = np.NAN
+
+            for t in range(0, len(index_t)):
+                layers[t] = self.reader.read_variable_sea_surface_temperature_at_time(index_t[t])
+
+            data = self.interpolate_time(date, index_t, layers)
+
+        else:
+            data = self.reader.read_variable_sea_surface_temperature_at_time(index_t[0])
+
+        return data
+
+    def read_variable_sea_surface_salinity_at_time(self, date):
+        index_t = self.find_time_index(date)
+
+        if len(index_t) > 1:
+            layers = np.zeros([len(index_t), self.get_nb_points()])
+            layers[::] = np.NAN
+
+            for t in range(0, len(index_t)):
+                layers[t] = self.reader.read_variable_sea_surface_salinity_at_time(index_t[t])
+
+            data = self.interpolate_time(date, index_t, layers)
+
+        else:
+            data = self.reader.read_variable_sea_surface_salinity_at_time(index_t[0])
+
+        return data
+
+    def read_variable_sea_water_pressure_at_sea_water_surface_at_time(self, date):
+        index_t = self.find_time_index(date)
+
+        if len(index_t) > 1:
+            layers = np.zeros([len(index_t), self.get_nb_points()])
+            layers[::] = np.NAN
+
+            for t in range(0, len(index_t)):
+                layers[t] = self.reader.read_variable_sea_water_pressure_at_sea_water_surface_at_time(index_t[t])
+
+            data = self.interpolate_time(date, index_t, layers)
+
+        else:
+            data = self.reader.read_variable_sea_water_pressure_at_sea_water_surface_at_time(index_t[0])
+
+        return data
+
+    def read_variable_sea_water_velocity_at_sea_water_surface_at_time(self, date):
         index_t = self.find_time_index(date)
 
         data = np.zeros([2, self.get_nb_points()])
         data[::] = np.NAN
 
         if len(index_t) > 1:
-            layers = np.zeros([len(index_t),2, self.get_nb_points()])
+            layers = np.zeros([len(index_t), 2, self.get_nb_points()])
             layers[::] = np.NAN
 
             for t in range(0, len(index_t)):
-                comp = self.reader.read_variable_wind_10m_at_time(index_t[t])
+                comp = self.reader.read_variable_sea_water_velocity_at_sea_water_surface_at_time(index_t[t])
                 layers[t][0] = comp[0]
                 layers[t][1] = comp[1]
 
-            data[0] = self.interpolate_time(date,index_t,layers[:,0,:])
-            data[1] = self.interpolate_time(date, index_t, layers[:,1,:])
+            data[0] = self.interpolate_time(date, index_t, layers[:, 0, :])
+            data[1] = self.interpolate_time(date, index_t, layers[:, 1, :])
 
         else:
-            data = self.reader.read_variable_wind_10m_at_time(index_t[0])
+            data = self.reader.read_variable_sea_water_velocity_at_sea_water_surface_at_time(index_t[0])
 
         return data
 
-    def read_variable_wind_speed_10m_at_time(self, date):
-        comp = self.read_variable_wind_10m_at_time(date)
+    def read_variable_sea_water_speed_at_sea_water_surface_at_time(self, date):
+        comp = self.read_variable_sea_water_velocity_at_sea_water_surface_at_time(date)
 
         data = np.zeros([self.get_nb_points()])
         data[::] = np.NAN
 
-        for index_x in range(0,self.get_nb_points()):
-
+        for index_x in range(0, self.get_nb_points()):
             data[index_x] = math.sqrt(comp[0][index_x] ** 2 + comp[1][index_x] ** 2)
 
         return data
 
-    def read_variable_wind_from_direction_10m_at_time(self, date):
-        comp = self.read_variable_wind_10m_at_time(date)
+    def read_variable_sea_water_from_direction_at_sea_water_surface_at_time(self, date):
+        comp = self.read_variable_sea_water_velocity_at_sea_water_surface_at_time(date)
 
         data = np.zeros([self.get_nb_points()])
         data[::] = np.NAN
 
         for index_x in range(0, self.get_nb_points()):
-            data[index_x] = 270. - (math.degrees(math.atan2(comp[1][index_x], comp[0][index_x]))) + 180.0 % 360.0
+            data[index_x] =  (math.degrees(math.atan2(comp[1][index_x], comp[0][index_x]))) + 180.0 % 360.0
 
         return data
 
-    def read_variable_wind_to_direction_10m_at_time(self, date):
-        comp = self.read_variable_wind_10m_at_time(date)
+    def read_variable_sea_water_to_direction_at_sea_water_surface_at_time(self, date):
+        comp = self.read_variable_sea_water_velocity_at_sea_water_surface_at_time(date)
 
         data = np.zeros([self.get_nb_points()])
         data[::] = np.NAN
 
         for index_x in range(0, self.get_nb_points()):
-            data[index_x] = 270. - (math.degrees(math.atan2(comp[1][index_x], comp[0][index_x]))) % 360.0
+            data[index_x] = (math.degrees(math.atan2(comp[1][index_x], comp[0][index_x]))) % 360.0
 
         return data
+
+    #################
+    # HYDRO
+    # Ground level
+    #################
+
+    def read_variable_sea_water_temperature_at_ground_level_at_time(self, date):
+        index_t = self.find_time_index(date)
+
+        if len(index_t) > 1:
+            layers = np.zeros([len(index_t), self.get_nb_points()])
+            layers[::] = np.NAN
+
+            for t in range(0, len(index_t)):
+                layers[t] = self.reader.read_variable_sea_water_temperature_at_ground_level_at_time(index_t[t])
+
+            data = self.interpolate_time(date, index_t, layers)
+
+        else:
+            data = self.reader.read_variable_sea_water_temperature_at_ground_level_at_time(index_t[0])
+
+        return data
+
+    def read_variable_sea_water_salinity_at_ground_level_at_time(self, date):
+        index_t = self.find_time_index(date)
+
+        if len(index_t) > 1:
+            layers = np.zeros([len(index_t), self.get_nb_points()])
+            layers[::] = np.NAN
+
+            for t in range(0, len(index_t)):
+                layers[t] = self.reader.read_variable_sea_water_salinity_at_ground_level_at_time(index_t[t])
+
+            data = self.interpolate_time(date, index_t, layers)
+
+        else:
+            data = self.reader.read_variable_sea_water_salinity_at_ground_level_at_time(index_t[0])
+
+        return data
+
+    def read_variable_sea_water_velocity_at_ground_level_at_time(self, date):
+        index_t = self.find_time_index(date)
+
+        data = np.zeros([2, self.get_nb_points()])
+        data[::] = np.NAN
+
+        if len(index_t) > 1:
+            layers = np.zeros([len(index_t), 2, self.get_nb_points()])
+            layers[::] = np.NAN
+
+            for t in range(0, len(index_t)):
+                comp = self.reader.read_variable_sea_water_velocity_at_ground_level_at_time(index_t[t])
+                layers[t][0] = comp[0]
+                layers[t][1] = comp[1]
+
+            data[0] = self.interpolate_time(date, index_t, layers[:, 0, :])
+            data[1] = self.interpolate_time(date, index_t, layers[:, 1, :])
+
+        else:
+            data = self.reader.read_variable_sea_water_velocity_at_ground_level_at_time(index_t[0])
+
+        return data
+
+    def read_variable_sea_water_speed_at_ground_level_at_time(self, date):
+        comp = self.read_variable_sea_water_velocity_at_ground_level_at_time(date)
+
+        data = np.zeros([self.get_nb_points()])
+        data[::] = np.NAN
+
+        for index_x in range(0, self.get_nb_points()):
+            data[index_x] = math.sqrt(comp[0][index_x] ** 2 + comp[1][index_x] ** 2)
+
+        return data
+
+    def read_variable_sea_water_from_direction_at_ground_level_at_time(self, date):
+        comp = self.read_variable_sea_water_velocity_at_ground_level_at_time(date)
+
+        data = np.zeros([self.get_nb_points()])
+        data[::] = np.NAN
+
+        for index_x in range(0, self.get_nb_points()):
+            data[index_x] =  (math.degrees(math.atan2(comp[1][index_x], comp[0][index_x]))) + 180.0 % 360.0
+
+        return data
+
+    def read_variable_sea_water_to_direction_at_ground_level_at_time(self, date):
+        comp = self.read_variable_sea_water_velocity_at_ground_level_at_time(date)
+
+        data = np.zeros([self.get_nb_points()])
+        data[::] = np.NAN
+
+        for index_x in range(0, self.get_nb_points()):
+            data[index_x] = (math.degrees(math.atan2(comp[1][index_x], comp[0][index_x]))) % 360.0
+
+        return data
+
+    #################
+    # WAVES
+    # Sea Surface
+    #################
+
+    #################
+    # WAVES
+    # Ground level
+    #################
+
+    #################
+    # WAVES
+    # Momentum flux
+    #################
+
+    #################
+    # METEO
+    # 2D
+    #################
+
+    def read_variable_water_volume_transport_into_sea_water_from_rivers_at_time(self, date):
+        index_t = self.find_time_index(date)
+
+        if len(index_t) > 1:
+            layers = np.zeros([len(index_t), self.get_nb_points()])
+            layers[::] = np.NAN
+
+            for t in range(0, len(index_t)):
+                layers[t] = self.reader.read_variable_water_volume_transport_into_sea_water_from_rivers_at_time(
+                    index_t[t])
+
+            data = self.interpolate_time(date, index_t, layers)
+
+        else:
+            data = self.reader.read_variable_water_volume_transport_into_sea_water_from_rivers_at_time(index_t[0])
+
+        return data
+
+    #################
+    # METEO
+    # Surface air
+    #################
 
     def read_variable_surface_air_pressure_at_time(self, date):
         index_t = self.find_time_index(date)
@@ -587,25 +697,66 @@ class TimeMultiPoint(MultiPoint):
 
         return data
 
-    def read_variable_water_volume_transport_into_sea_water_from_rivers_at_time(self, date):
+    #################
+    # METEO
+    # At 10 m
+    #################
+
+    def read_variable_wind_10m_at_time(self, date):
         index_t = self.find_time_index(date)
 
+        data = np.zeros([2, self.get_nb_points()])
+        data[::] = np.NAN
+
         if len(index_t) > 1:
-            layers = np.zeros([len(index_t), self.get_nb_points()])
+            layers = np.zeros([len(index_t), 2, self.get_nb_points()])
             layers[::] = np.NAN
 
             for t in range(0, len(index_t)):
-                layers[t] = self.reader.read_variable_water_volume_transport_into_sea_water_from_rivers_at_time(index_t[t])
+                comp = self.reader.read_variable_wind_10m_at_time(index_t[t])
+                layers[t][0] = comp[0]
+                layers[t][1] = comp[1]
 
-            data = self.interpolate_time(date, index_t, layers)
+            data[0] = self.interpolate_time(date, index_t, layers[:, 0, :])
+            data[1] = self.interpolate_time(date, index_t, layers[:, 1, :])
 
         else:
-            data = self.reader.read_variable_water_volume_transport_into_sea_water_from_rivers_at_time(index_t[0])
+            data = self.reader.read_variable_wind_10m_at_time(index_t[0])
 
         return data
 
+    def read_variable_wind_speed_10m_at_time(self, date):
+        comp = self.read_variable_wind_10m_at_time(date)
 
+        data = np.zeros([self.get_nb_points()])
+        data[::] = np.NAN
 
+        for index_x in range(0, self.get_nb_points()):
+            data[index_x] = math.sqrt(comp[0][index_x] ** 2 + comp[1][index_x] ** 2)
+
+        return data
+
+    def read_variable_wind_from_direction_10m_at_time(self, date):
+        comp = self.read_variable_wind_10m_at_time(date)
+
+        data = np.zeros([self.get_nb_points()])
+        data[::] = np.NAN
+
+        for index_x in range(0, self.get_nb_points()):
+            data[index_x] = 270. - (math.degrees(math.atan2(comp[1][index_x], comp[0][index_x]))) + 180.0 % 360.0
+
+        return data
+
+    def read_variable_wind_to_direction_10m_at_time(self, date):
+        comp = self.read_variable_wind_10m_at_time(date)
+
+        data = np.zeros([self.get_nb_points()])
+        data[::] = np.NAN
+
+        for index_x in range(0, self.get_nb_points()):
+            data[index_x] = 270. - (math.degrees(math.atan2(comp[1][index_x], comp[0][index_x]))) % 360.0
+
+        return data
 
     # TODO trouver une place propre pour ce qui suit
 

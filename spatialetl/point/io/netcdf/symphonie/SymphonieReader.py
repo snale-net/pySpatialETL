@@ -296,7 +296,6 @@ class SymphonieReader(MultiPointReader):
         return data
 
     def read_variable_sea_water_velocity_at_ground_level_at_time(self,index_t):
-
         data = np.zeros([2, self.nbPoints])
         data[:] = np.nan
 

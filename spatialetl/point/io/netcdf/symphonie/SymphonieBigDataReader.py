@@ -98,8 +98,6 @@ class SymphonieBigDataReader(MultiPointReader):
             self.xy_coords[i] = [nearestPoint[0],nearestPoint[1]]
             self.xy_values[i] = [nearestPoint[2], nearestPoint[3]]
 
-        self.names = names
-
     def find_point_index(self, target_lon, target_lat, method="classic", only_mask_value=True):
         """Retourne le point le plus proche du point donné en paramètre.
     @param target_lon: Coordonnée longitude du point
