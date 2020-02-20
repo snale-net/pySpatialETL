@@ -231,23 +231,23 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
     def compute_overlap_indexes(self, xmin, xmax, ymin, ymax):
 
-        xmin_overlap = max(0, xmin - SymphonieReader.HORIZONTAL_OVERLAPING_SIZE)
-        new_xmin = SymphonieReader.HORIZONTAL_OVERLAPING_SIZE
+        xmin_overlap = max(0, xmin - SymphonieBigDataReader.HORIZONTAL_OVERLAPING_SIZE)
+        new_xmin = SymphonieBigDataReader.HORIZONTAL_OVERLAPING_SIZE
         if xmin_overlap == 0:
             new_xmin = xmin
 
-        xmax_overlap = min(self.get_x_size(), xmax + SymphonieReader.HORIZONTAL_OVERLAPING_SIZE)
-        new_xmax = xmax_overlap - xmin_overlap - SymphonieReader.HORIZONTAL_OVERLAPING_SIZE
+        xmax_overlap = min(self.get_x_size(), xmax + SymphonieBigDataReader.HORIZONTAL_OVERLAPING_SIZE)
+        new_xmax = xmax_overlap - xmin_overlap - SymphonieBigDataReader.HORIZONTAL_OVERLAPING_SIZE
         if xmax_overlap == self.get_x_size():
             new_xmax = self.get_x_size()
 
-        ymin_overlap = max(0, ymin - SymphonieReader.HORIZONTAL_OVERLAPING_SIZE)
-        new_ymin = SymphonieReader.HORIZONTAL_OVERLAPING_SIZE
+        ymin_overlap = max(0, ymin - SymphonieBigDataReader.HORIZONTAL_OVERLAPING_SIZE)
+        new_ymin = SymphonieBigDataReader.HORIZONTAL_OVERLAPING_SIZE
         if ymin_overlap == 0:
             new_ymin = ymin
 
-        ymax_overlap = min(self.get_y_size(), ymax + SymphonieReader.HORIZONTAL_OVERLAPING_SIZE)
-        new_ymax = ymax_overlap - ymin_overlap - SymphonieReader.HORIZONTAL_OVERLAPING_SIZE
+        ymax_overlap = min(self.get_y_size(), ymax + SymphonieBigDataReader.HORIZONTAL_OVERLAPING_SIZE)
+        new_ymax = ymax_overlap - ymin_overlap - SymphonieBigDataReader.HORIZONTAL_OVERLAPING_SIZE
         if ymax_overlap == self.get_y_size():
             new_ymax = self.get_y_size()
 
