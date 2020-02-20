@@ -202,7 +202,7 @@ class DefaultWriter (CoverageWriter):
 
             time_index = 0
             for time in self.coverage.read_axis_t():
-                logging.debug(
+                logging.info(
                     '[DefaultWriter] Writing variable \'' + str(VariableDefinition.VARIABLE_NAME['wet_binary_mask']) + '\' at time \'' + str(time) + '\'')
                 var[
                 self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start+time_index:self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start+time_index+1,
@@ -271,7 +271,7 @@ class DefaultWriter (CoverageWriter):
 
             time_index = 0
             for time in self.coverage.read_axis_t():
-                logging.debug(
+                logging.info(
                     '[DefaultWriter] Writing variable \'Barotropic Sea Water Velocity\' at time \'' + str(time) + '\'')
 
                 data_u,data_v = self.coverage.read_variable_barotropic_sea_water_velocity_at_time(time)
@@ -341,7 +341,7 @@ class DefaultWriter (CoverageWriter):
 
             time_index = 0
             for time in self.coverage.read_axis_t():
-                logging.debug('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['sea_surface_height_above_geoid']) + '\' at time \'' + str(time) + '\'')
+                logging.info('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['sea_surface_height_above_geoid']) + '\' at time \'' + str(time) + '\'')
 
                 var[
                 self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start+time_index:self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start+time_index+1,
@@ -373,7 +373,7 @@ class DefaultWriter (CoverageWriter):
 
             time_index = 0
             for time in self.coverage.read_axis_t():
-                logging.debug(
+                logging.info(
                     '[DefaultWriter] Writing variable \'' + str(
                         VariableDefinition.LONG_NAME['sea_surface_temperature']) + '\' at time \'' + str(time) + '\'')
 
@@ -407,7 +407,7 @@ class DefaultWriter (CoverageWriter):
 
             time_index = 0
             for time in self.coverage.read_axis_t():
-                logging.debug(
+                logging.info(
                     '[DefaultWriter] Writing variable \'' + str(
                         VariableDefinition.LONG_NAME['sea_surface_salinity']) + '\' at time \'' + str(time) + '\'')
 
@@ -421,10 +421,63 @@ class DefaultWriter (CoverageWriter):
         else:
             raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
+    def write_variable_sea_water_velocity_at_sea_water_surface(self):
+
+        if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
+
+            if VariableDefinition.VARIABLE_NAME['eastward_sea_water_velocity_at_sea_water_surface'] in self.ncfile.variables:
+                ucomp = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['eastward_sea_water_velocity_at_sea_water_surface']]
+            else:
+                ucomp = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['eastward_sea_water_velocity_at_sea_water_surface'],
+                                              float32,
+                                              (VariableDefinition.VARIABLE_NAME['time'],
+                                               VariableDefinition.VARIABLE_NAME['latitude'],
+                                               VariableDefinition.VARIABLE_NAME['longitude'],), fill_value=9.96921e+36)
+            ucomp.long_name = VariableDefinition.LONG_NAME['eastward_sea_water_velocity_at_sea_water_surface']
+            ucomp.standard_name = VariableDefinition.STANDARD_NAME['eastward_sea_water_velocity_at_sea_water_surface']
+            ucomp.units = VariableDefinition.CANONICAL_UNITS['eastward_sea_water_velocity_at_sea_water_surface']
+            ucomp.comment = "cur=sqrt(U**2+V**2)";
+
+            if VariableDefinition.VARIABLE_NAME['northward_sea_water_velocity_at_sea_water_surface'] in self.ncfile.variables:
+                vcomp = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['northward_sea_water_velocity_at_sea_water_surface']]
+            else:
+                vcomp = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['northward_sea_water_velocity_at_sea_water_surface'],
+                                              float32,
+                                              (VariableDefinition.VARIABLE_NAME['time'],
+                                               VariableDefinition.VARIABLE_NAME['latitude'],
+                                               VariableDefinition.VARIABLE_NAME['longitude'],), fill_value=9.96921e+36)
+            vcomp.long_name = VariableDefinition.LONG_NAME['northward_sea_water_velocity_at_sea_water_surface']
+            vcomp.standard_name = VariableDefinition.STANDARD_NAME['northward_sea_water_velocity_at_sea_water_surface']
+            vcomp.units = VariableDefinition.CANONICAL_UNITS['northward_sea_water_velocity_at_sea_water_surface']
+            vcomp.comment = "cur=sqrt(U**2+V**2)";
+
+            if self.coverage.rank == 0:
+                logging.info('[DefaultWriter] Writing variable \'Sea Water Velocity at Sea Water Surface\'\'')
+
+            time_index = 0
+            for time in self.coverage.read_axis_t():
+                logging.info(
+                    '[DefaultWriter] Writing variable \'Sea Water Velocity at Sea Water Surface\' at time \'' + str(time) + '\'')
+
+                data_u,data_v = self.coverage.read_variable_sea_water_velocity_at_sea_water_surface_at_time(time)
+
+                ucomp[ self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start+time_index:self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start+time_index+1,
+                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
+                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = data_u
+
+                vcomp[ self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start+time_index:self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start+time_index+1,
+                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
+                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = data_v
+
+                time_index += 1
+        else:
+            raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
+
     #################
     # HYDRO
     # Ground level
     #################
+
     def write_variable_sea_water_temperature_at_ground_level(self):
 
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
@@ -445,7 +498,7 @@ class DefaultWriter (CoverageWriter):
 
             time_index = 0
             for time in self.coverage.read_axis_t():
-                logging.debug(
+                logging.info(
                     '[DefaultWriter] Writing variable \'' + str(
                         VariableDefinition.LONG_NAME['sea_water_temperature_at_ground_level']) + '\' at time \'' + str(time) + '\'')
 
@@ -479,7 +532,7 @@ class DefaultWriter (CoverageWriter):
 
             time_index = 0
             for time in self.coverage.read_axis_t():
-                logging.debug(
+                logging.info(
                     '[DefaultWriter] Writing variable \'' + str(
                         VariableDefinition.LONG_NAME['sea_water_salinity_at_ground_level']) + '\' at time \'' + str(time) + '\'')
 
@@ -493,10 +546,64 @@ class DefaultWriter (CoverageWriter):
         else:
             raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
+    def write_variable_sea_water_velocity_at_ground_level(self):
+
+        if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
+
+            if VariableDefinition.VARIABLE_NAME['eastward_sea_water_velocity_at_ground_level'] in self.ncfile.variables:
+                ucomp = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['eastward_sea_water_velocity_at_ground_level']]
+            else:
+                ucomp = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['eastward_sea_water_velocity_at_ground_level'],
+                                              float32,
+                                              (VariableDefinition.VARIABLE_NAME['time'],
+                                               VariableDefinition.VARIABLE_NAME['latitude'],
+                                               VariableDefinition.VARIABLE_NAME['longitude'],), fill_value=9.96921e+36)
+            ucomp.long_name = VariableDefinition.LONG_NAME['eastward_sea_water_velocity_at_ground_level']
+            ucomp.standard_name = VariableDefinition.STANDARD_NAME['eastward_sea_water_velocity_at_ground_level']
+            ucomp.units = VariableDefinition.CANONICAL_UNITS['eastward_sea_water_velocity_at_ground_level']
+            ucomp.comment = "cur=sqrt(U**2+V**2)";
+
+            if VariableDefinition.VARIABLE_NAME['northward_sea_water_velocity_at_ground_level'] in self.ncfile.variables:
+                vcomp = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['northward_sea_water_velocity_at_ground_level']]
+            else:
+                vcomp = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['northward_sea_water_velocity_at_ground_level'],
+                                              float32,
+                                              (VariableDefinition.VARIABLE_NAME['time'],
+                                               VariableDefinition.VARIABLE_NAME['latitude'],
+                                               VariableDefinition.VARIABLE_NAME['longitude'],), fill_value=9.96921e+36)
+            vcomp.long_name = VariableDefinition.LONG_NAME['northward_sea_water_velocity_at_ground_level']
+            vcomp.standard_name = VariableDefinition.STANDARD_NAME['northward_sea_water_velocity_at_ground_level']
+            vcomp.units = VariableDefinition.CANONICAL_UNITS['northward_sea_water_velocity_at_ground_level']
+            vcomp.comment = "cur=sqrt(U**2+V**2)";
+
+            if self.coverage.rank == 0:
+                logging.info('[DefaultWriter] Writing variable \'Sea Water Velocity at Ground Level\'\'')
+
+            time_index = 0
+            for time in self.coverage.read_axis_t():
+                logging.info(
+                    '[DefaultWriter] Writing variable \'Sea Water Velocity at Ground Level\' at time \'' + str(time) + '\'')
+
+                data_u,data_v = self.coverage.read_variable_sea_water_velocity_at_ground_level_at_time(time)
+
+                ucomp[ self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start+time_index:self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start+time_index+1,
+                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
+                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = data_u
+
+                vcomp[ self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start+time_index:self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start+time_index+1,
+                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
+                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = data_v
+
+                time_index += 1
+        else:
+            raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
+
+
     #################
     # HYDRO
     # 3D
     #################
+
     def write_variable_sea_water_temperature(self):
 
         if (isinstance(self.coverage, TimeLevelCoverage)):
@@ -658,7 +765,7 @@ class DefaultWriter (CoverageWriter):
 
             time_index=0
             for time in self.coverage.read_axis_t():
-                logging.debug(
+                logging.info(
                     '[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['sea_surface_wave_significant_height']) + '\' at time \'' + str(time) + '\'')
 
                 var[
@@ -689,7 +796,7 @@ class DefaultWriter (CoverageWriter):
 
             time_index = 0
             for time in self.coverage.read_axis_t():
-                logging.debug(
+                logging.info(
                     '[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['sea_surface_wave_breaking_height']) + '\' at time \'' + str(time) + '\'')
 
                 var[
@@ -720,7 +827,7 @@ class DefaultWriter (CoverageWriter):
 
             time_index = 0
             for time in self.coverage.read_axis_t():
-                logging.debug(
+                logging.info(
                     '[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['sea_surface_wave_mean_period']) + '\' at time \'' + str(time) + '\'')
 
                 var[
@@ -751,7 +858,7 @@ class DefaultWriter (CoverageWriter):
 
             time_index = 0
             for time in self.coverage.read_axis_t():
-                logging.debug(
+                logging.info(
                     '[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['sea_surface_wave_peak_period']) + '\' at time \'' + str(time) + '\'')
 
                 var[
@@ -782,7 +889,7 @@ class DefaultWriter (CoverageWriter):
 
             time_index = 0
             for time in self.coverage.read_axis_t():
-                logging.debug(
+                logging.info(
                     '[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['sea_surface_wave_from_direction']) + '\' at time \'' + str(time) + '\'')
 
                 var[
@@ -813,7 +920,7 @@ class DefaultWriter (CoverageWriter):
 
             time_index = 0
             for time in self.coverage.read_axis_t():
-                logging.debug(
+                logging.info(
                     '[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['sea_surface_wave_to_direction']) + '\' at time \'' + str(time) + '\'')
 
                 var[
@@ -852,7 +959,7 @@ class DefaultWriter (CoverageWriter):
             time_index=0
             for time in self.coverage.read_axis_t():
 
-                logging.debug('[DefaultWriter] Writing variable \'Surface Stokes Drift Velocity\' at time \''+str(time)+'\'')
+                logging.info('[DefaultWriter] Writing variable \'Surface Stokes Drift Velocity\' at time \''+str(time)+'\'')
 
                 data_u,data_v = self.coverage.read_variable_sea_surface_wave_stokes_drift_velocity_at_time(time)
 
@@ -890,7 +997,7 @@ class DefaultWriter (CoverageWriter):
 
             time_index = 0
             for time in self.coverage.read_axis_t():
-                logging.debug(
+                logging.info(
                     '[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['radiation_pressure_bernouilli_head']) + '\' at time \'' + str(time) + '\'')
 
                 var[
@@ -925,7 +1032,7 @@ class DefaultWriter (CoverageWriter):
 
             time_index = 0
             for time in self.coverage.read_axis_t():
-                logging.debug(
+                logging.info(
                     '[DefaultWriter] Writing variable \'' + str(
                         VariableDefinition.LONG_NAME['sea_surface_wave_energy_flux_to_ocean']) + '\' at time \'' + str(
                         time) + '\'')
@@ -965,7 +1072,7 @@ class DefaultWriter (CoverageWriter):
 
             time_index = 0
             for time in self.coverage.read_axis_t():
-                logging.debug(
+                logging.info(
                     '[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME[
                                                                     'sea_surface_wave_energy_dissipation_at_ground_level']) + '\' at time \'' + str(
                         time) + '\'')
@@ -1010,7 +1117,7 @@ class DefaultWriter (CoverageWriter):
             time_index=0
             for time in self.coverage.read_axis_t():
 
-                logging.debug('[DefaultWriter] Writing variable \'Atmosphere Momentum Flux to Waves\' at time \''+str(time)+'\'')
+                logging.info('[DefaultWriter] Writing variable \'Atmosphere Momentum Flux to Waves\' at time \''+str(time)+'\'')
 
                 data_u,data_v = self.coverage.read_variable_atmosphere_momentum_flux_to_waves_at_time(time)
 
@@ -1056,7 +1163,7 @@ class DefaultWriter (CoverageWriter):
             time_index=0
             for time in self.coverage.read_axis_t():
 
-                logging.debug('[DefaultWriter] Writing variable \'Waves Momentum Flux To Ocean\' at time \''+str(time)+'\'')
+                logging.info('[DefaultWriter] Writing variable \'Waves Momentum Flux To Ocean\' at time \''+str(time)+'\'')
 
                 data_u,data_v = self.coverage.read_variable_waves_momentum_flux_to_ocean_at_time(time)
 
@@ -1116,7 +1223,7 @@ class DefaultWriter (CoverageWriter):
 
             time_index = 0
             for time in self.coverage.read_axis_t():
-                logging.debug('[DefaultWriter] Writing variable \'Wind Stress\' at time \'' + str(time) + '\'')
+                logging.info('[DefaultWriter] Writing variable \'Wind Stress\' at time \'' + str(time) + '\'')
 
                 data_u,data_v = self.coverage.read_variable_wind_stress_at_time(time)
 
@@ -1166,7 +1273,7 @@ class DefaultWriter (CoverageWriter):
             time_index=0
             for time in self.coverage.read_axis_t():
 
-                logging.debug('[DefaultWriter] Writing variable \'Wind 10m\' at time \''+str(time)+'\'')
+                logging.info('[DefaultWriter] Writing variable \'Wind 10m\' at time \''+str(time)+'\'')
 
                 data_u,data_v = self.coverage.read_variable_wind_10m_at_time(time)
 
@@ -1206,7 +1313,7 @@ class DefaultWriter (CoverageWriter):
 
             time_index = 0
             for time in self.coverage.read_axis_t():
-                logging.debug(
+                logging.info(
                     '[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['wind_speed_10m']) + '\' at time \'' + str(time) + '\'')
 
                 var[
@@ -1237,7 +1344,7 @@ class DefaultWriter (CoverageWriter):
 
             time_index = 0
             for time in self.coverage.read_axis_t():
-                logging.debug(
+                logging.info(
                     '[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['wind_to_direction_10m']) + '\' at time \'' + str(time) + '\'')
 
                 var[
@@ -1268,7 +1375,7 @@ class DefaultWriter (CoverageWriter):
 
             time_index = 0
             for time in self.coverage.read_axis_t():
-                logging.debug(
+                logging.info(
                     '[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['wind_from_direction_10m']) + '\' at time \'' + str(time) + '\'')
 
                 var[

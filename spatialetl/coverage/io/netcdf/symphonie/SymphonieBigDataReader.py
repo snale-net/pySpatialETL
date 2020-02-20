@@ -326,7 +326,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         try:
             self.open_file(index_t)
             if "wetmask_t" in self.ncfile.variables:
-                return np.ma.filled(self.ncfile.variables["wetmask_t"][index_t, ymin:ymax, xmin:xmax],
+                return np.ma.filled(self.ncfile.variables["wetmask_t"][0, ymin:ymax, xmin:xmax],
                                     fill_value=np.nan)
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
@@ -379,7 +379,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             self.open_file(index_t)
             index_z = self.get_z_size() - 1
             if "tem" in self.ncfile.variables:
-                return np.ma.filled(self.ncfile.variables["tem"][index_t, index_z, ymin:ymax, xmin:xmax],
+                return np.ma.filled(self.ncfile.variables["tem"][0, index_z, ymin:ymax, xmin:xmax],
                                     fill_value=np.nan)
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
@@ -397,7 +397,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             self.open_file(index_t)
             index_z = self.get_z_size() - 1
             if "sal" in self.ncfile.variables:
-                return np.ma.filled(self.ncfile.variables["sal"][index_t, index_z, ymin:ymax, xmin:xmax],
+                return np.ma.filled(self.ncfile.variables["sal"][0, index_z, ymin:ymax, xmin:xmax],
                                     fill_value=np.nan)
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
@@ -412,7 +412,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
     def read_variable_sea_water_velocity_at_sea_water_surface_at_time(self, index_t, xmin, xmax, ymin, ymax):
         self.open_file(index_t)
-        index_z = self.zmax - 1
+        index_z = self.get_z_size() - 1
         xmin_overlap, xmax_overlap, ymin_overlap, ymax_overlap, new_xmin, new_xmax, new_ymin, new_ymax = self.compute_overlap_indexes(
             xmin, xmax, ymin, ymax)
 
@@ -428,11 +428,11 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
         if "vel_u" in self.ncfile.variables:
             data_u = np.ma.filled(
-                self.ncfile.variables["vel_u"][index_t, index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
+                self.ncfile.variables["vel_u"][0, index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
                 fill_value=np.nan)
         if "vel_v" in self.ncfile.variables:
             data_v = np.ma.filled(
-                self.ncfile.variables["vel_v"][index_t, index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
+                self.ncfile.variables["vel_v"][0, index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
                 fill_value=np.nan)
 
         u_rot, v_rot = self.compute_vector_rotation(data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v)
@@ -449,7 +449,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             self.open_file(index_t)
             index_z = 0
             if "tem" in self.ncfile.variables:
-                return np.ma.filled(self.ncfile.variables["tem"][index_t, index_z, ymin:ymax, xmin:xmax],
+                return np.ma.filled(self.ncfile.variables["tem"][0, index_z, ymin:ymax, xmin:xmax],
                                     fill_value=np.nan)
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
@@ -467,7 +467,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             self.open_file(index_t)
             index_z = 0
             if "sal" in self.ncfile.variables:
-                return np.ma.filled(self.ncfile.variables["sal"][index_t, index_z, ymin:ymax, xmin:xmax],
+                return np.ma.filled(self.ncfile.variables["sal"][0, index_z, ymin:ymax, xmin:xmax],
                                     fill_value=np.nan)
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
@@ -499,12 +499,12 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
             if "vel_u" in self.ncfile.variables:
                 data_u = np.ma.filled(
-                    self.ncfile.variables["vel_u"][index_t, index_z, ymin_overlap:ymax_overlap,
+                    self.ncfile.variables["vel_u"][0, index_z, ymin_overlap:ymax_overlap,
                     xmin_overlap:xmax_overlap],
                     fill_value=np.nan)
             if "vel_v" in self.ncfile.variables:
                 data_v = np.ma.filled(
-                    self.ncfile.variables["vel_v"][index_t, index_z, ymin_overlap:ymax_overlap,
+                    self.ncfile.variables["vel_v"][0, index_z, ymin_overlap:ymax_overlap,
                     xmin_overlap:xmax_overlap],
                     fill_value=np.nan)
 
@@ -560,11 +560,11 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
             if "velbar_u" in self.ncfile.variables:
                 data_u = np.ma.filled(
-                    self.ncfile.variables["velbar_u"][index_t, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
+                    self.ncfile.variables["velbar_u"][0, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
                     fill_value=np.nan)
             if "velbar_v" in self.ncfile.variables:
                 data_v = np.ma.filled(
-                    self.ncfile.variables["velbar_v"][index_t, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
+                    self.ncfile.variables["velbar_v"][0, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
                     fill_value=np.nan)
 
             u_rot, v_rot = self.compute_vector_rotation(data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v)
@@ -588,7 +588,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         try:
             self.open_file(index_t)
             if "tem" in self.ncfile.variables:
-                return np.ma.filled(self.ncfile.variables["tem"][index_t, index_z, ymin:ymax, xmin:xmax],
+                return np.ma.filled(self.ncfile.variables["tem"][0, index_z, ymin:ymax, xmin:xmax],
                                     fill_value=np.nan)
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
@@ -605,7 +605,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         try:
             self.open_file(index_t)
             if "sal" in self.ncfile.variables:
-                return np.ma.filled(self.ncfile.variables["sal"][index_t, index_z, ymin:ymax, xmin:xmax],
+                return np.ma.filled(self.ncfile.variables["sal"][0, index_z, ymin:ymax, xmin:xmax],
                                     fill_value=np.nan)
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
@@ -636,12 +636,12 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
             if "vel_u" in self.ncfile.variables:
                 data_u = np.ma.filled(
-                    self.ncfile.variables["vel_u"][index_t, index_z, ymin_overlap:ymax_overlap,
+                    self.ncfile.variables["vel_u"][0, index_z, ymin_overlap:ymax_overlap,
                     xmin_overlap:xmax_overlap],
                     fill_value=np.nan)
             if "vel_v" in self.ncfile.variables:
                 data_v = np.ma.filled(
-                    self.ncfile.variables["vel_v"][index_t, index_z, ymin_overlap:ymax_overlap,
+                    self.ncfile.variables["vel_v"][0, index_z, ymin_overlap:ymax_overlap,
                     xmin_overlap:xmax_overlap],
                     fill_value=np.nan)
 
@@ -666,7 +666,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         try:
             self.open_file(index_t)
             if "hs_wave_t" in self.ncfile.variables:
-                return np.ma.filled(self.ncfile.variables["hs_wave_t"][index_t, ymin:ymax, xmin:xmax],
+                return np.ma.filled(self.ncfile.variables["hs_wave_t"][0, ymin:ymax, xmin:xmax],
                                     fill_value=np.nan)
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
@@ -683,7 +683,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         try:
             self.open_file(index_t)
             if "t_wave_t" in self.ncfile.variables:
-                return np.ma.filled(self.ncfile.variables["t_wave_t"][index_t, ymin:ymax, xmin:xmax], fill_value=np.nan)
+                return np.ma.filled(self.ncfile.variables["t_wave_t"][0, ymin:ymax, xmin:xmax], fill_value=np.nan)
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
@@ -699,7 +699,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         try:
             self.open_file(index_t)
             if "dir_wave_t" in self.ncfile.variables:
-                return np.ma.filled(self.ncfile.variables["dir_wate_t"][index_t, ymin:ymax, xmin:xmax],
+                return np.ma.filled(self.ncfile.variables["dir_wate_t"][0, ymin:ymax, xmin:xmax],
                                     fill_value=np.nan)
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
@@ -731,12 +731,12 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
             if "velbarstokes_u" in self.ncfile.variables:
                 data_u = np.ma.filled(
-                    self.ncfile.variables["velbarstokes_u"][index_t, ymin_overlap:ymax_overlap,
+                    self.ncfile.variables["velbarstokes_u"][0, ymin_overlap:ymax_overlap,
                     xmin_overlap:xmax_overlap],
                     fill_value=np.nan)
             if "velbarstokes_v" in self.ncfile.variables:
                 data_v = np.ma.filled(
-                    self.ncfile.variables["velbarstokes_v"][index_t, ymin_overlap:ymax_overlap,
+                    self.ncfile.variables["velbarstokes_v"][0, ymin_overlap:ymax_overlap,
                     xmin_overlap:xmax_overlap],
                     fill_value=np.nan)
 
@@ -757,6 +757,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
     # WAVES
     # Momentum flux
     #################
+
     def read_variable_atmosphere_momentum_flux_to_waves_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
             self.open_file(index_t)
@@ -776,11 +777,11 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
             if "tawx" in self.ncfile.variables:
                 data_u = np.ma.filled(
-                    self.ncfile.variables["tawx"][index_t, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
+                    self.ncfile.variables["tawx"][0, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
                     fill_value=np.nan)
             if "tawy" in self.ncfile.variables:
                 data_v = np.ma.filled(
-                    self.ncfile.variables["tawy"][index_t, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
+                    self.ncfile.variables["tawy"][0, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
                     fill_value=np.nan)
 
             u_rot, v_rot = self.compute_vector_rotation(data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v)
@@ -815,11 +816,11 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
             if "twox" in self.ncfile.variables:
                 data_u = np.ma.filled(
-                    self.ncfile.variables["twox"][index_t, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
+                    self.ncfile.variables["twox"][0, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
                     fill_value=np.nan)
             if "twoy" in self.ncfile.variables:
                 data_v = np.ma.filled(
-                    self.ncfile.variables["twoy"][index_t, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
+                    self.ncfile.variables["twoy"][0, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
                     fill_value=np.nan)
 
             u_rot, v_rot = self.compute_vector_rotation(data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v)
@@ -864,11 +865,11 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
             if "wstress_u" in self.ncfile.variables:
                 data_u = np.ma.filled(
-                    self.ncfile.variables["wstress_u"][index_t, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
+                    self.ncfile.variables["wstress_u"][0, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
                     fill_value=np.nan)
             if "wstress_v" in self.ncfile.variables:
                 data_v = np.ma.filled(
-                    self.ncfile.variables["wstress_v"][index_t, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
+                    self.ncfile.variables["wstress_v"][0, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
                     fill_value=np.nan)
 
             u_rot, v_rot = self.compute_vector_rotation(data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v)
@@ -907,11 +908,11 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
             if "uwind_t" in self.ncfile.variables:
                 data_u = np.ma.filled(
-                    self.ncfile.variables["uwind_t"][index_t, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
+                    self.ncfile.variables["uwind_t"][0, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
                     fill_value=np.nan)
             if "vwind_t" in self.ncfile.variables:
                 data_v = np.ma.filled(
-                    self.ncfile.variables["vwind_t"][index_t, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
+                    self.ncfile.variables["vwind_t"][0, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
                     fill_value=np.nan)
 
             u_rot, v_rot = self.compute_vector_rotation(data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v)
@@ -947,7 +948,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         try:
             self.open_file(index_t)
             if "hssh" in self.ncfile.variables:
-                return np.ma.filled(self.ncfile.variables["hssh"][index_t, ymin:ymax, xmin:xmax],
+                return np.ma.filled(self.ncfile.variables["hssh"][0, ymin:ymax, xmin:xmax],
                                     fill_value=np.nan)
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
