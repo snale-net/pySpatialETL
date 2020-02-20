@@ -64,7 +64,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         self.gridrotcos_t = None
         self.gridrotsin_t = None
 
-    def open_given_file(self,index_t):
+    def open_file(self,index_t):
         if index_t!=self.last_opened_t_index:
             self.ncfile = Dataset(self.files[index_t])
 
@@ -324,6 +324,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
     def read_variable_wet_binary_mask_at_time(self, index_t):
         try:
+            self.open_file(index_t)
             if "wetmask_t" in self.ncfile.variables:
                 return np.ma.filled(self.ncfile.variables["wetmask_t"][index_t, ymin:ymax, xmin:xmax],
                                     fill_value=np.nan)
@@ -357,7 +358,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
     #################
     def read_variable_sea_surface_height_above_mean_sea_level_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
-            self.ncfile = Dataset(self.files[index_t])
+            self.open_file(index_t)
             if "ssh_w" in self.ncfile.variables:
                 return np.ma.filled(self.ncfile.variables["ssh_w"][0, ymin:ymax, xmin:xmax], fill_value=np.nan)
             if "ssh" in self.ncfile.variables:
@@ -375,8 +376,8 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
     def read_variable_sea_surface_temperature_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
+            self.open_file(index_t)
             index_z = self.get_z_size() - 1
-
             if "tem" in self.ncfile.variables:
                 return np.ma.filled(self.ncfile.variables["tem"][index_t, index_z, ymin:ymax, xmin:xmax],
                                     fill_value=np.nan)
@@ -393,8 +394,8 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
     def read_variable_sea_surface_salinity_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
+            self.open_file(index_t)
             index_z = self.get_z_size() - 1
-
             if "sal" in self.ncfile.variables:
                 return np.ma.filled(self.ncfile.variables["sal"][index_t, index_z, ymin:ymax, xmin:xmax],
                                     fill_value=np.nan)
@@ -410,6 +411,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
                                  1000))
 
     def read_variable_sea_water_velocity_at_sea_water_surface_at_time(self, index_t, xmin, xmax, ymin, ymax):
+        self.open_file(index_t)
         index_z = self.zmax - 1
         xmin_overlap, xmax_overlap, ymin_overlap, ymax_overlap, new_xmin, new_xmax, new_ymin, new_ymax = self.compute_overlap_indexes(
             xmin, xmax, ymin, ymax)
@@ -444,8 +446,8 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
     def read_variable_sea_water_temperature_at_ground_level_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
+            self.open_file(index_t)
             index_z = 0
-
             if "tem" in self.ncfile.variables:
                 return np.ma.filled(self.ncfile.variables["tem"][index_t, index_z, ymin:ymax, xmin:xmax],
                                     fill_value=np.nan)
@@ -462,8 +464,8 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
     def read_variable_sea_water_salinity_at_ground_level_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
+            self.open_file(index_t)
             index_z = 0
-
             if "sal" in self.ncfile.variables:
                 return np.ma.filled(self.ncfile.variables["sal"][index_t, index_z, ymin:ymax, xmin:xmax],
                                     fill_value=np.nan)
@@ -479,8 +481,8 @@ La classe SymphonieReader permet de lire les données du format Symphonie
                                  1000))
 
     def read_variable_sea_water_velocity_at_ground_level_at_time(self, index_t, xmin, xmax, ymin, ymax):
-
         try:
+            self.open_file(index_t)
             index_z = 0
             xmin_overlap, xmax_overlap, ymin_overlap, ymax_overlap, new_xmin, new_xmax, new_ymin, new_ymax = self.compute_overlap_indexes(
                 xmin, xmax, ymin, ymax)
@@ -540,8 +542,8 @@ La classe SymphonieReader permet de lire les données du format Symphonie
                                  1000))
 
     def read_variable_barotropic_sea_water_velocity_at_time(self, index_t, xmin, xmax, ymin, ymax):
-
         try:
+            self.open_file(index_t)
             index_z = self.get_z_size() - 1
             xmin_overlap, xmax_overlap, ymin_overlap, ymax_overlap, new_xmin, new_xmax, new_ymin, new_ymax = self.compute_overlap_indexes(
                 xmin, xmax, ymin, ymax)
@@ -584,6 +586,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
     #################
     def read_variable_sea_water_temperature_at_time_and_depth(self, index_t, index_z, xmin, xmax, ymin, ymax):
         try:
+            self.open_file(index_t)
             if "tem" in self.ncfile.variables:
                 return np.ma.filled(self.ncfile.variables["tem"][index_t, index_z, ymin:ymax, xmin:xmax],
                                     fill_value=np.nan)
@@ -600,6 +603,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
     def read_variable_sea_water_salinity_at_time_and_depth(self, index_t, index_z, xmin, xmax, ymin, ymax):
         try:
+            self.open_file(index_t)
             if "sal" in self.ncfile.variables:
                 return np.ma.filled(self.ncfile.variables["sal"][index_t, index_z, ymin:ymax, xmin:xmax],
                                     fill_value=np.nan)
@@ -616,6 +620,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
     def read_variable_baroclinic_sea_water_velocity_at_time_and_depth(self, index_t, index_z, xmin, xmax, ymin, ymax):
         try:
+            self.open_file(index_t)
             xmin_overlap, xmax_overlap, ymin_overlap, ymax_overlap, new_xmin, new_xmax, new_ymin, new_ymax = self.compute_overlap_indexes(
                 xmin, xmax, ymin, ymax)
 
@@ -659,6 +664,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
     #################
     def read_variable_sea_surface_wave_significant_height_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
+            self.open_file(index_t)
             if "hs_wave_t" in self.ncfile.variables:
                 return np.ma.filled(self.ncfile.variables["hs_wave_t"][index_t, ymin:ymax, xmin:xmax],
                                     fill_value=np.nan)
@@ -675,6 +681,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
     def read_variable_sea_surface_wave_mean_period_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
+            self.open_file(index_t)
             if "t_wave_t" in self.ncfile.variables:
                 return np.ma.filled(self.ncfile.variables["t_wave_t"][index_t, ymin:ymax, xmin:xmax], fill_value=np.nan)
         except Exception as ex:
@@ -690,6 +697,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
     def read_variable_sea_surface_wave_to_direction_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
+            self.open_file(index_t)
             if "dir_wave_t" in self.ncfile.variables:
                 return np.ma.filled(self.ncfile.variables["dir_wate_t"][index_t, ymin:ymax, xmin:xmax],
                                     fill_value=np.nan)
@@ -706,6 +714,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
     def read_variable_sea_surface_wave_stokes_drift_velocity_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
+            self.open_file(index_t)
             index_z = self.get_z_size() - 1
             xmin_overlap, xmax_overlap, ymin_overlap, ymax_overlap, new_xmin, new_xmax, new_ymin, new_ymax = self.compute_overlap_indexes(
                 xmin, xmax, ymin, ymax)
@@ -750,6 +759,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
     #################
     def read_variable_atmosphere_momentum_flux_to_waves_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
+            self.open_file(index_t)
             index_z = self.get_z_size() - 1
             xmin_overlap, xmax_overlap, ymin_overlap, ymax_overlap, new_xmin, new_xmax, new_ymin, new_ymax = self.compute_overlap_indexes(
                 xmin, xmax, ymin, ymax)
@@ -788,6 +798,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
     def read_variable_waves_momentum_flux_to_ocean_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
+            self.open_file(index_t)
             index_z = self.get_z_size() - 1
             xmin_overlap, xmax_overlap, ymin_overlap, ymax_overlap, new_xmin, new_xmax, new_ymin, new_ymax = self.compute_overlap_indexes(
                 xmin, xmax, ymin, ymax)
@@ -836,6 +847,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
     def read_variable_wind_stress_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
+            self.open_file(index_t)
             index_z = self.get_z_size() - 1
             xmin_overlap, xmax_overlap, ymin_overlap, ymax_overlap, new_xmin, new_xmax, new_ymin, new_ymax = self.compute_overlap_indexes(
                 xmin, xmax, ymin, ymax)
@@ -878,6 +890,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
     #################
     def read_variable_wind_10m_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
+            self.open_file(index_t)
             index_z = self.get_z_size() - 1
             xmin_overlap, xmax_overlap, ymin_overlap, ymax_overlap, new_xmin, new_xmax, new_ymin, new_ymax = self.compute_overlap_indexes(
                 xmin, xmax, ymin, ymax)
@@ -932,6 +945,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
     def read_variable_bathy_ssh_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
+            self.open_file(index_t)
             if "hssh" in self.ncfile.variables:
                 return np.ma.filled(self.ncfile.variables["hssh"][index_t, ymin:ymax, xmin:xmax],
                                     fill_value=np.nan)
