@@ -26,6 +26,9 @@ def resample_2d_to_grid(gridX,gridY,newX,newY,data,method):
 
     logging.debug("[InterpolatorCore][horizontal_interpolation()] starting interpolation with method '" + str(method) + "'")
 
+    gridX = np.ma.filled(gridX,fill_value=-9999.)
+    gridY = np.ma.filled(gridY,fill_value=-9999.)
+
     if gridX.ndim ==1 and gridY.ndim==1:
         gridX, gridY = np.meshgrid(gridX, gridY)
 

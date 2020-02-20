@@ -24,6 +24,7 @@ import numpy as np
 import os
 from spatialetl.utils.logger import logging
 from spatialetl.utils.timing import timing
+from datetime import datetime
 
 class SymphonieBigDataReader(CoverageReader):
     """
@@ -252,25 +253,32 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         return np.shape(self.ncfile.variables['time'].values)[0];
 
     def read_axis_x(self,xmin,xmax,ymin,ymax):
-        return self.grid.variables['longitude_t'].values[ymin:ymax,xmin:xmax]
+        return self.grid.longitude_t.to_masked_array()[ymin:ymax,xmin:xmax]
 
     def read_axis_y(self,xmin,xmax,ymin,ymax):
-        return self.grid.variables['latitude_t'].values[ymin:ymax,xmin:xmax]
+        return self.grid.latitude_t.to_masked_array()[ymin:ymax, xmin:xmax]
 
     def read_axis_z(self,):
-        lev = self.grid.variables["depth_t"].values
+        lev = self.grid.depth_t.to_masked_array()
         #lev = np.ma.filled(self.grid.variables["depth_t"], fill_value=np.nan)
         #lev = np.ma.filled(mx, fill_value=np.nan)
         lev[::] *= -1.0  # inverse la profondeur
         return lev
 
     def read_axis_t(self,tmin,tmax,timestamp):
-        data = self.ncfile.variables['time'].values[tmin:tmax]
-        result = num2date(data, units=self.ncfile.variables['time'].attrs["units"].replace('from', 'since').replace('jan',
-                                                                                                           '01').replace(
-            'feb', '02').replace('mar', '03').replace('apr', '04').replace('may', '05').replace('jun', '06').replace(
-            'jul', '07').replace('aug', '08').replace('sep', '09').replace('oct', '10').replace('nov', '11').replace(
-            'dec', '12'), calendar=self.ncfile.variables['time'].attrs["calendar"])
+
+        data = self.ncfile.time.to_masked_array()[tmin:tmax]
+
+        if "units" in self.ncfile.variables['time'].attrs :
+            result = num2date(data, units=self.ncfile.variables['time'].attrs["units"].replace('from', 'since').replace('jan',
+                                                                                                               '01').replace(
+                'feb', '02').replace('mar', '03').replace('apr', '04').replace('may', '05').replace('jun', '06').replace(
+                'jul', '07').replace('aug', '08').replace('sep', '09').replace('oct', '10').replace('nov', '11').replace(
+                'dec', '12'), calendar=self.ncfile.variables['time'].attrs["calendar"])
+        else:
+            ns = 1e-9  # number of seconds in a nanosecond
+            result = [(datetime.utcfromtimestamp(t.astype(int) * ns)) \
+                      for t in data];
 
         if timestamp == 1:
             return [(t - TimeCoverage.TIME_DATUM).total_seconds() \
