@@ -215,6 +215,44 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[slice_index] = map
 
             slice_index = slice_index + 1
+
+    def update_mpi_map(self):
+
+        Coverage.update_mpi_map(self)
+
+        idx = np.where((self.source_global_axis_t >= np.min(self.read_axis_t(type="target", with_overlap=False))) &
+                       (self.source_global_axis_t <= np.max(self.read_axis_t(type="target", with_overlap=False))))
+
+        tmin = np.min(idx[0])
+        tmax = np.max(idx[0]) + 1
+
+        # SRC GLOBAL
+        self.map_mpi[self.rank]["src_global_t"] = np.s_[tmin:tmax]
+        self.map_mpi[self.rank]["src_global_t_size"] = tmax - tmin
+
+        dst_global_t_min_overlap = max(0, self.map_mpi[self.rank][
+            "src_global_t"].start - TimeCoverage.TIME_OVERLAPING_SIZE)
+        dst_global_t_max_overlap = min(self.source_global_t_size,
+                                       self.map_mpi[self.rank][
+                                           "src_global_t"].stop + TimeCoverage.TIME_OVERLAPING_SIZE)
+        self.map_mpi[self.rank]["src_global_t_overlap"] = np.s_[
+                                                          dst_global_t_min_overlap:dst_global_t_max_overlap]
+
+        self.map_mpi[self.rank]["src_global_t_size_overlap"] = self.map_mpi[self.rank][
+                                                                   "src_global_t_overlap"].stop - \
+                                                               self.map_mpi[self.rank][
+                                                                   "src_global_t_overlap"].start
+
+
+        self.map_mpi[self.rank]["src_local_t_size"] = tmax - tmin
+        self.map_mpi[self.rank]["src_local_t"] = np.s_[0:self.map_mpi[self.rank]["src_local_t_size"]]
+
+        # OVERLAP
+        self.map_mpi[self.rank]["src_local_t_size_overlap"] = self.map_mpi[self.rank][
+            "src_global_t_size_overlap"]
+
+        self.map_mpi[self.rank]["src_local_t_overlap"] = np.s_[
+                                                         0:self.map_mpi[self.rank]["src_local_t_size_overlap"]]
    
     # Axis
     def find_time_index(self,t,method="quick"):
@@ -234,7 +272,7 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
         if type(t) == datetime or type(t) == cftime._cftime.real_datetime:
 
             zero_delta = timedelta(minutes=00)
-            array = np.asarray(self.target_global_axis_t[self.map_mpi[self.rank]["src_global_t"]])
+            array = np.asarray(self.source_global_axis_t[self.map_mpi[self.rank]["src_global_t"]])
 
             logging.debug("[TimeCoverage][find_time_index()] Looking for : " + str(t))
 
