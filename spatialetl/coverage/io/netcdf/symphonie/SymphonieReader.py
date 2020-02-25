@@ -393,7 +393,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
                                  1000))
 
     def read_variable_sea_water_velocity_at_sea_water_surface_at_time(self, index_t,xmin,xmax,ymin,ymax):
-        index_z = get_z_size() - 1
+        index_z = self.get_z_size() - 1
         xmin_overlap, xmax_overlap, ymin_overlap, ymax_overlap, new_xmin, new_xmax, new_ymin, new_ymax = self.compute_overlap_indexes(
             xmin, xmax, ymin, ymax)
 
