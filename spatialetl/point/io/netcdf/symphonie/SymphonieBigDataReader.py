@@ -207,8 +207,8 @@ class SymphonieBigDataReader(MultiPointReader):
 
         return data
 
-    def read_axis_t(self,timestamp=0):
-        return self.reader.read_axis_t(0,self.reader.get_t_size(),timestamp)
+    def read_axis_t(self,tmin,tmax,timestamp=0):
+        return self.reader.read_axis_t(tmin,tmax,timestamp)
 
     def read_metadata(self):
         m = {}
