@@ -187,6 +187,9 @@ class SymphonieBigDataReader(MultiPointReader):
     def get_z_size(self):
         return self.reader.get_z_size()
 
+    def get_t_size(self):
+        return self.reader.get_t_size()
+
     def read_axis_x(self):
         return self.xy_values[:,0]
 
