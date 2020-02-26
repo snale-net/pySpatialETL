@@ -272,7 +272,7 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
         if type(t) == datetime or type(t) == cftime._cftime.real_datetime:
 
             zero_delta = timedelta(minutes=00)
-            array = np.asarray(self.read_axis_t(type="source_global",timestamp=0))
+            array = np.asarray(self.read_axis_t(type="source",timestamp=0))
 
             logging.debug("[TimeCoverage][find_time_index()] Looking for : " + str(t))
 
