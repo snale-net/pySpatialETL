@@ -34,6 +34,12 @@ class CoverageReader(object):
     def get_y_size(self):
         raise NotImplementedError(str(type(self))+" don't have implemented the function 'get_y_size()'.")
 
+    def get_z_size(self):
+        raise NotImplementedError(str(type(self))+" don't have implemented the function 'get_z_size()'.")
+
+    def get_t_size(self):
+        raise NotImplementedError(str(type(self))+" don't have implemented the function 'get_t_size()'.")
+
     def read_axis_x(self,xmin,xmax,ymin,ymax):
         raise NotImplementedError(str(type(self))+" don't have implemented the function 'read_axis_x()'.")
 

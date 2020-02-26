@@ -91,16 +91,18 @@ class LevelMultiPoint(MultiPoint):
             self.target_axis_z = np.arange(Zmin, Zmax, resolution_z)
             self.target_z_size = len(self.target_axis_z)
 
-            if self.is_sigma_coordinate(type="source"):
-                logging.info(
-                    '[vertical_interpolation] Source grid size : ' + str(
-                        self.source_z_size) + " sigma coordinates level(s)")
-            else:
-                logging.info(
-                    '[vertical_interpolation] Source grid size : ' + str(self.source_z_size) + " level(s)")
+            if self.rank==0:
 
-            logging.info(
-                '[vertical_interpolation] Target grid size : ' + str(self.target_z_size) + " level(s)")
+                if self.is_sigma_coordinate(type="source"):
+                    logging.info(
+                        '[vertical_interpolation] Source grid size : ' + str(
+                            self.source_z_size) + " sigma coordinates level(s)")
+                else:
+                    logging.info(
+                        '[vertical_interpolation] Source grid size : ' + str(self.source_z_size) + " level(s)")
+
+                logging.info(
+                    '[vertical_interpolation] Target grid size : ' + str(self.target_z_size) + " level(s)")
     # Axis
     def read_axis_z(self,type="target"):
         if type=="source":

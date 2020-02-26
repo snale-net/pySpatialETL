@@ -307,17 +307,21 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             return self.target_global_axis_t
 
         elif type == "source_global":
-            return self.reader.read_axis_t(self.map_mpi[self.rank]["src_global_t"].start,
-                                           self.map_mpi[self.rank]["src_global_t"].stop,timestamp)
+            return self.source_global_axis_t
 
-        elif type == "source":
-            return self.reader.read_axis_t(self.map_mpi[self.rank]["src_local_t"].start,
-                                           self.map_mpi[self.rank]["src_local_t"].stop,timestamp)
+        elif type == "source" and with_overlap is True:
+            return self.reader.read_axis_t(self.map_mpi[self.rank]["src_global_t_overlap"].start,
+                                           self.map_mpi[self.rank]["src_global_t_overlap"].stop, timestamp)
+
+        elif type == "source" and with_overlap is False:
+            return self.reader.read_axis_t(self.map_mpi[self.rank]["src_global_t"].start,
+                                           self.map_mpi[self.rank]["src_global_t"].stop, timestamp)
 
         elif type == "target" and with_overlap is True:
-                return self.target_global_axis_t[self.map_mpi[self.rank]["dst_global_t_overlap"]]
+            return self.target_global_axis_t[self.map_mpi[self.rank]["dst_global_t_overlap"]]
+
         else:
-                return self.target_global_axis_t[self.map_mpi[self.rank]["dst_global_t"]]
+            return self.target_global_axis_t[self.map_mpi[self.rank]["dst_global_t"]]
 
     def get_t_size(self,type="target",with_overlap=False):
         if type == "target_global":
@@ -348,8 +352,8 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data,
@@ -373,8 +377,8 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data,
@@ -398,8 +402,8 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data,
@@ -419,8 +423,8 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data,
@@ -444,8 +448,8 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data,
@@ -469,8 +473,8 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data,
@@ -494,8 +498,8 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data,
@@ -519,8 +523,8 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data,
@@ -544,8 +548,8 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data,
@@ -570,15 +574,15 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data[0],
                                        Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
                        self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]], \
-                   resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+                   resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data[1],
@@ -608,8 +612,8 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data,
@@ -633,8 +637,8 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data,
@@ -658,15 +662,15 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data[0],
                                        Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
                        self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]], \
-                   resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+                   resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data[1],
@@ -695,15 +699,15 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data[0],
                                        Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
                        self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]], \
-                   resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+                   resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data[1],
@@ -732,8 +736,8 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data,
@@ -757,8 +761,8 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data,
@@ -778,8 +782,8 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data,
@@ -799,8 +803,8 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data,
@@ -820,8 +824,8 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data,
@@ -841,8 +845,8 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data,
@@ -866,15 +870,15 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data[0],
                                        Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
                        self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]], \
-                   resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+                   resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data[1],
@@ -899,8 +903,8 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data,
@@ -924,15 +928,15 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data[0],
                                        Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
                        self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]], \
-                   resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+                   resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data[1],
@@ -957,8 +961,8 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data,
@@ -986,15 +990,15 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data[0],
                                        Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
                        self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]], \
-                   resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+                   resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data[1],
@@ -1019,15 +1023,15 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data[0],
                                        Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
                        self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]], \
-                   resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+                   resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data[1],
@@ -1056,8 +1060,8 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data,
@@ -1086,8 +1090,8 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data,
@@ -1111,8 +1115,8 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data,
@@ -1136,15 +1140,15 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data[0],
                                        Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
                        self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]], \
-                   resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+                   resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data[1],
@@ -1170,8 +1174,8 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data,
@@ -1195,8 +1199,8 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data,
@@ -1220,8 +1224,8 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data,
@@ -1245,8 +1249,8 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data,
@@ -1270,8 +1274,8 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data,
@@ -1295,8 +1299,8 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data,
@@ -1320,8 +1324,8 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data,
@@ -1345,8 +1349,8 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data,
@@ -1374,15 +1378,15 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data[0],
                                        Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
                        self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]], \
-                   resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+                   resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data[1],

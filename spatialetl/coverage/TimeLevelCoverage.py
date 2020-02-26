@@ -103,8 +103,8 @@ Elle rajoute les dimensions temporelle et verticale à la couverture horizontale
                                                     LevelCoverage.VERTICAL_INTERPOLATION_METHOD)
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        self.data_temp[0],
@@ -167,8 +167,8 @@ Elle rajoute les dimensions temporelle et verticale à la couverture horizontale
                                                     LevelCoverage.VERTICAL_INTERPOLATION_METHOD)
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        self.data_temp[0],
@@ -235,8 +235,8 @@ Elle rajoute les dimensions temporelle et verticale à la couverture horizontale
                                                                  LevelCoverage.VERTICAL_INTERPOLATION_METHOD)
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source_global", with_overlap=True),
-                                       self.read_axis_y(type="source_global", with_overlap=True),
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        self.data_temp[0],

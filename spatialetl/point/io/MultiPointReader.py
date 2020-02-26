@@ -27,6 +27,18 @@ class MultiPointReader(object):
 
         self.filename = myFile;
 
+    def get_x_size(self):
+        raise NotImplementedError(str(type(self)) + " don't have implemented the function 'get_x_size()'.")
+
+    def get_y_size(self):
+        raise NotImplementedError(str(type(self)) + " don't have implemented the function 'get_y_size()'.")
+
+    def get_z_size(self):
+        raise NotImplementedError(str(type(self)) + " don't have implemented the function 'get_z_size()'.")
+
+    def get_t_size(self):
+        raise NotImplementedError(str(type(self)) + " don't have implemented the function 'get_t_size()'.")
+
     def read_axis_x(self):
         raise NotImplementedError(str(type(self)) + " don't have implemented the function 'read_axis_x()'.")
 
@@ -36,7 +48,7 @@ class MultiPointReader(object):
     def read_axis_z(self):
         raise NotImplementedError(str(type(self)) + " don't have implemented the function 'read_axis_z()'.")
 
-    def read_axis_t(self, timestamp):
+    def read_axis_t(self,tmin,tmax,timestamp):
         raise NotImplementedError(str(type(self)) + " don't have implemented the function 'read_axis_t()'.")
 
     # Variables

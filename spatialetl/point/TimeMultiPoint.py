@@ -16,6 +16,7 @@
 from __future__ import division, print_function, absolute_import
 from spatialetl.point.MultiPoint import MultiPoint
 from spatialetl.operator.interpolator.InterpolatorCore import time_1d_interpolation
+from array_split import shape_split
 from numpy import int,int32,int64
 import numpy as np
 from datetime import datetime,timedelta,timezone
@@ -30,21 +31,22 @@ class TimeMultiPoint(MultiPoint):
     TIME_DATUM = datetime(1970, 1, 1)
     TIME_DELTA = timedelta(minutes=5)
     TIME_INTERPOLATION_METHOD = "linear"
+    TIME_OVERLAPING_SIZE = 0
 
     def __init__(self,myReader,start_time=None,end_time=None,freq=None,time_range=None):
         MultiPoint.__init__(self, myReader)
 
-        self.source_axis_t = self.reader.read_axis_t(timestamp=0)
-        self.source_t_size = np.shape(self.source_axis_t)[0]
+        self.source_global_t_size = self.reader.get_t_size()
+        self.source_global_axis_t = self.reader.read_axis_t(0, self.source_global_t_size, 0);
         tmin = 0
-        tmax = self.source_t_size
+        tmax = self.source_global_t_size
         zero_delta = timedelta(minutes=00)
 
         self.temporal_resampling = False
 
         if time_range is not None:
-            self.target_axis_t = time_range
-            self.target_t_size = np.shape(self.target_axis_t)[0]
+            self.target_global_axis_t = time_range
+            self.target_global_t_size = np.shape(self.target_global_axis_t)[0]
             self.temporal_resampling = True
 
         if start_time is not None:
@@ -59,10 +61,10 @@ class TimeMultiPoint(MultiPoint):
             else:
                 raise ValueError("start_time have to be string or datetime. Found " + str(type(start_time)))
 
-            nearest_t_index = (np.abs(np.asarray(self.source_axis_t) - time)).argmin()
+            nearest_t_index = (np.abs(np.asarray(self.source_global_axis_t) - time)).argmin()
 
-            if time - self.source_axis_t[nearest_t_index] == zero_delta or abs(
-                    time - self.source_axis_t[nearest_t_index]) < TimeMultiPoint.TIME_DELTA:
+            if time - self.source_global_axis_t[nearest_t_index] == zero_delta or abs(
+                    time - self.source_global_axis_t[nearest_t_index]) < TimeMultiPoint.TIME_DELTA:
                 tmin = nearest_t_index
             else:
                 raise ValueError(str(time) + " not found. Maybe the TimeMultiPoint.TIME_DELTA (" + str(
@@ -80,10 +82,10 @@ class TimeMultiPoint(MultiPoint):
             else:
                 raise ValueError("end_time have to be string or datetime. Found " + str(type(end_time)))
 
-            nearest_t_index = (np.abs(np.asarray(self.source_axis_t) - time)).argmin()
+            nearest_t_index = (np.abs(np.asarray(self.source_global_axis_t) - time)).argmin()
 
-            if time - self.source_axis_t[nearest_t_index] == zero_delta or abs(
-                    time - self.source_axis_t[nearest_t_index]) < TimeMultiPoint.TIME_DELTA:
+            if time - self.source_global_axis_t[nearest_t_index] == zero_delta or abs(
+                    time - self.source_global_axis_t[nearest_t_index]) < TimeMultiPoint.TIME_DELTA:
                 tmax = nearest_t_index + 1
             else:
                 raise ValueError(str(time) + " not found. Maybe the TimeMultiPoint.TIME_DELTA (" + str(
@@ -91,30 +93,141 @@ class TimeMultiPoint(MultiPoint):
 
         if freq is not None:
             self.temporal_resampling = True
-            self.target_axis_t = pandas.date_range(start=self.source_axis_t[tmin],
-                                                          end=self.source_axis_t[tmax - 1],
+            self.target_global_axis_t = pandas.date_range(start=self.source_global_axis_t[tmin],
+                                                          end=self.source_global_axis_t[tmax - 1],
                                                           freq=freq).to_pydatetime();
-            self.target_t_size = np.shape(self.target_axis_t)[0]
+            self.target_global_t_size = np.shape(self.target_global_axis_t)[0]
         else:
-            self.target_axis_t = self.source_axis_t[tmin:tmax]
-            self.target_t_size = tmax - tmin
+            self.target_global_axis_t = self.source_global_axis_t[tmin:tmax]
+            self.target_global_t_size = tmax - tmin
+
+        self.create_mpi_map()
+        self.update_mpi_map()
+
+        if self.rank == 0:
+            logging.debug("MPI map:")
+        for key in self.map_mpi[self.rank]:
+            logging.debug("Proc n°" + str(self.rank) + " " + str(key) + "=" + str(self.map_mpi[self.rank][key]))
+        logging.debug("---------")
+
+    def create_mpi_map(self):
+
+        self.map_mpi = np.empty(self.size, dtype=object)
+        target_sample = (self.target_global_t_size,)
+        target_slices = shape_split(target_sample, self.size, axis=[0])
+
+        slice_index = 0
+        for slyce in target_slices.flatten():
+            slice = tuple(slyce)
+
+            map = {}
+            # Grille source
+            map["dst_global_t"] = slice[0]
+            map["dst_local_t_size"] = map["dst_global_t"].stop - map["dst_global_t"].start
+
+            dst_global_t_min_overlap = max(0, map["dst_global_t"].start - TimeMultiPoint.TIME_OVERLAPING_SIZE)
+            dst_global_t_max_overlap = min(self.target_global_t_size,
+                                           map["dst_global_t"].stop + TimeMultiPoint.TIME_OVERLAPING_SIZE)
+            map["dst_global_t_overlap"] = np.s_[dst_global_t_min_overlap:dst_global_t_max_overlap]
+
+            map["dst_global_t_size_overlap"] = map["dst_global_t_overlap"].stop - map["dst_global_t_overlap"].start
+
+            dst_t_min = TimeMultiPoint.TIME_OVERLAPING_SIZE
+            dst_t_max = map["dst_global_t_size_overlap"] - TimeMultiPoint.TIME_OVERLAPING_SIZE
+
+            if map["dst_global_t"].start == 0:
+                dst_t_min = 0
+
+            if map["dst_global_t"].stop == self.target_global_t_size:
+                dst_t_max = map["dst_global_t_size_overlap"]
+
+            map["dst_local_t"] = np.s_[dst_t_min:dst_t_max]
+
+            # Source grille
+            map["src_global_t"] = map["dst_global_t"]
+            map["src_global_t_overlap"] = map["dst_global_t_overlap"]
+            map["src_local_t"] = map["dst_local_t"]
+            map["src_local_t_size"] = map["dst_local_t_size"]
+            map["src_local_t_size_overlap"] = map["dst_global_t_size_overlap"]
+
+            self.map_mpi[slice_index] = map
+
+            slice_index = slice_index + 1
+
+    def update_mpi_map(self):
+
+        idx = np.where((self.source_global_axis_t >= np.min(self.read_axis_t(type="target", with_overlap=False))) &
+                       (self.source_global_axis_t <= np.max(self.read_axis_t(type="target", with_overlap=False))))
+
+        tmin = np.min(idx[0])
+        tmax = np.max(idx[0]) + 1
+
+        # SRC GLOBAL
+        self.map_mpi[self.rank]["src_global_t"] = np.s_[tmin:tmax]
+        self.map_mpi[self.rank]["src_global_t_size"] = tmax - tmin
+
+        dst_global_t_min_overlap = max(0, self.map_mpi[self.rank][
+            "src_global_t"].start - TimeMultiPoint.TIME_OVERLAPING_SIZE)
+        dst_global_t_max_overlap = min(self.source_global_t_size,
+                                       self.map_mpi[self.rank][
+                                           "src_global_t"].stop + TimeMultiPoint.TIME_OVERLAPING_SIZE)
+        self.map_mpi[self.rank]["src_global_t_overlap"] = np.s_[
+                                                          dst_global_t_min_overlap:dst_global_t_max_overlap]
+
+        self.map_mpi[self.rank]["src_global_t_size_overlap"] = self.map_mpi[self.rank][
+                                                                   "src_global_t_overlap"].stop - \
+                                                               self.map_mpi[self.rank][
+                                                                   "src_global_t_overlap"].start
+
+        self.map_mpi[self.rank]["src_local_t_size"] = tmax - tmin
+        self.map_mpi[self.rank]["src_local_t"] = np.s_[0:self.map_mpi[self.rank]["src_local_t_size"]]
+
+        # OVERLAP
+        self.map_mpi[self.rank]["src_local_t_size_overlap"] = self.map_mpi[self.rank][
+            "src_global_t_size_overlap"]
+
+        self.map_mpi[self.rank]["src_local_t_overlap"] = np.s_[
+                                                         0:self.map_mpi[self.rank]["src_local_t_size_overlap"]]
 
     # Axis
-    def read_axis_t(self,timestamp=0,type="target"):
+    def read_axis_t(self, type="target", with_overlap=False,timestamp=0):
+        """Retourne les valeurs (souvent la longitude) de l'axe x.
+    @return:  un tableau à une ou deux dimensions selon le type de maille des valeurs de l'axe x (souvent la longitude) : [x] ou [y,x]."""
 
-        if  type=="source" and timestamp==1:
-            return self.reader.read_axis_t(timestamp)
-        elif type=="source":
-            return self.source_axis_t
+        if type == "target_global":
+            return self.target_global_axis_t
+
+        elif type == "source_global":
+            return self.source_global_axis_t
+
+        elif type == "source" and with_overlap is True:
+            return self.reader.read_axis_t(self.map_mpi[self.rank]["src_global_t_overlap"].start,
+                                           self.map_mpi[self.rank]["src_global_t_overlap"].stop,timestamp)
+
+        elif type == "source" and with_overlap is False:
+            return self.reader.read_axis_t(self.map_mpi[self.rank]["src_global_t"].start,
+                                           self.map_mpi[self.rank]["src_global_t"].stop,timestamp)
+
+        elif type == "target" and with_overlap is True:
+            return self.target_global_axis_t[self.map_mpi[self.rank]["dst_global_t_overlap"]]
+
         else:
-            return self.target_axis_t
+            return self.target_global_axis_t[self.map_mpi[self.rank]["dst_global_t"]]
 
-    def get_t_size(self,type="target"):
 
-        if type=="source":
-            return self.source_t_size
+    def get_t_size(self, type="target", with_overlap=False):
+        if type == "target_global":
+            return self.target_global_t_size
+        elif type == "source_global":
+            return self.source_global_t_size
+        elif type == "source" and with_overlap is True:
+            return self.map_mpi[self.rank]["src_local_t_size_overlap"]
+        elif type == "source" and with_overlap is False:
+            return self.map_mpi[self.rank]["src_local_t_size"]
+        elif type == "target" and with_overlap is True:
+            return self.map_mpi[self.rank]["dst_local_t_size_overlap"]
         else:
-            return self.target_t_size
+            return self.map_mpi[self.rank]["dst_local_t_size"]
 
     def find_time_index(self, t):
         """Retourne l'index de la date la plus proche à TIME_DELTA_MIN prêt.
@@ -147,10 +260,10 @@ class TimeMultiPoint(MultiPoint):
             for index in range(np.shape(idx)[1]):
                 index_t = idx[0][index]
                 indexes_t.append(int(index_t))
-                logging.debug("[TimeMultiPoint][find_time_index()] Found : " + str(self.source_axis_t[index_t]))
+                logging.debug("[TimeMultiPoint][find_time_index()] Found : " + str(self.source_global_axis_t[index_t]))
 
             if not indexes_t:
-                raise ValueError("" + str(t) + " was not found. Maybe the TimeMultiPoint.TIME_DELTA (" + str(
+                raise ValueError("Proc n°"+str(self.rank)+" " + str(t) + " was not found. Maybe the TimeMultiPoint.TIME_DELTA (" + str(
                     TimeMultiPoint.TIME_DELTA) + ") is too small or the date is out the range.")
 
         else:

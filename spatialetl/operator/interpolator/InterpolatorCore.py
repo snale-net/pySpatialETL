@@ -81,7 +81,7 @@ def vertical_interpolation(sourceAxis,targetAxis,data,method,extrapolate=False):
     else:
         raise ValueError("Unable to decode vertical interpolation method : "+str(method))
 
-def time_1d_interpolation(sourceAxis,targetAxis,data,method):
+def time_1d_interpolation(sourceAxis,targetAxis,data,method,extrapolate=False):
     logging.debug("[InterpolatorCore][time_interpolation()] Looking for time : "+str(datetime.utcfromtimestamp(targetAxis[0]))+" with method '"+str(method)+"'.")
     for time in sourceAxis:
         logging.debug("[InterpolatorCore][time_interpolation()] Source Axis contains: "+str(datetime.utcfromtimestamp(time)))
@@ -110,13 +110,19 @@ def time_1d_interpolation(sourceAxis,targetAxis,data,method):
             logging.warning("[InterpolatorCore][time_interpolation()] Error: " + str(ex))
             logging.warning("[InterpolatorCore][time_interpolation()] This error may occur when you ask for a datetime  out of range : " + str(
                     datetime.utcfromtimestamp(targetAxis[0])))
-            logging.warning("[InterpolatorCore][time_interpolation()] We continue by using an extrapolation method.")
             logging.warning("[InterpolatorCore][time_interpolation()] To avoid this error, you can change your time range or use another time interpolation method.")
-            logging.warning("[InterpolatorCore][time_interpolation()] ----------------------------------------")
-
-            f = interp1d(sourceAxis, data, kind=method, fill_value="extrapolate")
-
-            return f(targetAxis)
+            if extrapolate:
+                logging.warning(
+                    "[InterpolatorCore][vertical_interpolation()] We continue by using an extrapolation method.")
+                logging.warning("[InterpolatorCore][vertical_interpolation()] ----------------------------------------")
+                f = interp1d(sourceAxis, data, kind=method, fill_value="extrapolate")
+                return f(targetAxis)
+            else:
+                logging.warning("[InterpolatorCore][vertical_interpolation()] We continue by using the nearest method.")
+                logging.warning("[InterpolatorCore][vertical_interpolation()] ----------------------------------------")
+                array = np.asarray(sourceAxis)
+                nearest_index_t = (np.abs(array - targetAxis[0])).argmin()
+                return data[nearest_index_t]
     else:
         raise ValueError("Unable to decode vertical interpolation method : " + str(method))
 

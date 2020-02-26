@@ -189,6 +189,9 @@ class SymphonieReader(MultiPointReader):
     def get_z_size(self):
         return self.reader.get_z_size()
 
+    def get_t_size(self):
+        return self.reader.get_t_size()
+
     def read_axis_x(self):
         return self.xy_values[:,0]
 
@@ -206,8 +209,8 @@ class SymphonieReader(MultiPointReader):
 
         return data
 
-    def read_axis_t(self,timestamp=0):
-        return self.reader.read_axis_t(0,self.reader.get_t_size(),timestamp)
+    def read_axis_t(self,tmin,tmax,timestamp=0):
+        return self.reader.read_axis_t(tmin,tmax,timestamp)
 
     def read_metadata(self):
         m = {}
