@@ -31,7 +31,7 @@ class TimeMultiPoint(MultiPoint):
     TIME_DATUM = datetime(1970, 1, 1)
     TIME_DELTA = timedelta(minutes=5)
     TIME_INTERPOLATION_METHOD = "linear"
-    TIME_OVERLAPING_SIZE = 0
+    TIME_OVERLAPING_SIZE = 2
 
     def __init__(self,myReader,start_time=None,end_time=None,freq=None,time_range=None):
         MultiPoint.__init__(self, myReader)
@@ -250,7 +250,7 @@ class TimeMultiPoint(MultiPoint):
 
             logging.debug("[TimeMultiPoint][find_time_index()] Looking for : "+str(t))
 
-            array = np.asarray(self.read_axis_t(timestamp=0,type="source"))
+            array = np.asarray(self.read_axis_t(type="source_global",timestamp=0))
             #X = np.abs(self.read_axis_t(timestamp=1,raw=1) - t.replace(tzinfo=timezone.utc).timestamp())
 
             X = np.abs(array - t)
@@ -276,8 +276,8 @@ class TimeMultiPoint(MultiPoint):
 
     def interpolate_all_times(self, values):
 
-        source_index = pandas.DatetimeIndex(self.read_axis_t(type="source"))
-        target_index = pandas.DatetimeIndex(self.read_axis_t(type="target"))
+        source_index = pandas.DatetimeIndex(self.read_axis_t(type="source_global"))
+        target_index = pandas.DatetimeIndex(self.read_axis_t(type="target_global"))
 
         for index_x in range(0,self.get_nb_points()):
 
@@ -317,7 +317,7 @@ class TimeMultiPoint(MultiPoint):
         results[:] = np.NAN
 
         targetTime = [date.replace(tzinfo=timezone.utc).timestamp()]
-        rawTime = self.read_axis_t(timestamp=0, type="source")
+        rawTime = self.read_axis_t(type="source_global",timestamp=0)
 
         candidateTimes = np.zeros([len(indexes_t)])
         candidateValues = np.zeros([len(indexes_t)])
