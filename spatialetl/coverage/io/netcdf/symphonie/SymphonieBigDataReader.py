@@ -26,6 +26,7 @@ from spatialetl.utils.timing import timing
 import glob
 import ntpath
 from datetime import datetime
+import re
 
 def path_leaf(path):
     head, tail = ntpath.split(path)
@@ -46,7 +47,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         if os.path.isfile(self.filename):
             self.files= [self.filename]
         elif os.path.isdir(self.filename):
-            self.files = sorted(os.path.join(self.filename, "*.nc"))
+            self.files = sorted(glob.glob(os.path.join(self.filename, "*.nc")))
         elif self.filename.endswith("*"):
             self.files = sorted(glob.glob(self.filename + ".nc"))
         else:
@@ -54,8 +55,16 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
         self.t_size = len(self.files)
         self.times = np.empty([self.t_size], dtype=datetime)
+        count=0
         for t_index in range(0, self.t_size):
-            self.times[t_index] = datetime.strptime(path_leaf(self.files[t_index]), "%Y%m%d_%H%M%S.nc")
+            pattern = re.compile("^[0-9]{4}[0-9]{2}[0-9]{2}\_[0-9]{2}[0-9]{2}[0-9]{2}.nc$")
+            if pattern.match(path_leaf(self.files[t_index])):
+                self.times[t_index] = datetime.strptime(path_leaf(self.files[t_index]), "%Y%m%d_%H%M%S.nc")
+                count=count+1
+
+        if count == 0:
+            raise ValueError("Unable to find SYMPHONIE raw output filename.")
+
         self.ncfile = Dataset(self.files[0], 'r')
         self.last_opened_t_index = 0
 
@@ -285,9 +294,9 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
         if timestamp == 1:
             return [(t - TimeCoverage.TIME_DATUM).total_seconds() \
-                    for t in self.times];
+                    for t in self.times[tmin:tmax]];
         else:
-            return self.times
+            return self.times[tmin:tmax]
 
     # Variables
     def read_variable_time(self):
