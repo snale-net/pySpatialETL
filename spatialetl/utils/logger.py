@@ -25,12 +25,17 @@ class myLogger(log.Logger):
             self._log(self.INFO, msg, args, **kwargs)
 
     def warning(self, msg, *args, **kwargs):
-        if self.isEnabledFor(self.WARNING) and self.isEnabledFor(self.INFO) or not self.isEnabledFor(self.RUN):
+        if self.isEnabledFor(self.WARNING):
             self._log(self.WARNING, msg, args, **kwargs)
 
     def timing(self, msg, *args, **kwargs):
         if self.isEnabledFor(self.TIMING):
             self._log(self.TIMING, msg, args, **kwargs)
+
+    def setLevel(self,level):
+        log.getLogger().setLevel(level)
+        if level == self.RUN:
+            log.disable(self.WARNING)
 
 log.setLoggerClass(myLogger)
 logging = log.getLogger("main")
