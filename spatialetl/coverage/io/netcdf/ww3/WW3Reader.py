@@ -28,7 +28,7 @@ import os
 
 class WW3Reader (CoverageReader):
 
-    def __init__(self, myFile):
+    def __init__(self, myFile,isCurvilinear=False):
         CoverageReader.__init__(self,myFile);
 
         if os.path.isfile(self.filename):
@@ -36,14 +36,25 @@ class WW3Reader (CoverageReader):
         elif os.path.isdir(self.filename):
             self.ncfile = MFDataset(os.path.join(self.filename, "*.nc"), 'r')
 
+        if isCurvilinear:
+            self.regular_grid=False
+        else:
+            self.regular_grid=True
+
     def is_regular_grid(self):
-        return False
+        return self.regular_grid
 
     def get_x_size(self):
-        return np.shape(self.ncfile.variables['longitude'])[0]
+        if self.regular_grid:
+            return np.shape(self.ncfile.variables['longitude'])[0]
+        else:
+            return np.shape(self.ncfile.variables['longitude'])[1]
 
     def get_y_size(self):
-        return np.shape(self.ncfile.variables['latitude'])[0]
+        if self.regular_grid:
+            return np.shape(self.ncfile.variables['latitude'])[0]
+        else:
+            return np.shape(self.ncfile.variables['latitude'])[0]
 
     def get_t_size(self):
         return np.shape(self.ncfile.variables['time'])[0]
@@ -63,10 +74,16 @@ class WW3Reader (CoverageReader):
             return result;
     
     def read_axis_x(self,xmin,xmax,ymin,ymax):
-        return self.ncfile.variables['longitude'][ymin:ymax,xmin:xmax]
+        if self.regular_grid:
+            return self.ncfile.variables['longitude'][xmin:xmax]
+        else:
+            return self.ncfile.variables['longitude'][ymin:ymax, xmin:xmax]
     
     def read_axis_y(self,xmin,xmax,ymin,ymax):
-        return self.ncfile.variables['latitude'][ymin:ymax,xmin:xmax]
+        if self.regular_grid:
+            return self.ncfile.variables['latitude'][ymin:ymax]
+        else:
+            return self.ncfile.variables['latitude'][ymin:ymax, xmin:xmax]
     
     # Scalar 
     def read_variable_2D_sea_binary_mask(self,xmin,xmax,ymin,ymax):

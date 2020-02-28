@@ -44,16 +44,16 @@ class OASISWriter(object):
         symphonieLatitudes.units = "degree_north" ;
         symphonieLatitudes.long_name = "latitude" ;
         symphonieLatitudes.standard_name = "latitude" ;
-        symphonieLatitudes.valid_min = "-90.f";
-        symphonieLatitudes.valid_max = "90.f" ;
+        symphonieLatitudes.valid_min = -90.;
+        symphonieLatitudes.valid_max = 90.;
         symphonieLatitudes.axis = "Y" ;
 
         symphonieLongitudes = ncfile.createVariable('symt.lon', float64, ('y_symt','x_symt',))
         symphonieLongitudes.units = "degree_east" ;
         symphonieLongitudes.long_name = "longitude" ;
         symphonieLongitudes.standard_name = "longitude" ;
-        symphonieLongitudes.valid_min = "-180.f" ;
-        symphonieLongitudes.valid_max = "180.f" ;
+        symphonieLongitudes.valid_min = -180.;
+        symphonieLongitudes.valid_max = 180.;
         symphonieLongitudes.axis = "X" ;
 
         # data SYMPHONIE
@@ -71,16 +71,16 @@ class OASISWriter(object):
             ww3Latitudes.units = "degree_north" ;
             ww3Latitudes.long_name = "latitude" ;
             ww3Latitudes.standard_name = "latitude" ;
-            ww3Latitudes.valid_min = "-90.f";
-            ww3Latitudes.valid_max = "90.f" ;
+            ww3Latitudes.valid_min = -90.;
+            ww3Latitudes.valid_max = 90. ;
             ww3Latitudes.axis = "Y" ;
 
             ww3Longitudes = ncfile.createVariable('ww3t.lon', float64, ('x_ww3t',))
             ww3Longitudes.units = "degree_east" ;
             ww3Longitudes.long_name = "longitude" ;
             ww3Longitudes.standard_name = "longitude" ;
-            ww3Longitudes.valid_min = "-180.f" ;
-            ww3Longitudes.valid_max = "180.f" ;
+            ww3Longitudes.valid_min = -180. ;
+            ww3Longitudes.valid_max = 180. ;
             ww3Longitudes.axis = "X" ;
 
             # data
@@ -99,16 +99,16 @@ class OASISWriter(object):
                 ww3Latitudes.units = "degree_north" ;
                 ww3Latitudes.long_name = "latitude" ;
                 ww3Latitudes.standard_name = "latitude" ;
-                ww3Latitudes.valid_min = "-90.f";
-                ww3Latitudes.valid_max = "90.f" ;
+                ww3Latitudes.valid_min = -90.;
+                ww3Latitudes.valid_max = 90. ;
                 ww3Latitudes.axis = "Y" ;
 
                 ww3Longitudes = ncfile.createVariable('ww3t.lon', float64, ('y_ww3t','x_ww3t',))
                 ww3Longitudes.units = "degree_east" ;
                 ww3Longitudes.long_name = "longitude" ;
                 ww3Longitudes.standard_name = "longitude" ;
-                ww3Longitudes.valid_min = "-180.f" ;
-                ww3Longitudes.valid_max = "180.f" ;
+                ww3Longitudes.valid_min = -180. ;
+                ww3Longitudes.valid_max = 180. ;
                 ww3Longitudes.axis = "X" ;
 
                 # data
@@ -124,16 +124,16 @@ class OASISWriter(object):
                 ww3Latitudes.units = "degree_north" ;
                 ww3Latitudes.long_name = "latitude" ;
                 ww3Latitudes.standard_name = "latitude" ;
-                ww3Latitudes.valid_min = "-90.f";
-                ww3Latitudes.valid_max = "90.f" ;
+                ww3Latitudes.valid_min = -90.;
+                ww3Latitudes.valid_max = 90. ;
                 ww3Latitudes.axis = "Y" ;
 
                 ww3Longitudes = ncfile.createVariable('ww3t.lon', float64, ('y_ww3t','x_ww3t',))
                 ww3Longitudes.units = "degree_east" ;
                 ww3Longitudes.long_name = "longitude" ;
                 ww3Longitudes.standard_name = "longitude" ;
-                ww3Longitudes.valid_min = "-180.f" ;
-                ww3Longitudes.valid_max = "180.f" ;
+                ww3Longitudes.valid_min = -180. ;
+                ww3Longitudes.valid_max = 180. ;
                 ww3Longitudes.axis = "X" ;
 
                 # data
@@ -158,12 +158,12 @@ class OASISWriter(object):
         symphonieMask.units = "" ;
         symphonieMask.long_name = "Land/Sea Mask" ;
         symphonieMask.standard_name = "land_sea_mask" ;
-        symphonieMask.valid_min = "0";
-        symphonieMask.valid_max = "1" ;
+        symphonieMask.valid_min = 0;
+        symphonieMask.valid_max = 1 ;
 
 
         # data SYMPHONIE
-        data = self.symphonieCoverage.read_variable_2D_mask();
+        data = self.symphonieCoverage.read_variable_2D_sea_binary_mask();
         for i in range(0, self.symphonieCoverage.get_x_size()):
             for j in range(0, self.symphonieCoverage.get_y_size()):
                 if (data[j,i]== 0):
@@ -182,11 +182,11 @@ class OASISWriter(object):
             ww3Mask.units = "" ;
             ww3Mask.long_name = "Land/Sea Mask" ;
             ww3Mask.standard_name = "land_sea_mask" ;
-            ww3Mask.valid_min = "0";
-            ww3Mask.valid_max = "1" ;
+            ww3Mask.valid_min = 0;
+            ww3Mask.valid_max = 1 ;
 
             # data
-            data = self.ww3Coverage.read_variable_2D_mask();
+            data = self.ww3Coverage.read_variable_2D_sea_binary_mask();
             for i in range(0, self.ww3Coverage.get_x_size()):
                 for j in range(0, self.ww3Coverage.get_y_size()):
                     if (data[j,i]== 0):
@@ -207,13 +207,13 @@ class OASISWriter(object):
                 ww3Mask.units = "" ;
                 ww3Mask.long_name = "Land/Sea Mask" ;
                 ww3Mask.standard_name = "land_sea_mask" ;
-                ww3Mask.valid_min = "0";
-                ww3Mask.valid_max = "1" ;
+                ww3Mask.valid_min = 0;
+                ww3Mask.valid_max = 1 ;
 
                 print("inverse le mask !!!!")
 
                 # data
-                ww3Mask[:,:] = np.reshape(self.ww3Coverage.read_variable_2D_mask(), (1, self.ww3Coverage.get_x_size()*self.ww3Coverage.get_y_size()))
+                ww3Mask[:,:] = np.reshape(self.ww3Coverage.read_variable_2D_sea_binary_mask(), (1, self.ww3Coverage.get_x_size()*self.ww3Coverage.get_y_size()))
 
             else:
                 # dimensions WW3
@@ -225,11 +225,11 @@ class OASISWriter(object):
                 ww3Mask.units = "" ;
                 ww3Mask.long_name = "Land/Sea Mask" ;
                 ww3Mask.standard_name = "land_sea_mask" ;
-                ww3Mask.valid_min = "0";
-                ww3Mask.valid_max = "1" ;
+                ww3Mask.valid_min = 0;
+                ww3Mask.valid_max = 1 ;
 
                 # data
-                data = self.ww3Coverage.read_variable_2D_mask();
+                data = self.ww3Coverage.read_variable_2D_sea_binary_mask();
                 for i in range(0, self.ww3Coverage.get_x_size()):
                     for j in range(0, self.ww3Coverage.get_y_size()):
                         #ww3Mask[j,i] = 0
