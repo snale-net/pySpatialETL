@@ -89,8 +89,8 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
                     TimeCoverage.TIME_DELTA) + ") is too small or the date is out the range.")
 
         if freq is not None:
-            self.target_global_axis_t = pandas.date_range(start=self.source_global_axis_t[tmin],
-                                                  end=self.source_global_axis_t[tmax-1], freq=freq).to_pydatetime();
+            self.target_global_axis_t = pandas.date_range(start=datetime.utcfromtimestamp(self.read_axis_t(type="source_global", with_overlap=False,timestamp=1)[tmin]),
+                                                  end=datetime.utcfromtimestamp(self.read_axis_t(type="source_global", with_overlap=False,timestamp=1)[tmax-1]), freq=freq).to_pydatetime();
             self.target_global_t_size = np.shape(self.target_global_axis_t)[0]
         else:
             self.target_global_axis_t = self.source_global_axis_t[tmin:tmax]
@@ -222,7 +222,7 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
         Coverage.update_mpi_map(self)
 
         if self.get_t_size(type="target", with_overlap=False)==1:
-            tmin = (np.abs(np.asarray(self.source_global_axis_t) - np.min(self.read_axis_t(type="target", with_overlap=False)))).argmin()
+            tmin = (np.abs(np.asarray(self.read_axis_t(type="source_global", with_overlap=False,timestamp=1)) - np.min(self.read_axis_t(type="target", with_overlap=False,timestamp=1)))).argmin()
             tmax=tmin+1
         else:
             idx = np.where((self.read_axis_t(type="source_global", with_overlap=False,timestamp=1) >= np.min(self.read_axis_t(type="target", with_overlap=False,timestamp=1))) &
@@ -274,20 +274,19 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
             return t;
 
-        if type(t) == datetime or type(t) == cftime._cftime.real_datetime:
+        if type(t) == datetime or type(t) == cftime._cftime.datetime or type(t) == cftime._cftime.real_datetime:
 
-            zero_delta = timedelta(minutes=00)
-            array = np.asarray(self.read_axis_t(type="source",timestamp=0))
+            target_timestamp = (t - TimeCoverage.TIME_DATUM).total_seconds()
+            array = np.asarray(self.read_axis_t(type="source",timestamp=1))
 
             logging.debug("[TimeCoverage][find_time_index()] Looking for : " + str(t))
 
             if method == "fast":
 
-                nearest_t_index = (np.abs(array - t)).argmin()
-
-                if t - array[nearest_t_index] == zero_delta or abs(t - array[nearest_t_index]) < TimeCoverage.TIME_DELTA:
+                nearest_t_index = (np.abs(array - target_timestamp)).argmin()
+                if target_timestamp - array[nearest_t_index] == 0.0 or abs(target_timestamp - array[nearest_t_index]) < (TimeCoverage.TIME_DELTA).total_seconds():
                     logging.debug("[TimeCoverage][find_time_index()] Nearest datetime found : " + str(
-                        array[nearest_t_index]))
+                        self.read_axis_t(type="source",timestamp=0)[nearest_t_index]))
                     return nearest_t_index
             else:
                 raise NotImplementedError("Method " + str(method) + " is not implemented for regular grid.")
