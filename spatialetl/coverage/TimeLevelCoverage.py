@@ -112,6 +112,7 @@ Elle rajoute les dimensions temporelle et verticale à la couverture horizontale
 
         return self.data_temp[0,self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
+    @timing
     def read_variable_sea_water_salinity_at_time_and_depth(self, time, depth):
         """Retourne la salinité à la date souhaitée et au niveau souhaité sur toute la couverture horizontale.
     @type time: datetime ou l'index

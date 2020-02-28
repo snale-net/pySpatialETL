@@ -31,7 +31,7 @@ class SymphonieOfflineReader(SymphonieReader):
     def read_variable_sea_surface_height_above_mean_sea_level_at_time(self,index_t,xmin,xmax,ymin,ymax):
         try:
             if "ssh_ib" in self.ncfile.variables:
-                return np.ma.filled(self.ncfile.variables["ssh_ib"][index_t][ymin:ymax, xmin:xmax], fill_value=np.nan)
+                return np.ma.filled(self.ncfile.variables["ssh_ib"][index_t,ymin:ymax, xmin:xmax], fill_value=np.nan)
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieOfflineReader", "An error occured : '" + str(ex) + "'", 1000))

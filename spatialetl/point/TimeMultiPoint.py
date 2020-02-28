@@ -157,11 +157,11 @@ class TimeMultiPoint(MultiPoint):
     def update_mpi_map(self):
 
         if self.get_t_size(type="target", with_overlap=False)==1:
-            tmin = (np.abs(np.asarray(self.source_global_axis_t) - np.min(self.read_axis_t(type="target", with_overlap=False)))).argmin()
+            tmin = (np.abs(np.asarray(sself.read_axis_t(type="source_global", with_overlap=False,timestamp=1)) - np.min(self.read_axis_t(type="target", with_overlap=False,timestamp=1)))).argmin()
             tmax=tmin+1
         else:
-            idx = np.where((self.source_global_axis_t >= np.min(self.read_axis_t(type="target", with_overlap=False))) &
-                           (self.source_global_axis_t <= np.max(self.read_axis_t(type="target", with_overlap=False))))
+            idx = np.where((self.read_axis_t(type="source_global", with_overlap=False,timestamp=1) >= np.min(self.read_axis_t(type="target", with_overlap=False,timestamp=1))) &
+                           (self.read_axis_t(type="source_global", with_overlap=False,timestamp=1) <= np.max(self.read_axis_t(type="target", with_overlap=False,timestamp=1))))
 
             tmin = np.min(idx[0])
             tmax = np.max(idx[0]) + 1
@@ -194,28 +194,40 @@ class TimeMultiPoint(MultiPoint):
                                                          0:self.map_mpi[self.rank]["src_local_t_size_overlap"]]
 
     # Axis
-    def read_axis_t(self, type="target", with_overlap=False,timestamp=0):
-        """Retourne les valeurs (souvent la longitude) de l'axe x.
-    @return:  un tableau à une ou deux dimensions selon le type de maille des valeurs de l'axe x (souvent la longitude) : [x] ou [y,x]."""
-
+    def read_axis_t(self, type="target", with_overlap=False, timestamp=0):
+        """Retourne les valeurs de l'axe t.
+    @param timestamp: égale 1 si le temps est souhaité en timestamp depuis TIME_DATUM.
+    @return:  un tableau à une dimensions [z] au format datetime ou timestamp si timestamp=1."""
         if type == "target_global":
+            if timestamp == 1:
+                return [(t - TimeMultiPoint.TIME_DATUM).total_seconds() \
+                        for t in self.target_global_axis_t];
             return self.target_global_axis_t
 
         elif type == "source_global":
+            if timestamp == 1:
+                return [(t - TimeMultiPoint.TIME_DATUM).total_seconds() \
+                        for t in self.source_global_axis_t];
             return self.source_global_axis_t
 
         elif type == "source" and with_overlap is True:
             return self.reader.read_axis_t(self.map_mpi[self.rank]["src_global_t_overlap"].start,
-                                           self.map_mpi[self.rank]["src_global_t_overlap"].stop,timestamp)
+                                           self.map_mpi[self.rank]["src_global_t_overlap"].stop, timestamp)
 
         elif type == "source" and with_overlap is False:
             return self.reader.read_axis_t(self.map_mpi[self.rank]["src_global_t"].start,
-                                           self.map_mpi[self.rank]["src_global_t"].stop,timestamp)
+                                           self.map_mpi[self.rank]["src_global_t"].stop, timestamp)
 
         elif type == "target" and with_overlap is True:
+            if timestamp == 1:
+                return [(t - TimeMultiPoint.TIME_DATUM).total_seconds() \
+                        for t in self.target_global_axis_t[self.map_mpi[self.rank]["dst_global_t_overlap"]]];
             return self.target_global_axis_t[self.map_mpi[self.rank]["dst_global_t_overlap"]]
 
         else:
+            if timestamp == 1:
+                return [(t - TimeMultiPoint.TIME_DATUM).total_seconds() \
+                        for t in self.target_global_axis_t[self.map_mpi[self.rank]["dst_global_t"]]];
             return self.target_global_axis_t[self.map_mpi[self.rank]["dst_global_t"]]
 
 

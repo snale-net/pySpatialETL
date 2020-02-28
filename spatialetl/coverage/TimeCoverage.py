@@ -24,6 +24,7 @@ import numpy as np
 from array_split import shape_split
 from spatialetl.operator.interpolator.InterpolatorCore import resample_2d_to_grid
 from spatialetl.utils.logger import logging
+from spatialetl.utils.timing import timing
 import pandas
 
 class TimeCoverage(Coverage):
@@ -220,11 +221,15 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         Coverage.update_mpi_map(self)
 
-        idx = np.where((self.source_global_axis_t >= np.min(self.read_axis_t(type="target", with_overlap=False))) &
-                       (self.source_global_axis_t <= np.max(self.read_axis_t(type="target", with_overlap=False))))
+        if self.get_t_size(type="target", with_overlap=False)==1:
+            tmin = (np.abs(np.asarray(self.source_global_axis_t) - np.min(self.read_axis_t(type="target", with_overlap=False)))).argmin()
+            tmax=tmin+1
+        else:
+            idx = np.where((self.read_axis_t(type="source_global", with_overlap=False,timestamp=1) >= np.min(self.read_axis_t(type="target", with_overlap=False,timestamp=1))) &
+                           (self.read_axis_t(type="source_global", with_overlap=False,timestamp=1) <= np.max(self.read_axis_t(type="target", with_overlap=False,timestamp=1))))
 
-        tmin = np.min(idx[0])
-        tmax = np.max(idx[0]) + 1
+            tmin = np.min(idx[0])
+            tmax = np.max(idx[0]) + 1
 
         # SRC GLOBAL
         self.map_mpi[self.rank]["src_global_t"] = np.s_[tmin:tmax]
@@ -255,7 +260,7 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
                                                          0:self.map_mpi[self.rank]["src_local_t_size_overlap"]]
    
     # Axis
-    def find_time_index(self,t,method="quick"):
+    def find_time_index(self,t,method="fast"):
         """Retourne l'index de la date la plus proche à TIME_DELTA_MIN prêt.
     @type t: datetime ou int
     @param t: date souhaitée ou l'index de la date souhaitée
@@ -276,14 +281,7 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
             logging.debug("[TimeCoverage][find_time_index()] Looking for : " + str(t))
 
-            if method == "classic":
-
-                for i in range(0,self.get_t_size()):
-                    if t - array[i] == zero_delta or abs(t - array[i]) < TimeCoverage.TIME_DELTA:
-                        logging.debug("[TimeCoverage][find_time_index()] Nearest datetime found : " + str(array[i]))
-                        return i
-
-            elif method == "quick":
+            if method == "fast":
 
                 nearest_t_index = (np.abs(array - t)).argmin()
 
@@ -298,15 +296,22 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         else:
             raise ValueError(""+str(t)+" have to be an integer or a datetime. Current type: "+str(type(t)))
-    
+
+
     def read_axis_t(self,type="target",with_overlap=False,timestamp=0):
         """Retourne les valeurs de l'axe t.
     @param timestamp: égale 1 si le temps est souhaité en timestamp depuis TIME_DATUM.
     @return:  un tableau à une dimensions [z] au format datetime ou timestamp si timestamp=1."""
         if type == "target_global":
+            if timestamp == 1:
+                return [(t - TimeCoverage.TIME_DATUM).total_seconds() \
+                        for t in self.target_global_axis_t];
             return self.target_global_axis_t
 
         elif type == "source_global":
+            if timestamp == 1:
+                return [(t - TimeCoverage.TIME_DATUM).total_seconds() \
+                        for t in self.source_global_axis_t];
             return self.source_global_axis_t
 
         elif type == "source" and with_overlap is True:
@@ -318,9 +323,15 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
                                            self.map_mpi[self.rank]["src_global_t"].stop, timestamp)
 
         elif type == "target" and with_overlap is True:
+            if timestamp == 1:
+                return [(t - TimeCoverage.TIME_DATUM).total_seconds() \
+                        for t in self.target_global_axis_t[self.map_mpi[self.rank]["dst_global_t_overlap"]]];
             return self.target_global_axis_t[self.map_mpi[self.rank]["dst_global_t_overlap"]]
 
         else:
+            if timestamp == 1:
+                return [(t - TimeCoverage.TIME_DATUM).total_seconds() \
+                        for t in self.target_global_axis_t[self.map_mpi[self.rank]["dst_global_t"]]];
             return self.target_global_axis_t[self.map_mpi[self.rank]["dst_global_t"]]
 
     def get_t_size(self,type="target",with_overlap=False):

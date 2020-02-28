@@ -19,6 +19,7 @@ from scipy import spatial
 import numpy as np
 from spatialetl.utils.logger import logging
 from itertools import product
+from spatialetl.utils.timing import timing
 
 class LevelCoverage(Coverage):    
     """
@@ -83,6 +84,9 @@ Elle rajoute une dimension verticale à la couverture horizontale classique.
         self.target_sigma_coordinate = self.source_sigma_coordinate
 
         if resolution_z is not None:
+
+            if resolution_z <= 0.0:
+                raise ValueError("[LevelCoverage] resolution_z have to be upper than 0.0")
 
             self.vertical_resampling = True
             self.target_sigma_coordinate = False
@@ -164,7 +168,7 @@ Elle rajoute une dimension verticale à la couverture horizontale classique.
             return self.source_global_z_size
         else:
             return self.target_global_z_size
-    
+
     def find_level_index(self,depth,method="fast"):
         """Retourne l'index de la profondeur la plus proche selon le point le plus proche.
     @type depth : integer ou flottant
@@ -172,13 +176,13 @@ Elle rajoute une dimension verticale à la couverture horizontale classique.
     @return:  un tableau de l'indice de la couche verticale inférieur la plus proche en chacun point de la grille. z < vert_coord[y,x] et z > vert_coord[y,x]+1.
     Les valeurs masquées valent -999."""
 
+        if depth in self.depth_weight:
+            return self.depth_weight[depth]
+
         xmax=self.get_x_size(type="source",with_overlap=True)
         ymax=self.get_y_size(type="source",with_overlap=True)
         vert_coord = np.empty([ymax,xmax],dtype=object)
         indexes_z = []
-
-        if depth in self.depth_weight:
-            return self.depth_weight[depth]
 
         if type(depth) == int or type(depth) == np.int32 or type(depth) == np.int64:
 
@@ -216,57 +220,6 @@ Elle rajoute une dimension verticale à la couverture horizontale classique.
 
                     if int(index_z) not in indexes_z:
                         indexes_z.append((int(index_z)))
-
-            elif method=="classic":
-
-                for y in range(0,ymax):
-                    for x in range(0,xmax):
-
-                        vert_coord[y, x] = []
-
-                        if np.isnan(self.source_global_axis_z[:,y,x]).all() == False:
-
-                            logging.debug("[LevelCoverage][find_level_index()] Point [" + str(x) + "," + str(y) + "] - water depth candidates are : " + str(self.source_global_axis_z[:,y,x]))
-
-                            # On cherche l'index le plus proche
-                            #array = np.asarray(self.source_global_axis_z[:,y,x])
-                            #index_z = (np.abs(array - depth)).argmin()
-
-                            if abs(depth - self.source_global_axis_z[index_z,y,x]) <= LevelCoverage.DEPTH_DELTA:
-                                # On a trouvé une profondeur qui correspond au delta près.
-
-                                logging.debug(
-                                    "[LevelCoverage][find_level_index()] Point [" + str(x) + "," + str(y) + "] - found : " + str(
-                                        self.source_global_axis_z[index_z, y, x]) + " m water depth")
-
-                                vert_coord[y,x].append((int(index_z)))
-                                indexes_z.append((int(index_z)))
-
-                                if abs(depth - self.source_global_axis_z[index_z,y,x]) != 0.0:
-                                    # On n'a pas trouvé exactement notre profondeur, on va chercher autour au DEPTH_DELTA près
-                                    zz = index_z
-
-                                    while zz - 1 >= 0 and abs(self.source_global_axis_z[zz-1,y,x]- depth) <= LevelCoverage.DEPTH_DELTA and zz -1 not in vert_coord[y,x]:
-                                        logging.debug(
-                                            "[LevelCoverage][find_level_index()] Point [" + str(x) + "," + str(y) + "] - found : " + str(
-                                                self.source_global_axis_z[zz-1, y, x]) + " m water depth")
-                                        vert_coord[y, x].append((int(zz-1)))
-                                        indexes_z.append((int(zz-1)))
-                                        zz = zz -1
-
-                                    while zz + 1 < self.get_z_size() and abs(self.source_global_axis_z[zz+1,y,x]- depth) <= LevelCoverage.DEPTH_DELTA and zz +1 not in vert_coord[y,x]:
-                                        logging.debug(
-                                            "[LevelCoverage][find_level_index()] Point [" + str(x) + "," + str(y) + "] - found : " + str(
-                                                self.source_global_axis_z[zz+1, y, x]) + " m water depth")
-                                        vert_coord[y, x].append((int(zz+1)))
-                                        indexes_z.append((int(zz+1)))
-                                        zz = zz +1
-                            else :
-                                #raise ValueError("[LevelCoverage] " + str(depth) + " m water depth was not found for the point [" + str(x) + "," + str(y) + "]. Max depth found is for this point is " + str(self.levels[z,y,x]))
-                                logging.debug("[LevelCoverage] " + str(depth) + " m water depth was not found for the point [" + str(x) + "," + str(y) + "]. Max depth found is for this point is " + str(self.source_global_axis_z[index_z,y,x])+" m.")
-
-                            vert_coord[y,x] = np.array(np.unique(vert_coord[y,x]))
-
             else:
                 raise ValueError("Unable to decode method between 'fast' or 'classic'.")
 
@@ -279,67 +232,44 @@ Elle rajoute une dimension verticale à la couverture horizontale classique.
             if method == "fast":
 
                 X = np.abs(self.source_global_axis_z - depth)
-                idx = np.where(X <= LevelCoverage.DEPTH_DELTA)
 
-                for index in range(np.shape(idx)[1]):
-                    index_z = idx[0][index]
+                idx = np.where(X == 0.0)
+                if (len(idx[0]) == 1):
+                    index_z = idx[0][0]
+
+                    if self.rank == 0:
+                        logging.debug("[LevelCoverage][find_level_index()] found : " + str(
+                                self.source_global_axis_z[index_z]) + " m water depth")
 
                     for y,x in product(range(0,ymax),range(0,xmax)):
-                        if vert_coord[y, x] is None:  # first time
-                            vert_coord[y, x] = []
+                            if vert_coord[y, x] is None:  # first time
+                                vert_coord[y, x] = []
 
-                        #logging.debug(
-                        #    "[LevelCoverage][find_level_index()] found : " + str(
-                        #        self.source_global_axis_z[index_z]) + " m water depth")
+                            vert_coord[y, x].append((int(index_z)))
 
-                        vert_coord[y, x].append((int(index_z)))
+                            if int(index_z) not in indexes_z:
+                                indexes_z.append((int(index_z)))
+                else:
+                    idx = np.where(X <= LevelCoverage.DEPTH_DELTA)
 
-                        if int(index_z) not in indexes_z:
-                            indexes_z.append((int(index_z)))
+                    for index in range(np.shape(idx)[1]):
+                        index_z = idx[0][index]
 
-            elif method == "classic":
+                        for y,x in product(range(0,ymax),range(0,xmax)):
+                            if vert_coord[y, x] is None:  # first time
+                                vert_coord[y, x] = []
 
-                # On cherche l'index le plus proche
-                array = np.asarray(self.source_global_axis_z)
-                index_z = (np.abs(array - depth)).argmin()
+                            #logging.debug(
+                            #    "[LevelCoverage][find_level_index()] found : " + str(
+                            #        self.source_global_axis_z[index_z]) + " m water depth")
 
-                if abs(depth - self.source_global_axis_z[index_z]) <= LevelCoverage.DEPTH_DELTA:
-                # On a trouvé une profondeur qui correspond au delta près.
+                            vert_coord[y, x].append((int(index_z)))
 
-                    logging.debug(
-                    "[LevelCoverage][find_level_index()] found : " + str(
-                        self.source_global_axis_z[index_z]) + " m water depth")
-
-                    for y in range(0, ymax):
-                        for x in range(0, xmax):
-
-                            vert_coord[y, x] = []
-                            vert_coord[y,x].append((int(index_z)))
-                            indexes_z.append((int(index_z)))
-
-                            if abs(depth - self.source_global_axis_z[index_z]) != 0.0:
-                                # On n'a pas trouvé exactement notre profondeur, on va chercher autour au DEPTH_DELTA près
-                                zz = index_z
-
-                                while zz - 1 >= 0 and abs(self.source_global_axis_z[zz - 1] - depth) <= LevelCoverage.DEPTH_DELTA and zz -1 not in vert_coord[y,x]:
-                                    logging.debug(
-                                        "[LevelCoverage][find_level_index()] found : " + str(
-                                            self.source_global_axis_z[zz-1]) + " m water depth")
-
-                                    vert_coord[y,x].append((int(zz - 1)))
-                                    indexes_z.append((int(zz - 1)))
-                                    zz = zz - 1
-
-                                while zz + 1 < self.get_z_size() and abs(self.source_global_axis_z[zz + 1] - depth) <= LevelCoverage.DEPTH_DELTA and zz +1 not in vert_coord[y,x]:
-                                    logging.debug(
-                                        "[LevelCoverage][find_level_index()] found : " + str(
-                                            self.source_global_axis_z[zz+1]) + " m water depth")
-                                    vert_coord[y,x].append((int(zz + 1)))
-                                    indexes_z.append((int(zz + 1)))
-                                    zz = zz + 1
+                            if int(index_z) not in indexes_z:
+                                indexes_z.append((int(index_z)))
 
             else:
-                logging.debug("[LevelCoverage] " + str(depth) + " m water depth was not found on the Z axis.")
+                raise ValueError("Unable to decode method between 'fast' or 'classic'.")
 
         if len(indexes_z)==0:
             logging.warning("[LevelCoverage] " + str(

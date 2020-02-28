@@ -1,5 +1,11 @@
 import logging as log
 
+class RunFilter(log.Filter):
+    def filter(self, record):
+        if record.levelno==log.WARN:
+            return False
+        return True
+
 class myLogger(log.Logger):
 
     TIMING = 200
@@ -35,10 +41,11 @@ class myLogger(log.Logger):
     def setLevel(self,level):
         log.getLogger().setLevel(level)
         if level == self.RUN:
-            log.disable(self.WARNING)
+            self.addFilter(RunFilter())
 
 log.setLoggerClass(myLogger)
 logging = log.getLogger("main")
+
 
 
 

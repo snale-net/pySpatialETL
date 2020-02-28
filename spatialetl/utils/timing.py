@@ -17,10 +17,10 @@ from __future__ import division, print_function, absolute_import
 import time
 from spatialetl.utils.logger import logging
 
-def timing(f):
-    def wrap(*args):
+def timing(f,**trigger):
+    def wrap(*args, **kwargs):
         time1 = time.time()
-        ret = f(*args)
+        ret = f(*args, **kwargs)
         time2 = time.time()
         logging.timing('\'{:s}\' took {:.3f} s'.format(f.__name__, (time2-time1)))
         return ret

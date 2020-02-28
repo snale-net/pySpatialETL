@@ -22,6 +22,7 @@ from spatialetl.exception.VariableNameError import VariableNameError
 import numpy as np
 import os
 from spatialetl.utils.logger import logging
+from spatialetl.utils.timing import timing
 
 class MercatorReader(CoverageReader):
     
