@@ -16,8 +16,9 @@
 from __future__ import division, print_function, absolute_import
 from spatialetl.coverage.io.CoverageReader import CoverageReader
 from spatialetl.coverage.TimeCoverage import TimeCoverage
-from netCDF4 import Dataset, num2date
+from netCDF4 import Dataset, MFDataset, num2date
 import numpy as np
+import os
 from spatialetl.utils.logger import logging
 
 class MercatorReader2015(CoverageReader):
@@ -26,14 +27,53 @@ class MercatorReader2015(CoverageReader):
         CoverageReader.__init__(self,m)
         self.mask = Dataset(m, 'r')
         self.grid2D = Dataset(d, 'r')
-        self.gridT = Dataset(t, 'r') 
-        self.gridU = Dataset(u, 'r')  
-        self.gridV = Dataset(v, 'r') 
+
+        if os.path.isfile(t):
+            self.gridT = Dataset(t, 'r')
+        elif os.path.isdir(t):
+            self.gridT = MFDataset(os.path.join(t,"*.nc"), 'r')
+        elif t.endswith("*"):
+            self.gridT = MFDataset(t+".nc", 'r')
+        else:
+            raise ValueError("Unable to decode file "+str(t))
+
+        if os.path.isfile(u):
+            self.gridU = Dataset(u, 'r')
+        elif os.path.isdir(u):
+            self.gridU = MFDataset(os.path.join(u,"*.nc"), 'r')
+        elif u.endswith("*"):
+            self.gridU = MFDataset(u+".nc", 'r')
+        else:
+            raise ValueError("Unable to decode file "+str(u))
+
+        if os.path.isfile(v):
+            self.gridV = Dataset(v, 'r')
+        elif os.path.isdir(v):
+            self.gridV = MFDataset(os.path.join(v,"*.nc"), 'r')
+        elif v.endswith("*"):
+            self.gridV = MFDataset(v+".nc", 'r')
+        else:
+            raise ValueError("Unable to decode file "+str(u))
+
+    def is_regular_grid(self):
+        return False
+
+    def get_x_size(self):
+        return np.shape(self.gridT.variables['nav_lon'][:])[1];
+
+    def get_y_size(self):
+        return np.shape(self.gridT.variables['nav_lat'][:])[0];
+
+    def get_z_size(self):
+        return np.shape(self.gridT.variables['depth_t'][:])[0];
+
+    def get_t_size(self):
+        return np.shape(self.gridT.variables['time_counter'])[0];
      
     # Axis
-    def read_axis_t(self,timestamp):
+    def read_axis_t(self,tmin,tmax,timestamp):
         """Attention si gridT, U,V,2D ont un time_counter different"""
-        data = self.gridT.variables['time_counter'][:]
+        data = self.gridT.variables['time_counter'][tmin:tmax]
         result = num2date(data, units = self.gridT.variables['time_counter'].units, calendar = self.gridT.variables['time_counter'].calendar)
         
         if timestamp ==1:           
@@ -42,37 +82,37 @@ class MercatorReader2015(CoverageReader):
         else:            
             return result
     
-    def read_axis_x(self):        
-        return self.gridT.variables['nav_lon'][:]
+    def read_axis_x(self,xmin,xmax,ymin,ymax):
+        return self.gridT.variables['nav_lon'][ymin:ymax,xmin:xmax]
     
-    def read_axis_y(self):        
-        return self.gridT.variables['nav_lat'][:]
+    def read_axis_y(self,xmin,xmax,ymin,ymax):
+        return self.gridT.variables['nav_lat'][ymin:ymax,xmin:xmax]
     
     def read_axis_z(self):       
         return self.gridT.variables['deptht']
     
     # Data    
-    def read_variable_2D_sea_binary_mask(self):
-        return self.mask.variables["tmask"][0][0][:]
+    def read_variable_2D_sea_binary_mask(self,xmin,xmax,ymin,ymax):
+        return self.mask.variables["tmask"][0][0][ymin:ymax,xmin:xmax]
 
-    def read_variable_3D_sea_binary_mask(self):
-        return self.mask.variables["tmask"][0][:]
+    def read_variable_3D_sea_binary_mask(self,xmin,xmax,ymin,ymax):
+        return self.mask.variables["tmask"][0][ymin:ymax,xmin:xmax]
 
-    def read_variable_4D_sea_binary_mask(self):
-        return self.mask.variables["tmask"]
+    def read_variable_4D_sea_binary_mask(self,xmin,xmax,ymin,ymax):
+        return self.mask.variables["tmask"][ymin:ymax,xmin:xmax]
     
-    def read_variable_sea_surface_height_above_sea_level_at_time(self,t):
-        return self.grid2D.variables["sossheig"][t][:]
+    def read_variable_sea_surface_height_above_sea_level_at_time(self,t,xmin,xmax,ymin,ymax):
+        return self.grid2D.variables["sossheig"][t,ymin:ymax,xmin:xmax]
      
-    def read_variable_baroclinic_sea_water_velocity_at_time_and_depth(self,index_t,index_z,depth):
+    def read_variable_baroclinic_sea_water_velocity_at_time_and_depth(self,index_t,index_z,xmin,xmax,ymin,ymax):
 
         mask_t = self.read_variable_4D_sea_binary_mask();
         mask_u = self.mask.variables["umask"][:];
         mask_v = self.mask.variables["vmask"][:];
-        lon_t = self.read_axis_x();
-        lat_t = self.read_axis_y();
-        data_u = self.gridU.variables["vozocrtx"][index_t][::]
-        data_v = self.gridV.variables["vomecrty"][index_t][::]
+        lon_t = self.read_axis_x(xmin,xmax,ymin,ymax);
+        lat_t = self.read_axis_y(xmin,xmax,ymin,ymax);
+        data_u = self.gridU.variables["vozocrtx"][index_t,index_z,ymin:ymax,xmin:xmax]
+        data_v = self.gridV.variables["vomecrty"][index_t,index_z,ymin:ymax,xmin:xmax]
         
         # compute and apply rotation matrix
         xmax=np.shape(lon_t)[1]
