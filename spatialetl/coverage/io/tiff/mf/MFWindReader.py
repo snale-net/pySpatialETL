@@ -32,19 +32,35 @@ class MFWindReader(CoverageReader):
         self.y = None
         self.x = None
 
+    def is_regular_grid(self):
+        return True
+
+    def get_x_size(self):
+        return self.u_file.RasterXSize
+
+    def get_y_size(self):
+        return self.u_file.RasterYSize
+
+    def get_t_size(self):
+        return 1
+
     # Axis
-    def read_axis_t(self,timestamp):
+    def read_axis_t(self,tmin,tmax,timestamp):
         band = self.u_file.GetRasterBand(1)
         metadata = band.GetMetadata()
 
-        temp = [datetime.fromtimestamp(int(metadata["GRIB_VALID_TIME"].split( )[0]))]
+        temp = [datetime.fromtimestamp(int(metadata["GRIB_VALID_TIME"].split( )[0]))][tmin:tmax]
 
         result = [ datetime.strptime(str(t), '%Y-%m-%d %H:%M:%S') \
                 for t in temp];
 
-        return result
-
-    def read_axis_x(self):
+        if timestamp == 1:
+            return [(t - TimeCoverage.TIME_DATUM).total_seconds() \
+                    for t in result];
+        else:
+            return result
+        
+    def read_axis_x(self,xmin,xmax,ymin,ymax):
 
         if self.x is None:
             width = self.u_file.RasterXSize
@@ -54,9 +70,9 @@ class MFWindReader(CoverageReader):
                 self.x[x] = self.pixel2coord(x,0)[0]
             #print self.x
 
-        return self.x
+        return self.x[xmin:xmax]
 
-    def read_axis_y(self):
+    def read_axis_y(self,xmin,xmax,ymin,ymax):
         if self.y is None:
             height = self.u_file.RasterYSize
 
@@ -65,7 +81,7 @@ class MFWindReader(CoverageReader):
                 self.y[y] = self.pixel2coord(0,y)[1]
             #print self.y
 
-        return self.y
+        return self.y[ymin:ymax]
 
     # Scalar
     def read_variable_2D_sea_binary_mask(self):
@@ -77,7 +93,7 @@ class MFWindReader(CoverageReader):
 
         return data
 
-    def read_variable_wind_10m_at_time(self,t):
+    def read_variable_wind_10m_at_time(self,t,xmin,xmax,ymin,ymax):
 
         #print "[ NO DATA VALUE ] = ", band.GetNoDataValue()
         #print "[ MIN ] = ", band.GetMinimum()
@@ -90,7 +106,7 @@ class MFWindReader(CoverageReader):
 
         band = self.v_file.GetRasterBand(1)
         v = band.ReadAsArray()
-        return [u,v]
+        return [u[ymin:ymax,xmin:xmax],v[ymin:ymax,xmin:xmax]]
 
     def pixel2coord(self,y, x):
         # unravel GDAL affine transform parameters
