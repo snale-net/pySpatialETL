@@ -28,22 +28,28 @@ class GDALReader (CoverageReader):
         CoverageReader.__init__(self,myFile);
         self.ncfile = Dataset(self.filename, 'r')
 
-    def read_axis_x(self):
-        return self.ncfile.variables['lon'][:]
+    def close(self):
+        self.ncfile.close()
 
-    def read_axis_y(self):
-        return self.ncfile.variables['lat'][:]
+    def is_regular_grid(self):
+        return True
+
+    def read_axis_x(self,xmin,xmax,ymin,ymax):
+        return self.ncfile.variables['lon'][xmin:xmax]
+
+    def read_axis_y(self,xmin,xmax,ymin,ymax):
+        return self.ncfile.variables['lat'][ymin:ymax]
 
     # Variables
-    def read_variable_longitude(self):
-        return self.read_axis_x()
+    def read_variable_longitude(self,xmin,xmax,ymin,ymax):
+        return self.read_axis_x(xmin,xmax,ymin,ymax)
 
-    def read_variable_latitude(self):
-        return self.read_axis_y()
+    def read_variable_latitude(self,xmin,xmax,ymin,ymax):
+        return self.read_axis_y(xmin,xmax,ymin,ymax)
 
-    def read_variable_2D_sea_binary_mask(self):
+    def read_variable_2D_sea_binary_mask(self,xmin,xmax,ymin,ymax):
         mask = self.ncfile.variables["Band1"][:]
         return mask
 
-    def read_variable_bathymetry(self):
-        return self.ncfile.variables["Band1"][:]
+    def read_variable_bathymetry(self,xmin,xmax,ymin,ymax):
+        return self.ncfile.variables["Band1"][ymin:ymax,xmin:xmax]

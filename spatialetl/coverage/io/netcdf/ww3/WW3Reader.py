@@ -41,6 +41,9 @@ class WW3Reader (CoverageReader):
         else:
             self.regular_grid=True
 
+    def close(self):
+        self.ncfile.close()
+
     def is_regular_grid(self):
         return self.regular_grid
 

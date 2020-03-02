@@ -49,6 +49,9 @@ class SWANReader(CoverageReader):
                     cftime.datetime(int(t.group(1)), int(t.group(2)), int(t.group(3)), int(t.group(4)), int(t.group(5)),
                                     int(t.group(6))))
 
+    def close(self):
+        return
+
     def is_regular_grid(self):
         return False
 

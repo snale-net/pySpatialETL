@@ -25,6 +25,9 @@ class CoverageReader(object):
 
         self.filename = myFile;
 
+    def close(self):
+        raise NotImplementedError(str(type(self)) + " don't have implemented the function 'close()'.")
+
     def is_regular_grid(self):
         raise NotImplementedError(str(type(self))+" don't have implemented the function 'is_regular_grid()'.")
 

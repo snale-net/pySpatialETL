@@ -51,14 +51,26 @@ class SerafinReader(CoverageReader):
     def close(self):
         self.file.close()
 
-    def read_axis_x(self):
-        return self.header.x
+    def is_regular_grid(self):
+        return True
 
-    def read_axis_y(self):
-        return self.header.y
+    def get_x_size(self):
+        return self.x_size
 
-    def read_axis_t(self, timestamp):
-        result = []
+    def get_y_size(self):
+        return self.y_size
+
+    def get_t_size(self):
+        return self.header.nb_frames
+
+    def read_axis_x(self,xmin,xmax,ymin,ymax):
+        return self.header.x[xmin:xmax]
+
+    def read_axis_y(self,xmin,xmax,ymin,ymax):
+        return self.header.y[ymin:ymax]
+
+    def read_axis_t(self,tmin,tmax,timestamp):
+        temp = []
 
         if self.header is None:
             raise ValueError('Cannot read time without any header (forgot read_header ?)')
@@ -68,9 +80,11 @@ class SerafinReader(CoverageReader):
         for _ in range(self.header.nb_frames):
             self.file.read(4)
             d = timedelta(seconds=self.header.unpack_float(self.file.read(self.header.float_size), 1)[0])
-            result.append(self.time_ref+d)
+            temp.append(self.time_ref+d)
             self.file.read(4)
             self.file.seek(self.header.frame_size - 8 - self.header.float_size, 1)
+
+        result = temp[tmin:tmax]
 
         if timestamp == 1:
             return [(t - TimeCoverage.TIME_DATUM).total_seconds() \
@@ -80,14 +94,14 @@ class SerafinReader(CoverageReader):
 
 
     # Variables
-    def read_variable_longitude(self):
-        return self.read_axis_x()
+    def read_variable_longitude(self,xmin,xmax,ymin,ymax):
+        return self.read_axis_x(xmin,xmax,ymin,ymax)
 
-    def read_variable_latitude(self):
-        return self.read_axis_y()
+    def read_variable_latitude(self,xmin,xmax,ymin,ymax):
+        return self.read_axis_y(xmin,xmax,ymin,ymax)
 
-    def read_variable_time(self):
-        return self.read_axis_t(timestamp=0)
+    def read_variable_time(self,tmin,tmax):
+        return self.read_axis_t(tmin,tmax,timestamp=0)
 
     def _get_var_index(self, var_ID):
         """!
@@ -103,7 +117,7 @@ class SerafinReader(CoverageReader):
             raise ValueError('Variable ID %s not found' % var_ID)
         return index
 
-    def read_variable_bathymetry(self):
+    def read_variable_bathymetry(self,xmin,xmax,ymin,ymax):
         time_index=0
         var_ID="WATER DEPTH"
         pos_var = self._get_var_index(var_ID)
@@ -113,7 +127,7 @@ class SerafinReader(CoverageReader):
         data = np.array(self.header.unpack_float(self.file.read(self.header.float_size * self.header.nb_nodes),
                                                  self.header.nb_nodes), dtype=self.header.np_float_type)
 
-        return data
+        return data[ymin:ymax,xmin:xmax]
 
 
     def read_var_in_frame(self, time_index, var_ID):

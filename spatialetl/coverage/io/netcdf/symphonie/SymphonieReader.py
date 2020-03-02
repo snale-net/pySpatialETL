@@ -50,6 +50,10 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         self.gridrotcos_t = None
         self.gridrotsin_t = None
 
+    def close(self):
+        self.ncfile.close()
+        self.grid.close()
+
     def compute_rot(self):
 
         logging.debug("[SymphonieReader] Compute grid rotation matrix...")

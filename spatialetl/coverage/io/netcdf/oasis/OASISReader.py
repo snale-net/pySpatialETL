@@ -30,6 +30,10 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         self.ncfile = Dataset(self.filename, 'r')
         self.grid = Dataset(myGrid, 'r')
 
+    def close(self):
+        self.ncfile.close()
+        self.grid;close()
+
     # Axis
     def read_axis_t(self,timestamp=0):
         data = self.ncfile.variables['time'][:]

@@ -27,6 +27,9 @@ class MultiPointReader(object):
 
         self.filename = myFile;
 
+    def close(self):
+        raise NotImplementedError(str(type(self)) + " don't have implemented the function 'close()'.")
+
     def get_x_size(self):
         raise NotImplementedError(str(type(self)) + " don't have implemented the function 'get_x_size()'.")
 

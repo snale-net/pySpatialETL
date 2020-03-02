@@ -28,6 +28,9 @@ class GMTReader(CoverageReader):
         CoverageReader.__init__(self,myFile);
         self.ncfile = Dataset(self.filename, 'r')
 
+    def close(self):
+        self.ncfile.close()
+
     def read_axis_x(self):
         return self.ncfile.variables['lon'][:]
 

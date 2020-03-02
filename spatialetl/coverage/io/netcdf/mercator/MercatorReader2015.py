@@ -55,6 +55,13 @@ class MercatorReader2015(CoverageReader):
         else:
             raise ValueError("Unable to decode file "+str(u))
 
+    def close(self):
+        self.mask.close()
+        self.grid2D.close()
+        self.gridT.close()
+        self.gridU.close()
+        self.gridV.close()
+
     def is_regular_grid(self):
         return False
 

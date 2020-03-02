@@ -31,6 +31,9 @@ class SRTMReader(CoverageReader):
         self.y = None
         self.x = None
 
+    def close(self):
+        return
+
     # Axis
     def read_axis_x(self):
 

@@ -28,6 +28,9 @@ class MEFOCReader(CoverageReader):
         else:
             raise ValueError("Unable to decode file " + str(self.filename))
 
+    def close(self):
+        self.ncfile.close()
+
     def is_regular_grid(self):
         return True
 

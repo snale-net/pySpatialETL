@@ -75,7 +75,11 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
     def open_file(self,index_t):
         if index_t!=self.last_opened_t_index:
+            self.close()
             self.ncfile = Dataset(self.files[index_t])
+
+    def close(self):
+        self.ncfile.close()
 
     def compute_rot(self):
 

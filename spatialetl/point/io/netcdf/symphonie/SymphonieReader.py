@@ -55,6 +55,9 @@ class SymphonieReader(MultiPointReader):
 
         self.names = names
 
+    def close(self):
+        self.reader.close()
+
     def find_point_index(self, target_lon, target_lat, method="classic", only_mask_value=True):
         """Retourne le point le plus proche du point donné en paramètre.
     @param target_lon: Coordonnée longitude du point

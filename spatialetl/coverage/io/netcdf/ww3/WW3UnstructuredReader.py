@@ -39,6 +39,9 @@ class WW3UnstructuredReader (CoverageReader):
 
         self.open_boundaries_mask_to_land=open_boundaries_mask_to_land
 
+    def close(self):
+        self.ncfile.close()
+
     def is_regular_grid(self):
         return False
 
