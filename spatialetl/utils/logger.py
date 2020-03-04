@@ -2,7 +2,7 @@ import logging as log
 
 class RunFilter(log.Filter):
     def filter(self, record):
-        if record.levelno==log.WARN:
+        if record.levelno==log.WARN or record.levelno==myLogger.TIMING:
             return False
         return True
 
