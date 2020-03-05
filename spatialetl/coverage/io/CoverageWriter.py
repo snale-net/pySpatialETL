@@ -53,7 +53,7 @@ class CoverageWriter(object):
 
     def write_variable_3D_land_binary_mask(self):
         raise NotImplementedError(
-            str(type(self)) + " don't have implemented the function 'write_variable_3D_land_binary_mas()'.")
+            str(type(self)) + " don't have implemented the function 'write_variable_3D_land_binary_mask()'.")
 
     def write_variable_wet_binary_mask(self):
         raise NotImplementedError(

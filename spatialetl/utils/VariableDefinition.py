@@ -45,6 +45,11 @@ class VariableDefinition:
     VARIABLE_NAME['2d_sea_binary_mask'] = "sea_mask"
     CANONICAL_UNITS['2d_sea_binary_mask'] = "1"
 
+    STANDARD_NAME['2d_land_binary_mask'] = "land_binary_mask"
+    LONG_NAME['2d_land_binary_mask'] = "Landa Binary Mask"
+    VARIABLE_NAME['2d_land_binary_mask'] = "land_mask"
+    CANONICAL_UNITS['2d_land_binary_mask'] = "1"
+
     STANDARD_NAME['wet_binary_mask'] = "wet_binary_mask"
     LONG_NAME['wet_binary_mask'] = "Wet Binary Mask"
     VARIABLE_NAME['wet_binary_mask'] = "wet_mask"

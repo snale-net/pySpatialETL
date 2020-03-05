@@ -252,6 +252,44 @@ class DefaultWriter (CoverageWriter):
             raise CoverageError("DefaultWriter",
                                 "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
+    def write_variable_3D_land_binary_mask(self):
+
+        if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
+
+            if VariableDefinition.VARIABLE_NAME['2d_land_binary_mask'] in self.ncfile.variables:
+                var = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['2d_land_binary_mask']]
+            else:
+                var = self.ncfile.createVariable(
+                    VariableDefinition.VARIABLE_NAME['2d_land_binary_mask'], float32, (
+                    VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['latitude'],
+                    VariableDefinition.VARIABLE_NAME['longitude'],), fill_value=9.96921e+36)
+
+            var.long_name = VariableDefinition.LONG_NAME['2d_land_binary_mask']
+            var.standard_name = VariableDefinition.STANDARD_NAME['2d_land_binary_mask']
+            var.units = VariableDefinition.CANONICAL_UNITS['2d_land_binary_mask']
+
+            if self.coverage.rank == 0:
+                logging.info('[DefaultWriter] Writing variable \'' + str(
+                    VariableDefinition.LONG_NAME['2d_land_binary_mask']) + '\'')
+
+            time_index = 0
+            for time in self.coverage.read_axis_t():
+                logging.info('[DefaultWriter] Writing variable \'' + str(
+                    VariableDefinition.LONG_NAME['2d_land_binary_mask']) + '\' at time \'' + str(
+                    time) + '\'')
+
+                var[
+                self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index:
+                self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index + 1,
+                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
+                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]
+                ] = self.coverage.read_variable_2D_land_binary_mask_at_time(time)
+
+                time_index += 1
+        else:
+            raise CoverageError("DefaultWriter",
+                                "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
+
     #################
     # HYDRO
     # 2D
