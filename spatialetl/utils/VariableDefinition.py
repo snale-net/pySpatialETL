@@ -360,7 +360,12 @@ class VariableDefinition:
     STANDARD_NAME['surface_air_pressure'] = "surface_air_pressure"
     LONG_NAME['surface_air_pressure'] = "Surface Air Pressure"
     VARIABLE_NAME['surface_air_pressure'] = "surface_air_pressure"
-    CANONICAL_UNITS['surface_air_pressure'] = "Pa"
+    CANONICAL_UNITS['surface_air_pressure'] = "hPa"
+
+    STANDARD_NAME['sea_surface_air_pressure'] = "sea_surface_air_pressure"
+    LONG_NAME['sea_surface_air_pressure'] = "Sea Surface Air Pressure"
+    VARIABLE_NAME['sea_surface_air_pressure'] = "sea_surface_air_pressure"
+    CANONICAL_UNITS['sea_surface_air_pressure'] = "hPa"
 
     STANDARD_NAME['eastward_wind_stress'] = "eastward_wind_stress"
     LONG_NAME['eastward_wind_stress'] = "Eastward Wind Stress"
@@ -385,12 +390,12 @@ class VariableDefinition:
     STANDARD_NAME['surface_air_temperature'] = "surface_air_temperature"
     LONG_NAME['surface_air_temperature'] = "Surface Air Temperature"
     VARIABLE_NAME['surface_air_temperature'] = "surface_air_temperature"
-    CANONICAL_UNITS['surface_air_temperature'] = "W m2"
+    CANONICAL_UNITS['surface_air_temperature'] = "C"
 
     STANDARD_NAME['dew_point_temperature'] = "dew_point_temperature"
     LONG_NAME['dew_point_temperature'] = "Dew Point Temperature"
     VARIABLE_NAME['dew_point_temperature'] = "dew_point_temperature"
-    CANONICAL_UNITS['dew_point_temperature'] = "K"
+    CANONICAL_UNITS['dew_point_temperature'] = "C"
 
     STANDARD_NAME['surface_downwards_solar_radiation'] = "surface_downwards_solar_radiation"
     LONG_NAME['surface_downwards_solar_radiation'] = "Surface Downwards Solar Radiation"

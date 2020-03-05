@@ -27,10 +27,8 @@ import glob
 import ntpath
 from datetime import datetime
 import re
-
-def path_leaf(path):
-    head, tail = ntpath.split(path)
-    return tail or ntpath.basename(head)
+import cftime
+from spatialetl.utils.path import path_leaf
 
 class SymphonieBigDataReader(CoverageReader):
     """
@@ -54,15 +52,18 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             raise ValueError("Unable to decode file " + str(self.filename))
 
         self.t_size = len(self.files)
-        self.times = np.empty([self.t_size], dtype=datetime)
-        count=0
-        for t_index in range(0, self.t_size):
-            pattern = re.compile("^[0-9]{4}[0-9]{2}[0-9]{2}\_[0-9]{2}[0-9]{2}[0-9]{2}.nc$")
-            if pattern.match(path_leaf(self.files[t_index])):
-                self.times[t_index] = datetime.strptime(path_leaf(self.files[t_index]), "%Y%m%d_%H%M%S.nc")
-                count=count+1
+        self.times = []
 
-        if count == 0:
+        for file in self.files:
+            groups = re.search("^([0-9]{4})([0-9]{2})([0-9]{2})\_([0-9]{2})([0-9]{2})([0-9]{2}).*.nc$",
+                               path_leaf(file))
+            if groups:
+                current_time = cftime.datetime(int(groups.group(1)), int(groups.group(2)), int(groups.group(3)),
+                                               int(groups.group(4)), int(groups.group(5)),
+                                               int(groups.group(6)))
+                self.times.append(current_time)
+
+        if len(self.times) == 0:
             raise ValueError("Unable to find SYMPHONIE raw output filename.")
 
         self.ncfile = Dataset(self.files[0], 'r')

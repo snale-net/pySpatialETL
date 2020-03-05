@@ -35,38 +35,38 @@ class CoverageWriter(object):
     def write_variable_time(self):
         raise NotImplementedError(str(type(self)) + " don't have implemented the function 'write_variable_time()'.")
 
-    def write_variable_2D_sea_binary_mask(self, xmin, xmax, ymin, ymax):
+    def write_variable_2D_sea_binary_mask(self):
         raise NotImplementedError(
             str(type(self)) + " don't have implemented the function 'write_variable_2D_sea_binary_mask()'.")
 
-    def write_variable_2D_land_binary_mask(self, xmin, xmax, ymin, ymax):
+    def write_variable_2D_land_binary_mask(self):
         raise NotImplementedError(
             str(type(self)) + " don't have implemented the function 'write_variable_2D_land_binary_mask()'.")
 
-    def write_variable_3D_sea_binary_mask(self, xmin, xmax, ymin, ymax):
+    def write_variable_3D_sea_binary_mask(self):
         raise NotImplementedError(
             str(type(self)) + " don't have implemented the function 'write_variable_3D_sea_binary_mask()'.")
 
-    def write_variable_3D_land_binary_mask(self, xmin, xmax, ymin, ymax):
+    def write_variable_3D_land_binary_mask(self):
         raise NotImplementedError(
             str(type(self)) + " don't have implemented the function 'write_variable_3D_land_binary_mask()'.")
 
-    def write_variable_3D_land_binary_mask(self, xmin, xmax, ymin, ymax):
+    def write_variable_3D_land_binary_mask(self):
         raise NotImplementedError(
             str(type(self)) + " don't have implemented the function 'write_variable_3D_land_binary_mas()'.")
 
-    def write_variable_wet_binary_mask(self, xmin, xmax, ymin, ymax):
+    def write_variable_wet_binary_mask(self):
         raise NotImplementedError(
             str(type(self)) + " don't have implemented the function 'write_variable_wet_binary_mask()'.")
 
-    def write_variable_mesh_size(self, xmin, xmax, ymin, ymax):
+    def write_variable_mesh_size(self):
         raise NotImplementedError(str(type(self)) + " don't have implemented the function 'write_variable_mesh_size()'.")
 
     #################
     # HYDRO
     # 2D
     #################
-    def write_variable_bathymetry(self, xmin, xmax, ymin, ymax):
+    def write_variable_bathymetry(self):
         raise NotImplementedError(
             str(type(self)) + " don't have implemented the function 'write_variable_bathymetry()'.")
 

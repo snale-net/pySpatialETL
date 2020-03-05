@@ -396,6 +396,28 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
+    def read_variable_2D_land_binary_mask_at_time(self, t):
+
+        index_t = self.find_time_index(t);
+
+        data = self.reader.read_variable_2D_land_binary_mask_at_time(
+            self.map_mpi[self.rank]["src_global_t"].start + index_t,
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data,
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
+                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+
+        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+
     #################
     # HYDRO
     # Sea Surface
@@ -1176,7 +1198,7 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         index_t = self.find_time_index(t);
 
-        data = self.rreader.read_variable_surface_downward_sensible_heat_flux_at_time(
+        data = self.reader.read_variable_surface_downward_sensible_heat_flux_at_time(
             self.map_mpi[self.rank]["src_global_t"].start + index_t,
             self.map_mpi[self.rank]["src_global_x_overlap"].start,
             self.map_mpi[self.rank]["src_global_x_overlap"].stop,

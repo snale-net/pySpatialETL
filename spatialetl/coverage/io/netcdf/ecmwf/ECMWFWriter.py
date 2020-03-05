@@ -24,9 +24,9 @@ from spatialetl.utils.logger import logging
 
 class ECMWFWriter (CoverageWriter):
 
-    def __init__(self, cov,myFile):
-        CoverageReader.__init__(self,myFile);
-        self.coverage = cov;
+    def __init__(self,cov,myFile):
+        CoverageWriter.__init__(self,cov,myFile);
+
         self.ncfile = None
 
         if self.coverage.is_regular_grid()==False:
@@ -72,10 +72,7 @@ class ECMWFWriter (CoverageWriter):
     def close(self):
         self.ncfile.close()
 
-    def write_variable_3D_mask(self):
-        if self.ncfile == None:
-            raise IOError("Please call write_axis() first")
-
+    def write_variable_3D_land_binary_mask(self):
         var = self.ncfile.createVariable('LSM', float32, ('time', 'lat', 'lon',), fill_value=9.96921e+36)
         var.long_name = "Land/sea mask";
         var.code = 172;
@@ -84,13 +81,10 @@ class ECMWFWriter (CoverageWriter):
         time_index = 0
         for time in self.coverage.read_axis_t():
             logging.info('[ECMWFWriter] Writing variable \'3D mask\' at time \'' + str(time) + '\'')
-            var[time_index:time_index + 1, :] = self.coverage.read_variable_3D_mask_at_time(time)
+            var[time_index:time_index + 1, :] = self.coverage.read_variable_2D_land_binary_mask_at_time(time)
             time_index += 1
 
-    def write_variable_surface_pressure(self):
-        if self.ncfile == None:
-            raise IOError("Please call write_axis() first")
-
+    def write_variable_surface_air_pressure(self):
         var = self.ncfile.createVariable('SP', float32, ('time', 'lat', 'lon',), fill_value=9.96921e+36)
         var.long_name = "Surface pressure";
         var.code = 134;
@@ -100,13 +94,27 @@ class ECMWFWriter (CoverageWriter):
         time_index = 0
         for time in self.coverage.read_axis_t():
             logging.info('[ECMWFWriter] Writing variable \'Surface pressure\' at time \'' + str(time) + '\'')
-            var[time_index:time_index + 1, :] = self.coverage.read_variable_surface_pressure_at_time(time)
+            data =  self.coverage.read_variable_surface_pressure_at_time(time)
+            data[:] *= 100  # hPa to Pa
+            var[time_index:time_index + 1, :] = data
             time_index += 1
 
-    def write_variable_surface_sensible_heat_flux(self):
-        if self.ncfile == None:
-            raise IOError("Please call write_axis() first")
+    def write_variable_sea_surface_air_pressure(self):
+        var = self.ncfile.createVariable('MSL', float32, ('time', 'lat', 'lon',), fill_value=9.96921e+36)
+        var.long_name = "Surface pressure";
+        var.code = 134;
+        var.table = 128;
+        var.units = "Pa";
 
+        time_index = 0
+        for time in self.coverage.read_axis_t():
+            logging.info('[ECMWFWriter] Writing variable \'Surface pressure\' at time \'' + str(time) + '\'')
+            data = self.coverage.read_variable_sea_surface_air_pressure_at_time(time)
+            data[:] *= 100 # hPa to Pa
+            var[time_index:time_index + 1, :] = data
+            time_index += 1
+
+    def write_variable_surface_downward_sensible_heat_flux(self):
         var = self.ncfile.createVariable('SSHF', float32, ('time', 'lat', 'lon',), fill_value=9.96921e+36)
         var.long_name = "Surface sensible heat flux";
         var.code = 146;
@@ -116,13 +124,10 @@ class ECMWFWriter (CoverageWriter):
         time_index = 0
         for time in self.coverage.read_axis_t():
             logging.info('[ECMWFWriter] Writing variable \'Surface sensible heat flux\' at time \'' + str(time) + '\'')
-            var[time_index:time_index + 1, :] = self.coverage.read_variable_surface_sensible_heat_flux_at_time(time)
+            var[time_index:time_index + 1, :] = self.coverage.read_variable_surface_downward_sensible_heat_flux_at_time(time)
             time_index += 1
 
-    def write_variable_surface_latent_heat_flux(self):
-        if self.ncfile == None:
-            raise IOError("Please call write_axis() first")
-
+    def write_variable_surface_downward_latent_heat_flux(self):
         var = self.ncfile.createVariable('SLHF', float32, ('time', 'lat', 'lon',), fill_value=9.96921e+36)
         var.long_name = "Surface latent heat flux";
         var.code = 147;
@@ -132,14 +137,10 @@ class ECMWFWriter (CoverageWriter):
         time_index = 0
         for time in self.coverage.read_axis_t():
             logging.info('[ECMWFWriter] Writing variable \'Surface latent heat flux\' at time \'' + str(time) + '\'')
-            var[time_index:time_index + 1, :] = self.coverage.read_variable_surface_latent_heat_flux_at_time(time)
+            var[time_index:time_index + 1, :] = self.coverage.read_variable_surface_downward_latent_heat_flux_at_time(time)
             time_index += 1
 
-    def write_variable_wind(self):
-
-        if self.ncfile == None:
-            raise IOError("Please call write_axis() first")
-
+    def write_variable_wind_10m(self):
         ucur = self.ncfile.createVariable('U10M', float32, ('time','lat', 'lon',),fill_value=9.96921e+36)
         ucur.long_name = "10 metre U wind component" ;
         ucur.code = 147;
@@ -158,16 +159,13 @@ class ECMWFWriter (CoverageWriter):
 
             logging.info('[ECMWFWriter] Writing variable \'wind\' at time \''+str(time)+'\'')
 
-            cur = self.coverage.read_variable_wind_at_time(time)
+            cur = self.coverage.read_variable_wind_10m_at_time(time)
 
             ucur[time_index:time_index+1,:,:] = cur[0]
             vcur[time_index:time_index+1,:,:] = cur[1]
             time_index += 1
 
     def write_variable_surface_air_temperature(self):
-        if self.ncfile == None:
-            raise IOError("Please call write_axis() first")
-
         var = self.ncfile.createVariable('T2M', float32, ('time', 'lat', 'lon',), fill_value=9.96921e+36)
         var.long_name = "2 metre temperature";
         var.code = 167;
@@ -177,13 +175,12 @@ class ECMWFWriter (CoverageWriter):
         time_index = 0
         for time in self.coverage.read_axis_t():
             logging.info('[ECMWFWriter] Writing variable \'Surface air temperature\' at time \'' + str(time) + '\'')
-            var[time_index:time_index + 1, :] = self.coverage.read_variable_surface_air_temperature_at_time(time)
+            data = self.coverage.read_variable_surface_air_temperature_at_time(time)
+            data += 273.15 # Celsius to Kelvin
+            var[time_index:time_index + 1, :] = data
             time_index += 1
 
-    def write_variable_dewpoint_temperature(self):
-        if self.ncfile == None:
-            raise IOError("Please call write_axis() first")
-
+    def write_variable_dew_point_temperature(self):
         var = self.ncfile.createVariable('D2M', float32, ('time', 'lat', 'lon',), fill_value=9.96921e+36)
         var.long_name = "2 metre dewpoint temperature";
         var.code = 168;
@@ -193,13 +190,12 @@ class ECMWFWriter (CoverageWriter):
         time_index = 0
         for time in self.coverage.read_axis_t():
             logging.info('[ECMWFWriter] Writing variable \'Dewpoint temperature\' at time \'' + str(time) + '\'')
-            var[time_index:time_index + 1, :] = self.coverage.read_variable_dewpoint_temperature_at_time(time)
+            data = self.coverage.read_variable_dew_point_temperature_at_time(time)
+            data += 273.15  # Celsius to Kelvin
+            var[time_index:time_index + 1, :] = data
             time_index += 1
 
-    def write_variable_surface_solar_radiation_downwards(self):
-        if self.ncfile == None:
-            raise IOError("Please call write_axis() first")
-
+    def write_variable_surface_downwards_solar_radiation(self):
         var = self.ncfile.createVariable('SSRD', float32, ('time', 'lat', 'lon',), fill_value=9.96921e+36)
         var.long_name = "Surface solar radiation downwards";
         var.code = 169;
@@ -209,13 +205,10 @@ class ECMWFWriter (CoverageWriter):
         time_index = 0
         for time in self.coverage.read_axis_t():
             logging.info('[ECMWFWriter] Writing variable \'Surface solar radiation downwards\' at time \'' + str(time) + '\'')
-            var[time_index:time_index + 1, :] = self.coverage.read_variable_surface_solar_radiation_downwards_at_time(time)
+            var[time_index:time_index + 1, :] = self.coverage.read_variable_surface_downwards_solar_radiation_at_time(time)
             time_index += 1
 
-    def write_variable_surface_thermal_radiation_downwards(self):
-        if self.ncfile == None:
-            raise IOError("Please call write_axis() first")
-
+    def write_variable_surface_downwards_thermal_radiation(self):
         var = self.ncfile.createVariable('STRD', float32, ('time', 'lat', 'lon',), fill_value=9.96921e+36)
         var.long_name = "Surface thermal radiation downwards";
         var.code = 175;
@@ -225,13 +218,10 @@ class ECMWFWriter (CoverageWriter):
         time_index = 0
         for time in self.coverage.read_axis_t():
             logging.info('[ECMWFWriter] Writing variable \'Surface thermal radiation downwards\' at time \'' + str(time) + '\'')
-            var[time_index:time_index + 1, :] = self.coverage.read_variable_surface_thermal_radiation_downwards_at_time(time)
+            var[time_index:time_index + 1, :] = self.coverage.read_variable_surface_downwards_thermal_radiation_at_time(time)
             time_index += 1
 
     def write_variable_surface_solar_radiation(self):
-        if self.ncfile == None:
-            raise IOError("Please call write_axis() first")
-
         var = self.ncfile.createVariable('SSR', float32, ('time', 'lat', 'lon',), fill_value=9.96921e+36)
         var.long_name = "Surface solar radiation";
         var.code = 176;
@@ -245,9 +235,6 @@ class ECMWFWriter (CoverageWriter):
             time_index += 1
 
     def write_variable_surface_thermal_radiation(self):
-        if self.ncfile == None:
-            raise IOError("Please call write_axis() first")
-
         var = self.ncfile.createVariable('STR', float32, ('time', 'lat', 'lon',), fill_value=9.96921e+36)
         var.long_name = "Surface thermal radiation";
         var.code = 177;
@@ -260,10 +247,7 @@ class ECMWFWriter (CoverageWriter):
             var[time_index:time_index + 1, :] = self.coverage.read_variable_surface_thermal_radiation_at_time(time)
             time_index += 1
 
-    def write_variable_rain(self):
-        if self.ncfile == None:
-            raise IOError("Please call write_axis() first")
-
+    def write_variable_rainfall_amount(self):
         var = self.ncfile.createVariable('TP', float32, ('time', 'lat', 'lon',), fill_value=9.96921e+36)
         var.long_name = "Total precipitation";
         var.code = 228;
@@ -273,5 +257,5 @@ class ECMWFWriter (CoverageWriter):
         time_index = 0
         for time in self.coverage.read_axis_t():
             logging.info('[ECMWFWriter] Writing variable \'Rain\' at time \'' + str(time) + '\'')
-            var[time_index:time_index + 1, :] = self.coverage.read_variable_rain_at_time(time)
+            var[time_index:time_index + 1, :] = self.coverage.read_variable_rainfall_amount_at_time(time)
             time_index += 1
