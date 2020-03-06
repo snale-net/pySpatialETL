@@ -20,6 +20,11 @@ class VariableDefinition:
     VARIABLE_NAME['depth'] = "depth"
     CANONICAL_UNITS['depth'] = "m"
 
+    STANDARD_NAME['depth_sigma'] = "depth"
+    LONG_NAME['depth_sigma'] = "Sigma depth"
+    VARIABLE_NAME['depth_sigma'] = "depth_sigma"
+    CANONICAL_UNITS['depth_sigma'] = "m"
+
     STANDARD_NAME['time'] = "time"
     LONG_NAME['time'] = "Time UTC"
     VARIABLE_NAME['time'] = "time"

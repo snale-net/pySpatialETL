@@ -16,6 +16,7 @@
 from __future__ import division, print_function, absolute_import
 from spatialetl.coverage.Coverage import Coverage
 from scipy import spatial
+from spatialetl.operator.interpolator.InterpolatorCore import resample_2d_to_grid
 import numpy as np
 from spatialetl.utils.logger import logging
 from itertools import product
@@ -291,6 +292,61 @@ Elle rajoute une dimension verticale à la couverture horizontale classique.
             1 = Mer
     """
         return self.reader.read_variable_3D_sea_binary_mask()
+
+    def read_variable_depth_at_depth(self, depth):
+        vert_coord,indexes_z = self.find_level_index(depth);
+        self.layers_temp[::] = np.NAN
+        self.data_temp[::] = np.NAN
+        targetDepth = [depth]
+
+        for z in range(0, len(indexes_z)):
+            self.layers_temp[z] = self.reader.read_variable_depth_at_depth(
+                indexes_z[z],
+                self.map_mpi[self.rank]["src_global_x_overlap"].start,
+                self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+                self.map_mpi[self.rank]["src_global_y_overlap"].start,
+                self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        idx = np.where(vert_coord != None)
+        for index in range(np.shape(idx)[1]):
+            x = idx[1][index]
+            y = idx[0][index]
+
+            if len(vert_coord[y, x]) == 1:
+                # Il n'y a qu'une seule couche de sélectionner donc pas d'interpolation possible
+                # On retrouve l'index de la layer
+                index_layer = (np.abs(indexes_z - vert_coord[y, x][0])).argmin()
+                self.data_temp[0, y, x] = self.layers_temp[index_layer, 0, y, x]
+
+            else:
+                candidateValues = np.zeros([len(vert_coord[y, x])])
+                candidateDepths = np.zeros([len(vert_coord[y, x])])
+
+                for z in range(0, len(vert_coord[y, x])):
+                    # On retrouve l'index de la layer
+                    index_layer = (np.abs(indexes_z - vert_coord[y, x][z])).argmin()
+
+                    if self.is_sigma_coordinate(type="source"):
+                        candidateDepths[z] = self.read_axis_z(type="source", with_horizontal_overlap=True)[
+                            vert_coord[y, x][z], y, x]
+                    else:
+                        candidateDepths[z] = self.read_axis_z(type="source", with_horizontal_overlap=True)[
+                            vert_coord[y, x][z]]
+
+                    candidateValues[z] = self.layers_temp[index_layer,0, y, x]
+
+                self.data_temp[0,y, x] = vertical_interpolation(candidateDepths, targetDepth, candidateValues,
+                                                    LevelCoverage.VERTICAL_INTERPOLATION_METHOD)
+
+        if self.horizontal_resampling:
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       self.data_temp[0],
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+
+        return self.data_temp[0,self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
         
         
     

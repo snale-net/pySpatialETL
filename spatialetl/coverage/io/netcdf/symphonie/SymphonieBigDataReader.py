@@ -598,6 +598,23 @@ La classe SymphonieReader permet de lire les données du format Symphonie
     # HYDRO
     # 3D
     #################
+
+    def read_variable_depth_at_depth(self,index_z,xmin,xmax,ymin,ymax):
+        try:
+            if "depth_t" in self.grid.variables:
+                data = self.grid.variables["depth_t"][index_z,ymin:ymax, xmin:xmax]
+                data[::] *= -1.0  # inverse la profondeur
+                return np.ma.filled(data, fill_value=np.nan)
+        except Exception as ex:
+            logging.debug("Error '" + str(ex) + "'")
+            raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
+
+        logging.debug("No variables found for '" + str(VariableDefinition.LONG_NAME['depth_sigma']) + "'")
+        raise (VariableNameError("SymphonieReader",
+                                 "No variables found for '" + str(
+                                     VariableDefinition.LONG_NAME['depth_sigma']) + "'",
+                                 1000))
+
     def read_variable_sea_water_temperature_at_time_and_depth(self, index_t, index_z, xmin, xmax, ymin, ymax):
         try:
             self.open_file(index_t)

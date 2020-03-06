@@ -680,6 +680,34 @@ class DefaultWriter (CoverageWriter):
     # 3D
     #################
 
+    def write_variable_depth(self):
+
+        if (isinstance(self.coverage, LevelCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
+
+            if VariableDefinition.VARIABLE_NAME['depth_sigma'] in self.ncfile.variables:
+                var = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['depth_sigma']]
+            else:
+                var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['depth_sigma'], float32,
+                                             (VariableDefinition.VARIABLE_NAME['depth'], VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],), fill_value=9.96921e+36)
+            var.long_name = VariableDefinition.LONG_NAME['depth_sigma']
+            var.standard_name = VariableDefinition.STANDARD_NAME['depth_sigma']
+            var.units = VariableDefinition.CANONICAL_UNITS['depth_sigma']
+
+            if self.coverage.rank == 0:
+                logging.info('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['depth_sigma']) + '\'')
+
+            level_index = 0
+            for level in self.coverage.read_axis_z():
+                var[level_index:level_index + 1,
+                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
+                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]
+                ] = self.coverage.read_variable_depth_at_depth(level)
+
+                level_index += 1
+        else:
+            raise CoverageError("DefaultWriter",
+                                "The given coverage is not an instance of 'LevelCoverage' or 'TimeLevelCoverage'")
+
     def write_variable_sea_water_temperature(self):
 
         if (isinstance(self.coverage, TimeLevelCoverage)):
