@@ -99,6 +99,9 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
                            (self.source_global_axis_y >= Ymin) &
                            (self.source_global_axis_y <= Ymax))
 
+            if len(idx[0]) == 0:
+                raise ValueError("No values found")
+
             ymin = np.min(idx[0])
             ymax = np.max(idx[0])+1
             xmin = np.min(idx[1])

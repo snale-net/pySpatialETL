@@ -82,11 +82,10 @@ class InspireReader(CoverageReader):
         if len(self.times) == 0:
             raise ValueError("Unable to find Inspire raw output filename.")
 
-        if (len(self.times)*(len(InspireReader.VARIABLES)-len(InspireReader.VARIABLES_PT3H)))+((len(self.times)-1)*len(InspireReader.VARIABLES_PT3H)) != len(self.files):
+        if len(self.times)*len(InspireReader.VARIABLES) != len(self.files):
             print("Nb times classiques : "+str(len(self.times)))
-            print("Nb variables classiques : "+str(len(InspireReader.VARIABLES)-len(InspireReader.VARIABLES_PT3H)))
-            print("Nb times PT3H : " + str(len(self.times)-1))
-            print("Nb variables PT3H : " + str(len(InspireReader.VARIABLES_PT3H)))
+            print("Nb variables : "+str(len(InspireReader.VARIABLES)))
+            print("Nb total times : " + str(len(self.times)*len(InspireReader.VARIABLES)))
             print("Nb files : " + str(len(self.files)))
             raise ValueError("Tous les variables n'ont pas les mêmes temps :")
 
@@ -98,15 +97,7 @@ class InspireReader(CoverageReader):
 
     def open_file(self,varname, index_t):
         self.close()
-
-        if varname in InspireReader.VARIABLES_PT3H:
-            if index_t==0:
-                #On prend le 3H pour combler
-                self.tifffile = gdal.Open(self.variable_files[varname][1])
-            else:
-                self.tifffile = gdal.Open(self.variable_files[varname][index_t-1])
-        else:
-            self.tifffile = gdal.Open(self.variable_files[varname][index_t])
+        self.tifffile = gdal.Open(self.variable_files[varname][index_t])
 
     def close(self):
         self.tifffile = None

@@ -52,16 +52,16 @@ class ECMWFWriter (CoverageWriter):
         latitudes.units = "degree_north" ;
         latitudes.long_name = "latitude" ;
         latitudes.standard_name = "latitude" ;
-        latitudes.valid_min = "-90.0";
-        latitudes.valid_max = "90.0" ;
+        latitudes.valid_min = -90.0;
+        latitudes.valid_max = 90.0 ;
         latitudes.axis = "Y" ;
         
         longitudes = self.ncfile.createVariable('lon', float32, ('lon',))
         longitudes.units = "degree_east" ;
         longitudes.long_name = "longitude" ;
         longitudes.standard_name = "longitude" ;
-        longitudes.valid_min = "-180.0" ;
-        longitudes.valid_max = "180.0" ;
+        longitudes.valid_min = -180.0 ;
+        longitudes.valid_max = 180.0 ;
         longitudes.axis = "X" ; 
         
          # data

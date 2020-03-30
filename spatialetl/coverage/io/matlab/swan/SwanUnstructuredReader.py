@@ -27,8 +27,7 @@ import re
 import cftime
 
 
-class SWANReader(CoverageReader):
-    PRIMARY_KEY = "ADCPdata"
+class SwanUnstructuredReader(CoverageReader):
 
     def __init__(self,myFile):
         CoverageReader.__init__(self, myFile);
