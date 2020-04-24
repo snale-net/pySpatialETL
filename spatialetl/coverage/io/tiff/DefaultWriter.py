@@ -2655,8 +2655,6 @@ class DefaultWriter (CoverageWriter):
 
                 logging.info('[DefaultWriter] Writing variable \'Wind Stress\'\'')
 
-                file = open(self.filename, "w")
-
                 for time_index in range(0, self.coverage.get_t_size(type="target_global")):
                     time = self.coverage.read_axis_t(type="target_global")[time_index]
 
@@ -2751,8 +2749,6 @@ class DefaultWriter (CoverageWriter):
 
                 logging.info('[DefaultWriter] Writing variable \'Wind 10m\'')
 
-                file = open(self.filename, "w")
-
                 for time_index in range(0, self.coverage.get_t_size(type="target_global")):
                     time = self.coverage.read_axis_t(type="target_global")[time_index]
 
@@ -2777,7 +2773,7 @@ class DefaultWriter (CoverageWriter):
 
                             file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
                                                                    VariableDefinition.VARIABLE_NAME[
-                                                                       'northward_wind_10'] + ".tiff"),
+                                                                       'northward_wind_10m'] + ".tiff"),
                                                       int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
 
                             # CRS info

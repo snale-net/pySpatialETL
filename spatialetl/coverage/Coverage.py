@@ -75,6 +75,7 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
             Xmax = bbox[1]
 
         if self.is_regular_grid(type="source"):
+
             idx = np.where((self.source_global_axis_x >= Xmin) &
                            (self.source_global_axis_x <= Xmax))
 
