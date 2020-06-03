@@ -24,10 +24,10 @@ class SymphonieBathycoteReader(SymphonieReader):
     def __init__(self,myFile):
         SymphonieReader.__init__(self,myFile,myFile);
         
-    def read_variable_2D_sea_binary_mask(self):
-        return self.grid.variables["mask_t"][:]
+    def read_variable_2D_sea_binary_mask(self, xmin, xmax, ymin, ymax):
+        return self.grid.variables["mask_t"][ymin:ymax, xmin:xmax]
 
-    def read_variable_mesh_size(self):
-        data= self.grid.variables["mesh_size"][:]
+    def read_variable_mesh_size(self,xmin, xmax, ymin, ymax):
+        data= self.grid.variables["mesh_size"][ymin:ymax, xmin:xmax]
         data[data < 0] = np.nan
         return data

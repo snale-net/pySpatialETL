@@ -190,7 +190,7 @@ class ECMWFWriter (CoverageWriter):
         time_index=0
         for time in self.coverage.read_axis_t():
 
-            logging.info('[ECMWFWriter] Writing variable \'wind\' at time \''+str(time)+'\'')
+            logging.info('[ECMWFWriter] Writing variable \'Wind\' at time \''+str(time)+'\'')
 
             data_u, data_v = self.coverage.read_variable_wind_10m_at_time(time)
 
