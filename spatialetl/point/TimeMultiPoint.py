@@ -271,7 +271,7 @@ class TimeMultiPoint(MultiPoint):
 
             X = np.abs(array - target_timestamp)
 
-            idx = np.where(X <= zero_delta)
+            idx = np.where(X <= (TimeMultiPoint.TIME_DELTA).total_seconds())
             if (len(idx[0])==1):
                 index_t = idx[0][0]
                 indexes_t.append(int(index_t))
