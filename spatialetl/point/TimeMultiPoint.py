@@ -266,7 +266,7 @@ class TimeMultiPoint(MultiPoint):
 
             logging.debug("[TimeMultiPoint][find_time_index()] Looking for : "+str(t))
 
-            target_timestamp = (t - TimeCoverage.TIME_DATUM).total_seconds()
+            target_timestamp = (t - TimeMultiPoint.TIME_DATUM).total_seconds()
             array = np.asarray(self.read_axis_t(type="source", timestamp=1))
 
             X = np.abs(array - target_timestamp)
