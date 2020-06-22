@@ -262,7 +262,7 @@ class TimeMultiPoint(MultiPoint):
 
             indexes_t.append(int(t));
 
-        elif type(t) == datetime or type(t) == cftime._cftime.real_datetime:
+        if type(t) == datetime or type(t) == cftime._cftime.datetime or type(t) == cftime._cftime.real_datetime:
 
             logging.debug("[TimeMultiPoint][find_time_index()] Looking for : "+str(t))
 
