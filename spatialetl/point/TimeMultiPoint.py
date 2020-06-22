@@ -289,7 +289,7 @@ class TimeMultiPoint(MultiPoint):
                     TimeMultiPoint.TIME_DELTA) + ") is too small or the date is out the range.")
 
         else:
-            raise ValueError("" + str(t) + " have to be an integer or a datetime.")
+            raise ValueError("" + str(t) + " have to be an integer or a datetime. Found :"+str(type(t)))
 
         logging.debug("[TimeMultiPoint][find_time_index()] Found " + str(len(indexes_t)) + " candidate datetime(s)")
 
