@@ -266,11 +266,10 @@ class TimeMultiPoint(MultiPoint):
 
             logging.debug("[TimeMultiPoint][find_time_index()] Looking for : "+str(t))
 
-            array = np.asarray(self.read_axis_t(type="source",timestamp=0))
-            #X = np.abs(self.read_axis_t(timestamp=1,raw=1) - t.replace(tzinfo=timezone.utc).timestamp())
+            target_timestamp = (t - TimeCoverage.TIME_DATUM).total_seconds()
+            array = np.asarray(self.read_axis_t(type="source", timestamp=1))
 
-            X = np.abs(array - t)
-            #index_t = (np.abs(array - t.replace(tzinfo=timezone.utc).timestamp())).argmin()
+            X = np.abs(array - target_timestamp)
 
             idx = np.where(X <= zero_delta)
             if (len(idx[0])==1):
@@ -289,7 +288,7 @@ class TimeMultiPoint(MultiPoint):
                     TimeMultiPoint.TIME_DELTA) + ") is too small or the date is out the range.")
 
         else:
-            raise ValueError("" + str(t) + " have to be an integer or a datetime. Found :"+str(type(t)))
+            raise ValueError("" + str(t) + " have to be an integer or a datetime. Current type :"+str(type(t)))
 
         logging.debug("[TimeMultiPoint][find_time_index()] Found " + str(len(indexes_t)) + " candidate datetime(s)")
 
