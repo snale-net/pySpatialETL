@@ -17,6 +17,7 @@ from __future__ import division, print_function, absolute_import
 from spatialetl.coverage.Coverage import Coverage
 from scipy import spatial
 from spatialetl.operator.interpolator.InterpolatorCore import resample_2d_to_grid
+from spatialetl.operator.interpolator.InterpolatorCore import vertical_interpolation
 import numpy as np
 from spatialetl.utils.logger import logging
 from itertools import product
