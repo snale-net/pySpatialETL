@@ -65,6 +65,21 @@ class VariableDefinition:
     VARIABLE_NAME['mesh_size'] = "mesh_size"
     CANONICAL_UNITS['mesh_size'] = "m"
 
+    STANDARD_NAME['x_mesh_size'] = "x_mesh_size"
+    LONG_NAME['x_mesh_size'] = "X Axis Mesh Size"
+    VARIABLE_NAME['x_mesh_size'] = "x_mesh_size"
+    CANONICAL_UNITS['x_mesh_size'] = "m"
+
+    STANDARD_NAME['y_mesh_size'] = "y_mesh_size"
+    LONG_NAME['y_mesh_size'] = "Y Axis Mesh Size"
+    VARIABLE_NAME['y_mesh_size'] = "y_mesh_size"
+    CANONICAL_UNITS['y_mesh_size'] = "m"
+
+    STANDARD_NAME['mesh_size_factor'] = "mesh_size_factor"
+    LONG_NAME['mesh_size_factor'] = "Mesh Size Factor"
+    VARIABLE_NAME['mesh_size_factor'] = "mesh_size_factor"
+    CANONICAL_UNITS['mesh_size_factor'] = "x/y"
+
     #################
     # HYDRO
     # Sea Surface

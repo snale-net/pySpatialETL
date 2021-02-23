@@ -327,6 +327,34 @@ La classe SymphonieReader permet de lire les données du format Symphonie
                                      VariableDefinition.LONG_NAME['2d_sea_binary_mask']) + "'",
                                  1000))
 
+    def read_variable_x_mesh_size(self, xmin, xmax, ymin, ymax):
+        try:
+            if "dx_t" in self.grid.variables:
+                return np.ma.filled(self.grid.variables["dx_t"][ymin:ymax, xmin:xmax], fill_value=np.nan)
+        except Exception as ex:
+            logging.debug("Error '" + str(ex) + "'")
+            raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
+
+        logging.debug("No variables found for '" + str(VariableDefinition.LONG_NAME['x_mesh_size']) + "'")
+        raise (VariableNameError("SymphonieReader",
+                                 "No variables found for '" + str(
+                                     VariableDefinition.LONG_NAME['x_mesh_size']) + "'",
+                                 1000))
+
+    def read_variable_y_mesh_size(self, xmin, xmax, ymin, ymax):
+        try:
+            if "dy_t" in self.grid.variables:
+                return np.ma.filled(self.grid.variables["dy_t"][ymin:ymax, xmin:xmax], fill_value=np.nan)
+        except Exception as ex:
+            logging.debug("Error '" + str(ex) + "'")
+            raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
+
+        logging.debug("No variables found for '" + str(VariableDefinition.LONG_NAME['y_mesh_size']) + "'")
+        raise (VariableNameError("SymphonieReader",
+                                 "No variables found for '" + str(
+                                     VariableDefinition.LONG_NAME['y_mesh_size']) + "'",
+                                 1000))
+
     def read_variable_mesh_size(self,xmin,xmax,ymin,ymax):
         try:
             if "sqrt_dxdy" in self.grid.variables:

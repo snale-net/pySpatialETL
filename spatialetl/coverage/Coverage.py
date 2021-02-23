@@ -586,6 +586,44 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
                                        Coverage.HORIZONTAL_INTERPOLATION_METHOD)
 
         return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+
+    def read_variable_x_mesh_size(self):
+        """Retourne la taille de la grille sur l'axe X
+    @return: un tableau en deux dimensions [y,x]."""
+        data = self.reader.read_variable_x_mesh_size(
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data,
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+
+    def read_variable_y_mesh_size(self):
+        """Retourne la taille de la grille sur l'axe Y
+    @return: un tableau en deux dimensions [y,x]."""
+        data = self.reader.read_variable_y_mesh_size(
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data,
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
     
     def read_variable_2D_sea_binary_mask(self):
         """Retourne le masque terre/mer sur toute la couverture

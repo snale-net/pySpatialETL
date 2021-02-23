@@ -164,6 +164,30 @@ class DefaultWriter (CoverageWriter):
             self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]
         ] = self.coverage.read_variable_mesh_size()
 
+    def write_variable_mesh_size_factor(self):
+
+        if VariableDefinition.VARIABLE_NAME['mesh_size'] in self.ncfile.variables:
+            var = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['mesh_size']]
+        else:
+            var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['mesh_size'], float32, (
+            VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],),
+                                             fill_value=9.96921e+36)
+        var.long_name = VariableDefinition.LONG_NAME['mesh_size']
+        var.standard_name = VariableDefinition.STANDARD_NAME['mesh_size']
+        var.units = VariableDefinition.CANONICAL_UNITS['mesh_size']
+
+        if self.coverage.rank == 0:
+            logging.info('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['mesh_size']) + '\'')
+
+        x = self.coverage.read_variable_x_mesh_size()
+        y = self.coverage.read_variable_y_mesh_size()
+        factor = np.divide(x, y)
+
+        var[
+            self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
+            self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]
+        ] = factor
+
     def write_variable_2D_sea_binary_mask(self):
 
         if VariableDefinition.VARIABLE_NAME['2d_sea_binary_mask'] in self.ncfile.variables:
