@@ -16,11 +16,13 @@ Return an aerial imagery (with maximum resolution available) downloaded from Bin
 """
 
 import os
+from tempfile import NamedTemporaryFile
 from urllib import request
+
 from PIL import Image
+
 from spatialetl.utils.bing.core.tilesystem import TileSystem
 from spatialetl.utils.logger import logging
-from tempfile import NamedTemporaryFile
 
 
 class AerialImageRetrieval(object):

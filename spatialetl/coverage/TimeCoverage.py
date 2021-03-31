@@ -1,12 +1,12 @@
 #! /usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 #
-# CoverageProcessing is free software: you can redistribute it and/or modify
+# pySpatialETL is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
 #
-# CoverageProcessing is distributed in the hope that it will be useful,
+# pySpatialETL is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
@@ -14,18 +14,21 @@
 # Author : Fabien Rétif - fabien.retif@zoho.com
 #
 from __future__ import division, print_function, absolute_import
-from spatialetl.coverage.Coverage import Coverage
-from datetime import timedelta
-from datetime import datetime
-import cftime
-from numpy import int,int32,int64
+
 import math
+from datetime import datetime
+from datetime import timedelta
+
+import cftime
 import numpy as np
+import pandas
 from array_split import shape_split
+from numpy import int, int32, int64
+
+from spatialetl.coverage.Coverage import Coverage
 from spatialetl.operator.interpolator.InterpolatorCore import resample_2d_to_grid
 from spatialetl.utils.logger import logging
-from spatialetl.utils.timing import timing
-import pandas
+
 
 class TimeCoverage(Coverage):
     """La classe TimeCoverage est une extension de la classe Coverage.
@@ -296,7 +299,6 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
         else:
             raise ValueError(""+str(t)+" have to be an integer or a datetime. Current type: "+str(type(t)))
 
-
     def read_axis_t(self,type="target",with_overlap=False,timestamp=0):
         """Retourne les valeurs de l'axe t.
     @param timestamp: égale 1 si le temps est souhaité en timestamp depuis TIME_DATUM.
@@ -461,6 +463,28 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
                                        self.read_axis_y(type="target", with_overlap=True),
                                        data,
                                        Coverage.HORIZONTAL_INTERPOLATION_METHOD)[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+
+        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+
+    def read_variable_sea_water_column_thickness_at_time(self, t):
+
+        index_t = self.find_time_index(t);
+
+        data = self.reader.read_variable_sea_water_column_thickness_at_time(
+            self.map_mpi[self.rank]["src_global_t"].start + index_t,
+            self.map_mpi[self.rank]["src_global_x_overlap"].start,
+            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
+            self.map_mpi[self.rank]["src_global_y_overlap"].start,
+            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+
+        if self.horizontal_resampling:
+            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                       self.read_axis_y(type="source", with_overlap=True),
+                                       self.read_axis_x(type="target", with_overlap=True),
+                                       self.read_axis_y(type="target", with_overlap=True),
+                                       data,
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
+                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
         return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 

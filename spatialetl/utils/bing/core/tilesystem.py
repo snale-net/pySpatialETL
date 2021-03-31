@@ -8,10 +8,9 @@ This module implements a set of static methods used for Bing maps tile system.
 reference: https://msdn.microsoft.com/en-us/library/bb259689.aspx
 """
 
-import os
-from math import cos, sin, pi, log, atan, exp, floor
-from itertools import chain
 import re
+from itertools import chain
+from math import cos, sin, pi, log, atan, exp, floor
 
 
 class TileSystem(object):

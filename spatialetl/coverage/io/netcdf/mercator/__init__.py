@@ -9,7 +9,7 @@ NetCDF MERCATOR (:mod:`coverage.io.netcdf.mercator`)
 """
 from __future__ import division, print_function, absolute_import
 
-from .MercatorReader2015 import MercatorReader2015
-from .MercatorReader import MercatorReader
+from spatialetl.coverage.io.netcdf.mercator.v2015.MERCATORReader import MERCATORReader
+from spatialetl.coverage.io.netcdf.mercator.v2020.MERCATORReader import MERCATORReader
 
-__all__ = ['MercatorReader2015','MercatorReader']
+__all__ = ['MERCATORReader', 'MERCATORReader']

@@ -1,12 +1,12 @@
 #! /usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 #
-# CoverageProcessing is free software: you can redistribute it and/or modify
+# pySpatialETL is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
 #
-# CoverageProcessing is distributed in the hope that it will be useful,
+# pySpatialETL is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
@@ -14,7 +14,9 @@
 # Author : Fabien Rétif - fabien.retif@zoho.com
 #
 from __future__ import division, print_function, absolute_import
+
 import os
+
 
 class CoverageReader(object):
     
@@ -84,8 +86,8 @@ class CoverageReader(object):
     def read_variable_3D_land_binary_mask_at_time(self,index_t,xmin,xmax,ymin,ymax):
         raise NotImplementedError(str(type(self)) + " don't have implemented the function 'read_variable_3D_land_binary_mas_at_time()'.")
 
-    def read_variable_wet_binary_mask_at_time(self,index_t,xmin,xmax,ymin,ymax):
-        raise NotImplementedError(str(type(self)) + " don't have implemented the function 'read_variable_wet_binary_mask_at_time()'.")
+    def read_variable_2D_wet_binary_mask_at_time(self,index_t,xmin,xmax,ymin,ymax):
+        raise NotImplementedError(str(type(self)) + " don't have implemented the function 'read_variable_2D_wet_binary_mask_at_time()'.")
 
     def read_variable_mesh_size(self,xmin,xmax,ymin,ymax):
         raise NotImplementedError(str(type(self)) + " don't have implemented the function 'read_variable_mesh_size()'.")
@@ -94,6 +96,7 @@ class CoverageReader(object):
     # HYDRO
     # 2D
     #################
+
     def read_variable_bathymetry(self, xmin, xmax, ymin, ymax):
         raise NotImplementedError(
             str(type(self)) + " don't have implemented the function 'read_variable_bathymetry()'.")
@@ -110,8 +113,12 @@ class CoverageReader(object):
     # HYDRO
     # Sea Surface
     #################
+
     def read_variable_sea_surface_height_above_mean_sea_level_at_time(self,index_t,xmin,xmax,ymin,ymax):
         raise NotImplementedError(str(type(self)) + " don't have implemented the function 'read_variable_sea_surface_height_above_mean_sea_level_at_time()'.")
+
+    def read_variable_sea_water_column_thickness_at_time(self, index_t, xmin, xmax, ymin, ymax):
+        raise NotImplementedError(str(type(self)) + " don't have implemented the function 'read_variable_sea_water_column_thickness_at_time()'.")
 
     def read_variable_sea_surface_height_above_geoid_at_time(self,index_t,xmin,xmax,ymin,ymax):
         raise NotImplementedError(str(type(self)) + " don't have implemented the function 'read_variable_sea_surface_height_above_geoid_at_time()'.")
@@ -135,6 +142,7 @@ class CoverageReader(object):
     # HYDRO
     # Ground level
     #################
+
     def read_variable_sea_water_temperature_at_ground_level_at_time(self,index_t,xmin,xmax,ymin,ymax):
         raise NotImplementedError(str(type(self)) + " don't have implemented the function 'read_variable_sea_water_temperature_at_ground_level_at_time()'.")
 
@@ -154,6 +162,7 @@ class CoverageReader(object):
     # HYDRO
     # 3D
     #################
+
     def read_variable_depth_at_depth(self,index_z,xmin,xmax,ymin,ymax):
         raise NotImplementedError(str(type(self)) + " don't have implemented the function 'read_variable_depth_at_depth()'.")
 
@@ -179,6 +188,7 @@ class CoverageReader(object):
     # WAVES
     # Sea Surface
     #################
+
     def read_variable_sea_surface_wave_significant_height_at_time(self,index_t,xmin,xmax,ymin,ymax):
         raise NotImplementedError(str(type(self)) + " don't have implemented the function 'read_variable_sea_surface_wave_significant_height_at_time()'.")
 
@@ -210,6 +220,7 @@ class CoverageReader(object):
     # WAVES
     # Ground level
     #################
+
     def read_variable_sea_surface_wave_energy_dissipation_at_ground_level_at_time(self,index_t,xmin,xmax,ymin,ymax):
         raise NotImplementedError(str(type(self)) + " don't have implemented the function 'read_variable_sea_surface_wave_energy_dissipation_at_ground_level_at_time()'.")
 
@@ -217,6 +228,7 @@ class CoverageReader(object):
     # WAVES
     # Momentum flux
     #################
+
     def read_variable_atmosphere_momentum_flux_to_waves_at_time(self,index_t,xmin,xmax,ymin,ymax):
         raise NotImplementedError(str(type(self)) + " don't have implemented the function 'read_variable_atmosphere_momentum_flux_to_waves_at_time()'.")
 
@@ -227,6 +239,7 @@ class CoverageReader(object):
     # METEO
     # 2D
     #################
+
     def read_variable_topography(self,xmin,xmax,ymin,ymax):
         raise NotImplementedError(str(type(self)) + " don't have implemented the function 'read_variable_topography()'.")
 
@@ -237,6 +250,7 @@ class CoverageReader(object):
     # METEO
     # Surface air
     #################
+
     def read_variable_surface_air_pressure_at_time(self,index_t,xmin,xmax,ymin,ymax):
         raise NotImplementedError(str(type(self)) + " don't have implemented the function 'read_variable_surface_air_pressure_at_time()'.")
 
@@ -274,6 +288,7 @@ class CoverageReader(object):
     # METEO
     # At 10 m
     #################
+
     def read_variable_wind_10m_at_time(self,index_t,xmin,xmax,ymin,ymax):
         raise NotImplementedError(str(type(self)) + " don't have implemented the function 'read_variable_eastward_wind_10m_at_time()'.")
 

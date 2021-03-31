@@ -1,12 +1,12 @@
 #! /usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 #
-# CoverageProcessing is free software: you can redistribute it and/or modify
+# pySpatialETL is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
 #
-# CoverageProcessing is distributed in the hope that it will be useful,
+# pySpatialETL is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
@@ -14,20 +14,16 @@
 # Author : Fabien Rétif - fabien.retif@zoho.com
 #
 from __future__ import division, print_function, absolute_import
-from spatialetl.point.io.MultiPointReader import MultiPointReader
-from spatialetl.point.TimeMultiPoint import TimeMultiPoint
-from spatialetl.coverage.TimeCoverage import TimeCoverage
-from spatialetl.coverage.TimeLevelCoverage import TimeLevelCoverage
-from spatialetl.coverage.io.netcdf.symphonie.SymphonieBigDataReader import SymphonieBigDataReader as CovReader
-from netCDF4 import num2date
-from scipy.io import loadmat
-import numpy as np
-from datetime import datetime,timedelta,timezone
-import pytz
-from spatialetl.utils.logger import logging
-from spatialetl.utils.distance import distance_on_unit_sphere
 
-class SymphonieBigDataReader(MultiPointReader):
+import numpy as np
+
+from spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader import SYMPHONIEReader as CovReader
+from spatialetl.point.io.MultiPointReader import MultiPointReader
+from spatialetl.utils.distance import distance_on_unit_sphere
+from spatialetl.utils.logger import logging
+
+
+class AbstractSYMPHONIEReader(MultiPointReader):
 
     def __init__(self,myGrid,myFile,xy,names=None):
         MultiPointReader.__init__(self, myFile);
@@ -44,13 +40,17 @@ class SymphonieBigDataReader(MultiPointReader):
         else:
             self.names = names
 
+    def find_points_coordinates(self, xy):
+
         for i in range(0, np.shape(self.xy_coords)[0]):
             nearestPoint = self.find_point_index(xy[i][0], xy[i][1])
-            logging.info("Nearest point : " + str(nearestPoint[2]) + " / " + str(nearestPoint[3]) + " at " + str(round(nearestPoint[4], 4)) + " km")
-            self.meta_data = self.meta_data + "\n# " + str(self.names[i]) + " : nearest point in SYMPHONIE file is " + str(
+            logging.info("Nearest point : " + str(nearestPoint[2]) + " / " + str(nearestPoint[3]) + " at " + str(
+                round(nearestPoint[4], 4)) + " km")
+            self.meta_data = self.meta_data + "\n# " + str(
+                self.names[i]) + " : nearest point in SYMPHONIE file is " + str(
                 round(nearestPoint[4], 4)) + " km from the target point"
             logging.info("Nearest point (i,j) : " + str(nearestPoint[0]) + " / " + str(nearestPoint[1]))
-            self.xy_coords[i] = [nearestPoint[0],nearestPoint[1]]
+            self.xy_coords[i] = [nearestPoint[0], nearestPoint[1]]
             self.xy_values[i] = [nearestPoint[2], nearestPoint[3]]
 
     def close(self):

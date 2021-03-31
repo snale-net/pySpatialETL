@@ -1,12 +1,12 @@
 #! /usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 #
-# CoverageProcessing is free software: you can redistribute it and/or modify
+# pySpatialETL is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
 #
-# CoverageProcessing is distributed in the hope that it will be useful,
+# pySpatialETL is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
@@ -66,6 +66,7 @@ class CoverageWriter(object):
     # HYDRO
     # 2D
     #################
+
     def write_variable_bathymetry(self):
         raise NotImplementedError(
             str(type(self)) + " don't have implemented the function 'write_variable_bathymetry()'.")
@@ -82,6 +83,7 @@ class CoverageWriter(object):
     # HYDRO
     # Sea Surface
     #################
+
     def write_variable_sea_surface_height_above_mean_sea_level(self):
         raise NotImplementedError(str(type(
             self)) + " don't have implemented the function 'write_variable_sea_surface_height_above_mean_sea_level()'.")
@@ -114,6 +116,7 @@ class CoverageWriter(object):
     # HYDRO
     # Ground level
     #################
+
     def write_variable_sea_water_temperature_at_ground_level(self):
         raise NotImplementedError(str(type(
             self)) + " don't have implemented the function 'write_variable_sea_water_temperature_at_ground_level()'.")
@@ -138,6 +141,7 @@ class CoverageWriter(object):
     # HYDRO
     # 3D
     #################
+
     def write_variable_sea_water_turbidity_and_depth(self, index_z):
         raise NotImplementedError(str(type(
             self)) + " don't have implemented the function 'write_variable_sea_water_turbidity_and_depth()'.")
@@ -166,6 +170,7 @@ class CoverageWriter(object):
     # WAVES
     # Sea Surface
     #################
+
     def write_variable_sea_surface_wave_significant_height(self):
         raise NotImplementedError(str(type(
             self)) + " don't have implemented the function 'write_variable_sea_surface_wave_significant_height()'.")
@@ -206,6 +211,7 @@ class CoverageWriter(object):
     # WAVES
     # Ground level
     #################
+
     def write_variable_sea_surface_wave_energy_dissipation_at_ground_level(self):
         raise NotImplementedError(str(type(
             self)) + " don't have implemented the function 'write_variable_sea_surface_wave_energy_dissipation_at_ground_level()'.")
@@ -214,6 +220,7 @@ class CoverageWriter(object):
     # WAVES
     # Momentum flux
     #################
+
     def write_variable_atmosphere_momentum_flux_to_waves(self):
         raise NotImplementedError(str(type(
             self)) + " don't have implemented the function 'write_variable_atmosphere_momentum_flux_to_waves()'.")
@@ -226,6 +233,7 @@ class CoverageWriter(object):
     # METEO
     # 2D
     #################
+
     def write_variable_topography(self):
         raise NotImplementedError(
             str(type(self)) + " don't have implemented the function 'write_variable_topography()'.")
@@ -238,6 +246,7 @@ class CoverageWriter(object):
     # METEO
     # Surface air
     #################
+
     def write_variable_surface_air_pressure(self):
         raise NotImplementedError(
             str(type(self)) + " don't have implemented the function 'write_variable_surface_air_pressure()'.")
@@ -286,6 +295,7 @@ class CoverageWriter(object):
     # METEO
     # At 10 m
     #################
+
     def write_variable_wind_10m(self):
         raise NotImplementedError(
             str(type(self)) + " don't have implemented the function 'write_variable_wind_10m()'.")

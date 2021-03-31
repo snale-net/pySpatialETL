@@ -1,12 +1,12 @@
 ##! /usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 #
-# CoverageProcessing is free software: you can redistribute it and/or modify
+# pySpatialETL is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
 #
-# CoverageProcessing is distributed in the hope that it will be useful,
+# pySpatialETL is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
@@ -14,22 +14,21 @@
 # Author : Fabien Rétif - fabien.retif@zoho.com
 #
 from __future__ import division, print_function, absolute_import
-from spatialetl.coverage.io.CoverageReader import CoverageReader
-from spatialetl.coverage.TimeCoverage import TimeCoverage
-from netCDF4 import Dataset, num2date
-import numpy as np
-from datetime import datetime
-from time import strftime
-from spatialetl.utils.logger import logging
-from osgeo import gdal
-import os
-import glob
-import re
-from spatialetl.utils.path import path_leaf
-import cftime
-from scipy.constants import convert_temperature
 
-class InspireReader(CoverageReader):
+import glob
+import os
+import re
+
+import cftime
+import numpy as np
+from osgeo import gdal
+
+from spatialetl.coverage.TimeCoverage import TimeCoverage
+from spatialetl.coverage.io.CoverageReader import CoverageReader
+from spatialetl.utils.path import path_leaf
+
+
+class INSPIREReader(CoverageReader):
 
     VARIABLES = [
         'BRIGHTNESS_TEMPERATURE__GROUND_OR_WATER_SURFACE',
@@ -63,7 +62,7 @@ class InspireReader(CoverageReader):
 
         self.times = []
         self.variable_files = {}
-        for var in InspireReader.VARIABLES:
+        for var in INSPIREReader.VARIABLES:
             self.variable_files[var] = []
 
         for file in self.files:
@@ -82,10 +81,10 @@ class InspireReader(CoverageReader):
         if len(self.times) == 0:
             raise ValueError("Unable to find Inspire raw output filename.")
 
-        if len(self.times)*len(InspireReader.VARIABLES) != len(self.files):
+        if len(self.times)*len(INSPIREReader.VARIABLES) != len(self.files):
             print("Nb times classiques : "+str(len(self.times)))
-            print("Nb variables : "+str(len(InspireReader.VARIABLES)))
-            print("Nb total times : " + str(len(self.times)*len(InspireReader.VARIABLES)))
+            print("Nb variables : " + str(len(INSPIREReader.VARIABLES)))
+            print("Nb total times : " + str(len(self.times) * len(INSPIREReader.VARIABLES)))
             print("Nb files : " + str(len(self.files)))
             raise ValueError("Tous les variables n'ont pas les mêmes temps :")
 

@@ -3,16 +3,16 @@
 # Author : Fabien Rétif - fabien.retif@zoho.com
 #
 from __future__ import division, print_function, absolute_import
-from spatialetl.coverage.io.CoverageReader import CoverageReader
-from spatialetl.utils.VariableDefinition import VariableDefinition
-from spatialetl.coverage.TimeCoverage import TimeCoverage
-from netCDF4 import Dataset, MFDataset, num2date
-from spatialetl.exception.VariableNameError import VariableNameError
-import numpy as np
-from datetime import datetime
-from time import strftime
+
 import os
-from spatialetl.utils.logger import logging
+from datetime import datetime
+
+import numpy as np
+from netCDF4 import Dataset, MFDataset, num2date
+
+from spatialetl.coverage.TimeCoverage import TimeCoverage
+from spatialetl.coverage.io.CoverageReader import CoverageReader
+
 
 class MEFOCReader(CoverageReader):
 

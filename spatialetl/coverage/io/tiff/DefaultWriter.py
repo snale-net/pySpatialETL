@@ -1,12 +1,12 @@
 #! /usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 #
-# CoverageProcessing is free software: you can redistribute it and/or modify
+# pySpatialETL is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
 #
-# CoverageProcessing is distributed in the hope that it will be useful,
+# pySpatialETL is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
@@ -14,20 +14,20 @@
 # Author : Fabien Rétif - fabien.retif@zoho.com
 #
 from __future__ import division, print_function, absolute_import
-from spatialetl.coverage.io.CoverageWriter import CoverageWriter
-from spatialetl.utils.VariableDefinition import VariableDefinition
+
+import os
+
+import numpy as np
 from osgeo import gdal
 from osgeo import osr
-from osgeo.gdalconst import *
-from numpy import int16,float32,float64
-import numpy as np
-from spatialetl.utils.logger import logging
+
 from spatialetl.coverage.TimeCoverage import TimeCoverage
-from spatialetl.coverage.LevelCoverage import LevelCoverage
 from spatialetl.coverage.TimeLevelCoverage import TimeLevelCoverage
+from spatialetl.coverage.io.CoverageWriter import CoverageWriter
 from spatialetl.exception.CoverageError import CoverageError
-from mpi4py import MPI
-import os
+from spatialetl.utils.VariableDefinition import VariableDefinition
+from spatialetl.utils.logger import logging
+
 
 class DefaultWriter (CoverageWriter):
 

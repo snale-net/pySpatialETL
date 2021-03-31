@@ -9,6 +9,6 @@ TIFF METEO-FRANCE (:mod:`coverage.io.tiff.mf`)
 """
 from __future__ import division, print_function, absolute_import
 
-from .InspireReader import InspireReader
+from .INSPIREReader import INSPIREReader
 
-__all__ = ['InspireReader']
+__all__ = ['INSPIREReader']

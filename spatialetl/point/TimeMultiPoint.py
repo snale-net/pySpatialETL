@@ -1,12 +1,12 @@
 #! /usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 #
-# CoverageProcessing is free software: you can redistribute it and/or modify
+# pySpatialETL is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
 #
-# CoverageProcessing is distributed in the hope that it will be useful,
+# pySpatialETL is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
@@ -14,16 +14,20 @@
 # Author : Fabien Rétif - fabien.retif@zoho.com
 #
 from __future__ import division, print_function, absolute_import
-from spatialetl.point.MultiPoint import MultiPoint
-from spatialetl.operator.interpolator.InterpolatorCore import time_1d_interpolation
-from array_split import shape_split
-from numpy import int,int32,int64
-import numpy as np
-from datetime import datetime,timedelta,timezone
-from spatialetl.utils.logger import logging
-import pandas
+
 import math
+from datetime import datetime, timedelta, timezone
+
 import cftime
+import numpy as np
+import pandas
+from array_split import shape_split
+from numpy import int, int32, int64
+
+from spatialetl.operator.interpolator.InterpolatorCore import time_1d_interpolation
+from spatialetl.point.MultiPoint import MultiPoint
+from spatialetl.utils.logger import logging
+
 
 class TimeMultiPoint(MultiPoint):
     """"""

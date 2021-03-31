@@ -1,12 +1,12 @@
 #! /usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 #
-# CoverageProcessing is free software: you can redistribute it and/or modify
+# pySpatialETL is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
 #
-# CoverageProcessing is distributed in the hope that it will be useful,
+# pySpatialETL is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
@@ -14,13 +14,14 @@
 # Author : Fabien Rétif - fabien.retif@zoho.com
 #
 from __future__ import division, print_function, absolute_import
-from netCDF4 import Dataset
-from netCDF4 import date2num
-from numpy import float32
-from numpy import float64
+
 import numpy as np
-from spatialetl.utils.logger import logging
+from netCDF4 import Dataset
+from numpy import float64
+
 from spatialetl.coverage.io.netcdf.ww3.WW3UnstructuredReader import WW3UnstructuredReader
+from spatialetl.utils.logger import logging
+
 
 class OASISWriter(object):
 

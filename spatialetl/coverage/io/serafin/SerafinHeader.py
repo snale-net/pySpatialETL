@@ -1,12 +1,12 @@
 #! /usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 #
-# CoverageProcessing is free software: you can redistribute it and/or modify
+# pySpatialETL is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
 #
-# CoverageProcessing is distributed in the hope that it will be useful,
+# pySpatialETL is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
@@ -14,10 +14,12 @@
 # Author : Fabien Rétif - fabien.retif@zoho.com
 #
 from __future__ import division, print_function, absolute_import
+
 import copy
-import numpy as np
-import os
 import struct
+
+import numpy as np
+
 from spatialetl.utils.logger import logging
 
 # Encoding Information Type (EIT) for Serafin title, variable names and units
@@ -166,7 +168,7 @@ class SerafinHeader:
             ikle = self.ikle.reshape(self.nb_elements, self.nb_nodes_per_elem)
             self.ikle_2d = np.empty([self.nb_elements // (self.nb_planes - 1), 3], dtype=int)
             nb_lines = self.ikle_2d.shape[0]
-            # test the integer division
+            # tests the integer division
             if nb_lines * (self.nb_planes - 1) != self.nb_elements:
                 raise SerafinValidationError('The number of elements is not divisible by (number of planes - 1)')
             for i in range(nb_lines):
@@ -743,7 +745,7 @@ class SerafinHeader:
         self._set_header_size()
         self._set_frame_size()
 
-        # Deduce the number of frames and test the integer division
+        # Deduce the number of frames and tests the integer division
         self.nb_frames = (self.file_size - self.header_size) // self.frame_size
         logging.debug('The file has %d frames of size %d bytes' % (self.nb_frames, self.frame_size))
 

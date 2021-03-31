@@ -1,12 +1,12 @@
 #! /usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 #
-# CoverageProcessing is free software: you can redistribute it and/or modify
+# pySpatialETL is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
 #
-# CoverageProcessing is distributed in the hope that it will be useful,
+# pySpatialETL is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
@@ -23,14 +23,16 @@ Handles Serafin file with:
 The sizes (file, header, frame) are in bytes (8 bits).
 """
 from __future__ import division, print_function, absolute_import
-from spatialetl.coverage.io.CoverageReader import CoverageReader
-import copy
-import numpy as np
+
 import os
-import struct
-from spatialetl.utils.logger import logging
-from datetime import datetime,timedelta
+from datetime import datetime, timedelta
+
+import numpy as np
+
+from spatialetl.coverage.io.CoverageReader import CoverageReader
 from spatialetl.coverage.io.serafin.SerafinHeader import SerafinHeader
+from spatialetl.utils.logger import logging
+
 
 class SerafinReader(CoverageReader):
 

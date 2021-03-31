@@ -94,6 +94,11 @@ class VariableDefinition:
     VARIABLE_NAME['sea_surface_height_above_geoid'] = "ssh_geoid"
     CANONICAL_UNITS['sea_surface_height_above_geoid'] = "m"
 
+    STANDARD_NAME['sea_water_column_thickness'] = "sea_water_column_thickness"
+    LONG_NAME['sea_water_column_thickness'] = "Sea Water Column Thickness"
+    VARIABLE_NAME['sea_water_column_thickness'] = "water_thickness"
+    CANONICAL_UNITS['sea_water_column_thickness'] = "m"
+
     STANDARD_NAME['sea_surface_temperature'] = "sea_surface_temperature"
     LONG_NAME['sea_surface_temperature'] = "Sea Surface Temperature"
     VARIABLE_NAME['sea_surface_temperature'] = "sea_surface_temperature"

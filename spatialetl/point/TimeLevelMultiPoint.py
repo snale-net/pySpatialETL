@@ -1,12 +1,12 @@
 #! /usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 #
-# CoverageProcessing is free software: you can redistribute it and/or modify
+# pySpatialETL is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
 #
-# CoverageProcessing is distributed in the hope that it will be useful,
+# pySpatialETL is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
@@ -15,13 +15,11 @@
 #
 from __future__ import division, print_function, absolute_import
 
+import numpy as np
+
 from spatialetl.point.LevelMultiPoint import LevelMultiPoint
 from spatialetl.point.TimeMultiPoint import TimeMultiPoint
-from spatialetl.point.MultiPoint import MultiPoint
 
-import numpy as np
-from datetime import datetime,timedelta
-from spatialetl.utils.logger import logging
 
 class TimeLevelMultiPoint(LevelMultiPoint, TimeMultiPoint):
     """"""

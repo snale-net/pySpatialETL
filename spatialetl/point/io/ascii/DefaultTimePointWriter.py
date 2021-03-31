@@ -1,12 +1,12 @@
 #! /usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 #
-# CoverageProcessing is free software: you can redistribute it and/or modify
+# pySpatialETL is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
 #
-# CoverageProcessing is distributed in the hope that it will be useful,
+# pySpatialETL is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
@@ -14,29 +14,33 @@
 # Author : Fabien Rétif - fabien.retif@zoho.com
 #
 from __future__ import division, print_function, absolute_import
-from spatialetl.point.io.MultiPointWriter import MultiPointWriter
-from spatialetl.point.TimeMultiPoint import TimeMultiPoint
-from spatialetl.utils.VariableDefinition import VariableDefinition
-from netCDF4 import Dataset
-from netCDF4 import date2num
-from numpy import float32
-from numpy import float64
+
+from datetime import datetime
+
 import numpy as np
-from spatialetl.utils.logger import logging
 import pandas
+
+from spatialetl.point.TimeMultiPoint import TimeMultiPoint
+from spatialetl.point.io.MultiPointWriter import MultiPointWriter
+from spatialetl.utils.VariableDefinition import VariableDefinition
+from spatialetl.utils.logger import logging
 
 
 class DefaultTimePointWriter(MultiPointWriter):
 
-    def __init__(self, s,index_point,myFile):
-        MultiPointWriter.__init__(self, s, myFile);
+    def __init__(self, myPointCoords,index_point,myFile):
+        MultiPointWriter.__init__(self, myPointCoords, myFile);
 
         if not isinstance(self.points, TimeMultiPoint):
             raise ValueError("This writer supports only TimeMultiPoint object")
 
         self.index_x = index_point
 
-        index = pandas.DatetimeIndex(self.points.read_axis_t())
+        axis_t = []
+        for time in self.points.read_axis_t(timestamp=1):
+            axis_t.append(datetime.utcfromtimestamp(time))
+
+        index = pandas.DatetimeIndex(axis_t)
         self.data = pandas.DataFrame(index=index)
 
     def close(self):
@@ -67,7 +71,6 @@ class DefaultTimePointWriter(MultiPointWriter):
 
         file.write(old)  # write the new line before
         file.close()
-
 
     def write_variable_longitude(self):
         logging.info('[DefaultTimePointWriter] Writing variable \''+str(VariableDefinition.LONG_NAME['longitude'])+'\'')

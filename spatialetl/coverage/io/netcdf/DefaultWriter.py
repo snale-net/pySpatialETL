@@ -1,12 +1,12 @@
 #! /usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 #
-# CoverageProcessing is free software: you can redistribute it and/or modify
+# pySpatialETL is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
 #
-# CoverageProcessing is distributed in the hope that it will be useful,
+# pySpatialETL is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
@@ -14,18 +14,21 @@
 # Author : Fabien Rétif - fabien.retif@zoho.com
 #
 from __future__ import division, print_function, absolute_import
-from spatialetl.coverage.io.CoverageWriter import CoverageWriter
-from spatialetl.utils.VariableDefinition import VariableDefinition
+
+import numpy as np
+from mpi4py import MPI
 from netCDF4 import Dataset
 from netCDF4 import date2num
-from numpy import int16,float32,float64
-import numpy as np
-from spatialetl.utils.logger import logging
-from spatialetl.coverage.TimeCoverage import TimeCoverage
+from numpy import int16, float32, float64
+
 from spatialetl.coverage.LevelCoverage import LevelCoverage
+from spatialetl.coverage.TimeCoverage import TimeCoverage
 from spatialetl.coverage.TimeLevelCoverage import TimeLevelCoverage
+from spatialetl.coverage.io.CoverageWriter import CoverageWriter
 from spatialetl.exception.CoverageError import CoverageError
-from mpi4py import MPI
+from spatialetl.utils.VariableDefinition import VariableDefinition
+from spatialetl.utils.logger import logging
+
 
 class DefaultWriter (CoverageWriter):
 
@@ -452,6 +455,45 @@ class DefaultWriter (CoverageWriter):
                 time_index += 1
         else:
             raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
+
+    def write_variable_sea_water_column_thickness(self):
+
+        if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
+
+            if VariableDefinition.VARIABLE_NAME['sea_water_column_thickness'] in self.ncfile.variables:
+                var = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['sea_water_column_thickness']]
+            else:
+                var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_water_column_thickness'],
+                                                 float32,
+                                                 (VariableDefinition.VARIABLE_NAME['time'],
+                                                  VariableDefinition.VARIABLE_NAME['latitude'],
+                                                  VariableDefinition.VARIABLE_NAME['longitude'],),
+                                                 fill_value=9.96921e+36)
+            var.long_name = VariableDefinition.LONG_NAME['sea_water_column_thickness']
+            var.standard_name = VariableDefinition.STANDARD_NAME['sea_water_column_thickness']
+            var.units = VariableDefinition.CANONICAL_UNITS['sea_water_column_thickness']
+
+            if self.coverage.rank == 0:
+                logging.info('[DefaultWriter] Writing variable \'' + str(
+                    VariableDefinition.LONG_NAME['sea_water_column_thickness']) + '\'')
+
+            time_index = 0
+            for time in self.coverage.read_axis_t():
+                logging.info('[DefaultWriter] Writing variable \'' + str(
+                    VariableDefinition.LONG_NAME['sea_water_column_thickness']) + '\' at time \'' + str(
+                    time) + '\'')
+
+                var[
+                self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index:
+                self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index + 1,
+                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
+                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]
+                ] = self.coverage.read_variable_sea_water_column_thickness_at_time(time)
+
+                time_index += 1
+        else:
+            raise CoverageError("DefaultWriter",
+                                "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
     def write_variable_sea_surface_temperature(self):
 

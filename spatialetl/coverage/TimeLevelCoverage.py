@@ -1,12 +1,12 @@
 #! /usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 #
-# CoverageProcessing is free software: you can redistribute it and/or modify
+# pySpatialETL is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
 #
-# CoverageProcessing is distributed in the hope that it will be useful,
+# pySpatialETL is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
@@ -14,15 +14,17 @@
 # Author : Fabien Rétif - fabien.retif@zoho.com
 #
 from __future__ import division, print_function, absolute_import
-from spatialetl.coverage.Coverage import  Coverage
+
+import numpy as np
+
+from spatialetl.coverage.Coverage import Coverage
 from spatialetl.coverage.LevelCoverage import LevelCoverage
 from spatialetl.coverage.TimeCoverage import TimeCoverage
 from spatialetl.operator.interpolator.InterpolatorCore import resample_2d_to_grid
 from spatialetl.operator.interpolator.InterpolatorCore import vertical_interpolation
-from itertools import product
-import numpy as np
 from spatialetl.utils.logger import logging
 from spatialetl.utils.timing import timing
+
 
 class TimeLevelCoverage(LevelCoverage,TimeCoverage):
     """La classe TimeLevelCoverage est une extension de la classe Coverage, LevelCoverage, TimeCoverage.
