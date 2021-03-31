@@ -17,7 +17,6 @@ from __future__ import division, print_function, absolute_import
 
 import numpy as np
 
-from spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader import SYMPHONIEReader as CovReader
 from spatialetl.point.io.MultiPointReader import MultiPointReader
 from spatialetl.utils.distance import distance_on_unit_sphere
 from spatialetl.utils.logger import logging
@@ -25,26 +24,49 @@ from spatialetl.utils.logger import logging
 
 class AbstractSYMPHONIEReader(MultiPointReader):
 
-    def __init__(self,myGrid,myFile,xy,names=None):
+    def __init__(self,myFile,xy,names=None):
         MultiPointReader.__init__(self, myFile);
-        self.reader = CovReader(myGrid,self.filename)
-        self.nbPoints = np.shape(xy)[0]
-        self.xy_coords = np.zeros([self.nbPoints,2],dtype=np.int32)
+        self.reader = None
+
+        self.source_xy_coords = []
+        self.names = []
+
+        if isinstance(xy, dict):
+            self.nbPoints = len(xy.items())
+            for key, value in xy.items():
+                self.names.append(''.join(e for e in key if e.isalnum()))
+                self.source_xy_coords.append(value)
+        elif np.shape(xy)[1] == 2:
+            self.nbPoints = np.shape(xy)[0]
+            self.source_xy_coords = xy
+
+            if names is not None and len(names) == self.nbPoints:
+                self.names = names
+            else:
+                if names is not None and len(names) != self.nbPoints:
+                    logging.warning("Name point and points has not the same size. We use generic name")
+                else:
+                    logging.warning("We use generic names")
+
+                self.names = np.empty([self.nbPoints], dtype=object)
+                for count in range(0, self.nbPoints):
+                    self.names[count] = "Point-" + str(count)
+        else:
+            raise (ValueError("Unable to decode XY coordinates"))
+
+        self.xy_coords = np.zeros([self.nbPoints, 2], dtype=np.int32)
         self.xy_values = np.zeros([self.nbPoints, 2])
         self.meta_data = ""
 
-        if names is None:
-            self.names = np.empty([self.nbPoints], dtype=object)
-            for count in range(0, self.nbPoints):
-                self.names[count] = "Point-" + str(count)
-        else:
-            self.names = names
-
     def find_points_coordinates(self, xy):
 
+        if self.reader is None:
+            raise (ValueError("CoverageReader is not initialized"))
+
         for i in range(0, np.shape(self.xy_coords)[0]):
-            nearestPoint = self.find_point_index(xy[i][0], xy[i][1])
-            logging.info("Nearest point : " + str(nearestPoint[2]) + " / " + str(nearestPoint[3]) + " at " + str(
+            nearestPoint = self.find_point_index(self.source_xy_coords[i][0], self.source_xy_coords[i][1])
+            logging.info(str(
+                self.names[i]) + " nearest point in SYMPHONIE is " + str(nearestPoint[2]) + " / " + str(nearestPoint[3]) + " at " + str(
                 round(nearestPoint[4], 4)) + " km")
             self.meta_data = self.meta_data + "\n# " + str(
                 self.names[i]) + " : nearest point in SYMPHONIE file is " + str(

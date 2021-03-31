@@ -63,7 +63,7 @@ Elle rajoute une dimension verticale à la couverture horizontale classique.
                            (self.source_global_axis_z <= Zmax))
 
             if (np.shape(idx)[1] == 0):
-                raise ValueError("Zmin & Zmax out of range")
+                raise ValueError("Zmin or Zmax is out of range. Current range: "+str(np.min(self.source_global_axis_z))+" / "+str(np.max(self.source_global_axis_z)))
 
             zmin = np.min(idx[0])
             zmax = np.max(idx[0]) + 1
@@ -75,7 +75,7 @@ Elle rajoute une dimension verticale à la couverture horizontale classique.
                            (self.source_global_axis_z[:,0:self.get_y_size(type="source_global"),0:self.get_x_size(type="source_global")] <= Zmax))
 
             if (np.shape(idx)[1] == 0):
-                raise ValueError("Zmin & Zmax out of range")
+                raise ValueError("Zmin or Zmax is out of range. Current range: "+str(np.min(self.source_global_axis_z))+" / "+str(np.max(self.source_global_axis_z)))
             zmin = np.min(idx[0])
             zmax = np.max(idx[0]) + 1
 

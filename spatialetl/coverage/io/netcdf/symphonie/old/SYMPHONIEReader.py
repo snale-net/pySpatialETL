@@ -17,13 +17,13 @@ from __future__ import division, print_function, absolute_import
 
 import numpy as np
 
-from spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader import SYMPHONIEReader
+from spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader import SYMPHONIEReader as AbstractSYMPHONIEReader
 
 
-class SYMPHONIEReader(SYMPHONIEReader):
+class SYMPHONIEReader(AbstractSYMPHONIEReader):
 
     def __init__(self,myGrid, myFile):
-        SYMPHONIEReader.__init__(self, myGrid, myFile);
+        AbstractSYMPHONIEReader.__init__(self, myGrid, myFile);
 
     def read_variable_current_at_time_and_depth(self,index_t,index_z):
         mask_t = self.read_variable_mask();

@@ -7,7 +7,7 @@ from spatialetl.coverage.io.netcdf.symphonie.v293 import SYMPHONIEReader
 class CoverageTest(TestCase):
 
     def setUp(self):
-        reader = SYMPHONIEReader("cropped_grid.nc", "cropped_example.nc")
+        reader = SYMPHONIEReader("resources/cropped_grid.nc", "resources/cropped_example.nc")
         self.coverage = Coverage(reader)
 
     def test_check_bbox_validity(self):

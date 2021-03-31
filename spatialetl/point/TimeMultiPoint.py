@@ -97,9 +97,8 @@ class TimeMultiPoint(MultiPoint):
 
         if freq is not None:
             self.temporal_resampling = True
-            self.target_global_axis_t = pandas.date_range(start=self.source_global_axis_t[tmin],
-                                                          end=self.source_global_axis_t[tmax - 1],
-                                                          freq=freq).to_pydatetime();
+            self.target_global_axis_t =pandas.date_range(start=datetime.utcfromtimestamp(self.read_axis_t(type="source_global", with_overlap=False,timestamp=1)[tmin]),
+                                                  end=datetime.utcfromtimestamp(self.read_axis_t(type="source_global", with_overlap=False,timestamp=1)[tmax-1]), freq=freq).to_pydatetime();
             self.target_global_t_size = np.shape(self.target_global_axis_t)[0]
         else:
             self.target_global_axis_t = self.source_global_axis_t[tmin:tmax]
@@ -161,7 +160,7 @@ class TimeMultiPoint(MultiPoint):
     def update_mpi_map(self):
 
         if self.get_t_size(type="target", with_overlap=False)==1:
-            tmin = (np.abs(np.asarray(sself.read_axis_t(type="source_global", with_overlap=False,timestamp=1)) - np.min(self.read_axis_t(type="target", with_overlap=False,timestamp=1)))).argmin()
+            tmin = (np.abs(np.asarray(self.read_axis_t(type="source_global", with_overlap=False,timestamp=1)) - np.min(self.read_axis_t(type="target", with_overlap=False,timestamp=1)))).argmin()
             tmax=tmin+1
         else:
             idx = np.where((self.read_axis_t(type="source_global", with_overlap=False,timestamp=1) >= np.min(self.read_axis_t(type="target", with_overlap=False,timestamp=1))) &
@@ -281,7 +280,7 @@ class TimeMultiPoint(MultiPoint):
                 indexes_t.append(int(index_t))
                 logging.debug("[TimeMultiPoint][find_time_index()] Found : " + str(array[index_t]))
             else:
-                idx = np.where(X <= TimeMultiPoint.TIME_DELTA)
+                idx = np.where(X <= (TimeMultiPoint.TIME_DELTA).total_seconds())
                 for index in range(np.shape(idx)[1]):
                     index_t = idx[0][index]
                     indexes_t.append(int(index_t))
@@ -342,7 +341,7 @@ class TimeMultiPoint(MultiPoint):
         results[:] = np.NAN
 
         targetTime = [date.replace(tzinfo=timezone.utc).timestamp()]
-        rawTime = self.read_axis_t(type="source",timestamp=0)
+        rawTime = self.read_axis_t(type="source",timestamp=1)
 
         candidateTimes = np.zeros([len(indexes_t)])
         candidateValues = np.zeros([len(indexes_t)])
@@ -353,7 +352,7 @@ class TimeMultiPoint(MultiPoint):
             candidateTimes[:] = np.nan
 
             for t in range(0, len(indexes_t)):
-                candidateTimes[t] = datetime.timestamp(rawTime[indexes_t[t]])
+                candidateTimes[t] = rawTime[indexes_t[t]]
                 candidateValues[t] = layers[t][x]
 
             # We remove NaN values

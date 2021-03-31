@@ -1,12 +1,12 @@
 #! /usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 #
-# CoverageProcessing is free software: you can redistribute it and/or modify
+# pySpatialETL is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
 #
-# CoverageProcessing is distributed in the hope that it will be useful,
+# pySpatialETL is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
@@ -14,34 +14,25 @@
 
 # Lien vers le dossier de la lib
 import sys
-sys.path = ['/work/sciences/toolbox/python/pyGeoSpatialETL'] + sys.path
+sys.path = ['../'] + sys.path
 
-from coverage.TimeLevelCoverage import TimeLevelCoverage
-from coverage.operator.interpolator.CoverageInterpolator import CoverageInterpolator
-from coverage.operator.interpolator.InterpolatorCore import InterpolatorCore
-from coverage.io.netcdf.symphonie.SymphonieReader2015 import SymphonieReader2015
-from coverage.io.netcdf.DefaultWriter import DefaultWriter
-import numpy as np
-import logging
+from spatialetl.coverage.TimeLevelCoverage import TimeLevelCoverage
+from spatialetl.coverage.io.netcdf.symphonie.v293.SYMPHONIEReader import SYMPHONIEReader as CoverageReader
+from spatialetl.coverage.io.netcdf.DefaultWriter import DefaultWriter
+from spatialetl.utils.logger import logging
 
 if __name__ == "__main__":
-    print("Transform/Interpole Symphonie to GMT")
-    
-    logging.basicConfig(format='[%(levelname)s] %(message)s',level=logging.INFO)
+    logging.setLevel(logging.INFO)
 
     # Read file
-    reader = SymphonieReader2015('/work/sciences/projects/WWB-2017/Manicouagan/configuration_V2015/TStra_N/OFFLINE/grid.nc',
-                             '/work/sciences/projects/WWB-2017/Manicouagan/configuration_V2015/TStra_N/GRAPHIQUES/20090301_071217.nc')
+    reader = CoverageReader('resources/symphonie_grid.nc',
+                             'resources/symphonie_graphique.nc')
 
     coverageOrig = TimeLevelCoverage(reader);
 
-    # InterpolatorCore.INTERPOLATION_METHOD = "linear";
-    InterpolatorCore.INTERPOLATION_METHOD = "nearest";
+    #depths = [0.0, 10.0]
+    coverage = TimeLevelCoverage(reader, resolution_x=0.001, resolution_y=0.001,freq="3h",resolution_z=0.0001);
 
-    depths = np.array([0.0, 10.0, 50.0, 100.0])
-    coverage = TimeLevelCoverage(CoverageInterpolator(coverageOrig, 0.001, 0.001, depths))
-
-    #Renommer toutes les noms des fonctions
     writer = DefaultWriter(coverage, '/tmp/symphonie_regular.nc')
 
     writer.write_variable_baroclinic_sea_water_velocity()
@@ -61,7 +52,7 @@ if __name__ == "__main__":
     #writer.write_variable_sea_surface_wave_to_direction()
     writer.close()
     
-    print('End of programm')
+    print('End of program')
      
     
     

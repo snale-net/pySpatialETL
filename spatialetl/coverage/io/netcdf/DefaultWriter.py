@@ -108,7 +108,7 @@ class DefaultWriter (CoverageWriter):
             if(isinstance(self.coverage, LevelCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
                 if self.coverage.is_sigma_coordinate():
-                    raise ValueError("This writer supports only Coverage with a regular vertical axis.")
+                    raise ValueError("This writer supports only Coverage with a regular vertical axis. Use 'resolution_z' on the Coverage to interpolate")
 
                 self.ncfile.createDimension(VariableDefinition.VARIABLE_NAME['depth'], self.coverage.get_z_size(type="target"))
                 levels = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['depth'], float64, (VariableDefinition.VARIABLE_NAME['depth'],))

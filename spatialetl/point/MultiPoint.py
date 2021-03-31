@@ -197,7 +197,6 @@ class MultiPoint():
         """
         return self.reader.read_variable_bathymetry();
 
-
     def read_variable_bathymetry_at_location(self,x,y):
         """
         Read bathymetry for a specific point
