@@ -26,6 +26,7 @@ from array_split import shape_split
 from numpy import int, int32, int64
 
 from spatialetl.coverage.Coverage import Coverage
+from spatialetl.exception.NotFoundInRankError import NotFoundInRankError
 from spatialetl.operator.interpolator.InterpolatorCore import resample_2d_to_grid
 from spatialetl.utils.logger import logging
 
@@ -263,7 +264,7 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
                                                          0:self.map_mpi[self.rank]["src_local_t_size_overlap"]]
    
     # Axis
-    def find_time_index(self,t,method="fast"):
+    def find_time_index(self,t,method="fast",domain="source"):
         """Retourne l'index de la date la plus proche à TIME_DELTA_MIN prêt.
     @type t: datetime ou int
     @param t: date souhaitée ou l'index de la date souhaitée
@@ -290,11 +291,17 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
                 if target_timestamp - array[nearest_t_index] == 0.0 or abs(target_timestamp - array[nearest_t_index]) < (TimeCoverage.TIME_DELTA).total_seconds():
                     logging.debug("[TimeCoverage][find_time_index()] Nearest datetime found : " + str(
                         self.read_axis_t(type="source",timestamp=0)[nearest_t_index]))
-                    return nearest_t_index
+
+                    if domain == "source":
+                        return nearest_t_index
+                    elif domain == "source_global":
+                        return self.map_mpi[self.rank]["src_global_t"].start + nearest_t_index
+                    else:
+                        raise ValueError("Type doesn't match [source, source_global]")
             else:
                 raise NotImplementedError("Method " + str(method) + " is not implemented for regular grid.")
 
-            raise ValueError("Proc n°"+str(self.rank)+" doesn't find '"+str(t)+"'. Maybe the TimeCoverage.TIME_DELTA ("+ str(TimeCoverage.TIME_DELTA)+") is too small or the date is out the range.")
+            raise NotFoundInRankError(self.rank,"'"+str(t)+"' not found. Maybe the TimeCoverage.TIME_DELTA ("+ str(TimeCoverage.TIME_DELTA)+") is too small or the date is out the range.")
 
         else:
             raise ValueError(""+str(t)+" have to be an integer or a datetime. Current type: "+str(type(t)))

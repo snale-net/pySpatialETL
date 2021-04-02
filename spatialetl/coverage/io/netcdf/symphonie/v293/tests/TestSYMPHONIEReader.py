@@ -10,20 +10,28 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-#
+# -
 # Author : Fabien Rétif - fabien.retif@zoho.com
 #
+import sys
+
+sys.path = ['/work/sciences/pySpatialETL'] + sys.path
+
 from unittest import TestCase
 
+import cftime
 import numpy as np
 
 from spatialetl.coverage.io.netcdf.symphonie.v293 import SYMPHONIEReader
 
+# Lien vers le dossier de la lib
 
-class SymphonieReaderTest(TestCase):
+
+
+class TestSYMPHONIEReader(TestCase):
 
     def setUp(self):
-        self.reader = SYMPHONIEReader("cropped_grid.nc", "cropped_example.nc")
+        self.reader = SYMPHONIEReader("resources/grid.nc", "resources/2014*")
 
     def close(self):
         self.reader.close()
@@ -34,12 +42,12 @@ class SymphonieReaderTest(TestCase):
         self.assertEqual(expected,value)
 
     def test_get_x_size(self):
-        expected = 5
+        expected = 12
         value = self.reader.get_x_size()
         self.assertEqual(expected,value)
 
     def test_get_y_size(self):
-        expected = 5
+        expected = 12
         value = self.reader.get_y_size()
         self.assertEqual(expected,value)
 
@@ -49,47 +57,106 @@ class SymphonieReaderTest(TestCase):
         self.assertEqual(expected,value)
 
     def test_get_t_size(self):
-        expected = 1
+        expected = 3
         value = self.reader.get_t_size()
         self.assertEqual(expected,value)
 
     def test_read_axis_x(self):
         expected_shape = (5,5)
         expected_value = np.array([
-        [3.01484219,3.0152151,3.01558801,3.0159549,3.0163157],
-        [3.0150673,3.01544609,3.01582489,3.01619746,3.01656373],
-        [3.01529241,3.01567709,3.01606177,3.01644002,3.01681176],
-        [3.01552402,3.01591467,3.01630532,3.01668933,3.01706662],
-        [3.01576238,3.01615909,3.0165558,3.01694566,3.01732856]])
+        [-0.01798658, 0., 0.01798658, 0.03597315, 0.05395973],
+        [-0.01798658, 0., 0.01798658, 0.03597315, 0.05395973],
+        [-0.01798658, 0., 0.01798658, 0.03597315, 0.05395973],
+        [-0.01798658, 0., 0.01798658, 0.03597315, 0.05395973],
+        [-0.01798658, 0., 0.01798658, 0.03597315, 0.05395973]])
 
-        value = self.reader.read_axis_x(0,5,0,5)
-        self.assertEqual(expected_shape,np.shape(value),"shape assert")
-        #self.assertEqual(expected_value.tolist(), value.tolist(),"value assert")
+        candidate_value = self.reader.read_axis_x(0,5,0,5)
+        self.assertEqual(expected_shape,np.shape(candidate_value),"shape assert")
+        np.testing.assert_almost_equal(expected_value,candidate_value,5)
 
     def test_read_axis_y(self):
         expected_shape = (5, 5)
-        value = self.reader.read_axis_y(0, 5, 0, 5)
-        self.assertEqual(expected_shape, np.shape(value), "shape assert")
+        expected_value = np.array([
+        [-0.01798658, -0.01798658, -0.01798658, -0.01798658, -0.01798658],
+        [ 0.,         0.,          0.,          0.,         0.        ],
+        [ 0.01798658, 0.01798658, 0.01798658,  0.01798658,  0.01798658],
+        [ 0.03597315, 0.03597315, 0.03597315, 0.03597315,  0.03597315],
+        [ 0.05395972, 0.05395972, 0.05395972, 0.05395972,  0.05395972]])
+
+        candidate_value = self.reader.read_axis_y(0, 5, 0, 5)
+        self.assertEqual(expected_shape, np.shape(candidate_value), "shape assert")
+        np.testing.assert_almost_equal(expected_value, candidate_value, 5)
 
     def test_read_axis_z(self):
-        expected_shape = (10, 5, 5)
-        value = self.reader.read_axis_z()
-        self.assertEqual(expected_shape, np.shape(value), "shape assert")
+        expected_shape = (10, 12, 12)
+        expected_value = np.array([
+            [-0.01798658, -0.01798658, -0.01798658, -0.01798658, -0.01798658],
+            [0., 0., 0., 0., 0.],
+            [0.01798658, 0.01798658, 0.01798658, 0.01798658, 0.01798658],
+            [0.03597315, 0.03597315, 0.03597315, 0.03597315, 0.03597315],
+            [0.05395972, 0.05395972, 0.05395972, 0.05395972, 0.05395972]])
+
+        candidate_value = self.reader.read_axis_z()
+        self.assertEqual(expected_shape, np.shape(candidate_value), "shape assert")
+        #np.testing.assert_almost_equal(expected_value, candidate_value, 5)
 
     def test_read_axis_t(self):
-        expected_shape = (0,)
-        value = self.reader.read_axis_t(0,1,timestamp=1)
-        self.assertEqual(expected_shape, np.shape(value), "shape assert")
+        expected_shape = (2,)
+        expected_value = np.array([1388579767.0, 1388581212.0])
+
+        candidate_value = self.reader.read_axis_t(1,3,timestamp=1)
+        self.assertEqual(expected_shape, np.shape(candidate_value), "shape assert")
+        np.testing.assert_almost_equal(expected_value, candidate_value, 5)
 
     # Variables
     def test_read_variable_longitude(self):
-        value = self.reader.read_variable_longitude(0,5,0,5)
+        expected_shape = (12, 12)
+        expected_value = np.array([
+        [-0.01798658,  0.,          0.01798658,  0.03597315,  0.05395973,  0.0719463,
+        0.08993288,  0.10791946,  0.12590603,  0.14389261,  0.16187918,  0.17986576],
+        [-0.01798658,  0.,          0.01798658,  0.03597315,  0.05395973,  0.0719463,
+        0.08993288,  0.10791946,  0.12590603,  0.14389261,  0.16187918,  0.17986576],
+        [-0.01798658,  0.,          0.01798658,  0.03597315,  0.05395973,  0.0719463,
+        0.08993288,  0.10791946,  0.12590603,  0.14389261,  0.16187918,  0.17986576],
+        [-0.01798658,  0.,          0.01798658,  0.03597315,  0.05395973,  0.0719463,
+        0.08993288,  0.10791946,  0.12590603,  0.14389261,  0.16187918,  0.17986576],
+        [-0.01798658,  0.,          0.01798658,  0.03597315,  0.05395973,  0.0719463,
+        0.08993288,  0.10791946,  0.12590603,  0.14389261,  0.16187918,  0.17986576],
+        [-0.01798658,  0.,          0.01798658,  0.03597315,  0.05395973,  0.0719463,
+        0.08993288,  0.10791946,  0.12590603,  0.14389261,  0.16187918,  0.17986576],
+        [-0.01798658,  0.,          0.01798658,  0.03597315,  0.05395973,  0.0719463,
+        0.08993288,  0.10791946,  0.12590603,  0.14389261,  0.16187918,  0.17986576],
+        [-0.01798658,  0.,          0.01798658,  0.03597315,  0.05395973,  0.0719463,
+        0.08993288,  0.10791946,  0.12590603,  0.14389261,  0.16187918,  0.17986576],
+        [-0.01798658,  0.,          0.01798658,  0.03597315,  0.05395973,  0.0719463,
+        0.08993288,  0.10791946,  0.12590603,  0.14389261,  0.16187918,  0.17986576],
+        [-0.01798658,  0.,          0.01798658,  0.03597315,  0.05395973,  0.0719463,
+        0.08993288,  0.10791946,  0.12590603,  0.14389261,  0.16187918,  0.17986576],
+        [-0.01798658,  0.,          0.01798658,  0.03597315,  0.05395973,  0.0719463,
+        0.08993288,  0.10791946,  0.12590603,  0.14389261, 0.16187918,  0.17986576],
+        [-0.01798658,  0.,          0.01798658,  0.03597315,  0.05395973,  0.0719463,
+        0.08993288,  0.10791946, 0.12590603,  0.14389261,  0.16187918,  0.17986576]])
+
+        candidate_value = self.reader.read_variable_longitude(0,12,0,12)
+        self.assertEqual(expected_shape, np.shape(candidate_value), "shape assert")
+        np.testing.assert_almost_equal(expected_value, candidate_value, 5)
 
     def test_read_variable_latitude(self):
-        value = self.reader.read_variable_latitude(0,5,0,5)
+        expected_shape = (2, 2)
+        expected_value = np.array([[0.07194629, 0.07194629],[0.08993284, 0.08993284]])
+        candidate_value = self.reader.read_variable_latitude(5,7,5,7)
+        self.assertEqual(expected_shape, np.shape(candidate_value), "shape assert")
+        np.testing.assert_almost_equal(expected_value, candidate_value, 5)
 
     def test_read_variable_time(self):
-        self.reader.read_variable_time(0,1)
+        expected_shape = (2,)
+        expected_value = np.array([cftime.datetime(2014,1,1,12,36,7), cftime.datetime(2014,1,1,13,0,12)])
+
+        candidate_value = self.reader.read_variable_time(1,3,timestamp=0)
+        self.assertEqual(expected_shape, np.shape(candidate_value), "shape assert")
+
+        for i in range(0, len(expected_value)):
+            self.assertEqual(expected_value[i],candidate_value[i], "datetime assert")
 
     def test_read_variable_2D_sea_binary_mask(self):
         expected_value = np.array([

@@ -64,7 +64,7 @@ class CoverageReader(object):
     def read_variable_latitude(self,xmin,xmax,ymin,ymax):
         raise NotImplementedError(str(type(self)) + " don't have implemented the function 'read_variable_latitude()'.")
 
-    def read_variable_time(self):
+    def read_variable_time(self,tmin,tmax,timestamp):
         raise NotImplementedError(str(type(self)) + " don't have implemented the function 'read_variable_time()'.")
 
     def read_variable_2D_sea_binary_mask(self,xmin,xmax,ymin,ymax):
@@ -91,6 +91,12 @@ class CoverageReader(object):
 
     def read_variable_mesh_size(self,xmin,xmax,ymin,ymax):
         raise NotImplementedError(str(type(self)) + " don't have implemented the function 'read_variable_mesh_size()'.")
+
+    def read_variable_x_mesh_size(self, xmin, xmax, ymin, ymax):
+        raise NotImplementedError(str(type(self)) + " don't have implemented the function 'read_variable_x_mesh_size()'.")
+
+    def read_variable_y_mesh_size(self, xmin, xmax, ymin, ymax):
+        raise NotImplementedError(str(type(self)) + " don't have implemented the function 'read_variable_y_mesh_size()'.")
 
     #################
     # HYDRO

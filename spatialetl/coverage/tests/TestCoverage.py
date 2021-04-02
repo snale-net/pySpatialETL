@@ -1,62 +1,152 @@
+import sys
+sys.path = ['/work/sciences/pySpatialETL'] + sys.path
+
 from unittest import TestCase
+import numpy as np
 
 from spatialetl.coverage import Coverage
 from spatialetl.coverage.io.netcdf.symphonie.v293 import SYMPHONIEReader
+from spatialetl.exception.NotFoundInRankError import NotFoundInRankError
 
 
-class CoverageTest(TestCase):
+class TestCoverage(TestCase):
 
-    def setUp(self):
-        reader = SYMPHONIEReader("resources/cropped_grid.nc", "resources/cropped_example.nc")
-        self.coverage = Coverage(reader)
+    def test_mpi_coverage(self):
+        reader = SYMPHONIEReader("../io/netcdf/symphonie/v293/tests/resources/grid.nc", "../io/netcdf/symphonie/v293/tests/resources/2014*")
+        coverage = Coverage(reader)
 
-    def test_check_bbox_validity(self):
-        self.fail()
+        # test_get_x_size()
+        expected_size = coverage.map_mpi[coverage.rank]["dst_local_x_size"]
+        candidate_size = coverage.get_x_size()
+        self.assertEqual(expected_size, candidate_size, "test_get_x_size()")
 
-    def test_create_mpi_map(self):
-        self.fail()
+        # test_get_y_size()
+        expected_size = coverage.map_mpi[coverage.rank]["dst_local_y_size"]
+        candidate_size = coverage.get_y_size()
+        self.assertEqual(expected_size, candidate_size, "test_get_y_size()")
 
-    def test_update_mpi_map(self):
-        self.fail()
+        # test_is_regular_grid()
+        expected_value = False
+        candidate_value = coverage.is_regular_grid()
+        self.assertEqual(expected_value, candidate_value, "test_is_regular_grid()")
 
-    def test_read_metadata(self):
-        self.fail()
+        # test_read_axis_x()
+        expected_shape = (coverage.map_mpi[coverage.rank]["dst_local_y_size"],
+                          coverage.map_mpi[coverage.rank]["dst_local_x_size"])
+        candidate_shape = np.shape(coverage.read_axis_x())
+        self.assertEqual(expected_shape, candidate_shape, "test_read_axis_x()")
 
-    def test_get_x_size(self):
-        self.fail()
+        # test_read_axis_y()
+        expected_shape = (coverage.map_mpi[coverage.rank]["dst_local_y_size"],
+                          coverage.map_mpi[coverage.rank]["dst_local_x_size"])
+        candidate_shape = np.shape(coverage.read_axis_y())
+        self.assertEqual(expected_shape, candidate_shape, "test_read_axis_y()")
 
-    def test_get_y_size(self):
-        self.fail()
+        # test_find_point_index()
+        try:
+            expected_value = [5, 6, 0.07194630440530268, 0.08993284357837819, 0.006314286576960388]
+            candidate_value = coverage.find_point_index(0.0719, 0.0899, decimal_tolerance=3,type="source_global")
+            self.assertEqual(expected_value, candidate_value, "test_find_point_index()")
+        except NotFoundInRankError as ex:
+            if coverage.size == 1:
+                self.fail(ex.message)
 
-    def test_is_regular_grid(self):
-        self.fail()
+        # test_read_variable_bathymetry()
+        expected_shape = (coverage.map_mpi[coverage.rank]["dst_local_y_size"],
+                          coverage.map_mpi[coverage.rank]["dst_local_x_size"])
+        candidate_shape = np.shape(coverage.read_variable_bathymetry())
+        self.assertEqual(expected_shape, candidate_shape, "test_read_variable_bathymetry()")
 
-    def test_read_axis_x(self):
-        self.fail()
+        # test_read_variable_mesh_size()
+        expected_shape = (coverage.map_mpi[coverage.rank]["dst_local_y_size"],
+                          coverage.map_mpi[coverage.rank]["dst_local_x_size"])
+        candidate_shape = np.shape(coverage.read_variable_mesh_size())
+        self.assertEqual(expected_shape, candidate_shape, "test_read_variable_mesh_size()")
 
-    def test_read_axis_y(self):
-        self.fail()
+        # test_read_variable_x_mesh_size()
+        expected_shape = (coverage.map_mpi[coverage.rank]["dst_local_y_size"],
+                          coverage.map_mpi[coverage.rank]["dst_local_x_size"])
+        candidate_shape = np.shape(coverage.read_variable_x_mesh_size())
+        self.assertEqual(expected_shape, candidate_shape, "test_read_variable_x_mesh_size()")
 
-    def test_find_point_index(self):
-        self.fail()
+        # test_read_variable_y_mesh_size()
+        expected_shape = (coverage.map_mpi[coverage.rank]["dst_local_y_size"],
+                          coverage.map_mpi[coverage.rank]["dst_local_x_size"])
+        candidate_shape = np.shape(coverage.read_variable_y_mesh_size())
+        self.assertEqual(expected_shape, candidate_shape, "test_read_variable_y_mesh_size()")
 
-    def test_read_variable_bathymetry(self):
-        self.fail()
+        # test_read_variable_2D_sea_binary_mask()
+        expected_shape = (coverage.map_mpi[coverage.rank]["dst_local_y_size"],
+                          coverage.map_mpi[coverage.rank]["dst_local_x_size"])
+        candidate_shape = np.shape(coverage.read_variable_2D_sea_binary_mask())
+        self.assertEqual(expected_shape, candidate_shape, "test_read_variable_2D_sea_binary_mask()")
 
-    def test_read_variable_topography(self):
-        self.fail()
+    def test_mpi_interpolated_coverage(self):
+        reader = SYMPHONIEReader("../io/netcdf/symphonie/v293/tests/resources/grid.nc",
+                                 "../io/netcdf/symphonie/v293/tests/resources/2014*")
+        coverage = Coverage(reader, resolution_x=0.001, resolution_y=0.001)
 
-    def test_read_variable_mesh_size(self):
-        self.fail()
+        # test_get_x_size()
+        expected_size = coverage.map_mpi[coverage.rank]["dst_local_x_size"]
+        candidate_size = coverage.get_x_size()
+        self.assertEqual(expected_size, candidate_size, "test_get_x_size()")
 
-    def test_read_variable_x_mesh_size(self):
-        self.fail()
+        # test_get_y_size()
+        expected_size = coverage.map_mpi[coverage.rank]["dst_local_y_size"]
+        candidate_size = coverage.get_y_size()
+        self.assertEqual(expected_size, candidate_size, "test_get_y_size()")
 
-    def test_read_variable_y_mesh_size(self):
-        self.fail()
+        # test_is_regular_grid()
+        expected_value = True
+        candidate_value = coverage.is_regular_grid()
+        self.assertEqual(expected_value, candidate_value, "test_is_regular_grid()")
 
-    def test_read_variable_2d_sea_binary_mask(self):
-        self.fail()
+        # test_read_axis_x()
+        expected_shape = (coverage.map_mpi[coverage.rank]["dst_local_x_size"])
+        candidate_shape = np.shape(coverage.read_axis_x())
+        self.assertEqual(expected_shape, candidate_shape, "test_read_axis_x()")
 
-    def test_read_variable_ha(self):
-        self.fail()
+        # test_read_axis_y()
+        expected_shape = (coverage.map_mpi[coverage.rank]["dst_local_y_size"])
+        candidate_shape = np.shape(coverage.read_axis_y())
+        self.assertEqual(expected_shape, candidate_shape, "test_read_axis_y()")
+
+        # test_find_point_index()
+        try:
+            expected_value = [5, 6, 0.07194630440530268, 0.08993284357837819, 0.006314286576960388]
+            candidate_value = coverage.find_point_index(0.0719, 0.0899, decimal_tolerance=3, type="source_global")
+            self.assertEqual(expected_value, candidate_value, "test_find_point_index()")
+        except NotFoundInRankError as ex:
+            if coverage.size == 1:
+                self.fail(ex.message)
+
+        # test_read_variable_bathymetry()
+        expected_shape = (coverage.map_mpi[coverage.rank]["dst_local_y_size"],
+                          coverage.map_mpi[coverage.rank]["dst_local_x_size"])
+        candidate_shape = np.shape(coverage.read_variable_bathymetry())
+        self.assertEqual(expected_shape, candidate_shape, "test_read_variable_bathymetry()")
+
+        # test_read_variable_mesh_size()
+        expected_shape = (coverage.map_mpi[coverage.rank]["dst_local_y_size"],
+                          coverage.map_mpi[coverage.rank]["dst_local_x_size"])
+        candidate_shape = np.shape(coverage.read_variable_mesh_size())
+        self.assertEqual(expected_shape, candidate_shape, "test_read_variable_mesh_size()")
+
+        # test_read_variable_x_mesh_size()
+        expected_shape = (coverage.map_mpi[coverage.rank]["dst_local_y_size"],
+                          coverage.map_mpi[coverage.rank]["dst_local_x_size"])
+        candidate_shape = np.shape(coverage.read_variable_x_mesh_size())
+        self.assertEqual(expected_shape, candidate_shape, "test_read_variable_x_mesh_size()")
+
+        # test_read_variable_y_mesh_size()
+        expected_shape = (coverage.map_mpi[coverage.rank]["dst_local_y_size"],
+                          coverage.map_mpi[coverage.rank]["dst_local_x_size"])
+        candidate_shape = np.shape(coverage.read_variable_y_mesh_size())
+        self.assertEqual(expected_shape, candidate_shape, "test_read_variable_y_mesh_size()")
+
+        # test_read_variable_2D_sea_binary_mask()
+        expected_shape = (coverage.map_mpi[coverage.rank]["dst_local_y_size"],
+                          coverage.map_mpi[coverage.rank]["dst_local_x_size"])
+        candidate_shape = np.shape(coverage.read_variable_2D_sea_binary_mask())
+        self.assertEqual(expected_shape, candidate_shape, "test_read_variable_2D_sea_binary_mask()")
+

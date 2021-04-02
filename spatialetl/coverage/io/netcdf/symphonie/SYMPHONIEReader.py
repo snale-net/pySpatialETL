@@ -328,8 +328,14 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             return self.times[tmin:tmax]
 
     # Variables
-    def read_variable_time(self):
-        return self.read_axis_t(timestamp=0)
+    def read_variable_time(self,tmin, tmax, timestamp):
+        return self.read_axis_t(tmin,tmax, timestamp=timestamp)
+
+    def read_variable_longitude(self, xmin, xmax, ymin, ymax):
+        return self.read_axis_x(xmin,xmax,ymin,ymax)
+
+    def read_variable_latitude(self, xmin, xmax, ymin, ymax):
+        return self.read_axis_y(xmin,xmax,ymin,ymax)
 
     def read_variable_2D_sea_binary_mask(self, xmin, xmax, ymin, ymax):
         index_z = self.get_z_size() - 1  # At surface level
@@ -388,6 +394,34 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         raise (VariableNameError("SymphonieReader",
                                  "No variables found for '" + str(
                                      VariableDefinition.LONG_NAME['mesh_size']) + "'",
+                                 1000))
+
+    def read_variable_x_mesh_size(self, xmin, xmax, ymin, ymax):
+        try:
+            if "dx_t" in self.grid.variables:
+                return np.ma.filled(self.grid.variables["dx_t"][ymin:ymax, xmin:xmax], fill_value=np.nan)
+        except Exception as ex:
+            logging.debug("Error '" + str(ex) + "'")
+            raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
+
+        logging.debug("No variables found for '" + str(VariableDefinition.LONG_NAME['x_mesh_size']) + "'")
+        raise (VariableNameError("SymphonieReader",
+                                 "No variables found for '" + str(
+                                     VariableDefinition.LONG_NAME['x_mesh_size']) + "'",
+                                 1000))
+
+    def read_variable_y_mesh_size(self, xmin, xmax, ymin, ymax):
+        try:
+            if "dy_t" in self.grid.variables:
+                return np.ma.filled(self.grid.variables["dy_t"][ymin:ymax, xmin:xmax], fill_value=np.nan)
+        except Exception as ex:
+            logging.debug("Error '" + str(ex) + "'")
+            raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
+
+        logging.debug("No variables found for '" + str(VariableDefinition.LONG_NAME['y_mesh_size']) + "'")
+        raise (VariableNameError("SymphonieReader",
+                                 "No variables found for '" + str(
+                                     VariableDefinition.LONG_NAME['y_mesh_size']) + "'",
                                  1000))
 
     #################

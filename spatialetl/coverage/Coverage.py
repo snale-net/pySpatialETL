@@ -19,6 +19,7 @@ import numpy as np
 from array_split import shape_split
 from mpi4py import MPI
 
+from spatialetl.exception.NotFoundInRankError import NotFoundInRankError
 from spatialetl.operator.interpolator.InterpolatorCore import resample_2d_to_grid
 from spatialetl.utils.distance import distance_on_unit_sphere
 from spatialetl.utils.logger import logging
@@ -170,6 +171,19 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
         if Xmin < np.min(self.source_global_axis_x):
             return False
         if Xmax > np.max(self.source_global_axis_x):
+            return False
+
+        return True
+
+    def check_point_is_inside(self, target_lon, target_lat, lon, lat,tolerance=5):
+
+        if np.round(target_lat,decimals=tolerance) < np.min(np.round(lat,decimals=tolerance)):
+            return False
+        if np.round(target_lat,decimals=tolerance) > np.max(np.round(lat,decimals=tolerance)):
+            return False
+        if np.round(target_lon,decimals=tolerance) < np.min(np.round(lon,decimals=tolerance)):
+            return False
+        if np.round(target_lon,decimals=tolerance) > np.max(np.round(lon,decimals=tolerance)):
             return False
 
         return True
@@ -443,7 +457,7 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
             else:
                 return self.target_global_axis_y[self.map_mpi[self.rank]["dst_global_y"],self.map_mpi[self.rank]["dst_global_x"]]
         
-    def find_point_index(self,target_lon,target_lat,method="classic",only_mask_value=True):
+    def find_point_index(self,target_lon, target_lat, decimal_tolerance=5, method="classic", only_mask_value=True,type="source"):
         """Retourne le point le plus proche du point donné en paramètre.
     @param target_lon: Coordonnée longitude du point
     @param target_lat: Coordonnée latitude du point
@@ -454,77 +468,95 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
      [2] : la coordonnée en longitude du point le plus proche
      [3] : la coordonnée en latitude point le plus proche
      [4] : la distance du point le plus proche en kilomètre."""
-        lon = self.read_axis_x(type="source_global")
-        lat = self.read_axis_y(type="source_global")
+        lon = self.read_axis_x(type="source",with_overlap=False)
+        lat = self.read_axis_y(type="source",with_overlap=False)
 
-        try:
-            mask = self.read_variable_2D_sea_binary_mask()
-        except NotImplementedError:
-            logging.warning("No 2D sea binary mask found")
-            #mask = np.ones([self.source_global_y_size, self.source_global_x_size])
-            only_mask_value = False
+        if self.check_point_is_inside(target_lon, target_lat, lon, lat, tolerance=decimal_tolerance):
+            try:
+                mask = self.read_variable_2D_sea_binary_mask(type="source",with_overlap=False)
+                print(np.shape(mask))
+            except NotImplementedError:
+                logging.warning("No 2D sea binary mask found")
+                #mask = np.ones([self.source_global_y_size, self.source_global_x_size])
+                only_mask_value = False
 
-        dist = np.zeros([self.get_y_size(type="source_global"), self.get_x_size(type="source_global")])
-        dist[:] = 100000
+            dist = np.zeros([self.get_y_size(type="source",with_overlap=False), self.get_x_size(type="source",with_overlap=False)])
+            dist[:] = 10000000
 
-        if method=="classic":
-            for x in range(0, self.get_x_size(type="source_global")):
-                for y in range(0, self.get_y_size(type="source_global")):
+            if method=="classic":
+                for x in range(0, self.get_x_size(type="source",with_overlap=False)):
+                    for y in range(0, self.get_y_size(type="source",with_overlap=False)):
 
-                    if only_mask_value:
-                        if(mask[y,x] == 1): #=Terre
-                            if self.reader.is_regular_grid():
-                                dist[y,x] = distance_on_unit_sphere(target_lon,target_lat,lon[x],lat[y])
-                            else:
-                                dist[y,x] = distance_on_unit_sphere(target_lon,target_lat,lon[y,x],lat[y,x])
-                    else:
-                        if self.reader.is_regular_grid():
-                            dist[y, x] = distance_on_unit_sphere(target_lon, target_lat, lon[x], lat[y])
+                        if only_mask_value:
+                            if(mask[y,x] == 1): #=Terre
+                                if self.reader.is_regular_grid():
+                                    dist[y,x] = distance_on_unit_sphere(target_lon,target_lat,lon[x],lat[y])
+                                else:
+                                    dist[y,x] = distance_on_unit_sphere(target_lon,target_lat,lon[y,x],lat[y,x])
                         else:
-                            dist[y, x] = distance_on_unit_sphere(target_lon, target_lat, lon[y, x], lat[y, x])
+                            if self.reader.is_regular_grid():
+                                dist[y, x] = distance_on_unit_sphere(target_lon, target_lat, lon[x], lat[y])
+                            else:
+                                dist[y, x] = distance_on_unit_sphere(target_lon, target_lat, lon[y, x], lat[y, x])
 
-            nearest_y_index,nearest_x_index = np.where(dist == np.min(dist))
+                nearest_y_index,nearest_x_index = np.where(dist == np.min(dist))
 
-            if len(nearest_y_index) == 0 or len(nearest_x_index) == 0:
-                raise RuntimeError("No nearest point found.")
+                if len(nearest_y_index) == 0 or len(nearest_x_index) == 0:
+                    logging.error("no neaarest point found")
+                    raise RuntimeError("No nearest point found")
 
-            nearest_x_index = nearest_x_index[0]
-            nearest_y_index = nearest_y_index[0]
-            min_dist = dist[nearest_y_index,nearest_x_index]
+                nearest_x_index = nearest_x_index[0]
+                nearest_y_index = nearest_y_index[0]
+                min_dist = dist[nearest_y_index,nearest_x_index]
 
-            if self.is_regular_grid():
-                nearest_lon = lon[nearest_x_index]
-                nearest_lat = lat[nearest_y_index]
+                if self.is_regular_grid(type="source"):
+                    nearest_lon = lon[nearest_x_index]
+                    nearest_lat = lat[nearest_y_index]
+                else:
+                    nearest_lon = lon[nearest_y_index, nearest_x_index]
+                    nearest_lat = lat[nearest_y_index, nearest_x_index]
+
+                if type == "source":
+                    return [nearest_x_index, nearest_y_index, nearest_lon, nearest_lat, min_dist]
+                elif type == "source_global":
+                    return [self.map_mpi[self.rank]["src_global_x"].start+nearest_x_index, self.map_mpi[self.rank]["src_global_y"].start+nearest_y_index, nearest_lon, nearest_lat, min_dist]
+                else:
+                    raise ValueError("Type doesn't match [source, source_global]")
+
+            elif method == "quick":
+
+                if self.is_regular_grid():
+
+                    # Longitude : on cherche l'index le plus proche
+                    array = np.asarray(lon)
+                    nearest_x_index = (np.abs(array - target_lon)).argmin()
+
+                    # Latitude : on cherche l'index le plus proche
+                    array = np.asarray(lat)
+                    nearest_y_index = (np.abs(array - target_lat)).argmin()
+
+                    nearest_lon = lon[nearest_x_index]
+                    nearest_lat = lat[nearest_y_index]
+
+                    min_dist = distance_on_unit_sphere(target_lon, target_lat,nearest_lon,nearest_lat)
+
+                    if type == "source":
+                        return [nearest_x_index, nearest_y_index, nearest_lon, nearest_lat, min_dist]
+                    elif type == "source_global":
+                        return [self.map_mpi[self.rank]["src_global_x"].start + nearest_x_index,
+                                self.map_mpi[self.rank]["src_global_y"].start + nearest_y_index, nearest_lon,
+                                nearest_lat, min_dist]
+                    else:
+                        raise ValueError("Type doesn't match [source, source_global]")
+
+                else:
+                    raise NotImplementedError("Method " + str(method) + " is not implemented for regular grid.")
+
             else:
-                nearest_lon = lon[nearest_y_index, nearest_x_index]
-                nearest_lat = lat[nearest_y_index, nearest_x_index]
-
-            return [nearest_x_index, nearest_y_index, nearest_lon, nearest_lat, min_dist]
-
-        elif method == "quick":
-
-            if self.is_regular_grid():
-
-                # Longitude : on cherche l'index le plus proche
-                array = np.asarray(lon)
-                nearest_x_index = (np.abs(array - target_lon)).argmin()
-
-                # Latitude : on cherche l'index le plus proche
-                array = np.asarray(lat)
-                nearest_y_index = (np.abs(array - target_lat)).argmin()
-
-                nearest_lon = lon[nearest_x_index]
-                nearest_lat = lat[nearest_y_index]
-
-                min_dist = distance_on_unit_sphere(target_lon, target_lat,nearest_lon,nearest_lat)
-
-                return [nearest_x_index, nearest_y_index, nearest_lon, nearest_lat, min_dist]
-
-            else:
-                raise NotImplementedError("Method " + str(method) + " is not implemented for regular grid.")
-
+                raise RuntimeError("Method "+str(method)+" is not implemented yet.")
         else:
-            raise RuntimeError("Method "+str(method)+" is not implemented yet.")
+            logging.warning("Point is outside the rank n°"+str(self.rank))
+            raise NotFoundInRankError(self.rank,"Point is outside the rank")
     
     # Variables
     #################
@@ -626,7 +658,7 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
 
         return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
     
-    def read_variable_2D_sea_binary_mask(self):
+    def read_variable_2D_sea_binary_mask(self,type="target",with_overlap=False):
         """Retourne le masque terre/mer sur toute la couverture
     @return: un tableau en deux dimensions [y,x].
             0 = Terre
@@ -638,16 +670,22 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
             self.map_mpi[self.rank]["src_global_y_overlap"].start,
             self.map_mpi[self.rank]["src_global_y_overlap"].stop)
 
-        if self.horizontal_resampling:
+        if type == "source" and with_overlap is True:
+            return data[self.map_mpi[self.rank]["src_local_y_overlap"], self.map_mpi[self.rank]["src_local_x_overlap"]]
+        elif type == "source" and with_overlap is False:
+            return data[self.map_mpi[self.rank]["src_local_y"], self.map_mpi[self.rank]["src_local_x"]]
+        elif type == "target":
 
-            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data,
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+            if self.horizontal_resampling:
 
-        return data[self.map_mpi[self.rank]["dst_local_y"],self.map_mpi[self.rank]["dst_local_x"]]
+                data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
+                                           self.read_axis_y(type="source", with_overlap=True),
+                                           self.read_axis_x(type="target", with_overlap=True),
+                                           self.read_axis_y(type="target", with_overlap=True),
+                                           data,
+                                           Coverage.HORIZONTAL_INTERPOLATION_METHOD)
+
+            return data[self.map_mpi[self.rank]["dst_local_y"],self.map_mpi[self.rank]["dst_local_x"]]
 
     def read_variable_Ha(self):
         """Retourne l'amplitude de la réanalyse
