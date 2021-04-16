@@ -185,20 +185,33 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             rotcos = self.gridrotcos_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
             rotsin = self.gridrotsin_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
 
-            if "vel_u" in self.ncfile.variables:
+            if "vel_u" in self.ncfile.variables and "vel_v" in self.ncfile.variables:
                 data_u = np.ma.filled(
                     self.ncfile.variables["vel_u"][0, index_z, ymin_overlap:ymax_overlap,
                     xmin_overlap:xmax_overlap],
                     fill_value=np.nan)
-            if "vel_v" in self.ncfile.variables:
                 data_v = np.ma.filled(
                     self.ncfile.variables["vel_v"][0, index_z, ymin_overlap:ymax_overlap,
                     xmin_overlap:xmax_overlap],
                     fill_value=np.nan)
+            elif "u" in self.ncfile.variables and "v" in self.ncfile.variables:
+                data_u = np.ma.filled(
+                    self.ncfile.variables["u"][0, index_z, ymin_overlap:ymax_overlap,
+                    xmin_overlap:xmax_overlap],
+                    fill_value=np.nan)
+                data_v = np.ma.filled(
+                    self.ncfile.variables["v"][0, index_z, ymin_overlap:ymax_overlap,
+                    xmin_overlap:xmax_overlap],
+                    fill_value=np.nan)
+            else:
+                logging.debug("No variables found for 'Baroclinic Sea Water Velocity'")
+                raise (VariableNameError("SymphonieReader",
+                                         "No variables found for 'Baroclinic Sea Water Velocity'",
+                                         1000))
 
             u_rot, v_rot = self.compute_vector_rotation(data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v)
 
-            if "wetmask_t" in self.ncfile.variables:
+            if "wetmask_t" in self.ncfile.variables:  # We apply the wetmask
                 u_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
                       xmin_overlap:xmax_overlap] == 0] = np.nan
                 v_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
@@ -209,11 +222,6 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
-
-        logging.debug("No variables found for \'Baroclinic Sea Water Velocity\'")
-        raise (VariableNameError("SymphonieReader",
-                                 "No variables found for \'Baroclinic Sea Water Velocity\'",
-                                 1000))
 
     #################
     # WAVES

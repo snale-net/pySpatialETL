@@ -509,7 +509,7 @@ class DefaultTimePointWriter(MultiPointWriter):
 
     #################
     # METEO
-    # Surface air
+    # Sea surface
     #################
 
     def write_variable_surface_air_pressure(self):
@@ -547,6 +547,78 @@ class DefaultTimePointWriter(MultiPointWriter):
             time_index += 1
 
         self.data['rainfall_amount'] = data
+
+    def write_variable_wind_stress(self):
+        logging.info(
+            "[DefaultTimePointWriter] Writing variable 'Wind Stress'")
+        data_u = np.zeros([self.points.get_t_size()])
+        data_v = np.zeros([self.points.get_t_size()])
+        data_u[:] = np.nan
+        data_v[:] = np.nan
+        time_index = 0
+        for time in self.points.read_axis_t():
+            logging.info(
+                '[DefaultTimePointWriter] Writing variable \'Wind Stress\' at time \'' + str(
+                    time) + '\'')
+
+            data = self.points.read_variable_wind_stress_at_time(time)
+            data_u[time_index] = data[0][self.index_x]
+            data_v[time_index] = data[1][self.index_x]
+            time_index += 1
+
+        self.data['eastward_wind_stress'] = data_u
+        self.data['northward_wind_stress'] = data_v
+
+    def write_variable_wind_stress_stress(self):
+        logging.info(
+            '[DefaultTimePointWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['wind_stress_stress']) + '\'')
+        data = np.zeros([self.points.get_t_size()])
+        data[:] = np.nan
+        time_index = 0
+        for time in self.points.read_axis_t():
+            logging.info(
+                '[DefaultTimePointWriter] Writing variable \'' + str(
+                    VariableDefinition.LONG_NAME['wind_stress_stress']) + '\' at time \'' + str(
+                    time) + '\'')
+
+            data[time_index] = self.points.read_variable_wind_stress_stress_at_time(time)[self.index_x]
+            time_index += 1
+
+        self.data['wind_stress_stress'] = data
+
+    def write_variable_wind_stress_from_direction(self):
+        logging.info('[DefaultTimePointWriter] Writing variable \'' + str(
+            VariableDefinition.LONG_NAME['wind_stress_from_direction']) + '\'')
+        data = np.zeros([self.points.get_t_size()])
+        data[:] = np.nan
+        time_index = 0
+        for time in self.points.read_axis_t():
+            logging.info(
+                '[DefaultTimePointWriter] Writing variable \'' + str(
+                    VariableDefinition.LONG_NAME['wind_stress_from_direction']) + '\' at time \'' + str(
+                    time) + '\'')
+
+            data[time_index] = self.points.read_variable_wind_stress_from_direction_at_time(time)[self.index_x]
+            time_index += 1
+
+        self.data['wind_stress_from_direction'] = data
+
+    def write_variable_wind_stress_to_direction(self):
+        logging.info('[DefaultTimePointWriter] Writing variable \'' + str(
+            VariableDefinition.LONG_NAME['wind_stress_to_direction']) + '\'')
+        data = np.zeros([self.points.get_t_size()])
+        data[:] = np.nan
+        time_index = 0
+        for time in self.points.read_axis_t():
+            logging.info(
+                '[DefaultTimePointWriter] Writing variable \'' + str(
+                    VariableDefinition.LONG_NAME['wind_stress_to_direction']) + '\' at time \'' + str(
+                    time) + '\'')
+
+            data[time_index] = self.points.read_variable_wind_stress_to_direction_at_time(time)[self.index_x]
+            time_index += 1
+
+        self.data['wind_stress_to_direction'] = data
 
     #################
     # METEO

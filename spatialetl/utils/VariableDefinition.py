@@ -400,12 +400,27 @@ class VariableDefinition:
     STANDARD_NAME['eastward_wind_stress'] = "eastward_wind_stress"
     LONG_NAME['eastward_wind_stress'] = "Eastward Wind Stress"
     VARIABLE_NAME['eastward_wind_stress'] = "u_wind_stress"
-    CANONICAL_UNITS['eastward_wind_stress'] = "W m2"
+    CANONICAL_UNITS['eastward_wind_stress'] = "N m2"
 
     STANDARD_NAME['northward_wind_stress'] = "northward_wind_stress"
     LONG_NAME['northward_wind_stress'] = "Northward Wind Stress"
     VARIABLE_NAME['northward_wind_stress'] = "v_wind_stress"
-    CANONICAL_UNITS['northward_wind_stress'] = "W m2"
+    CANONICAL_UNITS['northward_wind_stress'] = "N m2"
+
+    STANDARD_NAME['wind_stress_stress'] = "wind_stress_stress"
+    LONG_NAME['wind_stress_stress'] = "Wind Stress"
+    VARIABLE_NAME['wind_stress_stress'] = "wind_stress_stress"
+    CANONICAL_UNITS['wind_stress_stress'] = "N m2"
+
+    STANDARD_NAME['wind_stress_to_direction'] = "wind_stress_to_direction"
+    LONG_NAME['wind_stress_to_direction'] = "Wind Stress to Direction"
+    VARIABLE_NAME['wind_stress_to_direction'] = "wind_stress_to_dir"
+    CANONICAL_UNITS['wind_stress_to_direction'] = "degree"  # to North=0 / East=90"
+
+    STANDARD_NAME['wind_stress_from_direction'] = "wind_stress_from_direction"
+    LONG_NAME['wind_stress_from_direction'] = "Wind Stress From Direction"
+    VARIABLE_NAME['wind_stress_from_direction'] = "wind_stress_from_dir"
+    CANONICAL_UNITS['wind_stress_from_direction'] = "degree"  # from North=0 / East=90"
 
     STANDARD_NAME['surface_downward_sensible_heat_flux'] = "surface_downward_sensible_heat_flux"
     LONG_NAME['surface_downward_sensible_heat_flux'] = "Surface Downward Sensible Heat Flux"

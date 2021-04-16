@@ -22,6 +22,6 @@ from spatialetl.point.io.netcdf.symphonie.AbstractSYMPHONIEReader import Abstrac
 class SYMPHONIEReader(AbstractSYMPHONIEReader):
 
     def __init__(self,myGrid,myFile,xy,names=None):
-        AbstractSYMPHONIEReader.__init__(self, myGrid, myFile, xy, names);
+        AbstractSYMPHONIEReader.__init__(self, myFile, xy, names);
         self.reader = CovReader(myGrid, self.filename)
         self.find_points_coordinates(xy)

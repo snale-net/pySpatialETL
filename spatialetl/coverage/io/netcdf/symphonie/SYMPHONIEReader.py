@@ -297,27 +297,99 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         return False
 
     def get_x_size(self):
-        return np.shape(self.grid.variables['longitude_t'][:])[1];
+        try:
+            if "longitude_t" in self.grid.variables:
+                return np.shape(self.grid.variables['longitude_t'][:])[1];
+            else:
+                logging.debug(
+                    "No variables found for '" + str(VariableDefinition.LONG_NAME['longitude']) + "'")
+                raise (VariableNameError("SymphonieReader",
+                                         "No variables found for '" + str(
+                                             VariableDefinition.LONG_NAME['longitude']) + "'",
+                                         1000))
+        except Exception as ex:
+            logging.debug("Error '" + str(ex) + "'")
+            raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
 
     def get_y_size(self):
-        return np.shape(self.grid.variables['latitude_t'][:])[0];
+        try:
+            if "latitude_t" in self.grid.variables:
+                return np.shape(self.grid.variables['latitude_t'][:])[0];
+            else:
+                logging.debug(
+                    "No variables found for '" + str(VariableDefinition.LONG_NAME['latitude']) + "'")
+                raise (VariableNameError("SymphonieReader",
+                                         "No variables found for '" + str(
+                                             VariableDefinition.LONG_NAME['latitude']) + "'",
+                                         1000))
+        except Exception as ex:
+            logging.debug("Error '" + str(ex) + "'")
+            raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
 
     def get_z_size(self):
-        return np.shape(self.grid.variables['depth_t'][:])[0];
+        try:
+            if "depth_t" in self.grid.variables:
+                return np.shape(self.grid.variables['depth_t'][:])[0];
+            else:
+                logging.debug(
+                    "No variables found for '" + str(VariableDefinition.LONG_NAME['depth']) + "'")
+                raise (VariableNameError("SymphonieReader",
+                                         "No variables found for '" + str(
+                                             VariableDefinition.LONG_NAME['depth']) + "'",
+                                         1000))
+        except Exception as ex:
+            logging.debug("Error '" + str(ex) + "'")
+            raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
 
     def get_t_size(self):
         return self.t_size
 
     def read_axis_x(self, xmin, xmax, ymin, ymax):
-        return self.grid.variables['longitude_t'][ymin:ymax, xmin:xmax]
+        try:
+            if "longitude_t" in self.grid.variables:
+                return self.grid.variables['longitude_t'][ymin:ymax, xmin:xmax]
+            else:
+                logging.debug(
+                    "No variables found for '" + str(VariableDefinition.LONG_NAME['longitude']) + "'")
+                raise (VariableNameError("SymphonieReader",
+                                         "No variables found for '" + str(
+                                             VariableDefinition.LONG_NAME['longitude']) + "'",
+                                         1000))
+        except Exception as ex:
+            logging.debug("Error '" + str(ex) + "'")
+            raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
 
     def read_axis_y(self, xmin, xmax, ymin, ymax):
-        return self.grid.variables['latitude_t'][ymin:ymax, xmin:xmax]
+        try:
+            if "latitude_t" in self.grid.variables:
+                return self.grid.variables['latitude_t'][ymin:ymax, xmin:xmax]
+            else:
+                logging.debug(
+                    "No variables found for '" + str(VariableDefinition.LONG_NAME['latitude']) + "'")
+                raise (VariableNameError("SymphonieReader",
+                                         "No variables found for '" + str(
+                                             VariableDefinition.LONG_NAME['latitude']) + "'",
+                                         1000))
+        except Exception as ex:
+            logging.debug("Error '" + str(ex) + "'")
+            raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
 
     def read_axis_z(self, ):
-        lev = self.grid.variables["depth_t"][::]
-        lev[::] *= -1.0  # inverse la profondeur
-        return lev
+        try:
+            if "depth_t" in self.grid.variables:
+                lev = self.grid.variables["depth_t"][::]
+                lev[::] *= -1.0  # inverse la profondeur
+                return lev
+            else:
+                logging.debug(
+                    "No variables found for '" + str(VariableDefinition.LONG_NAME['depth']) + "'")
+                raise (VariableNameError("SymphonieReader",
+                                         "No variables found for '" + str(
+                                             VariableDefinition.LONG_NAME['depth']) + "'",
+                                         1000))
+        except Exception as ex:
+            logging.debug("Error '" + str(ex) + "'")
+            raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
 
     def read_axis_t(self, tmin, tmax, timestamp):
 
@@ -342,29 +414,31 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         try:
             if "mask_t" in self.grid.variables:
                 return np.ma.filled(self.grid.variables["mask_t"][index_z, ymin:ymax, xmin:xmax], fill_value=np.nan)
+            else:
+                logging.debug(
+                    "No variables found for '" + str(VariableDefinition.LONG_NAME['2d_sea_binary_mask']) + "'")
+                raise (VariableNameError("SymphonieReader",
+                                         "No variables found for '" + str(
+                                             VariableDefinition.LONG_NAME['2d_sea_binary_mask']) + "'",
+                                         1000))
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
-
-        logging.debug("No variables found for '" + str(VariableDefinition.LONG_NAME['2d_sea_binary_mask']) + "'")
-        raise (VariableNameError("SymphonieReader",
-                                 "No variables found for '" + str(
-                                     VariableDefinition.LONG_NAME['2d_sea_binary_mask']) + "'",
-                                 1000))
 
     def read_variable_3D_sea_binary_mask(self, xmin, xmax, ymin, ymax):
         try:
             if "mask_t" in self.grid.variables:
                 return np.ma.filled(self.grid.variables["mask_t"][:, ymin:ymax, xmin:xmax], fill_value=np.nan)
+            else:
+                logging.debug(
+                    "No variables found for '" + str(VariableDefinition.LONG_NAME['2d_sea_binary_mask']) + "'")
+                raise (VariableNameError("SymphonieReader",
+                                         "No variables found for '" + str(
+                                             VariableDefinition.LONG_NAME['2d_sea_binary_mask']) + "'",
+                                         1000))
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
-
-        logging.debug("No variables found for '" + str(VariableDefinition.LONG_NAME['2d_sea_binary_mask']) + "'")
-        raise (VariableNameError("SymphonieReader",
-                                 "No variables found for '" + str(
-                                     VariableDefinition.LONG_NAME['2d_sea_binary_mask']) + "'",
-                                 1000))
 
     def read_variable_2D_wet_binary_mask_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
@@ -372,57 +446,58 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             if "wetmask_t" in self.ncfile.variables:
                 return np.ma.filled(self.ncfile.variables["wetmask_t"][0, ymin:ymax, xmin:xmax],
                                     fill_value=np.nan)
+            else:
+                logging.debug(
+                    "No variables found for '" + str(VariableDefinition.LONG_NAME['_wet_binary_mask']) + "'")
+                raise (VariableNameError("SymphonieReader",
+                                         "No variables found for '" + str(
+                                             VariableDefinition.LONG_NAME['wet_binary_mask']) + "'",
+                                         1000))
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
-
-        logging.debug("No variables found for '" + str(VariableDefinition.LONG_NAME['2d_sea_binary_mask']) + "'")
-        raise (VariableNameError("SymphonieReader",
-                                 "No variables found for '" + str(
-                                     VariableDefinition.LONG_NAME['2d_sea_binary_mask']) + "'",
-                                 1000))
 
     def read_variable_mesh_size(self, xmin, xmax, ymin, ymax):
         try:
             if "sqrt_dxdy" in self.grid.variables:
                 return np.ma.filled(self.grid.variables["sqrt_dxdy"][ymin:ymax, xmin:xmax], fill_value=np.nan)
+            else:
+                logging.debug("No variables found for '" + str(VariableDefinition.LONG_NAME['mesh_size']) + "'")
+                raise (VariableNameError("SymphonieReader",
+                                         "No variables found for '" + str(
+                                             VariableDefinition.LONG_NAME['mesh_size']) + "'",
+                                         1000))
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
-
-        logging.debug("No variables found for '" + str(VariableDefinition.LONG_NAME['mesh_size']) + "'")
-        raise (VariableNameError("SymphonieReader",
-                                 "No variables found for '" + str(
-                                     VariableDefinition.LONG_NAME['mesh_size']) + "'",
-                                 1000))
 
     def read_variable_x_mesh_size(self, xmin, xmax, ymin, ymax):
         try:
             if "dx_t" in self.grid.variables:
                 return np.ma.filled(self.grid.variables["dx_t"][ymin:ymax, xmin:xmax], fill_value=np.nan)
+            else:
+                logging.debug("No variables found for '" + str(VariableDefinition.LONG_NAME['x_mesh_size']) + "'")
+                raise (VariableNameError("SymphonieReader",
+                                         "No variables found for '" + str(
+                                             VariableDefinition.LONG_NAME['x_mesh_size']) + "'",
+                                         1000))
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
-
-        logging.debug("No variables found for '" + str(VariableDefinition.LONG_NAME['x_mesh_size']) + "'")
-        raise (VariableNameError("SymphonieReader",
-                                 "No variables found for '" + str(
-                                     VariableDefinition.LONG_NAME['x_mesh_size']) + "'",
-                                 1000))
 
     def read_variable_y_mesh_size(self, xmin, xmax, ymin, ymax):
         try:
             if "dy_t" in self.grid.variables:
                 return np.ma.filled(self.grid.variables["dy_t"][ymin:ymax, xmin:xmax], fill_value=np.nan)
+            else:
+                logging.debug("No variables found for '" + str(VariableDefinition.LONG_NAME['y_mesh_size']) + "'")
+                raise (VariableNameError("SymphonieReader",
+                                         "No variables found for '" + str(
+                                             VariableDefinition.LONG_NAME['y_mesh_size']) + "'",
+                                         1000))
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
-
-        logging.debug("No variables found for '" + str(VariableDefinition.LONG_NAME['y_mesh_size']) + "'")
-        raise (VariableNameError("SymphonieReader",
-                                 "No variables found for '" + str(
-                                     VariableDefinition.LONG_NAME['y_mesh_size']) + "'",
-                                 1000))
 
     #################
     # HYDRO
@@ -431,14 +506,23 @@ La classe SymphonieReader permet de lire les données du format Symphonie
     def read_variable_sea_surface_height_above_mean_sea_level_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
             self.open_file(index_t)
+
             if "ssh_w" in self.ncfile.variables:
                 data = np.ma.filled(self.ncfile.variables["ssh_w"][0, ymin:ymax, xmin:xmax], fill_value=np.nan)
-            if "ssh" in self.ncfile.variables:
+            elif "ssh" in self.ncfile.variables:
                 data = np.ma.filled(self.ncfile.variables["ssh"][0, ymin:ymax, xmin:xmax], fill_value=np.nan)
-            if "ssh_inst" in self.ncfile.variables:
+            elif "ssh_inst" in self.ncfile.variables:
                 data = np.ma.filled(self.ncfile.variables["ssh_inst"][0, ymin:ymax, xmin:xmax], fill_value=np.nan)
+            else:
+                logging.debug("No variables found for '" + str(
+                    VariableDefinition.LONG_NAME['sea_surface_height_above_mean_sea_level']) + "'")
+                raise (VariableNameError("SymphonieReader",
+                                         "No variables found for '" + str(
+                                             VariableDefinition.LONG_NAME[
+                                                 'sea_surface_height_above_mean_sea_level']) + "'",
+                                         1000))
 
-            if "wetmask_t" in self.ncfile.variables:
+            if "wetmask_t" in self.ncfile.variables: # We apply the wetmask
                 data[self.ncfile.variables["wetmask_t"][0, ymin:ymax, xmin:xmax] == 0] = np.nan
 
             return data
@@ -446,21 +530,21 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
-
-        logging.debug("No variables found for '" + str(
-            VariableDefinition.LONG_NAME['sea_surface_height_above_mean_sea_level']) + "'")
-        raise (VariableNameError("SymphonieReader",
-                                 "No variables found for '" + str(
-                                     VariableDefinition.LONG_NAME['sea_surface_height_above_mean_sea_level']) + "'",
-                                 1000))
 
     def read_variable_sea_water_column_thickness_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
             self.open_file(index_t)
             if "hssh" in self.ncfile.variables:
                 data = np.ma.filled(self.ncfile.variables["hssh"][0, ymin:ymax, xmin:xmax], fill_value=np.nan)
+            else:
+                logging.debug("No variables found for '" + str(
+                    VariableDefinition.LONG_NAME['sea_water_column_thickness']) + "'")
+                raise (VariableNameError("SymphonieReader",
+                                         "No variables found for '" + str(
+                                             VariableDefinition.LONG_NAME['sea_water_column_thickness']) + "'",
+                                         1000))
 
-            if "wetmask_t" in self.ncfile.variables:
+            if "wetmask_t" in self.ncfile.variables: # We apply the wetmask
                 data[self.ncfile.variables["wetmask_t"][0, ymin:ymax, xmin:xmax] == 0] = np.nan
 
             return data
@@ -468,13 +552,6 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
-
-        logging.debug("No variables found for '" + str(
-            VariableDefinition.LONG_NAME['sea_water_column_thickness']) + "'")
-        raise (VariableNameError("SymphonieReader",
-                                 "No variables found for '" + str(
-                                     VariableDefinition.LONG_NAME['sea_water_column_thickness']) + "'",
-                                 1000))
 
     def read_variable_sea_surface_temperature_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
@@ -483,8 +560,15 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             if "tem" in self.ncfile.variables:
                 data = np.ma.filled(self.ncfile.variables["tem"][0, index_z, ymin:ymax, xmin:xmax],
                                     fill_value=np.nan)
+            else:
+                logging.debug("No variables found for '" + str(
+                    VariableDefinition.LONG_NAME['sea_surface_temperature']) + "'")
+                raise (VariableNameError("SymphonieReader",
+                                         "No variables found for '" + str(
+                                             VariableDefinition.LONG_NAME['sea_surface_temperature']) + "'",
+                                         1000))
 
-            if "wetmask_t" in self.ncfile.variables:
+            if "wetmask_t" in self.ncfile.variables: # We apply the wetmask
                 data[self.ncfile.variables["wetmask_t"][0, ymin:ymax, xmin:xmax] == 0] = np.nan
 
             return data
@@ -493,12 +577,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
 
-        logging.debug("No variables found for '" + str(
-            VariableDefinition.LONG_NAME['sea_surface_temperature']) + "'")
-        raise (VariableNameError("SymphonieReader",
-                                 "No variables found for '" + str(
-                                     VariableDefinition.LONG_NAME['sea_surface_temperature']) + "'",
-                                 1000))
+
 
     def read_variable_sea_surface_salinity_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
@@ -507,8 +586,15 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             if "sal" in self.ncfile.variables:
                 data =np.ma.filled(self.ncfile.variables["sal"][0, index_z, ymin:ymax, xmin:xmax],
                                     fill_value=np.nan)
+            else:
+                logging.debug("No variables found for '" + str(
+                    VariableDefinition.LONG_NAME['sea_surface_salinity']) + "'")
+                raise (VariableNameError("SymphonieReader",
+                                         "No variables found for '" + str(
+                                             VariableDefinition.LONG_NAME['sea_surface_salinity']) + "'",
+                                         1000))
 
-            if "wetmask_t" in self.ncfile.variables:
+            if "wetmask_t" in self.ncfile.variables:  # We apply the wetmask
                 data[self.ncfile.variables["wetmask_t"][0, ymin:ymax, xmin:xmax] == 0] = np.nan
 
             return data
@@ -517,55 +603,56 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
 
-        logging.debug("No variables found for '" + str(
-            VariableDefinition.LONG_NAME['sea_surface_salinity']) + "'")
-        raise (VariableNameError("SymphonieReader",
-                                 "No variables found for '" + str(
-                                     VariableDefinition.LONG_NAME['sea_surface_salinity']) + "'",
-                                 1000))
-
     def read_variable_sea_water_velocity_at_sea_water_surface_at_time(self, index_t, xmin, xmax, ymin, ymax):
-        self.open_file(index_t)
-        index_z = self.get_z_size() - 1
-        xmin_overlap, xmax_overlap, ymin_overlap, ymax_overlap, new_xmin, new_xmax, new_ymin, new_ymax = self.compute_overlap_indexes(
-            xmin, xmax, ymin, ymax)
+        try:
+            self.open_file(index_t)
+            index_z = self.get_z_size() - 1
+            xmin_overlap, xmax_overlap, ymin_overlap, ymax_overlap, new_xmin, new_xmax, new_ymin, new_ymax = self.compute_overlap_indexes(
+                xmin, xmax, ymin, ymax)
 
-        mask_t = self.grid.variables["mask_t"][index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
-        mask_u = self.grid.variables["mask_u"][index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
-        mask_v = self.grid.variables["mask_v"][index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+            mask_t = self.grid.variables["mask_t"][index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+            mask_u = self.grid.variables["mask_u"][index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+            mask_v = self.grid.variables["mask_v"][index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
 
-        if self.gridrotcos_t is None and self.gridrotsin_t is None:
-            self.compute_rot()
+            if self.gridrotcos_t is None and self.gridrotsin_t is None:
+                self.compute_rot()
 
-        rotcos = self.gridrotcos_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
-        rotsin = self.gridrotsin_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+            rotcos = self.gridrotcos_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+            rotsin = self.gridrotsin_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
 
-        if "vel_u" in self.ncfile.variables:
-            data_u = np.ma.filled(
-                self.ncfile.variables["vel_u"][0, index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
-                fill_value=np.nan)
-        if "u" in self.ncfile.variables:
-            data_u = np.ma.filled(
-                self.ncfile.variables["u"][0, index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
-                fill_value=np.nan)
-        if "vel_v" in self.ncfile.variables:
-            data_v = np.ma.filled(
-                self.ncfile.variables["vel_v"][0, index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
-                fill_value=np.nan)
-        if "v" in self.ncfile.variables:
-            data_v = np.ma.filled(
-                self.ncfile.variables["v"][0, index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
-                fill_value=np.nan)
+            if "vel_u" in self.ncfile.variables and "vel_v" in self.ncfile.variables:
+                data_u = np.ma.filled(
+                    self.ncfile.variables["vel_u"][0, index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
+                    fill_value=np.nan)
+                data_v = np.ma.filled(
+                    self.ncfile.variables["vel_v"][0, index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
+                    fill_value=np.nan)
+            elif "u" in self.ncfile.variables and "v" in self.ncfile.variables:
+                data_u = np.ma.filled(
+                    self.ncfile.variables["u"][0, index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
+                    fill_value=np.nan)
+                data_v = np.ma.filled(
+                    self.ncfile.variables["v"][0, index_z, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
+                    fill_value=np.nan)
+            else:
+                logging.debug("No variables found for 'Sea Water Velocity At Sea Water Surface'")
+                raise (VariableNameError("SymphonieReader",
+                                         "No variables found for 'Sea Water Velocity At Sea Water Surface'",
+                                         1000))
 
-        u_rot, v_rot = self.compute_vector_rotation(data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v)
+            u_rot, v_rot = self.compute_vector_rotation(data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v)
 
-        if "wetmask_t" in self.ncfile.variables:
-            u_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
-                  xmin_overlap:xmax_overlap] == 0] = np.nan
-            v_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
-                  xmin_overlap:xmax_overlap] == 0] = np.nan
+            if "wetmask_t" in self.ncfile.variables: # We apply the wetmask
+                u_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
+                      xmin_overlap:xmax_overlap] == 0] = np.nan
+                v_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
+                      xmin_overlap:xmax_overlap] == 0] = np.nan
 
-        return [u_rot[new_ymin:new_ymax, new_xmin:new_xmax], v_rot[new_ymin:new_ymax, new_xmin:new_xmax]]
+            return [u_rot[new_ymin:new_ymax, new_xmin:new_xmax], v_rot[new_ymin:new_ymax, new_xmin:new_xmax]]
+
+        except Exception as ex:
+            logging.debug("Error '" + str(ex) + "'")
+            raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
 
     #################
     # HYDRO
@@ -579,8 +666,15 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             if "tem" in self.ncfile.variables:
                 data = np.ma.filled(self.ncfile.variables["tem"][0, index_z, ymin:ymax, xmin:xmax],
                                     fill_value=np.nan)
+            else:
+                logging.debug("No variables found for '" + str(
+                    VariableDefinition.LONG_NAME['sea_water_temperature_at_ground_level']) + "'")
+                raise (VariableNameError("SymphonieReader",
+                                         "No variables found for '" + str(
+                                             VariableDefinition.LONG_NAME['sea_water_temperature_at_ground_level']) + "'",
+                                         1000))
 
-            if "wetmask_t" in self.ncfile.variables:
+            if "wetmask_t" in self.ncfile.variables: # We apply the wetmask
                 data[self.ncfile.variables["wetmask_t"][0, ymin:ymax, xmin:xmax] == 0] = np.nan
 
             return data
@@ -588,13 +682,6 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
-
-        logging.debug("No variables found for '" + str(
-            VariableDefinition.LONG_NAME['sea_surface_temperature']) + "'")
-        raise (VariableNameError("SymphonieReader",
-                                 "No variables found for '" + str(
-                                     VariableDefinition.LONG_NAME['sea_surface_temperature']) + "'",
-                                 1000))
 
     def read_variable_sea_water_salinity_at_ground_level_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
@@ -603,8 +690,15 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             if "sal" in self.ncfile.variables:
                 data = np.ma.filled(self.ncfile.variables["sal"][0, index_z, ymin:ymax, xmin:xmax],
                                     fill_value=np.nan)
+            else:
+                logging.debug("No variables found for '" + str(
+                    VariableDefinition.LONG_NAME['sea_water_salinity_at_ground_level']) + "'")
+                raise (VariableNameError("SymphonieReader",
+                                         "No variables found for '" + str(
+                                             VariableDefinition.LONG_NAME['sea_water_salinity_at_ground_level']) + "'",
+                                         1000))
 
-            if "wetmask_t" in self.ncfile.variables:
+            if "wetmask_t" in self.ncfile.variables: # We apply the wetmask
                 data[self.ncfile.variables["wetmask_t"][0, ymin:ymax, xmin:xmax] == 0] = np.nan
 
             return data
@@ -613,12 +707,6 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
 
-        logging.debug("No variables found for '" + str(
-            VariableDefinition.LONG_NAME['sea_surface_salinity']) + "'")
-        raise (VariableNameError("SymphonieReader",
-                                 "No variables found for '" + str(
-                                     VariableDefinition.LONG_NAME['sea_surface_salinity']) + "'",
-                                 1000))
 
     def read_variable_sea_water_velocity_at_ground_level_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
@@ -637,20 +725,33 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             rotcos = self.gridrotcos_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
             rotsin = self.gridrotsin_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
 
-            if "vel_u" in self.ncfile.variables:
+            if "vel_u" in self.ncfile.variables and "vel_v" in self.ncfile.variables:
                 data_u = np.ma.filled(
                     self.ncfile.variables["vel_u"][0, index_z, ymin_overlap:ymax_overlap,
                     xmin_overlap:xmax_overlap],
                     fill_value=np.nan)
-            if "vel_v" in self.ncfile.variables:
                 data_v = np.ma.filled(
                     self.ncfile.variables["vel_v"][0, index_z, ymin_overlap:ymax_overlap,
                     xmin_overlap:xmax_overlap],
                     fill_value=np.nan)
+            elif "u" in self.ncfile.variables and "v" in self.ncfile.variables:
+                data_u = np.ma.filled(
+                    self.ncfile.variables["u"][0, index_z, ymin_overlap:ymax_overlap,
+                    xmin_overlap:xmax_overlap],
+                    fill_value=np.nan)
+                data_v = np.ma.filled(
+                    self.ncfile.variables["v"][0, index_z, ymin_overlap:ymax_overlap,
+                    xmin_overlap:xmax_overlap],
+                    fill_value=np.nan)
+            else:
+                logging.debug("No variables found for 'Sea Water Velocity at Ground level'")
+                raise (VariableNameError("SymphonieReader",
+                                         "No variables found for 'Sea Water Velocity at Ground level'",
+                                         1000))
 
             u_rot, v_rot = self.compute_vector_rotation(data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v)
 
-            if "wetmask_t" in self.ncfile.variables:
+            if "wetmask_t" in self.ncfile.variables: # We apply the wetmask
                 u_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
                       xmin_overlap:xmax_overlap] == 0] = np.nan
                 v_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
@@ -662,11 +763,6 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
 
-        logging.debug("No variables found for \'Sea Water Velocity at Ground level\'")
-        raise (VariableNameError("SymphonieReader",
-                                 "No variables found for \'Sea Water Velocity at Ground level\'",
-                                 1000))
-
     #################
     # HYDRO
     # 2D
@@ -676,16 +772,18 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         try:
             if "hm_w" in self.grid.variables:
                 return np.ma.filled(self.grid.variables["hm_w"][ymin:ymax, xmin:xmax], fill_value=np.nan)
-            if "h_w" in self.grid.variables:
+            elif "h_w" in self.grid.variables:
                 return np.ma.filled(self.grid.variables["h_w"][ymin:ymax, xmin:xmax], fill_value=np.nan)
+            else:
+                logging.debug("No variables found for '" + str(VariableDefinition.LONG_NAME['bathymetry']) + "'")
+                raise (VariableNameError("SymphonieReader",
+                                         "No variables found for '" + str(
+                                             VariableDefinition.LONG_NAME['bathymetry']) + "'",
+                                         1000))
+
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
-
-        logging.debug("No variables found for '" + str(VariableDefinition.LONG_NAME['bathymetry']) + "'")
-        raise (VariableNameError("SymphonieReader",
-                                 "No variables found for '" + str(VariableDefinition.LONG_NAME['bathymetry']) + "'",
-                                 1000))
 
     def read_variable_barotropic_sea_water_velocity_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
@@ -704,18 +802,22 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             rotcos = self.gridrotcos_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
             rotsin = self.gridrotsin_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
 
-            if "velbar_u" in self.ncfile.variables:
+            if "velbar_u" in self.ncfile.variables and "velbar_v" in self.ncfile.variables:
                 data_u = np.ma.filled(
                     self.ncfile.variables["velbar_u"][0, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
                     fill_value=np.nan)
-            if "velbar_v" in self.ncfile.variables:
                 data_v = np.ma.filled(
                     self.ncfile.variables["velbar_v"][0, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
                     fill_value=np.nan)
+            else:
+                logging.debug("No variables found for 'Barotropic Sea Water Velocity'")
+                raise (VariableNameError("SymphonieReader",
+                                         "No variables found for 'Barotropic Sea Water Velocity'",
+                                         1000))
 
             u_rot, v_rot = self.compute_vector_rotation(data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v)
 
-            if "wetmask_t" in self.ncfile.variables:
+            if "wetmask_t" in self.ncfile.variables:  # We apply the wetmask
                 u_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
                       xmin_overlap:xmax_overlap] == 0] = np.nan
                 v_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
@@ -726,11 +828,6 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
-
-        logging.debug("No variables found for \'Barotropic Sea Water Velocity\'")
-        raise (VariableNameError("SymphonieReader",
-                                 "No variables found for \'Barotropic Sea Water Velocity\'",
-                                 1000))
 
     #################
     # HYDRO
@@ -743,15 +840,15 @@ La classe SymphonieReader permet de lire les données du format Symphonie
                 data = self.grid.variables["depth_t"][index_z, ymin:ymax, xmin:xmax]
                 data[::] *= -1.0  # inverse la profondeur
                 return np.ma.filled(data, fill_value=np.nan)
+            else:
+                logging.debug("No variables found for '" + str(VariableDefinition.LONG_NAME['depth_sigma']) + "'")
+                raise (VariableNameError("SymphonieReader",
+                                         "No variables found for '" + str(
+                                             VariableDefinition.LONG_NAME['depth_sigma']) + "'",
+                                         1000))
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
-
-        logging.debug("No variables found for '" + str(VariableDefinition.LONG_NAME['depth_sigma']) + "'")
-        raise (VariableNameError("SymphonieReader",
-                                 "No variables found for '" + str(
-                                     VariableDefinition.LONG_NAME['depth_sigma']) + "'",
-                                 1000))
 
     def read_variable_sea_water_temperature_at_time_and_depth(self, index_t, index_z, xmin, xmax, ymin, ymax):
         try:
@@ -759,8 +856,15 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             if "tem" in self.ncfile.variables:
                 data = np.ma.filled(self.ncfile.variables["tem"][0, index_z, ymin:ymax, xmin:xmax],
                                     fill_value=np.nan)
+            else:
+                logging.debug("No variables found for '" + str(
+                    VariableDefinition.LONG_NAME['sea_water_temperature']) + "'")
+                raise (VariableNameError("SymphonieReader",
+                                         "No variables found for '" + str(
+                                             VariableDefinition.LONG_NAME['sea_water_temperature']) + "'",
+                                         1000))
 
-            if "wetmask_t" in self.ncfile.variables:
+            if "wetmask_t" in self.ncfile.variables:  # We apply the wetmask
                 data[self.ncfile.variables["wetmask_t"][0, ymin:ymax, xmin:xmax] == 0] = np.nan
 
             return data
@@ -768,13 +872,6 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
-
-        logging.debug("No variables found for '" + str(
-            VariableDefinition.LONG_NAME['sea_surface_temperature']) + "'")
-        raise (VariableNameError("SymphonieReader",
-                                 "No variables found for '" + str(
-                                     VariableDefinition.LONG_NAME['sea_surface_temperature']) + "'",
-                                 1000))
 
     def read_variable_sea_water_salinity_at_time_and_depth(self, index_t, index_z, xmin, xmax, ymin, ymax):
         try:
@@ -782,8 +879,15 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             if "sal" in self.ncfile.variables:
                 data = np.ma.filled(self.ncfile.variables["sal"][0, index_z, ymin:ymax, xmin:xmax],
                                     fill_value=np.nan)
+            else:
+                logging.debug("No variables found for '" + str(
+                    VariableDefinition.LONG_NAME['sea_water_salinity']) + "'")
+                raise (VariableNameError("SymphonieReader",
+                                         "No variables found for '" + str(
+                                             VariableDefinition.LONG_NAME['sea_water_salinity']) + "'",
+                                         1000))
 
-            if "wetmask_t" in self.ncfile.variables:
+            if "wetmask_t" in self.ncfile.variables: # We apply the wetmask
                 data[self.ncfile.variables["wetmask_t"][0, ymin:ymax, xmin:xmax] == 0] = np.nan
 
             return data
@@ -791,13 +895,6 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
-
-        logging.debug("No variables found for '" + str(
-            VariableDefinition.LONG_NAME['sea_surface_salinity']) + "'")
-        raise (VariableNameError("SymphonieReader",
-                                 "No variables found for '" + str(
-                                     VariableDefinition.LONG_NAME['sea_surface_salinity']) + "'",
-                                 1000))
 
     def read_variable_baroclinic_sea_water_velocity_at_time_and_depth(self, index_t, index_z, xmin, xmax, ymin, ymax):
         try:
@@ -815,20 +912,33 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             rotcos = self.gridrotcos_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
             rotsin = self.gridrotsin_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
 
-            if "vel_u" in self.ncfile.variables:
+            if "vel_u" in self.ncfile.variables and  "vel_v" in self.ncfile.variables:
                 data_u = np.ma.filled(
                     self.ncfile.variables["vel_u"][0, index_z, ymin_overlap:ymax_overlap,
                     xmin_overlap:xmax_overlap],
                     fill_value=np.nan)
-            if "vel_v" in self.ncfile.variables:
                 data_v = np.ma.filled(
                     self.ncfile.variables["vel_v"][0, index_z, ymin_overlap:ymax_overlap,
                     xmin_overlap:xmax_overlap],
                     fill_value=np.nan)
+            elif "u" in self.ncfile.variables and "v" in self.ncfile.variables:
+                data_u = np.ma.filled(
+                    self.ncfile.variables["u"][0, index_z, ymin_overlap:ymax_overlap,
+                    xmin_overlap:xmax_overlap],
+                    fill_value=np.nan)
+                data_v = np.ma.filled(
+                    self.ncfile.variables["v"][0, index_z, ymin_overlap:ymax_overlap,
+                    xmin_overlap:xmax_overlap],
+                    fill_value=np.nan)
+            else:
+                logging.debug("No variables found for 'Baroclinic Sea Water Velocity'")
+                raise (VariableNameError("SymphonieReader",
+                                         "No variables found for 'Baroclinic Sea Water Velocity'",
+                                         1000))
 
             u_rot, v_rot = self.compute_vector_rotation(data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v)
 
-            if "wetmask_t" in self.ncfile.variables:
+            if "wetmask_t" in self.ncfile.variables: # We apply the wetmask
                 u_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
                       xmin_overlap:xmax_overlap] == 0] = np.nan
                 v_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
@@ -840,11 +950,6 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
 
-        logging.debug("No variables found for \'Baroclinic Sea Water Velocity\'")
-        raise (VariableNameError("SymphonieReader",
-                                 "No variables found for \'Baroclinic Sea Water Velocity\'",
-                                 1000))
-
     #################
     # WAVES
     # Sea Surface
@@ -855,8 +960,16 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             if "hs_wave_t" in self.ncfile.variables:
                 data = np.ma.filled(self.ncfile.variables["hs_wave_t"][0, ymin:ymax, xmin:xmax],
                                     fill_value=np.nan)
+            else:
+                logging.debug(
+                    "No variables found for '" + str(
+                        VariableDefinition.LONG_NAME['sea_surface_wave_significant_height']) + "'")
+                raise (VariableNameError("SymphonieReader",
+                                         "No variables found for '" + str(
+                                             VariableDefinition.LONG_NAME['sea_surface_wave_significant_height']) + "'",
+                                         1000))
 
-            if "wetmask_t" in self.ncfile.variables:
+            if "wetmask_t" in self.ncfile.variables: # We apply the wetmask
                 data[self.ncfile.variables["wetmask_t"][0, ymin:ymax, xmin:xmax] == 0] = np.nan
 
             return data
@@ -864,21 +977,22 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
-
-        logging.debug(
-            "No variables found for '" + str(VariableDefinition.LONG_NAME['sea_surface_wave_significant_height']) + "'")
-        raise (VariableNameError("SymphonieReader",
-                                 "No variables found for '" + str(
-                                     VariableDefinition.LONG_NAME['sea_surface_wave_significant_height']) + "'",
-                                 1000))
 
     def read_variable_sea_surface_wave_mean_period_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
             self.open_file(index_t)
             if "t_wave_t" in self.ncfile.variables:
                 data = np.ma.filled(self.ncfile.variables["t_wave_t"][0, ymin:ymax, xmin:xmax], fill_value=np.nan)
+            else:
+                logging.debug(
+                    "No variables found for '" + str(
+                        VariableDefinition.LONG_NAME['sea_surface_wave_mean_period']) + "'")
+                raise (VariableNameError("SymphonieReader",
+                                         "No variables found for '" + str(
+                                             VariableDefinition.LONG_NAME['sea_surface_wave_mean_period']) + "'",
+                                         1000))
 
-            if "wetmask_t" in self.ncfile.variables:
+            if "wetmask_t" in self.ncfile.variables: # We apply the wetmask
                 data[self.ncfile.variables["wetmask_t"][0, ymin:ymax, xmin:xmax] == 0] = np.nan
 
             return data
@@ -886,13 +1000,6 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
-
-        logging.debug(
-            "No variables found for '" + str(VariableDefinition.LONG_NAME['sea_surface_wave_mean_period']) + "'")
-        raise (VariableNameError("SymphonieReader",
-                                 "No variables found for '" + str(
-                                     VariableDefinition.LONG_NAME['sea_surface_wave_mean_period']) + "'",
-                                 1000))
 
     def read_variable_sea_surface_wave_to_direction_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
@@ -900,8 +1007,16 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             if "dir_wave_t" in self.ncfile.variables:
                 data = np.ma.filled(self.ncfile.variables["dir_wate_t"][0, ymin:ymax, xmin:xmax],
                                     fill_value=np.nan)
+            else:
+                logging.debug(
+                    "No variables found for '" + str(
+                        VariableDefinition.LONG_NAME['sea_surface_wave_to_direction']) + "'")
+                raise (VariableNameError("SymphonieReader",
+                                         "No variables found for '" + str(
+                                             VariableDefinition.LONG_NAME['sea_surface_wave_to_direction']) + "'",
+                                         1000))
 
-            if "wetmask_t" in self.ncfile.variables:
+            if "wetmask_t" in self.ncfile.variables: # We apply the wetmask
                 data[self.ncfile.variables["wetmask_t"][0, ymin:ymax, xmin:xmax] == 0] = np.nan
 
             return data
@@ -909,13 +1024,6 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
-
-        logging.debug(
-            "No variables found for '" + str(VariableDefinition.LONG_NAME['sea_surface_wave_to_direction']) + "'")
-        raise (VariableNameError("SymphonieReader",
-                                 "No variables found for '" + str(
-                                     VariableDefinition.LONG_NAME['sea_surface_wave_to_direction']) + "'",
-                                 1000))
 
     def read_variable_sea_surface_wave_stokes_drift_velocity_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
@@ -934,20 +1042,24 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             rotcos = self.gridrotcos_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
             rotsin = self.gridrotsin_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
 
-            if "velbarstokes_u" in self.ncfile.variables:
+            if "velbarstokes_u" in self.ncfile.variables and "velbarstokes_v" in self.ncfile.variables:
                 data_u = np.ma.filled(
                     self.ncfile.variables["velbarstokes_u"][0, ymin_overlap:ymax_overlap,
                     xmin_overlap:xmax_overlap],
                     fill_value=np.nan)
-            if "velbarstokes_v" in self.ncfile.variables:
                 data_v = np.ma.filled(
                     self.ncfile.variables["velbarstokes_v"][0, ymin_overlap:ymax_overlap,
                     xmin_overlap:xmax_overlap],
                     fill_value=np.nan)
+            else:
+                logging.debug("No variables found for 'Surface Stokes Drift Velocity'")
+                raise (VariableNameError("SymphonieReader",
+                                         "No variables found for 'Surface Stokes Drift Velocity'",
+                                         1000))
 
             u_rot, v_rot = self.compute_vector_rotation(data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v)
 
-            if "wetmask_t" in self.ncfile.variables:
+            if "wetmask_t" in self.ncfile.variables: # We apply the wetmask
                 u_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
                       xmin_overlap:xmax_overlap] == 0] = np.nan
                 v_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
@@ -958,11 +1070,6 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
-
-        logging.debug("No variables found for \'Surface Stokes Drift Velocity\'")
-        raise (VariableNameError("SymphonieReader",
-                                 "No variables found for \'Surface Stokes Drift Velocity\'",
-                                 1000))
 
     #################
     # WAVES
@@ -986,18 +1093,22 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             rotcos = self.gridrotcos_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
             rotsin = self.gridrotsin_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
 
-            if "tawx" in self.ncfile.variables:
+            if "tawx" in self.ncfile.variables and  "tawy" in self.ncfile.variables: # We apply the wetmask
                 data_u = np.ma.filled(
                     self.ncfile.variables["tawx"][0, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
                     fill_value=np.nan)
-            if "tawy" in self.ncfile.variables:
                 data_v = np.ma.filled(
                     self.ncfile.variables["tawy"][0, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
                     fill_value=np.nan)
+            else:
+                logging.debug("No variables found for 'Atmosphere Momentum Flux to Waves'")
+                raise (VariableNameError("SymphonieReader",
+                                         "No variables found for 'Atmosphere Momentum Flux to Waves'",
+                                         1000))
 
             u_rot, v_rot = self.compute_vector_rotation(data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v)
 
-            if "wetmask_t" in self.ncfile.variables:
+            if "wetmask_t" in self.ncfile.variables: # We apply the wetmask
                 u_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
                       xmin_overlap:xmax_overlap] == 0] = np.nan
                 v_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
@@ -1008,11 +1119,6 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
-
-        logging.debug("No variables found for \'Atmosphere Momentum Flux to Waves\'")
-        raise (VariableNameError("SymphonieReader",
-                                 "No variables found for \'Atmosphere Momentum Flux to Waves\'",
-                                 1000))
 
     def read_variable_waves_momentum_flux_to_ocean_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
@@ -1031,18 +1137,22 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             rotcos = self.gridrotcos_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
             rotsin = self.gridrotsin_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
 
-            if "twox" in self.ncfile.variables:
+            if "twox" in self.ncfile.variables and "twoy" in self.ncfile.variables:
                 data_u = np.ma.filled(
                     self.ncfile.variables["twox"][0, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
                     fill_value=np.nan)
-            if "twoy" in self.ncfile.variables:
                 data_v = np.ma.filled(
                     self.ncfile.variables["twoy"][0, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
                     fill_value=np.nan)
+            else:
+                logging.debug("No variables found for 'Waves Momentum Flux To Ocean'")
+                raise (VariableNameError("SymphonieReader",
+                                         "No variables found for 'Waves Momentum Flux To Ocean'",
+                                         1000))
 
             u_rot, v_rot = self.compute_vector_rotation(data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v)
 
-            if "wetmask_t" in self.ncfile.variables:
+            if "wetmask_t" in self.ncfile.variables: # We apply the wetmask
                 u_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
                       xmin_overlap:xmax_overlap] == 0] = np.nan
                 v_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
@@ -1053,11 +1163,6 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
-
-        logging.debug("No variables found for \'Waves Momentum Flux To Ocean\'")
-        raise (VariableNameError("SymphonieReader",
-                                 "No variables found for \'Waves Momentum Flux To Ocean\'",
-                                 1000))
 
     #################
     # METEO
@@ -1086,18 +1191,22 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             rotcos = self.gridrotcos_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
             rotsin = self.gridrotsin_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
 
-            if "wstress_u" in self.ncfile.variables:
+            if "wstress_u" in self.ncfile.variables and "wstress_v" in self.ncfile.variables:
                 data_u = np.ma.filled(
                     self.ncfile.variables["wstress_u"][0, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
                     fill_value=np.nan)
-            if "wstress_v" in self.ncfile.variables:
                 data_v = np.ma.filled(
                     self.ncfile.variables["wstress_v"][0, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
                     fill_value=np.nan)
+            else:
+                logging.debug("No variables found for 'Wind Stress'")
+                raise (VariableNameError("SymphonieReader",
+                                         "No variables found for 'Wind Stress'",
+                                         1000))
 
             u_rot, v_rot = self.compute_vector_rotation(data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v)
 
-            if "wetmask_t" in self.ncfile.variables:
+            if "wetmask_t" in self.ncfile.variables: # We apply the wetmask
                 u_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
                       xmin_overlap:xmax_overlap] == 0] = np.nan
                 v_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
@@ -1108,11 +1217,6 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
-
-        logging.debug("No variables found for \'Wind Stress\'")
-        raise (VariableNameError("SymphonieReader",
-                                 "No variables found for \'Wind Stress\'",
-                                 1000))
 
     #################
     # METEO
@@ -1135,18 +1239,22 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             rotcos = self.gridrotcos_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
             rotsin = self.gridrotsin_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
 
-            if "uwind_t" in self.ncfile.variables:
+            if "uwind_t" in self.ncfile.variables and "vwind_t" in self.ncfile.variables:
                 data_u = np.ma.filled(
                     self.ncfile.variables["uwind_t"][0, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
                     fill_value=np.nan)
-            if "vwind_t" in self.ncfile.variables:
                 data_v = np.ma.filled(
                     self.ncfile.variables["vwind_t"][0, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
                     fill_value=np.nan)
+            else:
+                logging.debug("No variables found for \'Wind 10m\'")
+                raise (VariableNameError("SymphonieReader",
+                                         "No variables found for \'Wind 10m\'",
+                                         1000))
 
             u_rot, v_rot = self.compute_vector_rotation(data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v)
 
-            if "wetmask_t" in self.ncfile.variables:
+            if "wetmask_t" in self.ncfile.variables: # We apply the wetmask
                 u_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
                       xmin_overlap:xmax_overlap] == 0] = np.nan
                 v_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
@@ -1158,32 +1266,24 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
 
-        logging.debug("No variables found for \'Wind 10m\'")
-        raise (VariableNameError("SymphonieReader",
-                                 "No variables found for \'Wind 10m\'",
-                                 1000))
-
     # Others
     def read_variable_Ha(self, xmin, xmax, ymin, ymax):
         try:
             if "Ha" in self.ncfile.variables:
                 data = np.ma.filled(self.ncfile.variables["Ha"][ymin:ymax, xmin:xmax],
                                     fill_value=np.nan)
+            else:
+                logging.debug(
+                    "No variables found for 'Ha'")
+                raise (VariableNameError("SymphonieReader",
+                                         "No variables found for 'Ha'",
+                                         1000))
 
-                if "wetmask_t" in self.ncfile.variables:
-                    data[self.ncfile.variables["wetmask_t"][0, ymin:ymax, xmin:xmax] == 0] = np.nan
+            if "wetmask_t" in self.ncfile.variables: # We apply the wetmask
+                data[self.ncfile.variables["wetmask_t"][0, ymin:ymax, xmin:xmax] == 0] = np.nan
 
-                return data
+            return data
 
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
-
-        logging.debug(
-            "No variables found for 'Ha'")
-        raise (VariableNameError("SymphonieReader",
-                                 "No variables found for 'Ha'",
-                                 1000))
-
-
-

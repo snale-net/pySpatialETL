@@ -94,7 +94,11 @@ Elle rajoute une dimension verticale à la couverture horizontale classique.
 
             self.vertical_resampling = True
             self.target_sigma_coordinate = False
-            self.target_global_axis_z = np.arange(Zmin, Zmax+resolution_z, resolution_z)
+            if resolution_z >= Zmax: # On fait un seul niveau
+                self.target_global_axis_z = [Zmax];
+            else:
+                self.target_global_axis_z = np.arange(Zmin, Zmax+resolution_z, resolution_z)
+
             self.target_global_z_size = len(self.target_global_axis_z)
 
             if self.rank == 0:

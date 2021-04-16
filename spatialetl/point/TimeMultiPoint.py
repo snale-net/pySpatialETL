@@ -834,6 +834,64 @@ class TimeMultiPoint(MultiPoint):
 
         return data
 
+    def read_variable_wind_stress_at_time(self, date):
+        index_t = self.find_time_index(date)
+
+        data = np.zeros([2, self.get_nb_points()])
+        data[::] = np.NAN
+
+        if len(index_t) > 1:
+            layers = np.zeros([len(index_t), 2, self.get_nb_points()])
+            layers[::] = np.NAN
+
+            for t in range(0, len(index_t)):
+                comp = self.reader.read_variable_wind_stress_at_time(
+                    self.map_mpi[self.rank]["src_global_t"].start + index_t[t])
+                layers[t][0] = comp[0]
+                layers[t][1] = comp[1]
+
+            data[0] = self.interpolate_time(date, index_t, layers[:, 0, :])
+            data[1] = self.interpolate_time(date, index_t, layers[:, 1, :])
+
+        else:
+            data = self.reader.read_variable_wind_stress_at_time(
+                self.map_mpi[self.rank]["src_global_t"].start + index_t[0])
+
+        return data
+
+    def read_variable_wind_stress_stress_at_time(self, date):
+        comp = self.read_variable_wind_stress_at_time(date)
+
+        data = np.zeros([self.get_nb_points()])
+        data[::] = np.NAN
+
+        for index_x in range(0, self.get_nb_points()):
+            data[index_x] = math.sqrt(comp[0][index_x] ** 2 + comp[1][index_x] ** 2)
+
+        return data
+
+    def read_variable_wind_stress_from_direction_at_time(self, date):
+        comp = self.read_variable_wind_stress_at_time(date)
+
+        data = np.zeros([self.get_nb_points()])
+        data[::] = np.NAN
+
+        for index_x in range(0, self.get_nb_points()):
+            data[index_x] = 270. - (math.degrees(math.atan2(comp[1][index_x], comp[0][index_x]))) + 180.0 % 360.0
+
+        return data
+
+    def read_variable_wind_stress_to_direction_at_time(self, date):
+        comp = self.read_variable_wind_stress_at_time(date)
+
+        data = np.zeros([self.get_nb_points()])
+        data[::] = np.NAN
+
+        for index_x in range(0, self.get_nb_points()):
+            data[index_x] = 270. - (math.degrees(math.atan2(comp[1][index_x], comp[0][index_x]))) % 360.0
+
+        return data
+
     #################
     # METEO
     # At 10 m
