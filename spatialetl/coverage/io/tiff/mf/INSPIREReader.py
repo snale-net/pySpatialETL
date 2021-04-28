@@ -230,12 +230,12 @@ class INSPIREReader(CoverageReader):
         #data = convert_temperature(band.ReadAsArray(), 'Kelvin','Celsius')
         return np.ma.filled(data[ymin:ymax, xmin:xmax], fill_value=np.nan)
 
-    def read_variable_surface_downwards_solar_radiation_at_time(self, index_t, xmin, xmax, ymin, ymax):
+    def read_variable_surface_downward_solar_radiation_at_time(self, index_t, xmin, xmax, ymin, ymax):
         data = np.zeros([ymax - ymin, xmax - xmin])
         data[:] = 4.19e+6
         return data
 
-    def read_variable_surface_downwards_thermal_radiation_at_time(self, index_t, xmin, xmax, ymin, ymax):
+    def read_variable_surface_downward_thermal_radiation_at_time(self, index_t, xmin, xmax, ymin, ymax):
         data = np.zeros([ymax - ymin, xmax - xmin])
         data[:] = 4.67e+6
         return data

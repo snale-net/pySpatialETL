@@ -381,10 +381,10 @@ class TestSYMPHONIEReader(TestCase):
         value = self.reader.read_variable_dew_point_temperature_at_time(0, 0, 5, 0, 5)
 
     def test_read_variable_surface_downwards_solar_radiation_at_time(self):
-        value = self.reader.read_variable_surface_downwards_solar_radiation_at_time(0, 0, 5, 0, 5)
+        value = self.reader.read_variable_surface_downward_solar_radiation_at_time(0, 0, 5, 0, 5)
 
     def test_read_variable_surface_downwards_thermal_radiation_at_time(self):
-        value = self.reader.read_variable_surface_downwards_thermal_radiation_at_time(0, 0, 5, 0, 5)
+        value = self.reader.read_variable_surface_downward_thermal_radiation_at_time(0, 0, 5, 0, 5)
 
     def test_read_variable_surface_solar_radiation_at_time(self):
         value = self.reader.read_variable_surface_solar_radiation_at_time(0, 0, 5, 0, 5)

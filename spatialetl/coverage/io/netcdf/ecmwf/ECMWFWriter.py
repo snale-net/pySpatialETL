@@ -252,7 +252,7 @@ class ECMWFWriter (CoverageWriter):
             ] = data
             time_index += 1
 
-    def write_variable_surface_downwards_solar_radiation(self):
+    def write_variable_surface_downward_solar_radiation(self):
         var = self.ncfile.createVariable('SSRD', float32, ('time', 'lat', 'lon',), fill_value=9.96921e+36)
         var.long_name = "Surface solar radiation downwards";
         var.code = 169;
@@ -267,10 +267,10 @@ class ECMWFWriter (CoverageWriter):
             self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index + 1,
             self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
             self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]
-            ] = self.coverage.read_variable_surface_downwards_solar_radiation_at_time(time)
+            ] = self.coverage.read_variable_surface_downward_solar_radiation_at_time(time)
             time_index += 1
 
-    def write_variable_surface_downwards_thermal_radiation(self):
+    def write_variable_surface_downward_thermal_radiation(self):
         var = self.ncfile.createVariable('STRD', float32, ('time', 'lat', 'lon',), fill_value=9.96921e+36)
         var.long_name = "Surface thermal radiation downwards";
         var.code = 175;
@@ -285,7 +285,7 @@ class ECMWFWriter (CoverageWriter):
             self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index + 1,
             self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
             self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]
-            ] = self.coverage.read_variable_surface_downwards_thermal_radiation_at_time(time)
+            ] = self.coverage.read_variable_surface_downward_thermal_radiation_at_time(time)
             time_index += 1
 
     def write_variable_surface_solar_radiation(self):

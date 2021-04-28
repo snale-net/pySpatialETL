@@ -135,10 +135,10 @@ class ECMWFReader (CoverageReader):
     def read_variable_dew_point_temperature_at_time(self, index_t,xmin,xmax,ymin,ymax):
         return np.ma.filled(self.ncfile.variables["D2M"][index_t,ymin:ymax,xmin:xmax], fill_value=np.nan)
 
-    def read_variable_surface_downwards_solar_radiation_at_time(self, index_t,xmin,xmax,ymin,ymax):
+    def read_variable_surface_downward_solar_radiation_at_time(self, index_t, xmin, xmax, ymin, ymax):
         return np.ma.filled(self.ncfile.variables["SSRD"][index_t,ymin:ymax,xmin:xmax], fill_value=np.nan)
 
-    def read_variable_surface_downwards_thermal_radiation_at_time(self, index_t,xmin,xmax,ymin,ymax):
+    def read_variable_surface_downward_thermal_radiation_at_time(self, index_t, xmin, xmax, ymin, ymax):
         return np.ma.filled(self.ncfile.variables["STRD"][index_t,ymin:ymax,xmin:xmax], fill_value=np.nan)
 
     def read_variable_surface_solar_radiation_at_time(self, index_t,xmin,xmax,ymin,ymax):

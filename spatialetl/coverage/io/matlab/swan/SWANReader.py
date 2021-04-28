@@ -80,6 +80,13 @@ class SWANReader(CoverageReader):
         else:
             return result;
 
+    def read_variable_sea_surface_height_above_mean_sea_level_at_time(self,index_t,xmin,xmax,ymin,ymax):
+        time = self.times[index_t]
+        key = 'Setup_' + time.strftime("%Y%m%d_%H%M%S")
+
+        data = self.mat[key][ymin:ymax, xmin:xmax]
+        return data
+
     def read_variable_sea_surface_wave_significant_height_at_time(self, t, xmin, xmax, ymin, ymax):
         time = self.times[t]
         key = 'Hsig_'+time.strftime("%Y%m%d_%H%M%S")
@@ -98,14 +105,14 @@ class SWANReader(CoverageReader):
         time = self.times[t]
         key = 'Dir_' + time.strftime("%Y%m%d_%H%M%S")
 
-        data = 270.-self.mat[key][ymin:ymax, xmin:xmax]
+        data = 270.- (self.mat[key][ymin:ymax, xmin:xmax]) + 180.0 % 360.0
         return data
 
     def read_variable_sea_surface_wave_to_direction_at_time(self, t, xmin, xmax, ymin, ymax):
         time = self.times[t]
         key = 'Dir_' + time.strftime("%Y%m%d_%H%M%S")
 
-        data = self.mat[key][ymin:ymax, xmin:xmax]
+        data = 270. - (self.mat[key][ymin:ymax, xmin:xmax]) % 360.0
         return data
 
     def read_variable_wind_10m_at_time(self,t,xmin,xmax,ymin,ymax):

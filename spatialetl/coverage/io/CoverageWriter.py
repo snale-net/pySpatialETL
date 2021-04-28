@@ -275,11 +275,11 @@ class CoverageWriter(object):
         raise NotImplementedError(
             str(type(self)) + " don't have implemented the function 'write_variable_dew_point_temperature()'.")
 
-    def write_variable_surface_downwards_solar_radiation(self):
+    def write_variable_surface_downward_solar_radiation(self):
         raise NotImplementedError(str(type(
-            self)) + " don't have implemented the function 'write_variable_surface_downwards_solar_radiation()'.")
+            self)) + " don't have implemented the function 'write_variable_surface_downward_solar_radiation()'.")
 
-    def write_variable_surface_downwards_thermal_radiation(self):
+    def write_variable_surface_downward_thermal_radiation(self):
         raise NotImplementedError(str(type(
             self)) + " don't have implemented the function 'write_variable_surface_downwards_thermal_radiation()'.")
 

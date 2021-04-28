@@ -27,19 +27,42 @@ class ECMWFReader(MultiPointReader):
 
     def __init__(self,myFile,xy,names=None):
         MultiPointReader.__init__(self, myFile);
+
         self.reader = CovReader(self.filename)
-        self.nbPoints = np.shape(xy)[0]
-        self.xy_coords = np.zeros([self.nbPoints,2],dtype=np.int32)
+        self.source_xy_coords = []
+        self.names = []
+
+        if isinstance(xy, dict):
+            self.nbPoints = len(xy.items())
+            for key, value in xy.items():
+                self.names.append(''.join(e for e in key if e.isalnum()))
+                self.source_xy_coords.append(value)
+        elif np.shape(xy)[1] == 2:
+            self.nbPoints = np.shape(xy)[0]
+            self.source_xy_coords = xy
+
+            if names is not None and len(names) == self.nbPoints:
+                self.names = names
+            else:
+                if names is not None and len(names) != self.nbPoints:
+                    logging.warning("Name point and points has not the same size. We use generic name")
+                else:
+                    logging.warning("We use generic names")
+
+                self.names = np.empty([self.nbPoints], dtype=object)
+                for count in range(0, self.nbPoints):
+                    self.names[count] = "Point-" + str(count)
+        else:
+            raise (ValueError("Unable to decode XY coordinates"))
+
+        self.xy_coords = np.zeros([self.nbPoints, 2], dtype=np.int32)
         self.xy_values = np.zeros([self.nbPoints, 2])
         self.meta_data = ""
 
-        if names is None:
-            nbPoints = np.shape(self.read_axis_x())[0]
-            self.names = np.empty([nbPoints], dtype=object)
-            for count in range(0, nbPoints):
-                self.names[count] = "Point-" + str(count)
-        else:
-            self.names = names
+    def find_points_coordinates(self, xy):
+
+        if self.reader is None:
+            raise (ValueError("CoverageReader is not initialized"))
 
         for i in range(0, self.nbPoints):
             nearestPoint = self.find_point_index(xy[i][0], xy[i][1])
@@ -147,8 +170,8 @@ class ECMWFReader(MultiPointReader):
     def read_axis_y(self):
         return self.xy_values[:,1]
 
-    def read_axis_t(self,timestamp=0):
-        return self.reader.read_axis_t(timestamp)
+    def read_axis_t(self, tmin, tmax, timestamp=0):
+        return self.reader.read_axis_t(tmin, tmax, timestamp)
 
     def read_metadata(self):
         m = {}
@@ -161,43 +184,161 @@ class ECMWFReader(MultiPointReader):
     def read_variable_point_names(self):
         return self.names
 
-    def read_variable_wind_10m_at_time(self,date):
+    def read_variable_wind_10m_at_time(self,index_t):
 
-        data = np.zeros([2,self.nbPoints])
+        data = np.zeros([2, self.nbPoints])
         data[:] = np.nan
 
-        all_data = self.reader.read_variable_wind_10m_at_time(date)
-
         for index_x in range(0, self.nbPoints):
-            # comp U
-            data[0,index_x] = all_data[0][self.xy_coords[index_x][1],self.xy_coords[index_x][0]]
-            # comp V
-            data[1,index_x] = all_data[1][self.xy_coords[index_x][1], self.xy_coords[index_x][0]]
+            data[0][index_x] = self.reader.read_variable_wind_10m_at_time(index_t, self.xy_coords[index_x][0],
+                                                                          self.xy_coords[index_x][0] + 1,
+                                                                          self.xy_coords[index_x][1],
+                                                                          self.xy_coords[index_x][1] + 1)[0]
+            data[1][index_x] = self.reader.read_variable_wind_10m_at_time(index_t, self.xy_coords[index_x][0],
+                                                                          self.xy_coords[index_x][0] + 1,
+                                                                          self.xy_coords[index_x][1],
+                                                                          self.xy_coords[index_x][1] + 1)[1]
 
         return data
 
-    def read_variable_surface_air_pressure_at_time(self, date):
+    def read_variable_surface_air_pressure_at_time(self, index_t):
 
         data = np.zeros([self.nbPoints])
         data[:] = np.nan
-
-        all_data = self.reader.read_variable_surface_air_pressure_at_time(date)
-
         for index_x in range(0, self.nbPoints):
-            data[index_x] = all_data[self.xy_coords[index_x][1], self.xy_coords[index_x][0]]
-
+            data[index_x] = self.reader.read_variable_surface_air_pressure_at_time(index_t, self.xy_coords[index_x][0],
+                                                                          self.xy_coords[index_x][0] + 1,
+                                                                          self.xy_coords[index_x][1],
+                                                                          self.xy_coords[index_x][1] + 1)
         return data
 
-    def read_variable_rainfall_amount_at_time(self, date):
+    def read_variable_rainfall_amount_at_time(self, index_t):
 
         data = np.zeros([self.nbPoints])
         data[:] = np.nan
-
-        all_data = self.reader.read_variable_rainfall_amount_at_time(date)
-
         for index_x in range(0, self.nbPoints):
-            data[index_x] = all_data[self.xy_coords[index_x][1], self.xy_coords[index_x][0]]
+            data[index_x] = self.reader.read_variable_rainfall_amount_at_time(index_t, self.xy_coords[index_x][0],
+                                                                                   self.xy_coords[index_x][0] + 1,
+                                                                                   self.xy_coords[index_x][1],
+                                                                                   self.xy_coords[index_x][1] + 1)
+        return data
 
+    def read_variable_surface_downward_sensible_heat_flux_at_time(self, index_t):
+
+        data = np.zeros([self.nbPoints])
+        data[:] = np.nan
+        for index_x in range(0, self.nbPoints):
+            data[index_x] = self.reader.read_variable_surface_downward_sensible_heat_flux_at_time(index_t, self.xy_coords[index_x][0],
+                                                                              self.xy_coords[index_x][0] + 1,
+                                                                              self.xy_coords[index_x][1],
+                                                                              self.xy_coords[index_x][1] + 1)
+        return data
+
+    def read_variable_surface_downward_latent_heat_flux_at_time(self, index_t):
+
+        data = np.zeros([self.nbPoints])
+        data[:] = np.nan
+        for index_x in range(0, self.nbPoints):
+            data[index_x] = self.reader.read_variable_surface_downward_latent_heat_flux_at_time(index_t, self.xy_coords[index_x][0],
+                                                                              self.xy_coords[index_x][0] + 1,
+                                                                              self.xy_coords[index_x][1],
+                                                                              self.xy_coords[index_x][1] + 1)
+        return data
+
+    def read_variable_surface_downwards_solar_radiation_at_time(self, index_t):
+
+        data = np.zeros([self.nbPoints])
+        data[:] = np.nan
+        for index_x in range(0, self.nbPoints):
+            data[index_x] = self.reader.read_variable_surface_downward_solar_radiation_at_time(index_t,
+                                                                                               self.xy_coords[index_x][
+                                                                                                    0],
+                                                                                               self.xy_coords[index_x][
+                                                                                                    0] + 1,
+                                                                                               self.xy_coords[index_x][
+                                                                                                    1],
+                                                                                               self.xy_coords[index_x][
+                                                                                                    1] + 1)
+        return data
+
+    def read_variable_surface_downwards_thermal_radiation_at_time(self, index_t):
+
+        data = np.zeros([self.nbPoints])
+        data[:] = np.nan
+        for index_x in range(0, self.nbPoints):
+            data[index_x] = self.reader.read_variable_surface_downward_thermal_radiation_at_time(index_t,
+                                                                                                 self.xy_coords[index_x][
+                                                                                                    0],
+                                                                                                 self.xy_coords[index_x][
+                                                                                                    0] + 1,
+                                                                                                 self.xy_coords[index_x][
+                                                                                                    1],
+                                                                                                 self.xy_coords[index_x][
+                                                                                                    1] + 1)
+        return data
+
+    def read_variable_surface_solar_radiation_at_time(self, index_t):
+
+        data = np.zeros([self.nbPoints])
+        data[:] = np.nan
+        for index_x in range(0, self.nbPoints):
+            data[index_x] = self.reader.read_variable_surface_solar_radiation_at_time(index_t,
+                                                                                                self.xy_coords[index_x][
+                                                                                                    0],
+                                                                                                self.xy_coords[index_x][
+                                                                                                    0] + 1,
+                                                                                                self.xy_coords[index_x][
+                                                                                                    1],
+                                                                                                self.xy_coords[index_x][
+                                                                                                    1] + 1)
+        return data
+
+    def read_variable_surface_thermal_radiation_at_time(self, index_t):
+
+        data = np.zeros([self.nbPoints])
+        data[:] = np.nan
+        for index_x in range(0, self.nbPoints):
+            data[index_x] = self.reader.read_variable_surface_thermal_radiation_at_time(index_t,
+                                                                                      self.xy_coords[index_x][
+                                                                                          0],
+                                                                                      self.xy_coords[index_x][
+                                                                                          0] + 1,
+                                                                                      self.xy_coords[index_x][
+                                                                                          1],
+                                                                                      self.xy_coords[index_x][
+                                                                                          1] + 1)
+        return data
+
+    def read_variable_surface_air_temperature_at_time(self, index_t):
+
+        data = np.zeros([self.nbPoints])
+        data[:] = np.nan
+        for index_x in range(0, self.nbPoints):
+            data[index_x] = self.reader.read_variable_surface_air_temperature_at_time(index_t,
+                                                                                      self.xy_coords[index_x][
+                                                                                          0],
+                                                                                      self.xy_coords[index_x][
+                                                                                          0] + 1,
+                                                                                      self.xy_coords[index_x][
+                                                                                          1],
+                                                                                      self.xy_coords[index_x][
+                                                                                          1] + 1)
+        return data
+
+    def read_variable_dew_point_temperature_at_time(self, index_t):
+
+        data = np.zeros([self.nbPoints])
+        data[:] = np.nan
+        for index_x in range(0, self.nbPoints):
+            data[index_x] = self.reader.read_variable_dew_point_temperature_at_time(index_t,
+                                                                                      self.xy_coords[index_x][
+                                                                                          0],
+                                                                                      self.xy_coords[index_x][
+                                                                                          0] + 1,
+                                                                                      self.xy_coords[index_x][
+                                                                                          1],
+                                                                                      self.xy_coords[index_x][
+                                                                                          1] + 1)
         return data
 
 

@@ -1321,7 +1321,7 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
-    def read_variable_surface_downwards_solar_radiation_at_time(self, t):
+    def read_variable_surface_downward_solar_radiation_at_time(self, t):
         """Retourne les composantes u,v de surface solar radiation downwards à la date souhaitée
     @type t: datetime ou l'index
     @param t: date souhaitée
@@ -1329,7 +1329,7 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         index_t = self.find_time_index(t);
 
-        data = self.reader.read_variable_surface_downwards_solar_radiation_at_time(
+        data = self.reader.read_variable_surface_downward_solar_radiation_at_time(
             self.map_mpi[self.rank]["src_global_t"].start + index_t,
             self.map_mpi[self.rank]["src_global_x_overlap"].start,
             self.map_mpi[self.rank]["src_global_x_overlap"].stop,
@@ -1346,7 +1346,7 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
-    def read_variable_surface_downwards_thermal_radiation_at_time(self, t):
+    def read_variable_surface_downward_thermal_radiation_at_time(self, t):
         """Retourne les composantes u,v de surface thermal radiation downwards à la date souhaitée
     @type t: datetime ou l'index
     @param t: date souhaitée
@@ -1354,7 +1354,7 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         index_t = self.find_time_index(t);
 
-        data = self.reader.read_variable_surface_downwards_thermal_radiation_at_time(
+        data = self.reader.read_variable_surface_downward_thermal_radiation_at_time(
             self.map_mpi[self.rank]["src_global_t"].start + index_t,
             self.map_mpi[self.rank]["src_global_x_overlap"].start,
             self.map_mpi[self.rank]["src_global_x_overlap"].stop,

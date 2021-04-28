@@ -1602,7 +1602,7 @@ class DefaultWriter (CoverageWriter):
             raise CoverageError("DefaultWriter",
                                 "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
-    def write_variable_surface_downwards_solar_radiation(self):
+    def write_variable_surface_downward_solar_radiation(self):
 
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
@@ -1635,14 +1635,14 @@ class DefaultWriter (CoverageWriter):
                 self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index + 1,
                 self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
                 self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]
-                ] = self.coverage.read_variable_surface_downwards_solar_radiation_at_time(time)
+                ] = self.coverage.read_variable_surface_downward_solar_radiation_at_time(time)
 
                 time_index += 1
         else:
             raise CoverageError("DefaultWriter",
                                 "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
-    def write_variable_surface_downwards_thermal_radiation(self):
+    def write_variable_surface_downward_thermal_radiation(self):
 
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
@@ -1675,7 +1675,7 @@ class DefaultWriter (CoverageWriter):
                 self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index + 1,
                 self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
                 self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]
-                ] = self.coverage.read_variable_surface_downwards_thermal_radiation_at_time(time)
+                ] = self.coverage.read_variable_surface_downward_thermal_radiation_at_time(time)
 
                 time_index += 1
         else:

@@ -278,11 +278,11 @@ class CoverageReader(object):
     def read_variable_dew_point_temperature_at_time(self, index_t,xmin,xmax,ymin,ymax):
          raise NotImplementedError(str(type(self)) + " don't have implemented the function 'read_variable_dew_point_temperature_at_time()'.")
 
-    def read_variable_surface_downwards_solar_radiation_at_time(self, index_t,xmin,xmax,ymin,ymax):
-         raise NotImplementedError(str(type(self)) + " don't have implemented the function 'read_variable_surface_downwards_solar_radiation_at_time()'.")
+    def read_variable_surface_downward_solar_radiation_at_time(self, index_t, xmin, xmax, ymin, ymax):
+         raise NotImplementedError(str(type(self)) + " don't have implemented the function 'read_variable_surface_downward_solar_radiation_at_time()'.")
 
-    def read_variable_surface_downwards_thermal_radiation_at_time(self, index_t,xmin,xmax,ymin,ymax):
-         raise NotImplementedError(str(type(self)) + " don't have implemented the function 'read_variable_surface_downwards_thermal_radiation_at_time()'.")
+    def read_variable_surface_downward_thermal_radiation_at_time(self, index_t, xmin, xmax, ymin, ymax):
+         raise NotImplementedError(str(type(self)) + " don't have implemented the function 'read_variable_surface_downward_thermal_radiation_at_time()'.")
 
     def read_variable_surface_solar_radiation_at_time(self, index_t,xmin,xmax,ymin,ymax):
          raise NotImplementedError(str(type(self)) + " don't have implemented the function 'read_variable_surface_solar_radiation_at_time()'.")
