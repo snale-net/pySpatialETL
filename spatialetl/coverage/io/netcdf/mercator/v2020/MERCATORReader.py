@@ -117,10 +117,10 @@ class MERCATORReader(CoverageReader):
                                      VariableDefinition.LONG_NAME['sea_surface_height_above_geoid']) + "'",
                                  1000))
 
-        #################
-        # HYDRO
-        # 3D
-        #################
+    #################
+    # HYDRO
+    # 3D
+    #################
 
     def read_variable_sea_water_temperature_at_time_and_depth(self, index_t, index_z, xmin, xmax, ymin, ymax):
         try:

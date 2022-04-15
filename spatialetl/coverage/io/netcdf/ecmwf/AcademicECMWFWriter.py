@@ -177,7 +177,7 @@ class AcademicECMWFWriter (CoverageWriter):
         else:
             var = self.ncfile.variables['SSHF']
 
-        var[:] = self.surface_downward_sensible_heat_flux
+        var[:] = self.surface_downward_sensible_heat_flux;
 
     def write_variable_surface_downward_latent_heat_flux(self):
 
@@ -186,7 +186,7 @@ class AcademicECMWFWriter (CoverageWriter):
         var.code = 147;
         var.table = 128;
         var.units = "W m**-2 s";
-        var[:] = self.surface_downward_latent_heat_flux
+        var[:] = self.surface_downward_latent_heat_flux;
 
     def write_variable_surface_air_temperature(self):
 
@@ -195,7 +195,7 @@ class AcademicECMWFWriter (CoverageWriter):
         var.code = 167;
         var.table = 128;
         var.units = "K";
-        var[:] = self.surface_air_temperature
+        var[:] = self.surface_air_temperature;
 
     def write_variable_dewpoint_temperature(self):
 
@@ -205,7 +205,7 @@ class AcademicECMWFWriter (CoverageWriter):
         var.table = 128;
         var.units = "K";
         # Value
-        var[:] = self.dewpoint_temperature
+        var[:] = self.dewpoint_temperature;
 
     def write_variable_surface_downward_solar_radiation(self):
 
@@ -214,7 +214,7 @@ class AcademicECMWFWriter (CoverageWriter):
         var.code = 169;
         var.table = 128;
         var.units = "W m**-2 s";
-        var[:] = self.surface_downward_solar_radiation
+        var[:] = self.surface_downward_solar_radiation;
 
     def write_variable_surface_downward_thermal_radiation(self):
 
@@ -223,7 +223,7 @@ class AcademicECMWFWriter (CoverageWriter):
         var.code = 175;
         var.table = 128;
         var.units = "W m**-2 s";
-        var[:] = self.surface_downward_thermal_radiation
+        var[:] = self.surface_downward_thermal_radiation;
 
     def write_variable_surface_solar_radiation(self):
 
@@ -241,13 +241,13 @@ class AcademicECMWFWriter (CoverageWriter):
         var.code = 177;
         var.table = 128;
         var.units = "W m**-2 s";
-        var[:] = self.surface_thermal_radiation,
+        var[:] = self.surface_thermal_radiation;
 
-    def write_variable_rain(self):
+    def write_variable_rainfall_amount(self):
 
         var = self.ncfile.createVariable('TP', float32, ('time', 'lat', 'lon',), fill_value=9.96921e+36)
         var.long_name = "Total precipitation";
         var.code = 228;
         var.table = 128;
         var.units = "m";
-        var[:] = self.total_rain
+        var[:] = self.total_rain;

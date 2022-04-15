@@ -92,13 +92,13 @@ La classe SymphonieReader permet de lire les données du format Symphonie
                                                                                                                       '11').replace(
                                          'dec', '12'), calendar=current_file.variables['time'].calendar)
                             self.times.append(current_time)
-                        else:
-                            raise ValueError("No variable time found or multiple time records found in the same file")
+                        #else:
+                        #    raise ValueError("No variable time found or multiple time records found in the same file")
                     except Exception as ex:
                         raise ValueError("Unable to decode time records in file "+str(file)+ ":"+str(ex))
 
         if len(self.times) == 0:
-            raise ValueError("No time records found")
+            logging.info("No time records found")
 
     def open_file(self, index_t):
         if index_t != self.last_opened_t_index:

@@ -51,7 +51,7 @@ class VariableDefinition:
     CANONICAL_UNITS['2d_sea_binary_mask'] = "1"
 
     STANDARD_NAME['2d_land_binary_mask'] = "land_binary_mask"
-    LONG_NAME['2d_land_binary_mask'] = "Landa Binary Mask"
+    LONG_NAME['2d_land_binary_mask'] = "Land Binary Mask"
     VARIABLE_NAME['2d_land_binary_mask'] = "land_mask"
     CANONICAL_UNITS['2d_land_binary_mask'] = "1"
 
@@ -442,15 +442,15 @@ class VariableDefinition:
     VARIABLE_NAME['dew_point_temperature'] = "dew_point_temperature"
     CANONICAL_UNITS['dew_point_temperature'] = "C"
 
-    STANDARD_NAME['surface_downwards_solar_radiation'] = "surface_downwards_solar_radiation"
-    LONG_NAME['surface_downwards_solar_radiation'] = "Surface Downwards Solar Radiation"
-    VARIABLE_NAME['surface_downwards_solar_radiation'] = "surface_downwards_solar_radiation"
-    CANONICAL_UNITS['surface_downwards_solar_radiation'] = "W m2"
+    STANDARD_NAME['surface_downward_solar_radiation'] = "surface_downward_solar_radiation"
+    LONG_NAME['surface_downward_solar_radiation'] = "Surface Downward Solar Radiation"
+    VARIABLE_NAME['surface_downward_solar_radiation'] = "surface_downward_solar_radiation"
+    CANONICAL_UNITS['surface_downward_solar_radiation'] = "W m2"
 
-    STANDARD_NAME['surface_downwards_thermal_radiation'] = "surface_downwards_thermal_radiation"
-    LONG_NAME['surface_downwards_thermal_radiation'] = "Surface Downwards Thermal Radiation"
-    VARIABLE_NAME['surface_downwards_thermal_radiation'] = "surface_downwards_thermal_radiation"
-    CANONICAL_UNITS['surface_downwards_thermal_radiation'] = "W m2"
+    STANDARD_NAME['surface_downward_thermal_radiation'] = "surface_downward_thermal_radiation"
+    LONG_NAME['surface_downward_thermal_radiation'] = "Surface Downward Thermal Radiation"
+    VARIABLE_NAME['surface_downward_thermal_radiation'] = "surface_downward_thermal_radiation"
+    CANONICAL_UNITS['surface_downward_thermal_radiation'] = "W m2"
 
     STANDARD_NAME['surface_solar_radiation'] = "surface_solar_radiation"
     LONG_NAME['surface_solar_radiation'] = "Surface Solar Radiation"

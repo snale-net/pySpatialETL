@@ -115,6 +115,61 @@ La classe SymphonieReader permet de lire les données du format Symphonie
     # Ground level
     #################
 
+    def read_variable_sea_water_velocity_at_ground_level_at_time(self, index_t, xmin, xmax, ymin, ymax):
+        try:
+            self.open_file(index_t)
+            index_z = 0
+            xmin_overlap, xmax_overlap, ymin_overlap, ymax_overlap, new_xmin, new_xmax, new_ymin, new_ymax = self.compute_overlap_indexes(
+                xmin, xmax, ymin, ymax)
+
+            mask_t = self.grid.variables["mask_t"][ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+            mask_u = self.grid.variables["mask_u"][ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+            mask_v = self.grid.variables["mask_v"][ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+
+            if self.gridrotcos_t is None and self.gridrotsin_t is None:
+                self.compute_rot()
+
+            rotcos = self.gridrotcos_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+            rotsin = self.gridrotsin_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+
+            if "vel_u" in self.ncfile.variables and "vel_v" in self.ncfile.variables:
+                data_u = np.ma.filled(
+                    self.ncfile.variables["vel_u"][0, index_z, ymin_overlap:ymax_overlap,
+                    xmin_overlap:xmax_overlap],
+                    fill_value=np.nan)
+                data_v = np.ma.filled(
+                    self.ncfile.variables["vel_v"][0, index_z, ymin_overlap:ymax_overlap,
+                    xmin_overlap:xmax_overlap],
+                    fill_value=np.nan)
+            elif "u" in self.ncfile.variables and "v" in self.ncfile.variables:
+                data_u = np.ma.filled(
+                    self.ncfile.variables["u"][0, index_z, ymin_overlap:ymax_overlap,
+                    xmin_overlap:xmax_overlap],
+                    fill_value=np.nan)
+                data_v = np.ma.filled(
+                    self.ncfile.variables["v"][0, index_z, ymin_overlap:ymax_overlap,
+                    xmin_overlap:xmax_overlap],
+                    fill_value=np.nan)
+            else:
+                logging.debug("No variables found for 'Sea Water Velocity at Ground level'")
+                raise (VariableNameError("SymphonieReader",
+                                         "No variables found for 'Sea Water Velocity at Ground level'",
+                                         1000))
+
+            u_rot, v_rot = self.compute_vector_rotation(data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v)
+
+            if "wetmask_t" in self.ncfile.variables:  # We apply the wetmask
+                u_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
+                      xmin_overlap:xmax_overlap] == 0] = np.nan
+                v_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
+                      xmin_overlap:xmax_overlap] == 0] = np.nan
+
+            return [u_rot[new_ymin:new_ymax, new_xmin:new_xmax], v_rot[new_ymin:new_ymax, new_xmin:new_xmax]]
+
+        except Exception as ex:
+            logging.debug("Error '" + str(ex) + "'")
+            raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
+
     #################
     # HYDRO
     # 2D

@@ -15,6 +15,7 @@
 #
 from __future__ import division, print_function, absolute_import
 
+import os
 from datetime import datetime
 
 import numpy as np
@@ -28,7 +29,7 @@ from spatialetl.utils.logger import logging
 
 class DefaultTimePointWriter(MultiPointWriter):
 
-    def __init__(self, myPointCoords,index_point,myFile):
+    def __init__(self, myPointCoords,index_point,myFile,append=False):
         MultiPointWriter.__init__(self, myPointCoords, myFile);
 
         if not isinstance(self.points, TimeMultiPoint):
@@ -42,15 +43,20 @@ class DefaultTimePointWriter(MultiPointWriter):
 
         index = pandas.DatetimeIndex(axis_t)
         self.data = pandas.DataFrame(index=index)
+        self.append = append
 
     def close(self):
-        self.data.to_csv(self.filename, sep='\t', columns=list(self.data), header=False, encoding='utf-8', na_rep="NaN")
+        if self.append and os.path.isfile(self.filename):
+            self.data.to_csv(self.filename, mode='a', sep='\t', columns=list(self.data), header=False, encoding='utf-8',
+                             na_rep="NaN")
+        else:
+            self.data.to_csv(self.filename, sep='\t', columns=list(self.data), header=False, encoding='utf-8', na_rep="NaN")
 
-        file = open(self.filename, "r+")
-        old = file.read()  # read everything in the file
-        file.seek(0)  # rewind
+            file = open(self.filename, "r+")
+            old = file.read()  # read everything in the file
+            file.seek(0)  # rewind
 
-        file.write("############################################################ \n\
+            file.write("############################################################ \n\
 # Station : " + str(self.points.read_variable_point_names()[self.index_x]) + " \n\
 # Coordinate Reference System : WGS84 \n\
 # Longitude : " + str(self.points.read_axis_x()[self.index_x]) + " \n\
@@ -61,16 +67,16 @@ class DefaultTimePointWriter(MultiPointWriter):
 # Separator: Tabulation \\t \n\
 # Column 1: year-month-day hour:minute:second UTC \n")
 
-        column = 2
-        for key in list(self.data):
-            file.write("# Column " + str(column) + ": " + str(VariableDefinition.STANDARD_NAME[key]) + " (" + str(
-                VariableDefinition.CANONICAL_UNITS[key]) + ") - FillValue: NaN \n")
-            column = column + 1
+            column = 2
+            for key in list(self.data):
+                file.write("# Column " + str(column) + ": " + str(VariableDefinition.STANDARD_NAME[key]) + " (" + str(
+                    VariableDefinition.CANONICAL_UNITS[key]) + ") - FillValue: NaN \n")
+                column = column + 1
 
-        file.write("############################################################\n")
+            file.write("############################################################\n")
 
-        file.write(old)  # write the new line before
-        file.close()
+            file.write(old)  # write the new line before
+            file.close()
 
     def write_variable_longitude(self):
         logging.info('[DefaultTimePointWriter] Writing variable \''+str(VariableDefinition.LONG_NAME['longitude'])+'\'')
@@ -530,6 +536,23 @@ class DefaultTimePointWriter(MultiPointWriter):
 
         self.data['surface_air_pressure'] = data
 
+    def write_variable_sea_surface_air_pressure(self):
+        logging.info('[DefaultTimePointWriter] Writing variable \'' + str(
+            VariableDefinition.LONG_NAME['sea_surface_air_pressure']) + '\'')
+        data = np.zeros([self.points.get_t_size()])
+        data[:] = np.nan
+        time_index = 0
+        for time in self.points.read_axis_t():
+            logging.info(
+                '[DefaultTimePointWriter] Writing variable \'' + str(
+                    VariableDefinition.LONG_NAME['sea_surface_air_pressure']) + '\' at time \'' + str(
+                    time) + '\'')
+
+            data[time_index] = self.points.read_variable_sea_surface_air_pressure_at_time(time)[self.index_x]
+            time_index += 1
+
+        self.data['surface_air_pressure'] = data
+
     def write_variable_rainfall_amount(self):
         logging.info('[DefaultTimePointWriter] Writing variable \'' + str(
             VariableDefinition.LONG_NAME['rainfall_amount']) + '\'')
@@ -547,6 +570,142 @@ class DefaultTimePointWriter(MultiPointWriter):
             time_index += 1
 
         self.data['rainfall_amount'] = data
+
+    def write_variable_surface_downward_sensible_heat_flux(self):
+        logging.info('[DefaultTimePointWriter] Writing variable \'' + str(
+            VariableDefinition.LONG_NAME['surface_downward_sensible_heat_flux']) + '\'')
+        data = np.zeros([self.points.get_t_size()])
+        data[:] = np.nan
+        time_index = 0
+        for time in self.points.read_axis_t():
+            logging.info(
+                '[DefaultTimePointWriter] Writing variable \'' + str(
+                    VariableDefinition.LONG_NAME['surface_downward_sensible_heat_flux']) + '\' at time \'' + str(
+                    time) + '\'')
+
+            data[time_index] = self.points.read_variable_surface_downward_sensible_heat_flux_at_time(time)[self.index_x]
+            time_index += 1
+
+        self.data['surface_downward_sensible_heat_flux'] = data
+
+    def write_variable_surface_downward_latent_heat_flux(self):
+        logging.info('[DefaultTimePointWriter] Writing variable \'' + str(
+            VariableDefinition.LONG_NAME['surface_downward_latent_heat_flux']) + '\'')
+        data = np.zeros([self.points.get_t_size()])
+        data[:] = np.nan
+        time_index = 0
+        for time in self.points.read_axis_t():
+            logging.info(
+                '[DefaultTimePointWriter] Writing variable \'' + str(
+                    VariableDefinition.LONG_NAME['surface_downward_latent_heat_flux']) + '\' at time \'' + str(
+                    time) + '\'')
+
+            data[time_index] = self.points.read_variable_surface_downward_latent_heat_flux_at_time(time)[self.index_x]
+            time_index += 1
+
+        self.data['surface_downward_latent_heat_flux'] = data
+
+    def write_variable_surface_air_temperature(self):
+        logging.info('[DefaultTimePointWriter] Writing variable \'' + str(
+            VariableDefinition.LONG_NAME['surface_air_temperature']) + '\'')
+        data = np.zeros([self.points.get_t_size()])
+        data[:] = np.nan
+        time_index = 0
+        for time in self.points.read_axis_t():
+            logging.info(
+                '[DefaultTimePointWriter] Writing variable \'' + str(
+                    VariableDefinition.LONG_NAME['surface_air_temperature']) + '\' at time \'' + str(
+                    time) + '\'')
+
+            data[time_index] = self.points.read_variable_surface_air_temperature_at_time(time)[self.index_x]
+            time_index += 1
+
+        self.data['surface_air_temperature'] = data
+
+    def write_variable_dew_point_temperature(self):
+        logging.info('[DefaultTimePointWriter] Writing variable \'' + str(
+            VariableDefinition.LONG_NAME['dew_point_temperature']) + '\'')
+        data = np.zeros([self.points.get_t_size()])
+        data[:] = np.nan
+        time_index = 0
+        for time in self.points.read_axis_t():
+            logging.info(
+                '[DefaultTimePointWriter] Writing variable \'' + str(
+                    VariableDefinition.LONG_NAME['dew_point_temperature']) + '\' at time \'' + str(
+                    time) + '\'')
+
+            data[time_index] = self.points.read_variable_dew_point_temperature_at_time(time)[self.index_x]
+            time_index += 1
+
+        self.data['dew_point_temperature'] = data
+
+    def write_variable_surface_downward_solar_radiation(self):
+        logging.info('[DefaultTimePointWriter] Writing variable \'' + str(
+            VariableDefinition.LONG_NAME['surface_downward_solar_radiation']) + '\'')
+        data = np.zeros([self.points.get_t_size()])
+        data[:] = np.nan
+        time_index = 0
+        for time in self.points.read_axis_t():
+            logging.info(
+                '[DefaultTimePointWriter] Writing variable \'' + str(
+                    VariableDefinition.LONG_NAME['surface_downward_solar_radiation']) + '\' at time \'' + str(
+                    time) + '\'')
+
+            data[time_index] = self.points.read_variable_surface_downward_solar_radiation_at_time(time)[self.index_x]
+            time_index += 1
+
+        self.data['surface_downward_solar_radiation'] = data
+
+    def write_variable_surface_downward_thermal_radiation(self):
+        logging.info('[DefaultTimePointWriter] Writing variable \'' + str(
+            VariableDefinition.LONG_NAME['surface_downward_thermal_radiation']) + '\'')
+        data = np.zeros([self.points.get_t_size()])
+        data[:] = np.nan
+        time_index = 0
+        for time in self.points.read_axis_t():
+            logging.info(
+                '[DefaultTimePointWriter] Writing variable \'' + str(
+                    VariableDefinition.LONG_NAME['surface_downward_thermal_radiation']) + '\' at time \'' + str(
+                    time) + '\'')
+
+            data[time_index] = self.points.read_variable_surface_downward_thermal_radiation_at_time(time)[self.index_x]
+            time_index += 1
+
+        self.data['surface_downward_thermal_radiation'] = data
+
+    def write_variable_surface_solar_radiation(self):
+        logging.info('[DefaultTimePointWriter] Writing variable \'' + str(
+            VariableDefinition.LONG_NAME['surface_solar_radiation']) + '\'')
+        data = np.zeros([self.points.get_t_size()])
+        data[:] = np.nan
+        time_index = 0
+        for time in self.points.read_axis_t():
+            logging.info(
+                '[DefaultTimePointWriter] Writing variable \'' + str(
+                    VariableDefinition.LONG_NAME['surface_solar_radiation']) + '\' at time \'' + str(
+                    time) + '\'')
+
+            data[time_index] = self.points.read_variable_surface_solar_radiation_at_time(time)[self.index_x]
+            time_index += 1
+
+        self.data['surface_solar_radiation'] = data
+
+    def write_variable_surface_thermal_radiation(self):
+        logging.info('[DefaultTimePointWriter] Writing variable \'' + str(
+            VariableDefinition.LONG_NAME['surface_thermal_radiation']) + '\'')
+        data = np.zeros([self.points.get_t_size()])
+        data[:] = np.nan
+        time_index = 0
+        for time in self.points.read_axis_t():
+            logging.info(
+                '[DefaultTimePointWriter] Writing variable \'' + str(
+                    VariableDefinition.LONG_NAME['surface_thermal_radiation']) + '\' at time \'' + str(
+                    time) + '\'')
+
+            data[time_index] = self.points.read_variable_surface_thermal_radiation_at_time(time)[self.index_x]
+            time_index += 1
+
+        self.data['surface_thermal_radiation'] = data
 
     def write_variable_wind_stress(self):
         logging.info(

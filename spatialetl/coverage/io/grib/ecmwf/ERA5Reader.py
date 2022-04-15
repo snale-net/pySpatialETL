@@ -28,7 +28,7 @@ from spatialetl.utils.VariableDefinition import VariableDefinition
 from spatialetl.utils.logger import logging
 
 
-class ECMWFReader (CoverageReader):
+class ERA5Reader (CoverageReader):
 
     def __init__(self, myFile):
         CoverageReader.__init__(self,myFile);
@@ -350,7 +350,7 @@ class ECMWFReader (CoverageReader):
                 nearest_t_index, nearest_step_index = self.find_time_and_step(index_t)
                 data = np.ma.filled(self.ds_accum.variables["sshf"].data[int(nearest_t_index), int(nearest_step_index),
                                     int(ymin):int(ymax), :], fill_value=np.nan)
-                return np.take_along_axis(data, self.new_indexes[ymin:ymax], axis=1)[:, xmin:xmax]
+                return np.take_along_axis(data, self.new_indexes[ymin:ymax], axis=1)[:, xmin:xmax] #/ 86400.00
             else:
                 logging.debug(
                     "No variables found for '" + str(VariableDefinition.LONG_NAME['surface_downward_sensible_heat_flux']) + "'")
@@ -368,7 +368,7 @@ class ECMWFReader (CoverageReader):
                 nearest_t_index, nearest_step_index = self.find_time_and_step(index_t)
                 data = np.ma.filled(self.ds_accum.variables["slhf"].data[int(nearest_t_index), int(nearest_step_index),
                                     int(ymin):int(ymax), :], fill_value=np.nan)
-                return np.take_along_axis(data, self.new_indexes[ymin:ymax], axis=1)[:, xmin:xmax]
+                return np.take_along_axis(data, self.new_indexes[ymin:ymax], axis=1)[:, xmin:xmax] #/ 86400.00
             else:
                 logging.debug(
                     "No variables found for '" + str(
@@ -423,7 +423,7 @@ class ECMWFReader (CoverageReader):
                 nearest_t_index, nearest_step_index = self.find_time_and_step(index_t)
                 data = np.ma.filled(self.ds_accum.variables["ssrd"].data[int(nearest_t_index), int(nearest_step_index),
                                     int(ymin):int(ymax), :], fill_value=np.nan)
-                return np.take_along_axis(data, self.new_indexes[ymin:ymax], axis=1)[:, xmin:xmax]
+                return np.take_along_axis(data, self.new_indexes[ymin:ymax], axis=1)[:, xmin:xmax] #/ 86400.00
             else:
                 logging.debug(
                     "No variables found for '" + str(
@@ -442,7 +442,7 @@ class ECMWFReader (CoverageReader):
                 nearest_t_index, nearest_step_index = self.find_time_and_step(index_t)
                 data = np.ma.filled(self.ds_accum.variables["strd"].data[int(nearest_t_index), int(nearest_step_index),
                                     int(ymin):int(ymax), :], fill_value=np.nan)
-                return np.take_along_axis(data, self.new_indexes[ymin:ymax], axis=1)[:, xmin:xmax]
+                return np.take_along_axis(data, self.new_indexes[ymin:ymax], axis=1)[:, xmin:xmax] #/ 86400.00
             else:
                 logging.debug(
                     "No variables found for '" + str(
@@ -461,7 +461,7 @@ class ECMWFReader (CoverageReader):
                 nearest_t_index, nearest_step_index = self.find_time_and_step(index_t)
                 data = np.ma.filled(self.ds_accum.variables["ssr"].data[int(nearest_t_index), int(nearest_step_index),
                                     int(ymin):int(ymax), :], fill_value=np.nan)
-                return np.take_along_axis(data, self.new_indexes[ymin:ymax], axis=1)[:, xmin:xmax]
+                return np.take_along_axis(data, self.new_indexes[ymin:ymax], axis=1)[:, xmin:xmax] #/ 86400.00
             else:
                 logging.debug(
                     "No variables found for '" + str(
@@ -480,7 +480,7 @@ class ECMWFReader (CoverageReader):
                 nearest_t_index, nearest_step_index = self.find_time_and_step(index_t)
                 data = np.ma.filled(self.ds_accum.variables["str"].data[int(nearest_t_index), int(nearest_step_index),
                                     int(ymin):int(ymax), :], fill_value=np.nan)
-                return np.take_along_axis(data, self.new_indexes[ymin:ymax], axis=1)[:, xmin:xmax]
+                return np.take_along_axis(data, self.new_indexes[ymin:ymax], axis=1)[:, xmin:xmax] #/ 86400.00
             else:
                 logging.debug(
                     "No variables found for '" + str(

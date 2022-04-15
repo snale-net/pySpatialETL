@@ -30,9 +30,6 @@ class SWANReader(CoverageReader):
     def __init__(self,myFile):
         CoverageReader.__init__(self, myFile);
         self.mat = loadmat(self.filename)
-
-        self.mat = loadmat(self.filename)
-
         self.x_size = np.shape(self.mat['Xp'])[1]
         self.y_size = np.shape(self.mat['Yp'])[0]
         self.times = []

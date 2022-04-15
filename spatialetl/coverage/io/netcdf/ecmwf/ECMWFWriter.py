@@ -22,6 +22,7 @@ from numpy import float32
 from numpy import float64
 
 from spatialetl.coverage.io.CoverageWriter import CoverageWriter
+from spatialetl.utils.VariableDefinition import VariableDefinition
 from spatialetl.utils.logger import logging
 
 
@@ -88,7 +89,8 @@ class ECMWFWriter (CoverageWriter):
 
         time_index = 0
         for time in self.coverage.read_axis_t():
-            logging.info('[ECMWFWriter] Writing variable \'3D mask\' at time \'' + str(time) + '\'')
+            logging.info('[ECMWFWriter] Writing variable \'' + str(
+                    VariableDefinition.LONG_NAME['land_binary_mask']) + '\' at time \'' + str(time) + '\'')
             var[
             self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index:
             self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index + 1,
@@ -107,7 +109,8 @@ class ECMWFWriter (CoverageWriter):
 
         time_index = 0
         for time in self.coverage.read_axis_t():
-            logging.info('[ECMWFWriter] Writing variable \'Surface pressure\' at time \'' + str(time) + '\'')
+            logging.info('[ECMWFWriter] Writing variable \'' + str(
+                    VariableDefinition.LONG_NAME['surface_air_pressure']) + '\' at time \'' + str(time) + '\'')
             data =  self.coverage.read_variable_surface_pressure_at_time(time)
             data[:] *= 100  # hPa to Pa
             var[
@@ -120,14 +123,15 @@ class ECMWFWriter (CoverageWriter):
 
     def write_variable_sea_surface_air_pressure(self):
         var = self.ncfile.createVariable('MSL', float32, ('time', 'lat', 'lon',), fill_value=9.96921e+36)
-        var.long_name = "Surface pressure";
+        var.long_name = "Sea surface pressure";
         var.code = 134;
         var.table = 128;
         var.units = "Pa";
 
         time_index = 0
         for time in self.coverage.read_axis_t():
-            logging.info('[ECMWFWriter] Writing variable \'Surface pressure\' at time \'' + str(time) + '\'')
+            logging.info('[ECMWFWriter] Writing variable \'' + str(
+                    VariableDefinition.LONG_NAME['sea_surface_air_pressure']) + '\' at time \'' + str(time) + '\'')
             data = self.coverage.read_variable_sea_surface_air_pressure_at_time(time)
             data[:] *= 100 # hPa to Pa
             var[
@@ -147,7 +151,8 @@ class ECMWFWriter (CoverageWriter):
 
         time_index = 0
         for time in self.coverage.read_axis_t():
-            logging.info('[ECMWFWriter] Writing variable \'Surface sensible heat flux\' at time \'' + str(time) + '\'')
+            logging.info('[ECMWFWriter] Writing variable \'' + str(
+                    VariableDefinition.LONG_NAME['surface_downward_sensible_heat_flux']) + '\' at time \'' + str(time) + '\'')
 
             var[
             self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index:
@@ -166,7 +171,8 @@ class ECMWFWriter (CoverageWriter):
 
         time_index = 0
         for time in self.coverage.read_axis_t():
-            logging.info('[ECMWFWriter] Writing variable \'Surface latent heat flux\' at time \'' + str(time) + '\'')
+            logging.info('[ECMWFWriter] Writing variable \'' + str(
+                    VariableDefinition.LONG_NAME['surface_downward_latent_heat_flux']) + '\' at time \'' + str(time) + '\'')
             var[
             self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index:
             self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index + 1,
@@ -192,7 +198,7 @@ class ECMWFWriter (CoverageWriter):
         time_index=0
         for time in self.coverage.read_axis_t():
 
-            logging.info('[ECMWFWriter] Writing variable \'Wind\' at time \''+str(time)+'\'')
+            logging.info('[ECMWFWriter] Writing variable \'Wind 10m\' at time \''+str(time)+'\'')
 
             data_u, data_v = self.coverage.read_variable_wind_10m_at_time(time)
 
@@ -221,7 +227,8 @@ class ECMWFWriter (CoverageWriter):
 
         time_index = 0
         for time in self.coverage.read_axis_t():
-            logging.info('[ECMWFWriter] Writing variable \'Surface air temperature\' at time \'' + str(time) + '\'')
+            logging.info('[ECMWFWriter] Writing variable \'' + str(
+                    VariableDefinition.LONG_NAME['surface_air_temperature']) + '\' at time \'' + str(time) + '\'')
             data = self.coverage.read_variable_surface_air_temperature_at_time(time)
             data += 273.15 # Celsius to Kelvin
             var[
@@ -241,7 +248,8 @@ class ECMWFWriter (CoverageWriter):
 
         time_index = 0
         for time in self.coverage.read_axis_t():
-            logging.info('[ECMWFWriter] Writing variable \'Dewpoint temperature\' at time \'' + str(time) + '\'')
+            logging.info('[ECMWFWriter] Writing variable \'' + str(
+                    VariableDefinition.LONG_NAME['dew_point_temperature']) + '\' at time \'' + str(time) + '\'')
             data = self.coverage.read_variable_dew_point_temperature_at_time(time)
             data += 273.15  # Celsius to Kelvin
             var[
@@ -261,7 +269,8 @@ class ECMWFWriter (CoverageWriter):
 
         time_index = 0
         for time in self.coverage.read_axis_t():
-            logging.info('[ECMWFWriter] Writing variable \'Surface solar radiation downwards\' at time \'' + str(time) + '\'')
+            logging.info('[ECMWFWriter] Writing variable \'' + str(
+                    VariableDefinition.LONG_NAME['surface_downward_solar_radiation']) + '\' at time \'' + str(time) + '\'')
             var[
             self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index:
             self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index + 1,
@@ -279,7 +288,8 @@ class ECMWFWriter (CoverageWriter):
 
         time_index = 0
         for time in self.coverage.read_axis_t():
-            logging.info('[ECMWFWriter] Writing variable \'Surface thermal radiation downwards\' at time \'' + str(time) + '\'')
+            logging.info('[ECMWFWriter] Writing variable \'' + str(
+                    VariableDefinition.LONG_NAME['surface_downward_thermal_radiation']) + '\' at time \'' + str(time) + '\'')
             var[
             self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index:
             self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index + 1,
@@ -297,7 +307,8 @@ class ECMWFWriter (CoverageWriter):
 
         time_index = 0
         for time in self.coverage.read_axis_t():
-            logging.info('[ECMWFWriter] Writing variable \'Surface solar radiation\' at time \'' + str(time) + '\'')
+            logging.info('[ECMWFWriter] Writing variable \'' + str(
+                    VariableDefinition.LONG_NAME['surface_solar_radiation']) + '\' at time \'' + str(time) + '\'')
             var[
             self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index:
             self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index + 1,
@@ -316,7 +327,8 @@ class ECMWFWriter (CoverageWriter):
 
         time_index = 0
         for time in self.coverage.read_axis_t():
-            logging.info('[ECMWFWriter] Writing variable \'Surface thermal radiation\' at time \'' + str(time) + '\'')
+            logging.info('[ECMWFWriter] Writing variable \'' + str(
+                    VariableDefinition.LONG_NAME['surface_thermal_radiation']) + '\' at time \'' + str(time) + '\'')
             var[
             self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index:
             self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index + 1,
@@ -334,7 +346,8 @@ class ECMWFWriter (CoverageWriter):
 
         time_index = 0
         for time in self.coverage.read_axis_t():
-            logging.info('[ECMWFWriter] Writing variable \'Rain\' at time \'' + str(time) + '\'')
+            logging.info('[ECMWFWriter] Writing variable \'' + str(
+                    VariableDefinition.LONG_NAME['rainfall_amount']) + '\' at time \'' + str(time) + '\'')
             var[
             self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index:
             self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index + 1,
