@@ -599,6 +599,69 @@ class DefaultWriter (CoverageWriter):
         else:
             raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
+    def write_variable_sea_water_column_thickness(self):
+
+        if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
+
+            if self.coverage.rank == 0:
+                logging.info('[DefaultWriter] Gathering data from all processors')
+                global_data = np.empty(
+                    [self.coverage.get_t_size(type="target_global"),
+                     self.coverage.get_y_size(type="target_global"),
+                     self.coverage.get_x_size(type="target_global")])
+                global_data[:] = np.nan
+
+            for time_index in range(0, self.coverage.get_t_size()):
+
+                local_data = self.coverage.read_variable_sea_water_column_thickness_at_time(time_index)
+
+                if self.coverage.rank != 0:
+                    self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
+                else:
+                    # Pour le proc n°1
+                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
+                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
+                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data
+
+                    # Pour les autres
+                    for source in range(1, self.coverage.size):
+                        recvbuf = np.empty([self.coverage.map_mpi[source]["dst_local_y_size"],
+                                            self.coverage.map_mpi[source]["dst_local_x_size"]])
+                        self.coverage.comm.Recv(recvbuf, source=source)
+
+                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
+                                    self.coverage.map_mpi[source]["dst_global_y"],
+                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf
+
+            self.coverage.comm.barrier()
+
+            if self.coverage.rank == 0:
+
+                logging.info('[DefaultWriter] Writing variable \'' + str(
+                    VariableDefinition.LONG_NAME['sea_water_column_thickness']) + '\'')
+
+                for time_index in range(0, self.coverage.get_t_size(type="target_global")):
+                    time = self.coverage.read_axis_t(type="target_global")[time_index]
+
+                    logging.debug('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME[
+                                                                                  'sea_water_column_thickness']) + '\' at time \'' + str(
+                        time) + '\'')
+
+                    file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                           VariableDefinition.VARIABLE_NAME[
+                                                               'sea_water_column_thickness'] + ".tiff"),
+                                              int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+
+                    # CRS info
+                    proj = osr.SpatialReference()
+                    proj.SetWellKnownGeogCS("EPSG:4326")
+                    file.SetProjection(proj.ExportToWkt())
+                    file.SetGeoTransform(self.geotransform)
+                    file.GetRasterBand(1).WriteArray(global_data[time_index])
+        else:
+            raise CoverageError("DefaultWriter",
+                                "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
+
     def write_variable_sea_surface_temperature(self):
 
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
