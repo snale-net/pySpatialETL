@@ -762,6 +762,63 @@ class TimeMultiPoint(MultiPoint):
     # Sea Surface
     #################
 
+    def read_variable_sea_surface_wave_significant_height_at_time(self, date):
+        index_t = self.find_time_index(date)
+
+        if len(index_t) > 1:
+            layers = np.zeros([len(index_t), self.get_nb_points()])
+            layers[::] = np.NAN
+
+            for t in range(0, len(index_t)):
+                layers[t] = self.reader.read_variable_sea_surface_wave_significant_height_at_time(
+                    self.map_mpi[self.rank]["src_global_t"].start + index_t[t])
+
+            data = self.interpolate_time(date, index_t, layers)
+
+        else:
+            data = self.reader.read_variable_sea_surface_wave_significant_height_at_time(
+                self.map_mpi[self.rank]["src_global_t"].start + index_t[0])
+
+        return data
+
+    def read_variable_sea_surface_wave_mean_period_at_time(self, date):
+        index_t = self.find_time_index(date)
+
+        if len(index_t) > 1:
+            layers = np.zeros([len(index_t), self.get_nb_points()])
+            layers[::] = np.NAN
+
+            for t in range(0, len(index_t)):
+                layers[t] = self.reader.read_variable_sea_surface_wave_mean_period_at_time(
+                    self.map_mpi[self.rank]["src_global_t"].start + index_t[t])
+
+            data = self.interpolate_time(date, index_t, layers)
+
+        else:
+            data = self.reader.read_variable_sea_surface_wave_mean_period_at_time(
+                self.map_mpi[self.rank]["src_global_t"].start + index_t[0])
+
+        return data
+
+    def read_variable_sea_surface_wave_to_direction_at_time(self, date):
+        index_t = self.find_time_index(date)
+
+        if len(index_t) > 1:
+            layers = np.zeros([len(index_t), self.get_nb_points()])
+            layers[::] = np.NAN
+
+            for t in range(0, len(index_t)):
+                layers[t] = self.reader.read_variable_sea_surface_wave_to_direction_at_time(
+                    self.map_mpi[self.rank]["src_global_t"].start + index_t[t])
+
+            data = self.interpolate_time(date, index_t, layers)
+
+        else:
+            data = self.reader.read_variable_sea_surface_wave_to_direction_at_time(
+                self.map_mpi[self.rank]["src_global_t"].start + index_t[0])
+
+        return data
+
     #################
     # WAVES
     # Ground level
