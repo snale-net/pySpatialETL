@@ -1004,7 +1004,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
     def read_variable_sea_surface_wave_to_direction_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
             self.open_file(index_t)
-            if "dir_wave_t" in self.ncfile.variables:
+            if "dir_wave_conv1" in self.ncfile.variables:
                 data = np.ma.filled(self.ncfile.variables["dir_wave_conv1"][0, ymin:ymax, xmin:xmax],
                                     fill_value=np.nan)
             else:
