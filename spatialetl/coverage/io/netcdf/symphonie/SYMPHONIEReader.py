@@ -1005,7 +1005,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         try:
             self.open_file(index_t)
             if "dir_wave_t" in self.ncfile.variables:
-                data = np.ma.filled(self.ncfile.variables["dir_wave_t"][0, ymin:ymax, xmin:xmax],
+                data = np.ma.filled(self.ncfile.variables["dir_wave_conv1"][0, ymin:ymax, xmin:xmax],
                                     fill_value=np.nan)
             else:
                 logging.debug(
