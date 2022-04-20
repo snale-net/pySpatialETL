@@ -85,7 +85,7 @@ class DefaultMultiPointWriter(MultiPointWriter):
 
     def write_variable_sea_surface_wave_mean_period(self):
         logging.info('[DefaultMultiPointWriter] Writing variable \''+str(VariableDefinition.LONG_NAME['sea_surface_wave_mean_period'])+'\'')
-        self.data['sea_surface_wave_mean_periode'] = self.points.read_variable_sea_surface_wave_mean_period()
+        self.data['sea_surface_wave_mean_period'] = self.points.read_variable_sea_surface_wave_mean_period()
 
     def write_variable_sea_surface_salinity(self):
         logging.info('[DefaultMultiPointWriter] Writing variable \''+str(VariableDefinition.LONG_NAME['sea_surface_salinity'])+'\'')
