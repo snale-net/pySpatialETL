@@ -28,10 +28,25 @@ from spatialetl.utils.VariableDefinition import VariableDefinition
 from spatialetl.utils.logger import logging
 
 
-class ERA5Reader (CoverageReader):
+class ERA5Reader(CoverageReader):
 
-    def __init__(self, myFile):
-        CoverageReader.__init__(self,myFile);
+    def __init__(self, myFile, academic_flux=False, surface_downward_sensible_heat_flux=0,
+                 surface_downward_latent_heat_flux=0,
+                 surface_downward_solar_radiation=0,
+                 surface_downward_thermal_radiation=0,
+                 surface_solar_radiation=0,
+                 surface_thermal_radiation=0, ):
+        CoverageReader.__init__(self, myFile);
+        self.academic_flux = academic_flux
+        self.surface_downward_sensible_heat_flux = surface_downward_sensible_heat_flux
+        self.surface_downward_latent_heat_flux = surface_downward_latent_heat_flux
+        self.surface_downward_solar_radiation = surface_downward_solar_radiation
+        self.surface_solar_radiation = surface_solar_radiation
+        self.surface_thermal_radiation = surface_thermal_radiation
+        self.surface_downward_thermal_radiation = surface_downward_thermal_radiation
+
+        if self.surface_downward_sensible_heat_flux != 0 or self.surface_downward_latent_heat_flux != 0 or self.surface_downward_solar_radiation != 0 or self.surface_solar_radiation != 0 or self.surface_thermal_radiation != 0 or self.surface_downward_thermal_radiation != 0:
+            self.academic_flux = True
 
         try:
             self.ds_instant = cfgrib.open_file(self.filename, filter_by_keys={'stepType': 'instant'})
@@ -63,14 +78,14 @@ class ERA5Reader (CoverageReader):
         # else:
         #     raise ValueError("Unable to decode file " + str(self.filename))
 
-    def find_time_and_step(self,index_t):
+    def find_time_and_step(self, index_t):
         try:
             if "time" in self.ds_instant.variables and "time" in self.ds_accum.variables and "step" in self.ds_accum.variables:
                 array = np.asarray(self.ds_accum.variables["time"].data)
                 idx = np.where(array <= self.ds_instant.variables["time"].data[int(index_t)])
 
                 if len(idx[0]) == 0:
-                    raise ValueError("Time "+self.ds_instant.variables["time"].data[int(index_t)]+" was not found")
+                    raise ValueError("Time " + self.ds_instant.variables["time"].data[int(index_t)] + " was not found")
 
                 nearest_t_index = (np.abs(array[idx] - self.ds_instant.variables["time"].data[int(index_t)])).argmin()
 
@@ -81,10 +96,10 @@ class ERA5Reader (CoverageReader):
                 array = np.asarray(self.ds_accum.variables["step"].data)
                 nearest_step_index = (np.abs(array - divmod(td.seconds, 3600)[0])).argmin()
 
-                #logging.debug("On cherche :",datetime.utcfromtimestamp(self.ds_instep.variables["time"].data[int(index_t)]) )
-                #logging.debug("ref Time",datetime.utcfromtimestamp(self.ds_step.variables["time"].data[int(nearest_t_index)]))
+                # logging.debug("On cherche :",datetime.utcfromtimestamp(self.ds_instep.variables["time"].data[int(index_t)]) )
+                # logging.debug("ref Time",datetime.utcfromtimestamp(self.ds_step.variables["time"].data[int(nearest_t_index)]))
                 step = timedelta(hours=self.ds_accum.variables["step"].data[int(nearest_step_index)])
-                #logging.debug("On trouve",datetime.utcfromtimestamp(self.ds_step.variables["time"].data[int(nearest_t_index)])+step)
+                # logging.debug("On trouve",datetime.utcfromtimestamp(self.ds_step.variables["time"].data[int(nearest_t_index)])+step)
 
                 return nearest_t_index, nearest_step_index
             else:
@@ -145,10 +160,10 @@ class ERA5Reader (CoverageReader):
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("ECMWFReader", "An error occured : '" + str(ex) + "'", 1000))
 
-    def read_axis_x(self,xmin,xmax,ymin,ymax):
+    def read_axis_x(self, xmin, xmax, ymin, ymax):
         return np.array(sorted(self.new_lon)[xmin:xmax])
 
-    def read_axis_y(self,xmin,xmax,ymin,ymax):
+    def read_axis_y(self, xmin, xmax, ymin, ymax):
         try:
             if "latitude" in self.ds_instant.variables:
                 return self.ds_instant.variables['latitude'].data[ymin:ymax]
@@ -162,7 +177,7 @@ class ERA5Reader (CoverageReader):
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("ECMWFReader", "An error occured : '" + str(ex) + "'", 1000))
 
-    def read_axis_t(self,tmin,tmax,timestamp):
+    def read_axis_t(self, tmin, tmax, timestamp):
         try:
             if "time" in self.ds_instant.variables:
                 data = self.ds_instant.variables['time'].data[tmin:tmax]
@@ -185,22 +200,23 @@ class ERA5Reader (CoverageReader):
             raise (VariableNameError("ECMWFReader", "An error occured : '" + str(ex) + "'", 1000))
 
     # Variables
-    def read_variable_longitude(self,xmin,xmax,ymin,ymax):
+    def read_variable_longitude(self, xmin, xmax, ymin, ymax):
         return self.read_axis_x()
 
-    def read_variable_latitude(self,xmin,xmax,ymin,ymax):
+    def read_variable_latitude(self, xmin, xmax, ymin, ymax):
         return self.read_axis_y()
 
-    def read_variable_time(self,tmin,tmax):
-        return self.read_axis_t(tmin,tmax,timestamp=0)
+    def read_variable_time(self, tmin, tmax):
+        return self.read_axis_t(tmin, tmax, timestamp=0)
 
-    def read_variable_2D_land_binary_mask(self,xmin,xmax,ymin,ymax):
+    def read_variable_2D_land_binary_mask(self, xmin, xmax, ymin, ymax):
         try:
             if "lsm" in self.ds_instant.variables:
                 mask = np.ma.filled(self.ds_instant.variables["lsm"].data[0, ymin:ymax, :], fill_value=np.nan)
                 return np.take_along_axis(mask, self.new_indexes[ymin:ymax], axis=1)[:, xmin:xmax]
             else:
-                logging.debug("No variables found for '" + str(VariableDefinition.LONG_NAME['2d_land_binary_mask']) + "'")
+                logging.debug(
+                    "No variables found for '" + str(VariableDefinition.LONG_NAME['2d_land_binary_mask']) + "'")
                 raise (VariableNameError("ECMWFReader",
                                          "No variables found for '" + str(
                                              VariableDefinition.LONG_NAME['2d_land_binary_mask']) + "'",
@@ -209,7 +225,7 @@ class ERA5Reader (CoverageReader):
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("ECMWFReader", "An error occured : '" + str(ex) + "'", 1000))
 
-    def read_variable_2D_land_binary_mask_at_time(self,index_t, xmin, xmax, ymin, ymax):
+    def read_variable_2D_land_binary_mask_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
             if "lsm" in self.ds_instant.variables:
                 mask = np.ma.filled(self.ds_instant.variables["lsm"].data[int(index_t), ymin:ymax, :],
@@ -226,7 +242,7 @@ class ERA5Reader (CoverageReader):
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("ECMWFReader", "An error occured : '" + str(ex) + "'", 1000))
 
-    def read_variable_2D_sea_binary_mask(self,xmin,xmax,ymin,ymax):
+    def read_variable_2D_sea_binary_mask(self, xmin, xmax, ymin, ymax):
         try:
             if "lsm" in self.ds_instant.variables:
                 mask = np.ma.filled(self.ds_instant.variables["lsm"].data[0, ymin:ymax, :], fill_value=np.nan)
@@ -244,7 +260,7 @@ class ERA5Reader (CoverageReader):
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("ECMWFReader", "An error occured : '" + str(ex) + "'", 1000))
 
-    def read_variable_3D_sea_binary_mask_at_time(self, index_t,xmin,xmax,ymin,ymax):
+    def read_variable_3D_sea_binary_mask_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
             if "lsm" in self.ds_instant.variables:
                 mask = np.ma.filled(self.ds_instant.variables["lsm"].data[int(index_t), int(ymin):int(ymax), :],
@@ -263,7 +279,7 @@ class ERA5Reader (CoverageReader):
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("ECMWFReader", "An error occured : '" + str(ex) + "'", 1000))
 
-    def read_variable_3D_land_binary_mask_at_time(self, index_t,xmin,xmax,ymin,ymax):
+    def read_variable_3D_land_binary_mask_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
             if "lsm" in self.ds_instant.variables:
                 mask = np.ma.filled(self.ds_instant.variables["lsm"].data[int(index_t), int(ymin):int(ymax), :],
@@ -285,7 +301,7 @@ class ERA5Reader (CoverageReader):
     # 2D
     #################
 
-    def read_variable_rainfall_amount_at_time(self, index_t,xmin,xmax,ymin,ymax):
+    def read_variable_rainfall_amount_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
             if "tp" in self.ds_accum.variables:
                 nearest_t_index, nearest_step_index = self.find_time_and_step(index_t)
@@ -308,7 +324,7 @@ class ERA5Reader (CoverageReader):
     # Sea surface
     #################
 
-    def read_variable_surface_air_pressure_at_time(self, index_t,xmin,xmax,ymin,ymax):
+    def read_variable_surface_air_pressure_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
             if "sp" in self.ds_instant.variables:
                 data = np.ma.filled(self.ds_instant.variables["sp"].data[int(index_t), int(ymin):int(ymax), :],
@@ -326,7 +342,7 @@ class ERA5Reader (CoverageReader):
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("ECMWFReader", "An error occured : '" + str(ex) + "'", 1000))
 
-    def read_variable_sea_surface_air_pressure_at_time(self,index_t,xmin,xmax,ymin,ymax):
+    def read_variable_sea_surface_air_pressure_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
             if "msl" in self.ds_instant.variables:
                 data = np.ma.filled(self.ds_instant.variables["msl"].data[int(index_t), int(ymin):int(ymax), :],
@@ -344,16 +360,21 @@ class ERA5Reader (CoverageReader):
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("ECMWFReader", "An error occured : '" + str(ex) + "'", 1000))
 
-    def read_variable_surface_downward_sensible_heat_flux_at_time(self, index_t,xmin,xmax,ymin,ymax):
+    def read_variable_surface_downward_sensible_heat_flux_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
             if "sshf" in self.ds_accum.variables:
                 nearest_t_index, nearest_step_index = self.find_time_and_step(index_t)
                 data = np.ma.filled(self.ds_accum.variables["sshf"].data[int(nearest_t_index), int(nearest_step_index),
                                     int(ymin):int(ymax), :], fill_value=np.nan)
-                return np.take_along_axis(data, self.new_indexes[ymin:ymax], axis=1)[:, xmin:xmax] #/ 86400.00
+                data = np.take_along_axis(data, self.new_indexes[ymin:ymax], axis=1)[:, xmin:xmax]
+                if self.academic_flux:
+                    data[:,:] = self.surface_downward_sensible_heat_flux
+
+                return data
             else:
                 logging.debug(
-                    "No variables found for '" + str(VariableDefinition.LONG_NAME['surface_downward_sensible_heat_flux']) + "'")
+                    "No variables found for '" + str(
+                        VariableDefinition.LONG_NAME['surface_downward_sensible_heat_flux']) + "'")
                 raise (VariableNameError("ECMWFReader",
                                          "No variables found for '" + str(
                                              VariableDefinition.LONG_NAME['surface_downward_sensible_heat_flux']) + "'",
@@ -362,13 +383,17 @@ class ERA5Reader (CoverageReader):
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("ECMWFReader", "An error occured : '" + str(ex) + "'", 1000))
 
-    def read_variable_surface_downward_latent_heat_flux_at_time(self, index_t,xmin,xmax,ymin,ymax):
+    def read_variable_surface_downward_latent_heat_flux_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
             if "slhf" in self.ds_accum.variables:
                 nearest_t_index, nearest_step_index = self.find_time_and_step(index_t)
                 data = np.ma.filled(self.ds_accum.variables["slhf"].data[int(nearest_t_index), int(nearest_step_index),
                                     int(ymin):int(ymax), :], fill_value=np.nan)
-                return np.take_along_axis(data, self.new_indexes[ymin:ymax], axis=1)[:, xmin:xmax] #/ 86400.00
+                data = np.take_along_axis(data, self.new_indexes[ymin:ymax], axis=1)[:, xmin:xmax]
+                if self.academic_flux:
+                    data[:, :] = self.surface_downward_latent_heat_flux
+
+                return data
             else:
                 logging.debug(
                     "No variables found for '" + str(
@@ -381,11 +406,12 @@ class ERA5Reader (CoverageReader):
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("ECMWFReader", "An error occured : '" + str(ex) + "'", 1000))
 
-    def read_variable_surface_air_temperature_at_time(self, index_t,xmin,xmax,ymin,ymax):
+    def read_variable_surface_air_temperature_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
             if "t2m" in self.ds_instant.variables:
-                data = np.ma.filled(self.ds_instant.variables["t2m"].data[int(index_t), int(ymin):int(ymax), :] - 273.15,
-                                    fill_value=np.nan)
+                data = np.ma.filled(
+                    self.ds_instant.variables["t2m"].data[int(index_t), int(ymin):int(ymax), :] - 273.15,
+                    fill_value=np.nan)
                 return np.take_along_axis(data, self.new_indexes[ymin:ymax], axis=1)[:, xmin:xmax]
             else:
                 logging.debug(
@@ -399,11 +425,12 @@ class ERA5Reader (CoverageReader):
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("ECMWFReader", "An error occured : '" + str(ex) + "'", 1000))
 
-    def read_variable_dew_point_temperature_at_time(self, index_t,xmin,xmax,ymin,ymax):
+    def read_variable_dew_point_temperature_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
             if "d2m" in self.ds_instant.variables:
-                data = np.ma.filled(self.ds_instant.variables["d2m"].data[int(index_t), int(ymin):int(ymax), :] - 273.15,
-                                    fill_value=np.nan)
+                data = np.ma.filled(
+                    self.ds_instant.variables["d2m"].data[int(index_t), int(ymin):int(ymax), :] - 273.15,
+                    fill_value=np.nan)
                 return np.take_along_axis(data, self.new_indexes[ymin:ymax], axis=1)[:, xmin:xmax]
             else:
                 logging.debug(
@@ -423,7 +450,11 @@ class ERA5Reader (CoverageReader):
                 nearest_t_index, nearest_step_index = self.find_time_and_step(index_t)
                 data = np.ma.filled(self.ds_accum.variables["ssrd"].data[int(nearest_t_index), int(nearest_step_index),
                                     int(ymin):int(ymax), :], fill_value=np.nan)
-                return np.take_along_axis(data, self.new_indexes[ymin:ymax], axis=1)[:, xmin:xmax] #/ 86400.00
+                data = np.take_along_axis(data, self.new_indexes[ymin:ymax], axis=1)[:, xmin:xmax]
+                if self.academic_flux:
+                    data[:, :] = self.surface_downward_solar_radiation
+
+                return data
             else:
                 logging.debug(
                     "No variables found for '" + str(
@@ -442,7 +473,11 @@ class ERA5Reader (CoverageReader):
                 nearest_t_index, nearest_step_index = self.find_time_and_step(index_t)
                 data = np.ma.filled(self.ds_accum.variables["strd"].data[int(nearest_t_index), int(nearest_step_index),
                                     int(ymin):int(ymax), :], fill_value=np.nan)
-                return np.take_along_axis(data, self.new_indexes[ymin:ymax], axis=1)[:, xmin:xmax] #/ 86400.00
+                data = np.take_along_axis(data, self.new_indexes[ymin:ymax], axis=1)[:, xmin:xmax]
+                if self.academic_flux:
+                    data[:, :] = self.surface_downward_thermal_radiation
+
+                return data
             else:
                 logging.debug(
                     "No variables found for '" + str(
@@ -455,13 +490,17 @@ class ERA5Reader (CoverageReader):
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("ECMWFReader", "An error occured : '" + str(ex) + "'", 1000))
 
-    def read_variable_surface_solar_radiation_at_time(self, index_t,xmin,xmax,ymin,ymax):
+    def read_variable_surface_solar_radiation_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
             if "ssr" in self.ds_accum.variables:
                 nearest_t_index, nearest_step_index = self.find_time_and_step(index_t)
                 data = np.ma.filled(self.ds_accum.variables["ssr"].data[int(nearest_t_index), int(nearest_step_index),
                                     int(ymin):int(ymax), :], fill_value=np.nan)
-                return np.take_along_axis(data, self.new_indexes[ymin:ymax], axis=1)[:, xmin:xmax] #/ 86400.00
+                data = np.take_along_axis(data, self.new_indexes[ymin:ymax], axis=1)[:, xmin:xmax]
+                if self.academic_flux:
+                    data[:, :] = self.surface_solar_radiation
+
+                return data
             else:
                 logging.debug(
                     "No variables found for '" + str(
@@ -474,13 +513,17 @@ class ERA5Reader (CoverageReader):
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("ECMWFReader", "An error occured : '" + str(ex) + "'", 1000))
 
-    def read_variable_surface_thermal_radiation_at_time(self, index_t,xmin,xmax,ymin,ymax):
+    def read_variable_surface_thermal_radiation_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
             if "str" in self.ds_accum.variables:
                 nearest_t_index, nearest_step_index = self.find_time_and_step(index_t)
                 data = np.ma.filled(self.ds_accum.variables["str"].data[int(nearest_t_index), int(nearest_step_index),
                                     int(ymin):int(ymax), :], fill_value=np.nan)
-                return np.take_along_axis(data, self.new_indexes[ymin:ymax], axis=1)[:, xmin:xmax] #/ 86400.00
+                data = np.take_along_axis(data, self.new_indexes[ymin:ymax], axis=1)[:, xmin:xmax]
+                if self.academic_flux:
+                    data[:, :] = self.surface_thermal_radiation
+
+                return data
             else:
                 logging.debug(
                     "No variables found for '" + str(
@@ -498,7 +541,7 @@ class ERA5Reader (CoverageReader):
     # At 10 m
     #################
 
-    def read_variable_wind_10m_at_time(self, index_t,xmin,xmax,ymin,ymax):
+    def read_variable_wind_10m_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
             if "u10" in self.ds_instant.variables and "v10" in self.ds_instant.variables:
                 u = np.ma.filled(self.ds_instant.variables["u10"].data[int(index_t), int(ymin):int(ymax), :],
@@ -516,5 +559,3 @@ class ERA5Reader (CoverageReader):
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("ECMWFReader", "An error occured : '" + str(ex) + "'", 1000))
-
-

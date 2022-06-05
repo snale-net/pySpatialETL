@@ -65,8 +65,7 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
                 raise ValueError("start_time have to be string or datetime. Found " + str(type(start_time)))
 
             nearest_t_index = (np.abs(np.asarray(self.source_global_axis_t) - time)).argmin()
-
-            if time - self.source_global_axis_t[nearest_t_index] == zero_delta or abs(time - self.source_global_axis_t[nearest_t_index]) < TimeCoverage.TIME_DELTA:
+            if time - datetime.strptime(self.source_global_axis_t[nearest_t_index].strftime('%Y-%m-%d %H:%M:%S'), '%Y-%m-%d %H:%M:%S') == zero_delta or abs(time - datetime.strptime(self.source_global_axis_t[nearest_t_index].strftime('%Y-%m-%d %H:%M:%S'), '%Y-%m-%d %H:%M:%S')) < TimeCoverage.TIME_DELTA:
                 tmin = nearest_t_index
             else:
                 raise ValueError(str(time) + " not found. Maybe the TimeCoverage.TIME_DELTA (" + str(
@@ -86,7 +85,7 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
             nearest_t_index = (np.abs(np.asarray(self.source_global_axis_t) - time)).argmin()
 
-            if time - self.source_global_axis_t[nearest_t_index] == zero_delta or abs(time - self.source_global_axis_t[nearest_t_index]) < TimeCoverage.TIME_DELTA:
+            if time - datetime.strptime(self.source_global_axis_t[nearest_t_index].strftime('%Y-%m-%d %H:%M:%S'), '%Y-%m-%d %H:%M:%S') == zero_delta or abs(time - datetime.strptime(self.source_global_axis_t[nearest_t_index].strftime('%Y-%m-%d %H:%M:%S'), '%Y-%m-%d %H:%M:%S')) < TimeCoverage.TIME_DELTA:
                 tmax = nearest_t_index +1
             else:
                 raise ValueError(str(time) + " not found. Maybe the TimeCoverage.TIME_DELTA (" + str(
