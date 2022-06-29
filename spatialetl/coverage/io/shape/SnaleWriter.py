@@ -116,6 +116,7 @@ class SnaleWriter(CoverageWriter):
 
                     union_vector_gdf = gpd.GeoDataFrame(geometry=gpd.GeoSeries(union_vector_gdf))
                     union_vector_gdf['Severity'] = dem_threshold
+                    union_vector_gdf['Datetime'] = time.strftime("%Y-%m-%d %H:%M:%S")
 
                     # Saving GeoDataFrame to shapefile
                     union_vector_gdf.to_file(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
