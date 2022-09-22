@@ -17,16 +17,19 @@ from __future__ import division, print_function, absolute_import
 
 import numpy as np
 
+
 from spatialetl.point.io.MultiPointReader import MultiPointReader
+from spatialetl.coverage.io.netcdf.ww3.WW3Reader import WW3Reader as CovReader
 from spatialetl.utils.distance import distance_on_unit_sphere
 from spatialetl.utils.logger import logging
 
 
-class AbstractSYMPHONIEReader(MultiPointReader):
+class WW3Reader(MultiPointReader):
 
     def __init__(self,myFile,xy,names=None):
         MultiPointReader.__init__(self, myFile);
-        self.reader = None
+
+        self.reader = CovReader(self.filename)
 
         self.source_xy_coords = []
         self.names = []
@@ -57,6 +60,7 @@ class AbstractSYMPHONIEReader(MultiPointReader):
         self.xy_coords = np.zeros([self.nbPoints, 2], dtype=np.int32)
         self.xy_values = np.zeros([self.nbPoints, 2])
         self.meta_data = ""
+        self.find_points_coordinates()
 
     def find_points_coordinates(self):
 
@@ -66,10 +70,10 @@ class AbstractSYMPHONIEReader(MultiPointReader):
         for i in range(0, np.shape(self.xy_coords)[0]):
             nearestPoint = self.find_point_index(self.source_xy_coords[i][0], self.source_xy_coords[i][1])
             logging.info(str(
-                self.names[i]) + " nearest point in SYMPHONIE is " + str(nearestPoint[2]) + " / " + str(nearestPoint[3]) + " at " + str(
+                self.names[i]) + " nearest point in WW3 is " + str(nearestPoint[2]) + " / " + str(nearestPoint[3]) + " at " + str(
                 round(nearestPoint[4], 4)) + " km")
             self.meta_data = self.meta_data + "\n# " + str(
-                self.names[i]) + " : nearest point in SYMPHONIE file is " + str(
+                self.names[i]) + " : nearest point in WW3 file is " + str(
                 round(nearestPoint[4], 4)) + " km from the target point"
             logging.info("Nearest point (i,j) : " + str(nearestPoint[0]) + " / " + str(nearestPoint[1]))
             self.xy_coords[i] = [nearestPoint[0], nearestPoint[1]]
@@ -192,7 +196,7 @@ class AbstractSYMPHONIEReader(MultiPointReader):
 
     def read_metadata(self):
         m = {}
-        m["data_source"] = "SYMPHONIE file"
+        m["data_source"] = "WW3 file"
         m["meta_data"] = self.meta_data
 
         return m
@@ -226,67 +230,6 @@ class AbstractSYMPHONIEReader(MultiPointReader):
 
         return data
 
-    def read_variable_sea_surface_temperature_at_time(self,index_t):
-        data = np.zeros([self.nbPoints])
-        data[:] = np.nan
-
-        for index_x in range(0, self.nbPoints):
-            data[index_x] = self.reader.read_variable_sea_surface_temperature_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)
-
-        return data
-
-    def read_variable_sea_surface_salinity_at_time(self,index_t):
-        data = np.zeros([self.nbPoints])
-        data[:] = np.nan
-
-        for index_x in range(0, self.nbPoints):
-            data[index_x] = self.reader.read_variable_sea_surface_salinity_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)
-
-        return data
-
-    def read_variable_sea_water_velocity_at_sea_water_surface_at_time(self,index_t):
-
-        data = np.zeros([2, self.nbPoints])
-        data[:] = np.nan
-
-        for index_x in range(0, self.nbPoints):
-            data[0][index_x] = self.reader.read_variable_sea_water_velocity_at_sea_water_surface_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)[0]
-            data[1][index_x] = self.reader.read_variable_sea_water_velocity_at_sea_water_surface_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)[1]
-
-        return data
-
-    #################
-    # HYDRO
-    # Ground level
-    #################
-    def read_variable_sea_water_temperature_at_ground_level_at_time(self,index_t):
-        data = np.zeros([self.nbPoints])
-        data[:] = np.nan
-
-        for index_x in range(0, self.nbPoints):
-            data[index_x] = self.reader.read_variable_sea_water_temperature_at_ground_level_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)
-
-        return data
-    def read_variable_sea_water_salinity_at_ground_level_at_time(self,index_t):
-        data = np.zeros([self.nbPoints])
-        data[:] = np.nan
-
-        for index_x in range(0, self.nbPoints):
-            data[index_x] = self.reader.read_variable_sea_water_salinity_at_ground_level_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)
-
-        return data
-
-    def read_variable_sea_water_velocity_at_ground_level_at_time(self,index_t):
-
-        data = np.zeros([2, self.nbPoints])
-        data[:] = np.nan
-
-        for index_x in range(0, self.nbPoints):
-            data[0][index_x] = self.reader.read_variable_sea_water_velocity_at_ground_level_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)[0]
-            data[1][index_x] = self.reader.read_variable_sea_water_velocity_at_ground_level_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)[1]
-
-        return data
-
     #################
     # HYDRO
     # 2D
@@ -297,48 +240,6 @@ class AbstractSYMPHONIEReader(MultiPointReader):
 
         for index_x in range(0, self.nbPoints):
             data[index_x] = self.reader.read_variable_bathymetry(self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)
-
-        return data
-
-    def read_variable_barotropic_sea_water_velocity_at_time(self,index_t):
-        data = np.zeros([2, self.nbPoints])
-        data[:] = np.nan
-
-        for index_x in range(0, self.nbPoints):
-            data[0][index_x] = self.reader.read_variable_barotropic_sea_water_velocity_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)[0]
-            data[1][index_x] = self.reader.read_variable_barotropic_sea_water_velocity_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)[1]
-
-        return data
-
-    #################
-    # HYDRO
-    # 3D
-    #################
-    def read_variable_sea_water_temperature_at_time_and_depth(self,index_t,index_z):
-        data = np.zeros([self.nbPoints])
-        data[:] = np.nan
-
-        for index_x in range(0, self.nbPoints):
-            data[index_x] = self.reader.read_variable_sea_water_temperature_at_time_and_depth(index_t,index_z,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)
-
-        return data
-
-    def read_variable_sea_water_salinity_at_time_and_depth(self,index_t,index_z):
-        data = np.zeros([self.nbPoints])
-        data[:] = np.nan
-
-        for index_x in range(0, self.nbPoints):
-            data[index_x] = self.reader.read_variable_sea_water_salinity_at_time_and_depth(index_t, index_z,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)
-
-        return data
-
-    def read_variable_baroclinic_sea_water_velocity_at_time_and_depth(self,index_t,index_z):
-        data = np.zeros([2, self.nbPoints])
-        data[:] = np.nan
-
-        for index_x in range(0, self.nbPoints):
-            data[0][index_x] = self.reader.read_variable_baroclinic_sea_water_velocity_at_time_and_depth(index_t, index_z,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)[0]
-            data[1][index_x] = self.reader.read_variable_baroclinic_sea_water_velocity_at_time_and_depth(index_t, index_z,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)[1]
 
         return data
 
@@ -404,20 +305,6 @@ class AbstractSYMPHONIEReader(MultiPointReader):
         for index_x in range(0, self.nbPoints):
             data[0][index_x] = self.reader.read_variable_waves_momentum_flux_to_ocean_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)[0]
             data[1][index_x] = self.reader.read_variable_waves_momentum_flux_to_ocean_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)[1]
-
-        return data
-
-    #################
-    # METEO
-    # Surface air
-    #################
-    def read_variable_wind_stress_at_time(self,index_t):
-        data = np.zeros([2, self.nbPoints])
-        data[:] = np.nan
-
-        for index_x in range(0, self.nbPoints):
-            data[0][index_x] = self.reader.read_variable_wind_stress_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)[0]
-            data[1][index_x] = self.reader.read_variable_wind_stress_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)[1]
 
         return data
 

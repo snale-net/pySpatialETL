@@ -67,8 +67,7 @@ class TimeMultiPoint(MultiPoint):
 
             nearest_t_index = (np.abs(np.asarray(self.source_global_axis_t) - time)).argmin()
 
-            if time - self.source_global_axis_t[nearest_t_index] == zero_delta or abs(
-                    time - self.source_global_axis_t[nearest_t_index]) < TimeMultiPoint.TIME_DELTA:
+            if time - datetime.strptime(self.source_global_axis_t[nearest_t_index].strftime('%Y-%m-%d %H:%M:%S'), '%Y-%m-%d %H:%M:%S') == zero_delta or abs(time - datetime.strptime(self.source_global_axis_t[nearest_t_index].strftime('%Y-%m-%d %H:%M:%S'), '%Y-%m-%d %H:%M:%S')) < TimeMultiPoint.TIME_DELTA:
                 tmin = nearest_t_index
             else:
                 raise ValueError(str(time) + " not found. Maybe the TimeMultiPoint.TIME_DELTA (" + str(
@@ -88,8 +87,7 @@ class TimeMultiPoint(MultiPoint):
 
             nearest_t_index = (np.abs(np.asarray(self.source_global_axis_t) - time)).argmin()
 
-            if time - self.source_global_axis_t[nearest_t_index] == zero_delta or abs(
-                    time - self.source_global_axis_t[nearest_t_index]) < TimeMultiPoint.TIME_DELTA:
+            if time - datetime.strptime(self.source_global_axis_t[nearest_t_index].strftime('%Y-%m-%d %H:%M:%S'), '%Y-%m-%d %H:%M:%S') == zero_delta or abs(time - datetime.strptime(self.source_global_axis_t[nearest_t_index].strftime('%Y-%m-%d %H:%M:%S'), '%Y-%m-%d %H:%M:%S')) < TimeMultiPoint.TIME_DELTA:
                 tmax = nearest_t_index + 1
             else:
                 raise ValueError(str(time) + " not found. Maybe the TimeMultiPoint.TIME_DELTA (" + str(
@@ -796,6 +794,25 @@ class TimeMultiPoint(MultiPoint):
 
         else:
             data = self.reader.read_variable_sea_surface_wave_mean_period_at_time(
+                self.map_mpi[self.rank]["src_global_t"].start + index_t[0])
+
+        return data
+
+    def read_variable_sea_surface_wave_from_direction_at_time(self, date):
+        index_t = self.find_time_index(date)
+
+        if len(index_t) > 1:
+            layers = np.zeros([len(index_t), self.get_nb_points()])
+            layers[::] = np.NAN
+
+            for t in range(0, len(index_t)):
+                layers[t] = self.reader.read_variable_sea_surface_wave_from_direction_at_time(
+                    self.map_mpi[self.rank]["src_global_t"].start + index_t[t])
+
+            data = self.interpolate_time(date, index_t, layers)
+
+        else:
+            data = self.reader.read_variable_sea_surface_wave_from_direction_at_time(
                 self.map_mpi[self.rank]["src_global_t"].start + index_t[0])
 
         return data

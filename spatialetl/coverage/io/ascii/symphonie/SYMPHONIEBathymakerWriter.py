@@ -49,6 +49,7 @@ class SYMPHONIEBathymakerWriter(CoverageWriter):
         data =  self.coverage.read_variable_bathymetry()
         for i in range(0, len(lon)):
             for j in range(0, len(lat)):
-                self.file.write(str(lat[j])+"\t"+str(lon[i])+"\t"+str(data[j,i])+"\n")
+                if data[j,i] != np.nan and str(data[j,i]) != "nan" :
+                    self.file.write(str(lat[j])+"\t"+str(lon[i])+"\t"+str(data[j,i])+"\n")
 
 

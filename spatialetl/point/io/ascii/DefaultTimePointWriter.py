@@ -480,6 +480,23 @@ class DefaultTimePointWriter(MultiPointWriter):
 
         self.data['sea_surface_wave_mean_period'] = data
 
+    def write_variable_sea_surface_wave_from_direction(self):
+        logging.info('[DefaultTimePointWriter] Writing variable \'' + str(
+            VariableDefinition.LONG_NAME['sea_surface_wave_from_direction']) + '\'')
+        data = np.zeros([self.points.get_t_size()])
+        data[:] = np.nan
+        time_index = 0
+        for time in self.points.read_axis_t():
+            logging.info(
+                '[DefaultTimePointWriter] Writing variable \'' + str(
+                    VariableDefinition.LONG_NAME['sea_surface_wave_from_direction']) + '\' at time \'' + str(
+                    time) + '\'')
+
+            data[time_index] = self.points.read_variable_sea_surface_wave_from_direction_at_time(time)[self.index_x]
+            time_index += 1
+
+        self.data['sea_surface_wave_from_direction'] = data
+
     def write_variable_sea_surface_wave_to_direction(self):
         logging.info('[DefaultTimePointWriter] Writing variable \'' + str(
             VariableDefinition.LONG_NAME['sea_surface_wave_to_direction']) + '\'')
