@@ -38,7 +38,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         index_z = self.get_z_size() - 1 # At surface level
         try:
             if "mask_t" in self.grid.variables:
-                return np.ma.filled(self.grid.variables["mask_t"][ymin:ymax, xmin:xmax], fill_value=np.nan)
+                return np.ma.filled(self.grid.variables["mask_t"][ymin:ymax, xmin:xmax], fill_value=-9999)
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))

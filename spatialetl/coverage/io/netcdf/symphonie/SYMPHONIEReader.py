@@ -534,8 +534,13 @@ La classe SymphonieReader permet de lire les données du format Symphonie
     def read_variable_sea_water_column_thickness_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
             self.open_file(index_t)
-            if "hssh" in self.ncfile.variables:
-                data = np.ma.filled(self.ncfile.variables["hssh"][0, ymin:ymax, xmin:xmax], fill_value=np.nan)
+            bathy = self.grid.variables["hm_w"][ymin:ymax, xmin:xmax]
+            if "ssh_w" in self.ncfile.variables:
+                data = np.ma.filled(self.ncfile.variables["ssh_w"][0, ymin:ymax, xmin:xmax] + bathy, fill_value=np.nan)
+            elif "ssh" in self.ncfile.variables:
+                data = np.ma.filled(self.ncfile.variables["ssh"][0, ymin:ymax, xmin:xmax] + bathy, fill_value=np.nan)
+            elif "ssh_inst" in self.ncfile.variables:
+                data = np.ma.filled(self.ncfile.variables["ssh_inst"][0, ymin:ymax, xmin:xmax] + bathy, fill_value=np.nan)
             else:
                 logging.debug("No variables found for '" + str(
                     VariableDefinition.LONG_NAME['sea_water_column_thickness']) + "'")
@@ -544,8 +549,10 @@ La classe SymphonieReader permet de lire les données du format Symphonie
                                              VariableDefinition.LONG_NAME['sea_water_column_thickness']) + "'",
                                          1000))
 
-            if "wetmask_t" in self.ncfile.variables: # We apply the wetmask
-                data[self.ncfile.variables["wetmask_t"][0, ymin:ymax, xmin:xmax] == 0] = np.nan
+            #if "wetmask_t" in self.ncfile.variables: # We apply the wetmask
+            #    data[self.ncfile.variables["wetmask_t"][0, ymin:ymax, xmin:xmax] == 0] = np.nan
+
+            data[data < 0.1] = 0 # Remove values on topo
 
             return data
 

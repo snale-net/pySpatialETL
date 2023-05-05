@@ -226,6 +226,16 @@ class AbstractSYMPHONIEReader(MultiPointReader):
 
         return data
 
+    def read_variable_sea_water_column_thickness_at_time(self,index_t):
+
+        data = np.zeros([self.nbPoints])
+        data[:] = np.nan
+
+        for index_x in range(0, self.nbPoints):
+            data[index_x] = self.reader.read_variable_sea_water_column_thickness_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)
+
+        return data
+
     def read_variable_sea_surface_temperature_at_time(self,index_t):
         data = np.zeros([self.nbPoints])
         data[:] = np.nan
