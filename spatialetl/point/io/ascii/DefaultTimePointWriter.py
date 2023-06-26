@@ -171,6 +171,78 @@ class DefaultTimePointWriter(MultiPointWriter):
 
         self.data['sea_surface_height_above_geoid'] = data
 
+
+    def write_variable_sea_water_column_thickness(self):
+        logging.info('[DefaultTimePointWriter] Writing variable \'' + str(
+            VariableDefinition.LONG_NAME['sea_water_column_thickness']) + '\'')
+
+        data = np.zeros([self.points.get_t_size()])
+        data[:] = np.nan
+        time_index = 0
+        for time in self.points.read_axis_t():
+
+            logging.info(
+                '[DefaultTimePointWriter] Writing variable \'' + str(
+                    VariableDefinition.LONG_NAME['sea_water_column_thickness']) + '\' at time \'' + str(
+                    time) + '\'')
+
+            data[time_index] = self.points.read_variable_sea_water_column_thickness_at_time(time)[self.index_x]
+            time_index += 1
+
+        self.data['sea_water_column_thickness'] = data
+
+    def write_variable_barotropic_sea_water_speed(self):
+        logging.info('[DefaultTimePointWriter] Writing variable \''+str(VariableDefinition.LONG_NAME['barotropic_sea_water_speed'])+'\'')
+        data = np.zeros([self.points.get_t_size()])
+        data[:] = np.nan
+        time_index = 0
+        for time in self.points.read_axis_t():
+
+            logging.info(
+                '[DefaultTimePointWriter] Writing variable \'' + str(
+                    VariableDefinition.LONG_NAME['barotropic_sea_water_speed']) + '\' at time \'' + str(
+                    time) + '\'')
+
+            data[time_index] = self.points.read_variable_barotropic_sea_water_speed_at_time(time)[self.index_x]
+            time_index += 1
+
+        self.data['barotropic_sea_water_speed'] = data
+
+    def write_variable_barotropic_sea_water_from_direction(self):
+        logging.info('[DefaultTimePointWriter] Writing variable \''+str(VariableDefinition.LONG_NAME['barotropic_sea_water_from_direction'])+'\'')
+        data = np.zeros([self.points.get_t_size()])
+        data[:] = np.nan
+        time_index = 0
+        for time in self.points.read_axis_t():
+
+            logging.info(
+                '[DefaultTimePointWriter] Writing variable \'' + str(
+                    VariableDefinition.LONG_NAME['barotropic_sea_water_from_direction']) + '\' at time \'' + str(
+                    time) + '\'')
+
+            data[time_index] = self.points.read_variable_barotropic_sea_water_from_direction_at_time(time)[self.index_x]
+            time_index += 1
+
+        self.data['barotropic_sea_water_from_direction'] = data
+
+    def write_variable_barotropic_sea_water_to_direction(self):
+        logging.info('[DefaultTimePointWriter] Writing variable \''+str(VariableDefinition.LONG_NAME['barotropic_sea_water_to_direction'])+'\'')
+        data = np.zeros([self.points.get_t_size()])
+        data[:] = np.nan
+        time_index = 0
+        for time in self.points.read_axis_t():
+
+            logging.info(
+                '[DefaultTimePointWriter] Writing variable \'' + str(
+                    VariableDefinition.LONG_NAME['barotropic_sea_water_to_direction']) + '\' at time \'' + str(
+                    time) + '\'')
+
+            data[time_index] = self.points.read_variable_barotropic_sea_water_to_direction_at_time(time)[self.index_x]
+            time_index += 1
+
+        self.data['barotropic_sea_water_to_direction'] = data
+
+
     #################
     # HYDRO
     # Sea Surface

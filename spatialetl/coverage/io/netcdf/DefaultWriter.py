@@ -391,6 +391,120 @@ class DefaultWriter (CoverageWriter):
         else:
             raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
+    def write_variable_barotropic_sea_water_speed(self):
+
+        if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
+
+            if VariableDefinition.VARIABLE_NAME['barotropic_sea_water_speed'] in self.ncfile.variables:
+                var = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['barotropic_sea_water_speed']]
+            else:
+                var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['barotropic_sea_water_speed'], float32,
+                                                 (VariableDefinition.VARIABLE_NAME['time'],
+                                                  VariableDefinition.VARIABLE_NAME['latitude'],
+                                                  VariableDefinition.VARIABLE_NAME['longitude'],),
+                                                 fill_value=9.96921e+36)
+            var.long_name = VariableDefinition.LONG_NAME['barotropic_sea_water_speed']
+            var.standard_name = VariableDefinition.STANDARD_NAME['barotropic_sea_water_speed']
+            var.units = VariableDefinition.CANONICAL_UNITS['barotropic_sea_water_speed']
+
+            if self.coverage.rank == 0:
+                logging.info(
+                    '[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['barotropic_sea_water_speed']) + '\'')
+
+            time_index = 0
+            for time in self.coverage.read_axis_t():
+                logging.info(
+                    '[DefaultWriter] Writing variable \'' + str(
+                        VariableDefinition.LONG_NAME['barotropic_sea_water_speed']) + '\' at time \'' + str(time) + '\'')
+
+                var[
+                self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index:
+                self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index + 1,
+                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
+                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]
+                ] = self.coverage.read_variable_barotropic_sea_water_speed_at_time(time)
+
+                time_index += 1
+        else:
+            raise CoverageError("DefaultWriter",
+                                "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
+
+    def write_variable_barotropic_sea_water_to_direction(self):
+
+        if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
+
+            if VariableDefinition.VARIABLE_NAME['barotropic_sea_water_to_direction'] in self.ncfile.variables:
+                var = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['barotropic_sea_water_to_direction']]
+            else:
+                var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['barotropic_sea_water_to_direction'], float32,
+                                                 (VariableDefinition.VARIABLE_NAME['time'],
+                                                  VariableDefinition.VARIABLE_NAME['latitude'],
+                                                  VariableDefinition.VARIABLE_NAME['longitude'],),
+                                                 fill_value=9.96921e+36)
+            var.long_name = VariableDefinition.LONG_NAME['barotropic_sea_water_to_direction']
+            var.standard_name = VariableDefinition.STANDARD_NAME['barotropic_sea_water_to_direction']
+            var.units = VariableDefinition.CANONICAL_UNITS['barotropic_sea_water_to_direction']
+
+            if self.coverage.rank == 0:
+                logging.info('[DefaultWriter] Writing variable \'' + str(
+                    VariableDefinition.LONG_NAME['barotropic_sea_water_to_direction']) + '\'')
+
+            time_index = 0
+            for time in self.coverage.read_axis_t():
+                logging.info(
+                    '[DefaultWriter] Writing variable \'' + str(
+                        VariableDefinition.LONG_NAME['barotropic_sea_water_to_direction']) + '\' at time \'' + str(time) + '\'')
+
+                var[
+                self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index:
+                self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index + 1,
+                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
+                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]
+                ] = self.coverage.read_variable_barotropic_sea_water_to_direction_at_time(time)
+
+                time_index += 1
+        else:
+            raise CoverageError("DefaultWriter",
+                                "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
+
+    def write_variable_barotropic_sea_water_from_direction(self):
+
+        if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
+
+            if VariableDefinition.VARIABLE_NAME['barotropic_sea_water_from_direction'] in self.ncfile.variables:
+                var = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['barotropic_sea_water_from_direction']]
+            else:
+                var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['barotropic_sea_water_from_direction'], float32,
+                                                 (VariableDefinition.VARIABLE_NAME['time'],
+                                                  VariableDefinition.VARIABLE_NAME['latitude'],
+                                                  VariableDefinition.VARIABLE_NAME['longitude'],),
+                                                 fill_value=9.96921e+36)
+            var.long_name = VariableDefinition.LONG_NAME['barotropic_sea_water_from_direction']
+            var.standard_name = VariableDefinition.STANDARD_NAME['barotropic_sea_water_from_direction']
+            var.units = VariableDefinition.CANONICAL_UNITS['barotropic_sea_water_from_direction']
+
+            if self.coverage.rank == 0:
+                logging.info('[DefaultWriter] Writing variable \'' + str(
+                    VariableDefinition.LONG_NAME['barotropic_sea_water_from_direction']) + '\'')
+
+            time_index = 0
+            for time in self.coverage.read_axis_t():
+                logging.info(
+                    '[DefaultWriter] Writing variable \'' + str(
+                        VariableDefinition.LONG_NAME['barotropic_sea_water_from_direction']) + '\' at time \'' + str(time) + '\'')
+
+                var[
+                self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index:
+                self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index + 1,
+                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
+                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]
+                ] = self.coverage.read_variable_barotropic_sea_water_from_direction_at_time(time)
+
+                time_index += 1
+        else:
+            raise CoverageError("DefaultWriter",
+                                "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
+
     #################
     # HYDRO
     # Sea Surface

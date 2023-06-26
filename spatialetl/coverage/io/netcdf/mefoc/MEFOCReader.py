@@ -66,10 +66,41 @@ class MEFOCReader(CoverageReader):
     def read_axis_y(self,xmin,xmax,ymin,ymax):
         return self.ncfile.variables['latitude'][ymin:ymax]
 
-    # Scalar
+    #################
+    # HYDRO
+    # 2D
+    #################
     def read_variable_bathymetry(self,xmin,xmax,ymin,ymax):
         return np.ma.filled(self.ncfile.variables['bathymetry'][ymin:ymax,xmin:xmax], fill_value=np.nan)
 
+    def read_variable_sea_surface_height_above_mean_sea_level_at_time(self, index_t, xmin, xmax, ymin, ymax):
+        return np.ma.filled(self.ncfile.variables["ssh"][index_t][ymin:ymax, xmin:xmax], fill_value=np.nan);
+
+    def read_variable_sea_water_column_thickness_at_time(self, index_t, xmin, xmax, ymin, ymax):
+        return np.ma.filled(self.ncfile.variables["water_thickness"][index_t][ymin:ymax, xmin:xmax], fill_value=np.nan);
+
+    def read_variable_barotropic_sea_water_velocity_at_time(self, index_t, xmin, xmax, ymin, ymax):
+        return [np.ma.filled(self.ncfile.variables["u_sea_water_bar_vel"][index_t][ymin:ymax, xmin:xmax], fill_value=np.nan),
+                np.ma.filled(self.ncfile.variables["v_sea_water_bar_vel"][index_t][ymin:ymax, xmin:xmax], fill_value=np.nan)]
+
+    #################
+    # WAVES
+    # Sea Surface
+    #################
+    def read_variable_sea_surface_wave_significant_height_at_time(self, index_t, xmin, xmax, ymin, ymax):
+        return np.ma.filled(self.ncfile.variables["hs"][index_t][ymin:ymax, xmin:xmax], fill_value=np.nan);
+
+    def read_variable_sea_surface_wave_mean_period_at_time(self, index_t, xmin, xmax, ymin, ymax):
+        return np.ma.filled(self.ncfile.variables["wave_mean_period"][index_t][ymin:ymax, xmin:xmax],
+                            fill_value=np.nan);
+
+    def read_variable_sea_surface_wave_to_direction_at_time(self, index_t, xmin, xmax, ymin, ymax):
+        return np.ma.filled(self.ncfile.variables["wave_to_dir"][index_t][ymin:ymax, xmin:xmax], fill_value=np.nan);
+
+    #################
+    # METEO
+    # At 10 m
+    #################
     def read_variable_eastward_wind_10m(self,xmin,xmax,ymin,ymax):
         return np.ma.filled(self.ncfile.variables["u_wind_10m"][:,ymin:ymax,xmin:xmax], fill_value=np.nan)
 
@@ -80,12 +111,5 @@ class MEFOCReader(CoverageReader):
         return [np.ma.filled(self.ncfile.variables["u_wind_10m"][index_t][ymin:ymax,xmin:xmax], fill_value=np.nan),
                 np.ma.filled(self.ncfile.variables["v_wind_10m"][index_t][ymin:ymax,xmin:xmax], fill_value=np.nan)]
 
-    def read_variable_sea_surface_wave_significant_height(self,xmin,xmax,ymin,ymax):
-            return self.ncfile.variables["hs"][::]
 
-    def read_variable_sea_surface_wave_mean_period(self,xmin,xmax,ymin,ymax):
-            return self.ncfile.variables["tm0m1"][::]
-
-    def read_variable_sea_surface_wave_to_direction(self):
-        return self.ncfile.variables["dir"][::]
 
