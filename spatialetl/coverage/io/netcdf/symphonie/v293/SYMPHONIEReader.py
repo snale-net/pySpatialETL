@@ -38,7 +38,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         index_z = self.get_z_size() - 1 # At surface level
         try:
             if "mask_t" in self.grid.variables:
-                return np.ma.filled(self.grid.variables["mask_t"][ymin:ymax, xmin:xmax], fill_value=np.nan)
+                return np.ma.filled(self.grid.variables["mask_t"][ymin:ymax, xmin:xmax], fill_value=-9999)
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
@@ -102,7 +102,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
         u_rot, v_rot = self.compute_vector_rotation(data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v)
 
-        if "wetmask_t" in self.ncfile.variables:
+        if AbstractSYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables:
             u_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
                   xmin_overlap:xmax_overlap] == 0] = np.nan
             v_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
@@ -158,7 +158,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
             u_rot, v_rot = self.compute_vector_rotation(data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v)
 
-            if "wetmask_t" in self.ncfile.variables:  # We apply the wetmask
+            if AbstractSYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables:  # We apply the wetmask
                 u_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
                       xmin_overlap:xmax_overlap] == 0] = np.nan
                 v_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
@@ -202,7 +202,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
                     fill_value=np.nan)
             u_rot, v_rot = self.compute_vector_rotation(data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v)
 
-            if "wetmask_t" in self.ncfile.variables:
+            if AbstractSYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables:
                 u_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
                       xmin_overlap:xmax_overlap] == 0] = np.nan
                 v_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
@@ -266,7 +266,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
             u_rot, v_rot = self.compute_vector_rotation(data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v)
 
-            if "wetmask_t" in self.ncfile.variables:  # We apply the wetmask
+            if AbstractSYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables:  # We apply the wetmask
                 u_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
                       xmin_overlap:xmax_overlap] == 0] = np.nan
                 v_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
@@ -325,7 +325,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
             u_rot, v_rot = self.compute_vector_rotation(data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v)
 
-            if "wetmask_t" in self.ncfile.variables:
+            if AbstractSYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables:
                 u_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
                       xmin_overlap:xmax_overlap] == 0] = np.nan
                 v_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
@@ -379,7 +379,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
             u_rot, v_rot = self.compute_vector_rotation(data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v)
 
-            if "wetmask_t" in self.ncfile.variables:
+            if AbstractSYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables:
                 u_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
                       xmin_overlap:xmax_overlap] == 0] = np.nan
                 v_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,

@@ -65,6 +65,7 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
                 raise ValueError("start_time have to be string or datetime. Found " + str(type(start_time)))
 
             nearest_t_index = (np.abs(np.asarray(self.source_global_axis_t) - time)).argmin()
+
             if time - datetime.strptime(self.source_global_axis_t[nearest_t_index].strftime('%Y-%m-%d %H:%M:%S'), '%Y-%m-%d %H:%M:%S') == zero_delta or abs(time - datetime.strptime(self.source_global_axis_t[nearest_t_index].strftime('%Y-%m-%d %H:%M:%S'), '%Y-%m-%d %H:%M:%S')) < TimeCoverage.TIME_DELTA:
                 tmin = nearest_t_index
             else:
@@ -777,6 +778,36 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
                        self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
         return data[0][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]],data[1][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+
+    def read_variable_barotropic_sea_water_speed_at_time(self, date):
+        comp = self.read_variable_barotropic_sea_water_velocity_at_time(date)
+        result = np.zeros([self.get_y_size(), self.get_x_size()])
+        result[:] = np.nan
+        for x in range(0, self.get_x_size()):
+            for y in range(0, self.get_y_size()):
+                result[y, x] = math.sqrt(comp[0][y, x] ** 2 + comp[1][y, x] ** 2)
+
+        return result
+
+    def read_variable_barotropic_sea_water_from_direction_at_time(self, date):
+        comp = self.read_variable_barotropic_sea_water_velocity_at_time(date)
+        result = np.zeros([self.get_y_size(), self.get_x_size()])
+        result[:] = np.nan
+        for x in range(0, self.get_x_size()):
+            for y in range(0, self.get_y_size()):
+                result[y, x] = 270. - (180.0 / math.pi) * (math.atan2(comp[0][y, x], comp[1][y, x])) + 180.0 % 360.0
+
+        return result
+
+    def read_variable_barotropic_sea_water_to_direction_at_time(self, date):
+        comp = self.read_variable_barotropic_sea_water_velocity_at_time(date)
+        result = np.zeros([self.get_y_size(), self.get_x_size()])
+        result[:] = np.nan
+        for x in range(0, self.get_x_size()):
+            for y in range(0, self.get_y_size()):
+                result[y, x] = 270. - (180.0 / math.pi) * (math.atan2(comp[0][y, x], comp[1][y, x])) % 360.0
+
+        return result
 
     #################
     # WAVES
