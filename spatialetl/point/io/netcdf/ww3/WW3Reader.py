@@ -16,21 +16,18 @@
 from __future__ import division, print_function, absolute_import
 
 import numpy as np
-
-
-
-from spatialetl.point.io.MultiPointReader import MultiPointReader
 from spatialetl.coverage.io.netcdf.ww3.WW3Reader import WW3Reader as CovReader
-from spatialetl.utils.distance import distance_on_unit_sphere
+from spatialetl.point.MultiPoint import distance_on_unit_sphere
+from spatialetl.point.io.MultiPointReader import MultiPointReader
 from spatialetl.utils.logger import logging
 
 
-class WW3Reader(MultiPointReader):
+class WW3Reader():
 
-    def __init__(self,myFile,xy,names=None):
+    def __init__(self, myFile, xy, names=None):
         MultiPointReader.__init__(self, myFile);
+        self.reader = None
 
-        self.reader = CovReader(self.filename)
         self.source_xy_coords = []
         self.names = []
 
@@ -60,17 +57,11 @@ class WW3Reader(MultiPointReader):
         self.xy_coords = np.zeros([self.nbPoints, 2], dtype=np.int32)
         self.xy_values = np.zeros([self.nbPoints, 2])
         self.meta_data = ""
-<<<<<<< HEAD
-        self.find_points_coordinates()
-
-    def find_points_coordinates(self):
-=======
 
         self.reader = CovReader(self.filename)
         self.find_points_coordinates(xy)
 
     def find_points_coordinates(self, xy):
->>>>>>> b3fd3053ba4a5f4f2c6bf8e3421ca29033cd4fee
 
         if self.reader is None:
             raise (ValueError("CoverageReader is not initialized"))
@@ -78,12 +69,8 @@ class WW3Reader(MultiPointReader):
         for i in range(0, np.shape(self.xy_coords)[0]):
             nearestPoint = self.find_point_index(self.source_xy_coords[i][0], self.source_xy_coords[i][1])
             logging.info(str(
-<<<<<<< HEAD
-                self.names[i]) + " nearest point in WW3 is " + str(nearestPoint[2]) + " / " + str(nearestPoint[3]) + " at " + str(
-=======
                 self.names[i]) + " nearest point in WW3 is " + str(nearestPoint[2]) + " / " + str(
                 nearestPoint[3]) + " at " + str(
->>>>>>> b3fd3053ba4a5f4f2c6bf8e3421ca29033cd4fee
                 round(nearestPoint[4], 4)) + " km")
             self.meta_data = self.meta_data + "\n# " + str(
                 self.names[i]) + " : nearest point in WW3 file is " + str(
@@ -108,19 +95,11 @@ class WW3Reader(MultiPointReader):
      [4] : la distance du point le plus proche en kilomètre."""
         x_size = self.reader.get_x_size()
         y_size = self.reader.get_y_size()
-<<<<<<< HEAD
-        lon = self.reader.read_axis_x(0,x_size,0,y_size)
-        lat = self.reader.read_axis_y(0,x_size,0,y_size)
-
-        try:
-            mask = self.reader.read_variable_2D_sea_binary_mask(0,x_size,0,y_size)
-=======
         lon = self.reader.read_axis_x(0, x_size, 0, y_size)
         lat = self.reader.read_axis_y(0, x_size, 0, y_size)
 
         try:
             mask = self.reader.read_variable_2D_sea_binary_mask(0, x_size, 0, y_size)
->>>>>>> b3fd3053ba4a5f4f2c6bf8e3421ca29033cd4fee
         except NotImplementedError:
             logging.warning("No 2D sea binary mask found")
             # mask = np.ones([self.source_global_y_size, self.source_global_x_size])
@@ -188,12 +167,8 @@ class WW3Reader(MultiPointReader):
         else:
             raise RuntimeError("Method " + str(method) + " is not implemented yet.")
 
-<<<<<<< HEAD
-    # Axis
-=======
         # Axis
 
->>>>>>> b3fd3053ba4a5f4f2c6bf8e3421ca29033cd4fee
     def get_z_size(self):
         return self.reader.get_z_size()
 
@@ -201,26 +176,6 @@ class WW3Reader(MultiPointReader):
         return self.reader.get_t_size()
 
     def read_axis_x(self):
-<<<<<<< HEAD
-        return self.xy_values[:,0]
-
-    def read_axis_y(self):
-        return self.xy_values[:,1]
-
-    def read_axis_z(self):
-        data = np.zeros([self.nbPoints,np.shape(self.reader.read_axis_z())[0]])
-        data[:] = np.nan
-
-        all_data = self.reader.read_axis_z()
-
-        for index_x in range(0, self.nbPoints):
-            data[index_x] = all_data[:,self.xy_coords[index_x][1], self.xy_coords[index_x][0]]
-
-        return data
-
-    def read_axis_t(self,tmin,tmax,timestamp=0):
-        return self.reader.read_axis_t(tmin,tmax,timestamp)
-=======
         return self.xy_values[:, 0]
 
     def read_axis_y(self):
@@ -228,7 +183,6 @@ class WW3Reader(MultiPointReader):
 
     def read_axis_t(self, tmin, tmax, timestamp=0):
         return self.reader.read_axis_t(tmin, tmax, timestamp)
->>>>>>> b3fd3053ba4a5f4f2c6bf8e3421ca29033cd4fee
 
     def read_metadata(self):
         m = {}
@@ -243,12 +197,6 @@ class WW3Reader(MultiPointReader):
     def read_variable_latitude(self):
         return self.read_axis_y()
 
-<<<<<<< HEAD
-    def read_variable_depth(self):
-        return self.read_axis_z()
-
-=======
->>>>>>> b3fd3053ba4a5f4f2c6bf8e3421ca29033cd4fee
     def read_variable_time(self):
         return self.read_axis_t(timestamp=0)
 
@@ -256,65 +204,15 @@ class WW3Reader(MultiPointReader):
         return self.names
 
     #################
-<<<<<<< HEAD
-    # HYDRO
-    # Sea Surface
-    #################
-    def read_variable_sea_surface_height_above_mean_sea_level_at_time(self,index_t):
-
-        data = np.zeros([self.nbPoints])
-        data[:] = np.nan
-
-        for index_x in range(0, self.nbPoints):
-            data[index_x] = self.reader.read_variable_sea_surface_height_above_mean_sea_level_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)
-
-        return data
-
-    #################
-    # HYDRO
-    # 2D
-    #################
-    def read_variable_bathymetry(self):
-        data = np.zeros([self.nbPoints])
-        data[:] = np.nan
-
-        for index_x in range(0, self.nbPoints):
-            data[index_x] = self.reader.read_variable_bathymetry(self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)
-
-        return data
-
-    #################
-    # WAVES
-    # Sea Surface
-    #################
-    def read_variable_sea_surface_wave_significant_height_at_time(self,index_t):
-        data = np.zeros([self.nbPoints])
-        data[:] = np.nan
-
-        for index_x in range(0, self.nbPoints):
-            data[index_x] = self.reader.read_variable_sea_surface_wave_significant_height_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)
-
-        return data
-
-    def read_variable_sea_surface_wave_mean_period_at_time(self,index_t):
-=======
     # WAVES
     # Sea Surface
     #################
 
     def read_variable_sea_surface_wave_significant_height_at_time(self, index_t):
->>>>>>> b3fd3053ba4a5f4f2c6bf8e3421ca29033cd4fee
         data = np.zeros([self.nbPoints])
         data[:] = np.nan
 
         for index_x in range(0, self.nbPoints):
-<<<<<<< HEAD
-            data[index_x] = self.reader.read_variable_sea_surface_wave_mean_period_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)
-
-        return data
-
-    def read_variable_sea_surface_wave_to_direction_at_time(self,index_t):
-=======
             data[index_x] = self.reader.read_variable_sea_surface_wave_significant_height_at_time(index_t,
                                                                                                   self.xy_coords[
                                                                                                       index_x][0],
@@ -328,42 +226,10 @@ class WW3Reader(MultiPointReader):
         return data
 
     def read_variable_sea_surface_wave_mean_period_at_time(self, index_t):
->>>>>>> b3fd3053ba4a5f4f2c6bf8e3421ca29033cd4fee
         data = np.zeros([self.nbPoints])
         data[:] = np.nan
 
         for index_x in range(0, self.nbPoints):
-<<<<<<< HEAD
-            data[index_x] = self.reader.read_variable_sea_surface_wave_to_direction_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)
-
-        return data
-
-    def read_variable_sea_surface_wave_stokes_drift_velocity_at_time(self,index_t):
-        data = np.zeros([2, self.nbPoints])
-        data[:] = np.nan
-
-        for index_x in range(0, self.nbPoints):
-            data[0][index_x] = self.reader.read_variable_sea_surface_wave_stokes_drift_velocity_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)[0]
-            data[1][index_x] = self.reader.read_variable_sea_surface_wave_stokes_drift_velocity_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)[1]
-
-        return data
-
-    #################
-    # WAVES
-    # Momentum flux
-    #################
-    def read_variable_atmosphere_momentum_flux_to_waves_at_time(self,index_t):
-        data = np.zeros([2, self.nbPoints])
-        data[:] = np.nan
-
-        for index_x in range(0, self.nbPoints):
-            data[0][index_x] = self.reader.read_variable_atmosphere_momentum_flux_to_waves_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)[0]
-            data[1][index_x] = self.reader.read_variable_atmosphere_momentum_flux_to_waves_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)[1]
-
-        return data
-
-    def read_variable_waves_momentum_flux_to_ocean_at_time(self,index_t):
-=======
             data[index_x] = self.reader.read_variable_sea_surface_wave_mean_period_at_time(index_t,
                                                                                            self.xy_coords[index_x][0],
                                                                                            self.xy_coords[index_x][
@@ -390,37 +256,10 @@ class WW3Reader(MultiPointReader):
         return data
 
     def read_variable_sea_surface_wave_stokes_drift_velocity_at_time(self, index_t):
->>>>>>> b3fd3053ba4a5f4f2c6bf8e3421ca29033cd4fee
         data = np.zeros([2, self.nbPoints])
         data[:] = np.nan
 
         for index_x in range(0, self.nbPoints):
-<<<<<<< HEAD
-            data[0][index_x] = self.reader.read_variable_waves_momentum_flux_to_ocean_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)[0]
-            data[1][index_x] = self.reader.read_variable_waves_momentum_flux_to_ocean_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)[1]
-
-        return data
-
-    #################
-    # METEO
-    # At 10 m
-    #################
-    def read_variable_wind_10m_at_time(self,index_t):
-        data = np.zeros([2, self.nbPoints])
-        data[:] = np.nan
-
-        for index_x in range(0, self.nbPoints):
-            data[0][index_x] = self.reader.read_variable_wind_10m_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)[0]
-            data[1][index_x] = self.reader.read_variable_wind_10m_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)[1]
-
-        return data
-
-
-
-
-
-
-=======
             data[0][index_x] = self.reader.read_variable_sea_surface_wave_stokes_drift_velocity_at_time(index_t,
                                                                                                         self.xy_coords[
                                                                                                             index_x][0],
@@ -445,4 +284,3 @@ class WW3Reader(MultiPointReader):
                                                                                                             1] + 1)[1]
 
         return data
->>>>>>> b3fd3053ba4a5f4f2c6bf8e3421ca29033cd4fee

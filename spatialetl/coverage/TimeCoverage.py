@@ -23,7 +23,7 @@ import cftime
 import numpy as np
 import pandas
 from array_split import shape_split
-from numpy import int32, int64
+from numpy import int, int32, int64
 
 from spatialetl.coverage.Coverage import Coverage
 from spatialetl.exception.NotFoundInRankError import NotFoundInRankError
@@ -66,7 +66,7 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
             nearest_t_index = (np.abs(np.asarray(self.source_global_axis_t) - time)).argmin()
 
-            if time - datetime.strptime(self.source_global_axis_t[nearest_t_index].strftime('%Y-%m-%d %H:%M:%S'), '%Y-%m-%d %H:%M:%S') == zero_delta or abs(time - datetime.strptime(self.source_global_axis_t[nearest_t_index].strftime('%Y-%m-%d %H:%M:%S'), '%Y-%m-%d %H:%M:%S')) < TimeCoverage.TIME_DELTA:
+            if time - datetime.strptime(str(self.source_global_axis_t[nearest_t_index]),'%Y-%m-%d %H:%M:%S') == zero_delta or abs(time -datetime.strptime(str(self.source_global_axis_t[nearest_t_index]),'%Y-%m-%d %H:%M:%S')) < TimeCoverage.TIME_DELTA:
                 tmin = nearest_t_index
             else:
                 raise ValueError(str(time) + " not found. Maybe the TimeCoverage.TIME_DELTA (" + str(
@@ -86,7 +86,7 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
             nearest_t_index = (np.abs(np.asarray(self.source_global_axis_t) - time)).argmin()
 
-            if time - datetime.strptime(self.source_global_axis_t[nearest_t_index].strftime('%Y-%m-%d %H:%M:%S'), '%Y-%m-%d %H:%M:%S') == zero_delta or abs(time - datetime.strptime(self.source_global_axis_t[nearest_t_index].strftime('%Y-%m-%d %H:%M:%S'), '%Y-%m-%d %H:%M:%S')) < TimeCoverage.TIME_DELTA:
+            if time - datetime.strptime(str(self.source_global_axis_t[nearest_t_index]),'%Y-%m-%d %H:%M:%S') == zero_delta or abs(time - datetime.strptime(str(self.source_global_axis_t[nearest_t_index]),'%Y-%m-%d %H:%M:%S')) < TimeCoverage.TIME_DELTA:
                 tmax = nearest_t_index +1
             else:
                 raise ValueError(str(time) + " not found. Maybe the TimeCoverage.TIME_DELTA (" + str(
