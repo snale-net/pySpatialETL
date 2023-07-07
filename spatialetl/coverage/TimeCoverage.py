@@ -23,7 +23,6 @@ import cftime
 import numpy as np
 import pandas
 from array_split import shape_split
-from numpy import int, int32, int64
 
 from spatialetl.coverage.Coverage import Coverage
 from spatialetl.exception.NotFoundInRankError import NotFoundInRankError
