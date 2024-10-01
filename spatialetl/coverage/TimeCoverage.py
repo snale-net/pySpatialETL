@@ -269,7 +269,7 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
     @param t: date souhaitée ou l'index de la date souhaitée
     @return:  l'index de la date la plus proche à TIME_DELTA_MIN prêt ou une erreur si aucune date n'a pu être trouvée."""
 
-        if type(t) == int or type(t) == int32 or type(t) == int64:
+        if type(t) == int or type(t) == np.int32 or type(t) == np.int64:
 
             if t < 0 or t >= self.get_t_size():
                 raise ValueError("Time index have to range between 0 and " + str(

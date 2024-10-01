@@ -75,9 +75,10 @@ class SnaleWriter(CoverageWriter):
 
                 local_data[local_data == 9.96921e+36] = 0  # Remove NaN
                 local_data[local_data <= 0.1] = 0
-                local_data[(local_data > 1.2) & (local_data != 0)] = 3
-                local_data[(local_data >= 0.7) & (local_data <= 1.2)] = 2
-                local_data[(local_data > 0.1) & (local_data <= 0.7)] = 1
+                #local_data[(local_data > 1.0) & (local_data < 4.0) & (local_data != 0)] = 3
+                local_data[(local_data > 1.0) & (local_data != 0)] = 3
+                local_data[(local_data >= 0.5) & (local_data <= 1.0)] = 2
+                local_data[(local_data > 0.1) & (local_data <= 0.5)] = 1
                 # local_data[(local_data > 0.1) & (local_data <= 0.3)] = 1
 
                 x, y, elevation = self.coverage.read_axis_x(type="target_local"), self.coverage.read_axis_y(
@@ -86,9 +87,13 @@ class SnaleWriter(CoverageWriter):
                 x, y = np.meshgrid(x, y)
                 x, y, elevation = x.flatten(), y.flatten(), elevation.flatten()
 
-                for dem_threshold in range(1, 4):
+                for dem_threshold in range(1, 5):
                     dem_pd = pd.DataFrame.from_dict({'elevation': elevation, 'x': x, 'y': y})
-                    dem_pd = dem_pd[dem_pd['elevation'] == dem_threshold]
+                    if dem_threshold < 4:
+                        dem_pd = dem_pd[dem_pd['elevation'] == dem_threshold]
+                    else:
+                        dem_pd = dem_pd[dem_pd['elevation'] >= 1]
+
                     dem_vector = gpd.GeoDataFrame(
                         geometry=gpd.GeoSeries.from_xy(dem_pd['x'], dem_pd['y'], crs=CRS.from_string('EPSG:4326')))
 
@@ -114,15 +119,26 @@ class SnaleWriter(CoverageWriter):
                     union_vector_gdf = union_vector_gdf.simplify(0.00002)
                     union_vector_gdf = union_vector_gdf.buffer(0.00002, join_style=1).buffer(-0.00002, join_style=1)
 
-                    union_vector_gdf = gpd.GeoDataFrame(geometry=gpd.GeoSeries(union_vector_gdf))
-                    union_vector_gdf['Severity'] = dem_threshold
+                    union_vector_gdf = gpd.GeoDataFrame(geometry=gpd.GeoSeries(union_vector_gdf), crs=CRS.from_string('EPSG:4326'))
+
+                    if dem_threshold < 4:
+                        union_vector_gdf['Type'] = 'classification'
+                        union_vector_gdf['Severity'] = dem_threshold
+                    else:
+                        union_vector_gdf['Type'] = 'flooded'
+
                     union_vector_gdf['Datetime'] = time.strftime("%Y-%m-%d %H:%M:%S")
 
                     # Saving GeoDataFrame to shapefile
-                    union_vector_gdf.to_file(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                          VariableDefinition.VARIABLE_NAME[
-                                                              'sea_water_column_thickness'] + "_severity-" + str(
-                        dem_threshold) + "_rank-" + str(self.coverage.rank) + ".shp"), crs='EPSG:4326')
+                    if dem_threshold < 4:
+                        union_vector_gdf.to_file(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                              VariableDefinition.VARIABLE_NAME[
+                                                                  'sea_water_column_thickness'] + "_severity-" + str(
+                            dem_threshold) + "_rank-" + str(self.coverage.rank) + ".shp"), crs='EPSG:4326')
+                    else:
+                        union_vector_gdf.to_file(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                              VariableDefinition.VARIABLE_NAME[
+                                                                  'sea_water_column_thickness'] + "_flooded_rank-" + str(self.coverage.rank) + ".shp"), crs='EPSG:4326')
 
         else:
             raise CoverageError("DefaultWriter",

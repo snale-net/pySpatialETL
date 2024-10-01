@@ -77,7 +77,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
                                                int(groups.group(6)))
                 self.times.append(current_time)
             else:
-                if os.path.isfile(file):
+                if os.path.isfile(file) and "bathycote_in" not in str(file):
                     try:
                         current_file = Dataset(file, 'r')
 
@@ -93,8 +93,14 @@ La classe SymphonieReader permet de lire les données du format Symphonie
                                                                                                                       '11').replace(
                                          'dec', '12'), calendar=current_file.variables['time'].calendar)
                             self.times.append(current_time)
-                        #else:
-                        #    raise ValueError("No variable time found or multiple time records found in the same file")
+                        else:
+                            for time in current_file.variables["time"]:
+                                nc_time = num2date(time,
+                                         units=current_file.variables["time"].units, calendar=current_file.variables['time'].calendar)
+
+                                self.times.append(nc_time.replace(microsecond=0))
+
+                            self.t_size = len(self.times)
                     except Exception as ex:
                         raise ValueError("Unable to decode time records in file "+str(file)+ ":"+str(ex))
 
@@ -102,6 +108,10 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             logging.info("No time records found")
 
     def open_file(self, index_t):
+
+        if len(self.files) == 1 and index_t > 0:
+           return
+
         if index_t != self.last_opened_t_index:
             self.close()
             self.ncfile = Dataset(self.files[index_t])
@@ -536,7 +546,9 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         try:
             self.open_file(index_t)
             bathy = self.grid.variables["hm_w"][ymin:ymax, xmin:xmax]
-            if "ssh_w" in self.ncfile.variables:
+            if "hssh" in self.ncfile.variables:
+                data = np.ma.filled(self.ncfile.variables["hssh"][index_t, ymin:ymax, xmin:xmax], fill_value=np.nan)
+            elif "ssh_w" in self.ncfile.variables:
                 data = np.ma.filled(self.ncfile.variables["ssh_w"][0, ymin:ymax, xmin:xmax] + bathy, fill_value=np.nan)
             elif "ssh" in self.ncfile.variables:
                 data = np.ma.filled(self.ncfile.variables["ssh"][0, ymin:ymax, xmin:xmax] + bathy, fill_value=np.nan)
