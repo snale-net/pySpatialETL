@@ -19,6 +19,7 @@ import numpy as np
 
 from spatialetl.coverage.io.netcdf.ecmwf.ECMWFReader import ECMWFReader as CovReader
 from spatialetl.point.io.MultiPointReader import MultiPointReader
+from spatialetl.utils import logger
 from spatialetl.utils.distance import distance_on_unit_sphere
 from spatialetl.utils.logger import logging
 
@@ -29,6 +30,7 @@ class ECMWFReader(MultiPointReader):
         MultiPointReader.__init__(self, myFile);
 
         self.reader = CovReader(self.filename)
+
         self.source_xy_coords = []
         self.names = []
 
@@ -58,18 +60,24 @@ class ECMWFReader(MultiPointReader):
         self.xy_coords = np.zeros([self.nbPoints, 2], dtype=np.int32)
         self.xy_values = np.zeros([self.nbPoints, 2])
         self.meta_data = ""
+        self.find_points_coordinates()
 
-    def find_points_coordinates(self, xy):
+    def find_points_coordinates(self,):
 
         if self.reader is None:
             raise (ValueError("CoverageReader is not initialized"))
 
-        for i in range(0, self.nbPoints):
-            nearestPoint = self.find_point_index(xy[i][0], xy[i][1])
-            logging.info("Nearest point : " + str(nearestPoint[2]) + " / " + str(nearestPoint[3]) + " at " + str(round(nearestPoint[4], 4)) + " km")
-            self.meta_data = self.meta_data + "\n# "+str(self.names[i])+" : nearest point in ECMWF file is "+ str(round(nearestPoint[4], 4)) + " km from the target point"
+        for i in range(0, np.shape(self.xy_coords)[0]):
+            nearestPoint = self.find_point_index(self.source_xy_coords[i][0], self.source_xy_coords[i][1])
+            logging.info(str(
+                self.names[i]) + " nearest point in ECMWF is " + str(nearestPoint[2]) + " / " + str(
+                nearestPoint[3]) + " at " + str(
+                round(nearestPoint[4], 4)) + " km")
+            self.meta_data = self.meta_data + "\n# " + str(
+                self.names[i]) + " : nearest point in ECMWF file is " + str(
+                round(nearestPoint[4], 4)) + " km from the target point"
             logging.info("Nearest point (i,j) : " + str(nearestPoint[0]) + " / " + str(nearestPoint[1]))
-            self.xy_coords[i] = [nearestPoint[0],nearestPoint[1]]
+            self.xy_coords[i] = [nearestPoint[0], nearestPoint[1]]
             self.xy_values[i] = [nearestPoint[2], nearestPoint[3]]
 
     def close(self):

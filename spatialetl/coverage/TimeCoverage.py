@@ -23,7 +23,6 @@ import cftime
 import numpy as np
 import pandas
 from array_split import shape_split
-from numpy import int, int32, int64
 
 from spatialetl.coverage.Coverage import Coverage
 from spatialetl.exception.NotFoundInRankError import NotFoundInRankError
@@ -66,7 +65,7 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
             nearest_t_index = (np.abs(np.asarray(self.source_global_axis_t) - time)).argmin()
 
-            if time - self.source_global_axis_t[nearest_t_index] == zero_delta or abs(time - self.source_global_axis_t[nearest_t_index]) < TimeCoverage.TIME_DELTA:
+            if time - datetime.strptime(str(self.source_global_axis_t[nearest_t_index]),'%Y-%m-%d %H:%M:%S') == zero_delta or abs(time -datetime.strptime(str(self.source_global_axis_t[nearest_t_index]),'%Y-%m-%d %H:%M:%S')) < TimeCoverage.TIME_DELTA:
                 tmin = nearest_t_index
             else:
                 raise ValueError(str(time) + " not found. Maybe the TimeCoverage.TIME_DELTA (" + str(
@@ -86,7 +85,7 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
             nearest_t_index = (np.abs(np.asarray(self.source_global_axis_t) - time)).argmin()
 
-            if time - self.source_global_axis_t[nearest_t_index] == zero_delta or abs(time - self.source_global_axis_t[nearest_t_index]) < TimeCoverage.TIME_DELTA:
+            if time - datetime.strptime(str(self.source_global_axis_t[nearest_t_index]),'%Y-%m-%d %H:%M:%S') == zero_delta or abs(time - datetime.strptime(str(self.source_global_axis_t[nearest_t_index]),'%Y-%m-%d %H:%M:%S')) < TimeCoverage.TIME_DELTA:
                 tmax = nearest_t_index +1
             else:
                 raise ValueError(str(time) + " not found. Maybe the TimeCoverage.TIME_DELTA (" + str(
@@ -270,7 +269,7 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
     @param t: date souhaitée ou l'index de la date souhaitée
     @return:  l'index de la date la plus proche à TIME_DELTA_MIN prêt ou une erreur si aucune date n'a pu être trouvée."""
 
-        if type(t) == int or type(t) == int32 or type(t) == int64:
+        if type(t) == int or type(t) == np.int32 or type(t) == np.int64:
 
             if t < 0 or t >= self.get_t_size():
                 raise ValueError("Time index have to range between 0 and " + str(
@@ -778,6 +777,36 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
                        self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
         return data[0][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]],data[1][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+
+    def read_variable_barotropic_sea_water_speed_at_time(self, date):
+        comp = self.read_variable_barotropic_sea_water_velocity_at_time(date)
+        result = np.zeros([self.get_y_size(), self.get_x_size()])
+        result[:] = np.nan
+        for x in range(0, self.get_x_size()):
+            for y in range(0, self.get_y_size()):
+                result[y, x] = math.sqrt(comp[0][y, x] ** 2 + comp[1][y, x] ** 2)
+
+        return result
+
+    def read_variable_barotropic_sea_water_from_direction_at_time(self, date):
+        comp = self.read_variable_barotropic_sea_water_velocity_at_time(date)
+        result = np.zeros([self.get_y_size(), self.get_x_size()])
+        result[:] = np.nan
+        for x in range(0, self.get_x_size()):
+            for y in range(0, self.get_y_size()):
+                result[y, x] = 270. - (180.0 / math.pi) * (math.atan2(comp[0][y, x], comp[1][y, x])) + 180.0 % 360.0
+
+        return result
+
+    def read_variable_barotropic_sea_water_to_direction_at_time(self, date):
+        comp = self.read_variable_barotropic_sea_water_velocity_at_time(date)
+        result = np.zeros([self.get_y_size(), self.get_x_size()])
+        result[:] = np.nan
+        for x in range(0, self.get_x_size()):
+            for y in range(0, self.get_y_size()):
+                result[y, x] = 270. - (180.0 / math.pi) * (math.atan2(comp[0][y, x], comp[1][y, x])) % 360.0
+
+        return result
 
     #################
     # WAVES

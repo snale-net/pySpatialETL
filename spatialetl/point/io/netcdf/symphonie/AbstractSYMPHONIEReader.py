@@ -58,7 +58,7 @@ class AbstractSYMPHONIEReader(MultiPointReader):
         self.xy_values = np.zeros([self.nbPoints, 2])
         self.meta_data = ""
 
-    def find_points_coordinates(self, xy):
+    def find_points_coordinates(self):
 
         if self.reader is None:
             raise (ValueError("CoverageReader is not initialized"))
@@ -223,6 +223,16 @@ class AbstractSYMPHONIEReader(MultiPointReader):
 
         for index_x in range(0, self.nbPoints):
             data[index_x] = self.reader.read_variable_sea_surface_height_above_mean_sea_level_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)
+
+        return data
+
+    def read_variable_sea_water_column_thickness_at_time(self,index_t):
+
+        data = np.zeros([self.nbPoints])
+        data[:] = np.nan
+
+        for index_x in range(0, self.nbPoints):
+            data[index_x] = self.reader.read_variable_sea_water_column_thickness_at_time(index_t,self.xy_coords[index_x][0],self.xy_coords[index_x][0]+1,self.xy_coords[index_x][1],self.xy_coords[index_x][1]+1)
 
         return data
 

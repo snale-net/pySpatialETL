@@ -1,6 +1,6 @@
 #! /usr/bin/env python3.6
 # -*- coding: utf-8 -*-
-# Author : Fabien Rétif - fabien.retif@zoho.com
+# Author : Fabien Rétif - fabien.retif@snale.net
 #
 from __future__ import division, print_function, absolute_import
 
@@ -14,19 +14,21 @@ from spatialetl.coverage.TimeCoverage import TimeCoverage
 from spatialetl.coverage.io.CoverageReader import CoverageReader
 
 
-class MEFOCReader(CoverageReader):
+class HYCOMReader(CoverageReader):
 
-    def __init__(self, myFile):
-        CoverageReader.__init__(self, myFile);
+    def __init__(self,myGrid, myFile=None):
+        CoverageReader.__init__(self, myGrid);
 
-        if os.path.isfile(self.filename):
-            self.ncfile = Dataset(self.filename, 'r')
-        elif os.path.isdir(self.filename):
-            self.ncfile = MFDataset(os.path.join(self.filename, "*.nc"), 'r')
-        elif self.filename.endswith("*"):
-            self.ncfile = MFDataset(self.filename + ".nc", 'r')
+        self.grid = Dataset(self.filename, 'r')
+
+        if os.path.isfile(myFile):
+            self.ncfile = Dataset(myFile, 'r')
+        elif os.path.isdir(myFile):
+            self.ncfile = MFDataset(os.path.join(myFile, "*.nc"), 'r')
+        elif myFile.endswith("*"):
+            self.ncfile = MFDataset(myFile + ".nc", 'r')
         else:
-            raise ValueError("Unable to decode file " + str(self.filename))
+            raise ValueError("Unable to decode file " + str(myFile))
 
     def close(self):
         self.ncfile.close()
@@ -35,13 +37,10 @@ class MEFOCReader(CoverageReader):
         return True
 
     def get_x_size(self):
-        return np.shape(self.ncfile.variables['longitude'][:])[0];
+        return np.shape(self.grid.variables['lon'][:])[0];
 
     def get_y_size(self):
-        return np.shape(self.ncfile.variables['latitude'][:])[0];
-
-    def get_z_size(self):
-        return np.shape(self.ncfile.variables['depth'][:])[0];
+        return np.shape(self.grid.variables['lat'][:])[0];
 
     def get_t_size(self):
         return np.shape(self.ncfile.variables['time'])[0];
@@ -49,7 +48,7 @@ class MEFOCReader(CoverageReader):
     # Axis
     def read_axis_t(self,tmin,tmax, timestamp=0):
         data = self.ncfile.variables['time'][tmin:tmax]
-        temp = num2date(data, units=self.ncfile.variables['time'].units, calendar=self.ncfile.variables['time'].calendar)
+        temp = num2date(data, units=self.ncfile.variables['time'].units, calendar='gregorian')
 
         result = [datetime.strptime(str(t), '%Y-%m-%d %H:%M:%S') \
                   for t in temp];
@@ -61,23 +60,23 @@ class MEFOCReader(CoverageReader):
             return result;
 
     def read_axis_x(self,xmin,xmax,ymin,ymax):
-        return self.ncfile.variables['longitude'][xmin:xmax]
+        return self.grid.variables['lon'][ymin:ymax, xmin:xmax]
 
     def read_axis_y(self,xmin,xmax,ymin,ymax):
-        return self.ncfile.variables['latitude'][ymin:ymax]
+        return self.grid.variables['lat'][ymin:ymax, xmin:xmax]
 
     #################
     # HYDRO
     # 2D
     #################
     def read_variable_bathymetry(self,xmin,xmax,ymin,ymax):
-        return np.ma.filled(self.ncfile.variables['bathymetry'][ymin:ymax,xmin:xmax], fill_value=np.nan)
+        return np.ma.filled(self.grid.variables['h'][0][ymin:ymax,xmin:xmax], fill_value=np.nan)
 
     def read_variable_sea_surface_height_above_mean_sea_level_at_time(self, index_t, xmin, xmax, ymin, ymax):
         return np.ma.filled(self.ncfile.variables["ssh"][index_t][ymin:ymax, xmin:xmax], fill_value=np.nan);
 
     def read_variable_sea_water_column_thickness_at_time(self, index_t, xmin, xmax, ymin, ymax):
-        return np.ma.filled(self.ncfile.variables["water_thickness"][index_t][ymin:ymax, xmin:xmax], fill_value=np.nan);
+        return np.ma.filled(self.grid.variables["h"][0][ymin:ymax, xmin:xmax] + self.ncfile.variables["ssh"][index_t][ymin:ymax, xmin:xmax], fill_value=np.nan);
 
     def read_variable_barotropic_sea_water_velocity_at_time(self, index_t, xmin, xmax, ymin, ymax):
         return [np.ma.filled(self.ncfile.variables["u_sea_water_bar_vel"][index_t][ymin:ymax, xmin:xmax], fill_value=np.nan),
