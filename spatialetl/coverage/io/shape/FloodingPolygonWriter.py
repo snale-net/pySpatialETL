@@ -35,7 +35,7 @@ def union(x):
     return unary_union(x)
 
 
-class SnaleWriter(CoverageWriter):
+class FloodingPolygonWriter(CoverageWriter):
 
     def __init__(self, cov, myFile):
         CoverageWriter.__init__(self, cov, myFile);
@@ -141,5 +141,5 @@ class SnaleWriter(CoverageWriter):
                                                                   'sea_water_column_thickness'] + "_flooded_rank-" + str(self.coverage.rank) + ".shp"), crs='EPSG:4326')
 
         else:
-            raise CoverageError("DefaultWriter",
+            raise CoverageError("FloodingPolygonWriter",
                                 "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
