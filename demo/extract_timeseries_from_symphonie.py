@@ -14,17 +14,15 @@
 
 # Lien vers le dossier de la lib
 import sys
-sys.path = ['/work/sciences/toolbox/python/pyGeoSpatialETL'] + sys.path
+sys.path = ['../'] + sys.path
 
-from point.TimeLevelMultiPoint import TimeLevelMultiPoint
-from point.TimeMultiPoint import TimeMultiPoint
-from point.io.netcdf.symphonie.SymphonieReader import SymphonieReader
-from point.io.netcdf.DefaultTimeLevelMultiPointWriter import DefaultTimeLevelMultiPointWriter as NcWriter
-from point.io.netcdf.DefaultTimeMultiPointWriter import DefaultTimeMultiPointWriter as NcWriterTime
+from spatialetl.point.TimeLevelMultiPoint import TimeLevelMultiPoint
+from spatialetl.point.TimeMultiPoint import TimeMultiPoint
+from spatialetl.point.io.netcdf.symphonie.SYMPHONIEReader import SYMPHONIEReader
+from spatialetl.point.io.netcdf.DefaultWriter import DefaultWriter as NcWriter
 
 import logging
-from datetime import datetime,timedelta
-import numpy as np
+from datetime import timedelta
 
 if __name__ == "__main__":
     logging.basicConfig(format='[%(levelname)s] %(message)s', level=logging.INFO)
@@ -40,7 +38,7 @@ if __name__ == "__main__":
     TimeMultiPoint.TIME_DELTA_MIN = timedelta(hours=3)
     TimeMultiPoint.TIME_DELTA_MAX = timedelta(hours=6)
 
-    reader =  SymphonieReader('/work/sciences/projects/WWB-2017/Manicouagan/configuration_V2015/TStra_N/OFFLINE/grid.nc',
+    reader =  SYMPHONIEReader('/work/sciences/projects/WWB-2017/Manicouagan/configuration_V2015/TStra_N/OFFLINE/grid.nc',
                              '/work/sciences/projects/WWB-2017/Manicouagan/configuration_V2015/TStra_N/GRAPHIQUES/20090301_071217.nc',
                               stationCoords,
                               depths)
@@ -54,17 +52,7 @@ if __name__ == "__main__":
     writer.write_variable_baroclinic_sea_water_velocity()
     writer.close()
 
-    # # TimeMultiPoint
-    # myPoints = TimeMultiPoint(reader)
-    # writer = NcWriterTime(myPoints, '/tmp/symphonie_points.nc')
-    # # writer.write_variable_sea_surface_temperature()
-    # # writer.write_variable_sea_surface_salinity()
-    # writer.write_variable_barotropic_sea_water_speed()
-    # writer.write_variable_barotropic_sea_water_from_direction()
-    # writer.write_variable_barotropic_sea_water_to_direction()
-    # writer.close()
-
-    print('End of programm')
+    print('End of program')
 
 
 

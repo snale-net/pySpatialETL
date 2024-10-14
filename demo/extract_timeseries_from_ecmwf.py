@@ -14,20 +14,18 @@
 
 # Lien vers le dossier de la lib
 import sys
-sys.path = ['/work/sciences/toolbox/python/pyGeoSpatialETL'] + sys.path
+sys.path = ['../'] + sys.path
 
-from point.TimeMultiPoint import TimeMultiPoint
-from point.io.netcdf.ecmwf.ECMWFReader import ECMWFReader
+from spatialetl.point.TimeMultiPoint import TimeMultiPoint
+from spatialetl.point.io.netcdf.ecmwf.ECMWFReader import ECMWFReader
+from spatialetl.point.io.netcdf.DefaultWriter import DefaultWriter as NcWriter
+from spatialetl.point.io.ascii.DefaultTimePointWriter import DefaultTimePointWriter as AsciiWriter
 import logging
 from datetime import timedelta
-from point.io.netcdf.DefaultTimeMultiPointWriter import DefaultTimeMultiPointWriter as NcWriter
-from point.io.ascii.DefaultTimePointWriter import DefaultTimePointWriter as AsciiWriter
-
 
 if __name__ == "__main__":
 
     logging.basicConfig(format='[%(levelname)s] %(message)s', level=logging.INFO)
-
 
     points = {};
     points['IRHOB'] =   [2.43931,  6.36887]
@@ -62,5 +60,5 @@ if __name__ == "__main__":
         writer.write_variable_rainfall_amount()
         writer.close()
 
-    print('End of programm')
+    print('End of program')
 

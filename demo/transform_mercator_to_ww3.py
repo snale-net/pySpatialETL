@@ -14,11 +14,11 @@
 
 # Lien vers le dossier de la lib
 import sys
-sys.path = ['/work/sciences/toolbox/python/pyGeoSpatialETL'] + sys.path
+sys.path = ['../'] + sys.path
 
-from coverage.TimeLevelCoverage import TimeLevelCoverage
-from coverage.io.netcdf.mercator.MercatorReader import MercatorReader
-from coverage.io.netcdf.ww3.WW3Writer import WW3Writer
+from spatialetl.coverage.TimeLevelCoverage import TimeLevelCoverage
+from spatialetl.coverage.io.netcdf.mercator.v2020.MERCATORReader import MERCATORReader
+from spatialetl.coverage.io.netcdf.ww3.WW3Writer import WW3Writer
 import logging
 import numpy as np
 
@@ -31,7 +31,7 @@ if __name__ == "__main__":
     logging.basicConfig(format='[%(levelname)s] %(message)s',level=logging.INFO)
     
     # Read file
-    reader = MercatorReader('/home/fabien/mercator/ext-PSY2V4R4_mask.nc',
+    reader = MERCATORReader('/home/fabien/mercator/ext-PSY2V4R4_mask.nc',
                             '/home/fabien/mercator/ext-PSY2V4R4_1dAV_20130201_20130202_grid2D_R20130213.nc',
                             '/home/fabien/mercator/ext-PSY2V4R4_1dAV_20130201_20130202_gridT_R20130213.nc',
                             '/home/fabien/mercator/ext-PSY2V4R4_1dAV_20130201_20130202_gridU_R20130213.nc',
@@ -46,7 +46,7 @@ if __name__ == "__main__":
     writer.write_variable_barotropic_sea_water_velocity();
     writer.close()    
     
-    print('End of programm')
+    print('End of program')
      
     
     

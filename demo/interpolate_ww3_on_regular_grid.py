@@ -14,13 +14,13 @@
 
 # Lien vers le dossier de la lib
 import sys
-sys.path = ['/work/sciences/toolbox/python/pyGeoSpatialETL'] + sys.path
+sys.path = ['../'] + sys.path
 
-from coverage.TimeCoverage import TimeCoverage
-from coverage.operator.interpolator.CoverageInterpolator import CoverageInterpolator
-from coverage.operator.interpolator.InterpolatorCore import InterpolatorCore
-from coverage.io.netcdf.ww3.WW3Reader import WW3Reader
-from coverage.io.netcdf.DefaultWriter import DefaultWriter
+from spatialetl.coverage.TimeCoverage import TimeCoverage
+from spatialetl.coverage.operator.interpolator.CoverageInterpolator import CoverageInterpolator
+from spatialetl.coverage.operator.interpolator.InterpolatorCore import InterpolatorCore
+from spatialetl.coverage.io.netcdf.ww3.WW3Reader import WW3Reader
+from spatialetl.coverage.io.netcdf.DefaultWriter import DefaultWriter
 import numpy as np
 import logging
 
@@ -61,7 +61,7 @@ if __name__ == "__main__":
     writer.write_variable_sea_surface_wave_energy_flux_to_ocean()
     writer.close()
     
-    print('End of programm')
+    print('End of program')
      
     
     
