@@ -1,5 +1,4 @@
-"""
-__author__ = Linlin Chen
+
 # MIT License
 # Copyright (c) 2024 [SNALE - French SAS Company - RCS 951 724 616]
 #
@@ -20,6 +19,8 @@ __author__ = Linlin Chen
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+"""
+__author__ = Linlin Chen
 __email__ = lchen96@hawk.iit.edu
 
 @Description:

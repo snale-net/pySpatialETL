@@ -1,4 +1,4 @@
-import logging as log
+
 
 # MIT License
 # Copyright (c) 2024 [SNALE - French SAS Company - RCS 951 724 616]
@@ -20,6 +20,8 @@ import logging as log
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+
+import logging as log
 class RunFilter(log.Filter):
     def filter(self, record):
         if record.levelno==log.WARN or record.levelno==myLogger.TIMING:

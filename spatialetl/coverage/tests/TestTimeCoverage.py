@@ -1,5 +1,4 @@
-import sys
-sys.path = ['/work/sciences/pySpatialETL'] + sys.path
+
 # MIT License
 # Copyright (c) 2024 [SNALE - French SAS Company - RCS 951 724 616]
 #
@@ -21,6 +20,8 @@ sys.path = ['/work/sciences/pySpatialETL'] + sys.path
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import sys
+sys.path = ['/work/sciences/pySpatialETL'] + sys.path
 from unittest import TestCase
 
 import numpy as np
