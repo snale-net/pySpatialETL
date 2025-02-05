@@ -20,9 +20,6 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
- 
-# Author : Fabien Rétif - fabien.retif@snale.net
-#
 from __future__ import division, print_function, absolute_import
 
 import os
@@ -33,7 +30,6 @@ from netCDF4 import Dataset, MFDataset, num2date
 
 from spatialetl.coverage.TimeCoverage import TimeCoverage
 from spatialetl.coverage.io.CoverageReader import CoverageReader
-
 
 class HYCOMReader(CoverageReader):
 
