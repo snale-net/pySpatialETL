@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+ 
 """
 Functions for converting dates to/from JD and MJD. Assumes dates are historical
 dates, including the transition from the Julian calendar to the Gregorian
