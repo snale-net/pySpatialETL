@@ -22,7 +22,6 @@
 # SOFTWARE.
 from scipy.signal import butter, lfilter
 
-
 def butter_lowpass(cutoff, fs, order=5):
     nyq = 0.5 * fs
     normal_cutoff = cutoff / nyq
