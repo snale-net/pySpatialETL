@@ -22,6 +22,7 @@
 # SOFTWARE.
  
 # Author : Fabien Rétif - fabien.retif@snale.net
+#
 from __future__ import division, print_function, absolute_import
 
 import os
