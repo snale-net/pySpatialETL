@@ -32,8 +32,8 @@ class XYCoordinatesReader(MultiPointReader):
     def __init__(self, myFilename):
         MultiPointReader.__init__(self,myFilename)
 
-        self.data = pandas.read_csv(self.filename, usecols=[0 , 1, 2],
-                               names=['longitude','latitude','name'], sep='\t')
+        self.data = pandas.read_csv(self.filename, usecols=[0,1,2],
+                               names=['longitude','latitude','name'], sep=' ')
 
     def read_axis_x(self):
         return self.data['longitude'].values

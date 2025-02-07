@@ -36,7 +36,7 @@ from spatialetl.coverage.TimeLevelCoverage import TimeLevelCoverage
 from spatialetl.coverage.io.CoverageWriter import CoverageWriter
 from spatialetl.exception.CoverageError import CoverageError
 from spatialetl.utils.VariableDefinition import VariableDefinition
-
+from spatialetl.utils.logger import logging
 
 def union(x):
     return unary_union(x)
@@ -44,7 +44,7 @@ def union(x):
 
 class FloodingPolygonWriter(CoverageWriter):
 
-    def __init__(self, cov, myFile):
+    def __init__(self, cov, myFile,classification=[1,2,3,4],mask=None):
         CoverageWriter.__init__(self, cov, myFile);
 
         if self.coverage.is_regular_grid() == False:
@@ -62,6 +62,13 @@ class FloodingPolygonWriter(CoverageWriter):
         ymax = np.max(self.coverage.read_axis_y(type="target_global"))
         self.x_pixel_size = round((xmax - xmin) / self.coverage.get_x_size(type="target_global"), 6)
         self.y_pixel_size = round((ymax - ymin) / self.coverage.get_y_size(type="target_global"), 6)
+
+        self.classification = classification
+
+        if mask and os.path.isfile(mask):
+            self.mask = gpd.read_file(mask)
+        else:
+            self.mask = None
 
     def close(self):
         return
@@ -94,7 +101,10 @@ class FloodingPolygonWriter(CoverageWriter):
                 x, y = np.meshgrid(x, y)
                 x, y, elevation = x.flatten(), y.flatten(), elevation.flatten()
 
-                for dem_threshold in range(1, 5):
+                for dem_threshold in self.classification:
+                    logging.info(
+                        '[FloodingPolygontWriter] Writing polygon classification \''+ str('Flooded' if dem_threshold == 4 else dem_threshold) +'\' at time \'' + str(
+                            time) + '\'')
                     dem_pd = pd.DataFrame.from_dict({'elevation': elevation, 'x': x, 'y': y})
                     if dem_threshold < 4:
                         dem_pd = dem_pd[dem_pd['elevation'] == dem_threshold]
@@ -127,6 +137,9 @@ class FloodingPolygonWriter(CoverageWriter):
                     union_vector_gdf = union_vector_gdf.buffer(0.00002, join_style=1).buffer(-0.00002, join_style=1)
 
                     union_vector_gdf = gpd.GeoDataFrame(geometry=gpd.GeoSeries(union_vector_gdf), crs=CRS.from_string('EPSG:4326'))
+
+                    if self.mask is not None:
+                        union_vector_gdf = union_vector_gdf.overlay(self.mask, how='difference')
 
                     if dem_threshold < 4:
                         union_vector_gdf['Type'] = 'classification'

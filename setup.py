@@ -55,9 +55,10 @@ setup (
        packages=find_packages(),
 
        # Declare your packages' dependencies here, for eg:
+       python_requires='>=3.9',
        install_requires=read_requirements("requirements.txt"),
 
-       author='Fabien Retif',
+       author='Fabien RÉTIF',
        author_email='fabien.retif@snale.net',
 
        #summary = 'Just another Python package for the cheese shop',

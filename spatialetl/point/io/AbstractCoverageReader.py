@@ -29,7 +29,7 @@ from spatialetl.utils.distance import distance_on_unit_sphere
 from spatialetl.utils.logger import logging
 
 
-class AbstractSYMPHONIEReader(MultiPointReader):
+class AbstractCoverageReader(MultiPointReader):
 
     def __init__(self,myFile,xy,names=None):
         MultiPointReader.__init__(self, myFile);
@@ -73,10 +73,10 @@ class AbstractSYMPHONIEReader(MultiPointReader):
         for i in range(0, np.shape(self.xy_coords)[0]):
             nearestPoint = self.find_point_index(self.source_xy_coords[i][0], self.source_xy_coords[i][1])
             logging.info(str(
-                self.names[i]) + " nearest point in SYMPHONIE is " + str(nearestPoint[2]) + " / " + str(nearestPoint[3]) + " at " + str(
+                self.names[i]) + " nearest point in the coverage is " + str(nearestPoint[2]) + " / " + str(nearestPoint[3]) + " at " + str(
                 round(nearestPoint[4], 4)) + " km")
             self.meta_data = self.meta_data + "\n# " + str(
-                self.names[i]) + " : nearest point in SYMPHONIE file is " + str(
+                self.names[i]) + " : nearest point in the coverage file is " + str(
                 round(nearestPoint[4], 4)) + " km from the target point"
             logging.info("Nearest point (i,j) : " + str(nearestPoint[0]) + " / " + str(nearestPoint[1]))
             self.xy_coords[i] = [nearestPoint[0], nearestPoint[1]]
@@ -199,7 +199,7 @@ class AbstractSYMPHONIEReader(MultiPointReader):
 
     def read_metadata(self):
         m = {}
-        m["data_source"] = "SYMPHONIE file"
+        m["data_source"] = "Coverage file"
         m["meta_data"] = self.meta_data
 
         return m
