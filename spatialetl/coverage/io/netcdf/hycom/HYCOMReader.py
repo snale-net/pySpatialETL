@@ -51,7 +51,7 @@ class HYCOMReader(CoverageReader):
         self.ncfile.close()
 
     def is_regular_grid(self):
-        return True
+        return False
 
     def get_x_size(self):
         return np.shape(self.grid.variables['lon'][:])[0];
@@ -93,7 +93,7 @@ class HYCOMReader(CoverageReader):
         return np.ma.filled(self.ncfile.variables["ssh"][index_t][ymin:ymax, xmin:xmax], fill_value=np.nan);
 
     def read_variable_sea_water_column_thickness_at_time(self, index_t, xmin, xmax, ymin, ymax):
-        return np.ma.filled(self.grid.variables["h"][0][ymin:ymax, xmin:xmax] + self.ncfile.variables["ssh"][index_t][ymin:ymax, xmin:xmax], fill_value=np.nan);
+        return np.ma.filled(self.grid.variables["h"][index_t][ymin:ymax, xmin:xmax], fill_value=np.nan);
 
     def read_variable_barotropic_sea_water_velocity_at_time(self, index_t, xmin, xmax, ymin, ymax):
         return [np.ma.filled(self.ncfile.variables["u_sea_water_bar_vel"][index_t][ymin:ymax, xmin:xmax], fill_value=np.nan),

@@ -23,13 +23,13 @@
 from __future__ import division, print_function, absolute_import
 
 from spatialetl.coverage.io.netcdf.symphonie.v293.SYMPHONIEReader import SYMPHONIEReader as CovReader
-from spatialetl.point.io.netcdf.symphonie.AbstractSYMPHONIEReader import AbstractSYMPHONIEReader
+from spatialetl.point.io.AbstractCoverageReader import AbstractCoverageReader
 
 
-class SYMPHONIEReader(AbstractSYMPHONIEReader):
+class SYMPHONIEReader(AbstractCoverageReader):
 
     def __init__(self,myGrid,myFile,xy,names=None):
-        AbstractSYMPHONIEReader.__init__(self, myFile, xy, names);
+        AbstractCoverageReader.__init__(self, myFile, xy, names);
         self.reader = CovReader(myGrid, self.filename)
         self.find_points_coordinates(xy)
 

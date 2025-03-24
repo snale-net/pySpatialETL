@@ -263,7 +263,7 @@ class TimeMultiPoint(MultiPoint):
         indexes_t = []
         zero_delta = timedelta(seconds=0.2)
 
-        if type(t) == int or type(t) == int32 or type(t)== int64:
+        if type(t) == int or type(t) == np.int32 or type(t) == np.int64:
 
             if t < 0 or t >= self.get_t_size(type="source"):
                 raise ValueError("Time index have to range between 0 and " + str(
