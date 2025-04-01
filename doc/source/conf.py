@@ -5,10 +5,11 @@
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
+from datetime import datetime
 
 project = 'pySpatialETL documentation'
-copyright = '2025, SNALE TEAM'
-author = 'SNALE TEAM'
+copyright = f'{datetime.now().year}, SNALE'
+author = 'SNALE'
 release = '0.1'
 
 # -- General configuration ---------------------------------------------------
