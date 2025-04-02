@@ -1,81 +1,95 @@
-# 📌 Installation de Sphinx pour la documentation de pySpatialETL  
+# 📌 Installing Sphinx for pySpatialETL Documentation  
 
-##  Prérequis  
+## Prerequisites  
 
-1. **Assurez-vous d'avoir installé Python 3.12** :  
-[🔗 Télécharger Python 3.12](https://www.python.org/downloads/release/python-3120/)  
+1. **Make sure you have Python 3.12 installed**:  
+[🔗 Download Python 3.12](https://www.python.org/downloads/release/python-3120/)  
 
-2. **Créer et activer un environnement virtuel**  
+2. **Create and activate a virtual environment**  
 
    ```bash
    python -m venv .venv
-   source .venv/bin/activate  # Sur macOS/Linux
-   .venv\Scripts\activate    # Sur Windows
+   source .venv/bin/activate  # On macOS/Linux
+   .venv\Scripts\activate     # On Windows
    ```  
 
-3. **Installer Sphinx** :
+3. **Install Sphinx**:  
    ```bash
    pip install sphinx==8.2.3
    ```  
-    ou
+   or  
 
    ```bash
    pip install -r doc/requirements.txt
    ```  
 
-## Environnement de documentation préconfiguré
-⚠️ **Vous n’avez pas besoin de faire les étapes décrites ci-dessous, elles ont déjà été effectuées.**  
+---
 
-1. **Créer et activer un environnement virtuel**  
+## Preconfigured Documentation Environment  
+⚠️ **You do not need to perform the steps below, as they have already been completed.**  
+
+1. **Create and activate a virtual environment**  
 
    ```bash
    python -m venv .venv
-   source .venv/bin/activate  # Sur macOS/Linux
-   .venv\Scripts\activate    # Sur Windows
+   source .venv/bin/activate  # On macOS/Linux
+   .venv\Scripts\activate     # On Windows
    ```  
 
-2. **Installer Sphinx**  
+2. **Install Sphinx**  
 
    ```bash
    pip install sphinx==8.2.3
    ```  
-    ou
+   or  
 
    ```bash
    pip install -r doc/requirements.txt
    ```  
 
-3. **Se déplacer dans le dossier `doc` 📂**  
+3. **Navigate to the `doc` folder 📂**  
 
    ```bash
    cd doc
    ```
 
-4. **Initialiser Sphinx**  
+4. **Initialize Sphinx**  
 
    ```bash
    sphinx-quickstart
    ```
 
-   **Réponses recommandées** :  
-   - **Séparer les répertoires source et de sortie ?** → **Y** (Oui)  
-   - **Nom du projet :** → `pySpatialETL documentation`  
-   - **Nom(s) de(s) l’auteur(s) :** → `SNALE TEAM`  
-   - **Version du projet :** → `0.1`  
-   - **Langue du projet :** → *(laisser vide, par défaut `en`)*  
+   **Recommended answers**:  
+   - **Separate source and build directories?** → **Y** (Yes)  
+   - **Project name:** → `pySpatialETL`  
+   - **Author(s) name(s):** → `SNALE`  
+   - **Project version:** → `0.1`  
+   - **Project language:** → *(leave empty, default is `en`)*  
 
-## 3️⃣ Structure de la documentation  
+---
 
-Une fois Sphinx initialisé en suivant les consignes ci-dessus, la structure ressemble à ceci :  
+## 3️⃣ Documentation Structure  
+
+Once Sphinx has been initialized following the instructions above, the structure will look like this:  
 
 ```
-📂 doc/                # Dossier racine pour la documentation
-├── 📂 source/         # Contient les fichiers source de la documentation
-│   ├── 📄 conf.py        # Fichier de configuration principal (paramètres du projet, extensions, etc.)
-│   ├── 📄 index.rst      # Fichier d'index principal (page d'accueil de la documentation)
-│   ├── 📂 _static/       # Dossier pour les fichiers statiques (CSS, images, etc.)
-│   └── 📂 _templates/    # Dossier pour les templates personnalisés
-├── 📂 build/          # Stocke la documentation générée (HTML, LaTeX, etc.)
-├── 📄 Makefile        # Fichier pour générer la documentation sur Linux/macOS
-└── 📄 make.bat        # Fichier pour générer la documentation sur Windows
+📂 doc/                # Root folder for the documentation
+├── 📂 source/         # Contains documentation source files
+│   ├── 📄 conf.py        # Main configuration file (project settings, extensions, etc.)
+│   ├── 📄 index.rst      # Main index file (documentation homepage)
+│   ├── 📂 _static/       # Folder for static files (CSS, images, etc.)
+│   └── 📂 _templates/    # Folder for custom templates
+├── 📂 build/          # Stores the generated documentation (HTML, LaTeX, etc.)
+├── 📄 Makefile        # File to generate documentation on Linux/macOS
+└── 📄 make.bat        # File to generate documentation on Windows
+```
+
+## 4️⃣ Dynamic Year Replacement conf.py
+- **`{{ current_year }}`**: This placeholder is meant to be dynamically replaced with the current year when you generate or update your documentation.
+
+```python
+from datetime import datetime
+
+current_year = datetime.now().year
+readme_content = f'{current_year}, SNALE'
 ```
