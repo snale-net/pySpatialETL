@@ -133,8 +133,8 @@ class FloodingPolygonWriter(CoverageWriter):
 
                     # Creating GeoDataFrame for total_union
                     union_vector_gdf = gpd.GeoDataFrame(geometry=gpd.GeoSeries(total_union))
-                    union_vector_gdf = union_vector_gdf.simplify(0.00002)
-                    union_vector_gdf = union_vector_gdf.buffer(0.00002, join_style=1).buffer(-0.00002, join_style=1)
+                    union_vector_gdf = union_vector_gdf.simplify(min(self.x_pixel_size, self.y_pixel_size) / 2)
+                    #union_vector_gdf = union_vector_gdf.buffer(0.00002, join_style=1).buffer(-0.00002, join_style=1)
 
                     union_vector_gdf = gpd.GeoDataFrame(geometry=gpd.GeoSeries(union_vector_gdf), crs=CRS.from_string('EPSG:4326'))
 
