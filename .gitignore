@@ -2,6 +2,7 @@ __pycache__/*
 *.pyc
 *.idea
 *.venv/
-*doc/build/
-*doc/source/api_reference/
+doc/build/*
+doc/source/api_reference/*
+
 
