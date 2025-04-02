@@ -1,0 +1,675 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>spatialetl.coverage.io.serafin.SerafinHeader &mdash; pySpatialETL documentation 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" />
+    <link rel="next" title="spatialetl.coverage.io.serafin.SerafinReader" href="../SerafinReader/index.html" />
+    <link rel="prev" title="spatialetl.coverage.io.serafin" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../../index.html" class="icon icon-home">
+            pySpatialETL documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../../index.html">spatialetl</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../../../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="../../../index.html">spatialetl.coverage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../exception/index.html">spatialetl.exception</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../operator/index.html">spatialetl.operator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../point/index.html">spatialetl.point</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../utils/index.html">spatialetl.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../SYMPHONIEBathymakerWriter/index.html">SYMPHONIEBathymakerWriter</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../../index.html">pySpatialETL documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">spatialetl</a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">spatialetl.coverage</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">spatialetl.coverage.io</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">spatialetl.coverage.io.serafin</a></li>
+      <li class="breadcrumb-item active">spatialetl.coverage.io.serafin.SerafinHeader</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../../../_sources/api_reference/spatialetl/coverage/io/serafin/SerafinHeader/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-spatialetl.coverage.io.serafin.SerafinHeader">
+<span id="spatialetl-coverage-io-serafin-serafinheader"></span><h1>spatialetl.coverage.io.serafin.SerafinHeader<a class="headerlink" href="#module-spatialetl.coverage.io.serafin.SerafinHeader" title="Link to this heading"></a></h1>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#spatialetl.coverage.io.serafin.SerafinHeader.SLF_EIT" title="spatialetl.coverage.io.serafin.SerafinHeader.SLF_EIT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SLF_EIT</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader" title="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SerafinHeader</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SLF_EIT">
+<span class="sig-prename descclassname"><span class="pre">spatialetl.coverage.io.serafin.SerafinHeader.</span></span><span class="sig-name descname"><span class="pre">SLF_EIT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'iso-8859-1'</span></em><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SLF_EIT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spatialetl.coverage.io.serafin.SerafinHeader.</span></span><span class="sig-name descname"><span class="pre">SerafinHeader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SERAFIN</span> <span class="pre">'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lang</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'fr'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endian</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'&gt;'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader" title="Link to this definition"></a></dt>
+<dd><p>!
+&#64;brief: Data type for reading and storing the Serafin file header</p>
+<p># Attributes:
+## Sizes
+- file_size &lt;int&gt;: total file size
+- header_size &lt;int&gt;: size taken by header only (set by <cite>_set_header_size</cite>)
+- frame_size &lt;int&gt;: size taken by a single frame (set by <cite>_set_frame_size</cite>)</p>
+<dl class="simple">
+<dt>## Float precision: simple or double precision</dt><dd><p>(attributes are set by <cite>_set_as_single_precision</cite> or <cite>_set_as_double_precision</cite>)</p>
+</dd>
+</dl>
+<ul class="simple">
+<li><p>float_type &lt;str&gt;: ‘f’ or ‘d’</p></li>
+<li><p>float_size &lt;int&gt;: 4 or 8</p></li>
+<li><p>np_float_type: np.float32 or np.float64</p></li>
+<li><p>endian &lt;str&gt;: file endianness (‘&gt;’ = big-endian, ‘&lt;’ = little-endian)</p></li>
+<li><p>title &lt;bytes:72&gt;: title of the simulation</p></li>
+<li><p>file_format &lt;bytes:8&gt;: file format type (e.g. b’SERAFIN ‘)</p></li>
+<li><p>language &lt;str&gt;: language for variables (‘fr’ or ‘en’)</p></li>
+<li><p>is_2d &lt;bool&gt;: True in 2D else False</p></li>
+<li><p>has_knolg &lt;bool&gt;: True if ipobo is replaced by KNOLG array</p></li>
+<li><p>date &lt;[int]&gt;: list with 6 integers (year, month, day, hour, minute and second) or None if not available</p></li>
+<li><p>nb_frames &lt;int&gt;: number of frames</p></li>
+<li><p>nb_var &lt;int&gt;: number of variables</p></li>
+<li><p>nb_var_quadratic &lt;int&gt;: ?</p></li>
+<li><p>nb_nodes_per_elem &lt;int&gt;: number of nodes per element</p></li>
+<li><p>nb_planes &lt;int&gt;: number of layers (should be 0 in 2D)</p></li>
+<li><p>var_IDs &lt;[str]&gt;: variable identifiers</p></li>
+<li><p>var_names &lt;[str]&gt;: variable names</p></li>
+<li><p>var_units &lt;[str]&gt;: variable units</p></li>
+<li><p>params &lt;(int)&gt;: tuple of 10 integer parameters</p></li>
+<li><p>nb_elements &lt;int&gt;: number of 3D elements</p></li>
+<li><p>nb_nodes &lt;int&gt;: number of 3D nodes</p></li>
+<li><p>nb_nodes_per_elem &lt;int&gt;: number of nodes per element (= 3 in 2D and 6 in 3D)</p></li>
+<li><p>nb_nodes_2d &lt;int&gt;: number of 2D nodes (equals to <cite>nb_nodes</cite> in 2D)</p></li>
+<li><p>mesh_origin &lt;(float, float)&gt;: x and y shift to apply to written coordinates (set by <cite>set_mesh_origin</cite>)</p></li>
+<li><p>x_stored &lt;numpy.1D-array&gt;: east written coordinates [shape = nb_nodes]</p></li>
+<li><p>y_stored &lt;numpy.1D-array&gt;: north written coordinates [shape = nb_nodes]</p></li>
+<li><p>x &lt;numpy.1D-array&gt;: east coordinates [shape = nb_nodes] (set by <cite>_compute_mesh_coordinates</cite>)</p></li>
+<li><p>y &lt;numpy.1D-array&gt;: north coordinates [shape = nb_nodes] (set by <cite>_compute_mesh_coordinates</cite>)</p></li>
+<li><p>ikle &lt;numpy.1D-array&gt;: connectivity table with 1-indexed nodes number [shape = nb_nodes_per_elem * nb_elements]</p></li>
+<li><dl class="simple">
+<dt>ikle_2d &lt;numpy.2D-array&gt;: reshaped connectivity table</dt><dd><p>[shape = (nb_elements, nb_nodes_per_elem)] (set by <cite>_build_ikle_2d</cite>)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>ipobo &lt;numpy.1D-array&gt;: array with 0 values for inner nodes and 1-indexed node number for boundary nodes</dt><dd><p>[shape = nb_nodes]</p>
+</dd>
+</dl>
+</li>
+</ul>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.file_size">
+<span class="sig-name descname"><span class="pre">file_size</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1</span></em><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.file_size" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.header_size">
+<span class="sig-name descname"><span class="pre">header_size</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1</span></em><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.header_size" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.frame_size">
+<span class="sig-name descname"><span class="pre">frame_size</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1</span></em><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.frame_size" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.float_type">
+<span class="sig-name descname"><span class="pre">float_type</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.float_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.float_size">
+<span class="sig-name descname"><span class="pre">float_size</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1</span></em><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.float_size" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.np_float_type">
+<span class="sig-name descname"><span class="pre">np_float_type</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.np_float_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.endian">
+<span class="sig-name descname"><span class="pre">endian</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'&gt;'</span></em><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.endian" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.title">
+<span class="sig-name descname"><span class="pre">title</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">b''</span></em><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.title" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.file_format">
+<span class="sig-name descname"><span class="pre">file_format</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">b''</span></em><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.file_format" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.language">
+<span class="sig-name descname"><span class="pre">language</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'fr'</span></em><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.language" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.is_2d">
+<span class="sig-name descname"><span class="pre">is_2d</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.is_2d" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.has_knolg">
+<span class="sig-name descname"><span class="pre">has_knolg</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.has_knolg" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.date">
+<span class="sig-name descname"><span class="pre">date</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.date" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.nb_var">
+<span class="sig-name descname"><span class="pre">nb_var</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.nb_var" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.nb_var_quadratic">
+<span class="sig-name descname"><span class="pre">nb_var_quadratic</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.nb_var_quadratic" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.nb_planes">
+<span class="sig-name descname"><span class="pre">nb_planes</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.nb_planes" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.nb_frames">
+<span class="sig-name descname"><span class="pre">nb_frames</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.nb_frames" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.var_IDs">
+<span class="sig-name descname"><span class="pre">var_IDs</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.var_IDs" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.var_names">
+<span class="sig-name descname"><span class="pre">var_names</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.var_names" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.var_units">
+<span class="sig-name descname"><span class="pre">var_units</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.var_units" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.params">
+<span class="sig-name descname"><span class="pre">params</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(1,</span> <span class="pre">0,</span> <span class="pre">0,</span> <span class="pre">0,</span> <span class="pre">0,</span> <span class="pre">0,</span> <span class="pre">0,</span> <span class="pre">0,</span> <span class="pre">0,</span> <span class="pre">0)</span></em><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.params" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.nb_elements">
+<span class="sig-name descname"><span class="pre">nb_elements</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1</span></em><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.nb_elements" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.nb_nodes">
+<span class="sig-name descname"><span class="pre">nb_nodes</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1</span></em><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.nb_nodes" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.nb_nodes_per_elem">
+<span class="sig-name descname"><span class="pre">nb_nodes_per_elem</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1</span></em><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.nb_nodes_per_elem" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.nb_nodes_2d">
+<span class="sig-name descname"><span class="pre">nb_nodes_2d</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1</span></em><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.nb_nodes_2d" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.mesh_origin">
+<span class="sig-name descname"><span class="pre">mesh_origin</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(0,</span> <span class="pre">0)</span></em><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.mesh_origin" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.x_stored">
+<span class="sig-name descname"><span class="pre">x_stored</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.x_stored" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.y_stored">
+<span class="sig-name descname"><span class="pre">y_stored</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.y_stored" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.x">
+<span class="sig-name descname"><span class="pre">x</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.x" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.y">
+<span class="sig-name descname"><span class="pre">y</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.y" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.ikle">
+<span class="sig-name descname"><span class="pre">ikle</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.ikle" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.ikle_2d">
+<span class="sig-name descname"><span class="pre">ikle_2d</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.ikle_2d" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.ipobo">
+<span class="sig-name descname"><span class="pre">ipobo</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.ipobo" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._check_dim">
+<span class="sig-name descname"><span class="pre">_check_dim</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._check_dim" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._set_file_format_and_precision">
+<span class="sig-name descname"><span class="pre">_set_file_format_and_precision</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_format</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._set_file_format_and_precision" title="Link to this definition"></a></dt>
+<dd><p>!
+&#64;brief: Set some attributes to read/write single or double precision Serafin depending on file format
+&#64;file_format &lt;str&gt;: Serafin file format (max length is 8)
+If file format is not recognized, the file is expected to be simple precision</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._set_has_knolg">
+<span class="sig-name descname"><span class="pre">_set_has_knolg</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._set_has_knolg" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._build_ikle_2d">
+<span class="sig-name descname"><span class="pre">_build_ikle_2d</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._build_ikle_2d" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._set_as_single_precision">
+<span class="sig-name descname"><span class="pre">_set_as_single_precision</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._set_as_single_precision" title="Link to this definition"></a></dt>
+<dd><p>Set Serafin as single precision</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._set_as_double_precision">
+<span class="sig-name descname"><span class="pre">_set_as_double_precision</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._set_as_double_precision" title="Link to this definition"></a></dt>
+<dd><p>Set Serafin as double precision</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.unpack_int">
+<span class="sig-name descname"><span class="pre">unpack_int</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bytes2unpack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.unpack_int" title="Link to this definition"></a></dt>
+<dd><p>Unpack bytes to integer(s)
+&#64;param bytes2unpack &lt;bytes&gt;: bytes to unpack
+&#64;param nb &lt;int&gt;: number of consecutive integers
+&#64;return &lt;(int)&gt;</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.unpack_float">
+<span class="sig-name descname"><span class="pre">unpack_float</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bytes2unpack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.unpack_float" title="Link to this definition"></a></dt>
+<dd><p>Unpack bytes to float(s)
+&#64;param bytes2unpack &lt;bytes&gt;: bytes to unpack
+&#64;param nb &lt;int&gt;: number of consecutive float
+&#64;return &lt;(float)&gt;</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.pack_int">
+<span class="sig-name descname"><span class="pre">pack_int</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.pack_int" title="Link to this definition"></a></dt>
+<dd><p>Pack integers
+&#64;param args &lt;(int)&gt;: integers to pack
+&#64;param nb &lt;int&gt;: number of integer values
+&#64;return &lt;bytes&gt;</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.pack_float">
+<span class="sig-name descname"><span class="pre">pack_float</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.pack_float" title="Link to this definition"></a></dt>
+<dd><p>Pack floats
+&#64;param args &lt;(float)&gt;: floats to pack
+&#64;param nb &lt;int&gt;: number of float values
+&#64;return &lt;bytes&gt;</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.toggle_endianness">
+<span class="sig-name descname"><span class="pre">toggle_endianness</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.toggle_endianness" title="Link to this definition"></a></dt>
+<dd><p>Toggle original endianness (between big or little endian)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._compute_mesh_coordinates">
+<span class="sig-name descname"><span class="pre">_compute_mesh_coordinates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._compute_mesh_coordinates" title="Link to this definition"></a></dt>
+<dd><p>Compute mesh coordinates from origin</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._set_header_size">
+<span class="sig-name descname"><span class="pre">_set_header_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._set_header_size" title="Link to this definition"></a></dt>
+<dd><p>Set header size</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._set_frame_size">
+<span class="sig-name descname"><span class="pre">_set_frame_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._set_frame_size" title="Link to this definition"></a></dt>
+<dd><p>Set frame size (all variable values for one time step)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._expected_file_size">
+<span class="sig-name descname"><span class="pre">_expected_file_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._expected_file_size" title="Link to this definition"></a></dt>
+<dd><p>Returns expected file size</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.summary">
+<span class="sig-name descname"><span class="pre">summary</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.summary" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.copy" title="Link to this definition"></a></dt>
+<dd><p>Returns a deep copy of the current instance</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.copy_as_2d">
+<span class="sig-name descname"><span class="pre">copy_as_2d</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.copy_as_2d" title="Link to this definition"></a></dt>
+<dd><p>!
+Returns a 2D equivalent copy of the current instance
+&#64;return &lt;slf.Serafin.SerafinHeader&gt;: output Serafin header</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.copy_as_3d">
+<span class="sig-name descname"><span class="pre">copy_as_3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nb_planes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.copy_as_3d" title="Link to this definition"></a></dt>
+<dd><p>!
+Returns a 3D equivalent copy of the current instance
+&#64;param nb_planes &lt;int&gt;: number of planes
+&#64;return &lt;slf.Serafin.SerafinHeader&gt;: output Serafin header</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.nearest_node">
+<span class="sig-name descname"><span class="pre">nearest_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.nearest_node" title="Link to this definition"></a></dt>
+<dd><p>!
+Find the nearest node of a target point (from x and y coordinates)
+&#64;param target_x &lt;float&gt;: east target coordinate
+&#64;param target_y &lt;float&gt;: north target coordinate
+&#64;return &lt;int&gt;: node number (1-indexed)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.same_2d_mesh">
+<span class="sig-name descname"><span class="pre">same_2d_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.same_2d_mesh" title="Link to this definition"></a></dt>
+<dd><p>!
+&#64;brief: Check if the other mesh is strictly identical (same order of nodes and elements) on the horizontal
+&#64;param other &lt;SerafinHeader&gt;: header to compare
+&#64;return: bool</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.is_double_precision">
+<span class="sig-name descname"><span class="pre">is_double_precision</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.is_double_precision" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.to_single_precision">
+<span class="sig-name descname"><span class="pre">to_single_precision</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.to_single_precision" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.empty_variables">
+<span class="sig-name descname"><span class="pre">empty_variables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.empty_variables" title="Link to this definition"></a></dt>
+<dd><p>Empty all variables</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.add_variable">
+<span class="sig-name descname"><span class="pre">add_variable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var_ID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_unit</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.add_variable" title="Link to this definition"></a></dt>
+<dd><p>!
+&#64;brief: Add a single variable
+&#64;param var_ID &lt;str&gt;: variables identifier (abbreviation)
+&#64;param var_name &lt;bytes&gt;: variable name
+&#64;param var_unit &lt;bytes&gt;: variable unit</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.add_variable_str">
+<span class="sig-name descname"><span class="pre">add_variable_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var_ID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_unit</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.add_variable_str" title="Link to this definition"></a></dt>
+<dd><p>!
+&#64;brief: Add a single variable with strings
+&#64;param var_ID &lt;str&gt;: variables identifier (abbreviation)
+&#64;param var_name &lt;str&gt;: variable name
+&#64;param var_unit &lt;str&gt;: variable unit</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.add_variable_from_ID">
+<span class="sig-name descname"><span class="pre">add_variable_from_ID</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var_ID</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.add_variable_from_ID" title="Link to this definition"></a></dt>
+<dd><p>!
+&#64;brief: Add new variable from its ID
+&#64;param var_ID &lt;str&gt;: variable ID</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.set_mesh_origin">
+<span class="sig-name descname"><span class="pre">set_mesh_origin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.set_mesh_origin" title="Link to this definition"></a></dt>
+<dd><p>!
+&#64;brief: Set mesh origin coordinates
+&#64;param x &lt;float&gt;: X-coordinate of the origin
+&#64;param y &lt;float&gt;: Y-coordinate of the origin</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.set_variables">
+<span class="sig-name descname"><span class="pre">set_variables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selected_vars</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.set_variables" title="Link to this definition"></a></dt>
+<dd><p>!
+&#64;brief: Set new variables
+&#64;param selected_vars &lt;[str, bytes, bytes]&gt;: list composed of variable ID, name and unit</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.iter_on_all_variables">
+<span class="sig-name descname"><span class="pre">iter_on_all_variables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.iter_on_all_variables" title="Link to this definition"></a></dt>
+<dd><p>!
+Iterate on variables
+&#64;return &lt;str, bytes, bytes&gt;: variable ID, name and unit</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.transform_mesh_copy">
+<span class="sig-name descname"><span class="pre">transform_mesh_copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transformations</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.transform_mesh_copy" title="Link to this definition"></a></dt>
+<dd><p>!
+&#64;brief Apply transformations on 2D nodes of a mesh copy
+&#64;param transformations &lt;[geom.transformation.Transformation]&gt;: list of successive transformations
+&#64;return: modified copy of original header with transformed mesh nodes</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.transform_mesh">
+<span class="sig-name descname"><span class="pre">transform_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transformations</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.transform_mesh" title="Link to this definition"></a></dt>
+<dd><p>!
+&#64;brief Apply transformations on mesh nodes (only in 2D)
+&#64;param transformations &lt;[geom.transformation.Transformation]&gt;: list of successive transformations</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.get_all_edges">
+<span class="sig-name descname"><span class="pre">get_all_edges</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.get_all_edges" title="Link to this definition"></a></dt>
+<dd><p>Get all edges (pair of nodes)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.get_external_edges">
+<span class="sig-name descname"><span class="pre">get_external_edges</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.get_external_edges" title="Link to this definition"></a></dt>
+<dd><p>Get external edges (pair of nodes)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.iter_on_boundaries">
+<span class="sig-name descname"><span class="pre">iter_on_boundaries</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.iter_on_boundaries" title="Link to this definition"></a></dt>
+<dd><p>Iterate over all boundaries to get the nodes describing them
+Each element is an ordered list of nodes (1-indexed numbering)</p>
+<p>How boundaries are defined:
+- the first boundary is the external boundary and then the islands (internal boundaries) are described</p>
+<blockquote>
+<div><p>in an arbitrary order</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>the external boundary is described counter-clockwise</p></li>
+<li><p>the islands are described clockwise</p></li>
+<li><p>the first boundary node should be the node with the minimum value of x+y (corresponds to the bottom left corner)</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.build_ipobo">
+<span class="sig-name descname"><span class="pre">build_ipobo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.build_ipobo" title="Link to this definition"></a></dt>
+<dd><p>Build IPOBO array containing 0 values for inner nodes and 1-indexed node number for boundary nodes
+/!This method will probably crash if some nodes are duplicated!</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._set_as_2d">
+<span class="sig-name descname"><span class="pre">_set_as_2d</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._set_as_2d" title="Link to this definition"></a></dt>
+<dd><p>!
+Beware: nb_nodes_2d has to be consistant</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.from_triangulation">
+<span class="sig-name descname"><span class="pre">from_triangulation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ikle</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.from_triangulation" title="Link to this definition"></a></dt>
+<dd><p>!
+Set to Serafin 2D header from a given triangulation
+&#64;param nodes &lt;numpy 2D-array&gt;: x and y coordinates
+&#64;param ikle &lt;numpy 2D-array&gt;: connectivity table (1-indexed)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.from_file">
+<span class="sig-name descname"><span class="pre">from_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_size</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.from_file" title="Link to this definition"></a></dt>
+<dd><p>!
+&#64;param file &lt;_io.BufferedReader&gt;: input Serafin stream
+&#64;param file_size &lt;int&gt;: file size (in bytes)
+&#64;return &lt;slf.Serafin.SerafinHeader&gt;: output Serafin header</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="spatialetl.coverage.io.serafin" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../SerafinReader/index.html" class="btn btn-neutral float-right" title="spatialetl.coverage.io.serafin.SerafinReader" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, SNALE.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

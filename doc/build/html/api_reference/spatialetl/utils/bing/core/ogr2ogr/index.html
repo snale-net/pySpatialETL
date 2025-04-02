@@ -1,0 +1,396 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>spatialetl.utils.bing.core.ogr2ogr &mdash; pySpatialETL documentation 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" />
+    <link rel="next" title="spatialetl.utils.bing.core.tilesystem" href="../tilesystem/index.html" />
+    <link rel="prev" title="spatialetl.utils.bing.core.TIFFWriter" href="../TIFFWriter/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../../index.html" class="icon icon-home">
+            pySpatialETL documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../../index.html">spatialetl</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../../../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../../../coverage/index.html">spatialetl.coverage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../exception/index.html">spatialetl.exception</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../operator/index.html">spatialetl.operator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../point/index.html">spatialetl.point</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../../../index.html">spatialetl.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../SYMPHONIEBathymakerWriter/index.html">SYMPHONIEBathymakerWriter</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../../index.html">pySpatialETL documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">spatialetl</a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">spatialetl.utils</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">spatialetl.utils.bing</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">spatialetl.utils.bing.core</a></li>
+      <li class="breadcrumb-item active">spatialetl.utils.bing.core.ogr2ogr</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../../../_sources/api_reference/spatialetl/utils/bing/core/ogr2ogr/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-spatialetl.utils.bing.core.ogr2ogr">
+<span id="spatialetl-utils-bing-core-ogr2ogr"></span><h1>spatialetl.utils.bing.core.ogr2ogr<a class="headerlink" href="#module-spatialetl.utils.bing.core.ogr2ogr" title="Link to this heading"></a></h1>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#spatialetl.utils.bing.core.ogr2ogr.nLastTick" title="spatialetl.utils.bing.core.ogr2ogr.nLastTick"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nLastTick</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#spatialetl.utils.bing.core.ogr2ogr.bSkipFailures" title="spatialetl.utils.bing.core.ogr2ogr.bSkipFailures"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bSkipFailures</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#spatialetl.utils.bing.core.ogr2ogr.nGroupTransactions" title="spatialetl.utils.bing.core.ogr2ogr.nGroupTransactions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nGroupTransactions</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#spatialetl.utils.bing.core.ogr2ogr.bPreserveFID" title="spatialetl.utils.bing.core.ogr2ogr.bPreserveFID"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bPreserveFID</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#spatialetl.utils.bing.core.ogr2ogr.nFIDToFetch" title="spatialetl.utils.bing.core.ogr2ogr.nFIDToFetch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nFIDToFetch</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#spatialetl.utils.bing.core.ogr2ogr.GeomOperation" title="spatialetl.utils.bing.core.ogr2ogr.GeomOperation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GeomOperation</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#spatialetl.utils.bing.core.ogr2ogr.version_num" title="spatialetl.utils.bing.core.ogr2ogr.version_num"><code class="xref py py-obj docutils literal notranslate"><span class="pre">version_num</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#spatialetl.utils.bing.core.ogr2ogr.ScaledProgressObject" title="spatialetl.utils.bing.core.ogr2ogr.ScaledProgressObject"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ScaledProgressObject</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#spatialetl.utils.bing.core.ogr2ogr.TargetLayerInfo" title="spatialetl.utils.bing.core.ogr2ogr.TargetLayerInfo"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TargetLayerInfo</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#spatialetl.utils.bing.core.ogr2ogr.AssociatedLayers" title="spatialetl.utils.bing.core.ogr2ogr.AssociatedLayers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AssociatedLayers</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#spatialetl.utils.bing.core.ogr2ogr.Enum" title="spatialetl.utils.bing.core.ogr2ogr.Enum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Enum</span></code></a></p></td>
+<td><p>set() -&gt; new empty set object</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#spatialetl.utils.bing.core.ogr2ogr.ScaledProgressFunc" title="spatialetl.utils.bing.core.ogr2ogr.ScaledProgressFunc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ScaledProgressFunc</span></code></a>(pct, msg, data)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#spatialetl.utils.bing.core.ogr2ogr.EQUAL" title="spatialetl.utils.bing.core.ogr2ogr.EQUAL"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EQUAL</span></code></a>(a, b)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#spatialetl.utils.bing.core.ogr2ogr.TermProgress" title="spatialetl.utils.bing.core.ogr2ogr.TermProgress"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TermProgress</span></code></a>(dfComplete, pszMessage, pProgressArg)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#spatialetl.utils.bing.core.ogr2ogr.main" title="spatialetl.utils.bing.core.ogr2ogr.main"><code class="xref py py-obj docutils literal notranslate"><span class="pre">main</span></code></a>([args, progress_func, progress_data])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#spatialetl.utils.bing.core.ogr2ogr.Usage" title="spatialetl.utils.bing.core.ogr2ogr.Usage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Usage</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#spatialetl.utils.bing.core.ogr2ogr.CSLFindString" title="spatialetl.utils.bing.core.ogr2ogr.CSLFindString"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CSLFindString</span></code></a>(v, mystr)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#spatialetl.utils.bing.core.ogr2ogr.IsNumber" title="spatialetl.utils.bing.core.ogr2ogr.IsNumber"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IsNumber</span></code></a>(pszStr)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#spatialetl.utils.bing.core.ogr2ogr.LoadGeometry" title="spatialetl.utils.bing.core.ogr2ogr.LoadGeometry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LoadGeometry</span></code></a>(pszDS, pszSQL, pszLyr, pszWhere)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#spatialetl.utils.bing.core.ogr2ogr.wkbFlatten" title="spatialetl.utils.bing.core.ogr2ogr.wkbFlatten"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wkbFlatten</span></code></a>(x)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#spatialetl.utils.bing.core.ogr2ogr.SetZ" title="spatialetl.utils.bing.core.ogr2ogr.SetZ"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SetZ</span></code></a>(poGeom, dfZ)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#spatialetl.utils.bing.core.ogr2ogr.SetupTargetLayer" title="spatialetl.utils.bing.core.ogr2ogr.SetupTargetLayer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SetupTargetLayer</span></code></a>(poSrcDS, poSrcLayer, poDstDS, ...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#spatialetl.utils.bing.core.ogr2ogr.TranslateLayer" title="spatialetl.utils.bing.core.ogr2ogr.TranslateLayer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TranslateLayer</span></code></a>(psInfo, poSrcDS, poSrcLayer, poDstDS, ...)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.ogr2ogr.ScaledProgressObject">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spatialetl.utils.bing.core.ogr2ogr.</span></span><span class="sig-name descname"><span class="pre">ScaledProgressObject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">min</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cbk</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cbk_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.utils.bing.core.ogr2ogr.ScaledProgressObject" title="Link to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.ogr2ogr.ScaledProgressObject.min">
+<span class="sig-name descname"><span class="pre">min</span></span><a class="headerlink" href="#spatialetl.utils.bing.core.ogr2ogr.ScaledProgressObject.min" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.ogr2ogr.ScaledProgressObject.max">
+<span class="sig-name descname"><span class="pre">max</span></span><a class="headerlink" href="#spatialetl.utils.bing.core.ogr2ogr.ScaledProgressObject.max" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.ogr2ogr.ScaledProgressObject.cbk">
+<span class="sig-name descname"><span class="pre">cbk</span></span><a class="headerlink" href="#spatialetl.utils.bing.core.ogr2ogr.ScaledProgressObject.cbk" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.ogr2ogr.ScaledProgressObject.cbk_data">
+<span class="sig-name descname"><span class="pre">cbk_data</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#spatialetl.utils.bing.core.ogr2ogr.ScaledProgressObject.cbk_data" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.ogr2ogr.ScaledProgressFunc">
+<span class="sig-prename descclassname"><span class="pre">spatialetl.utils.bing.core.ogr2ogr.</span></span><span class="sig-name descname"><span class="pre">ScaledProgressFunc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pct</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">msg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.utils.bing.core.ogr2ogr.ScaledProgressFunc" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.ogr2ogr.EQUAL">
+<span class="sig-prename descclassname"><span class="pre">spatialetl.utils.bing.core.ogr2ogr.</span></span><span class="sig-name descname"><span class="pre">EQUAL</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.utils.bing.core.ogr2ogr.EQUAL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.ogr2ogr.nLastTick">
+<span class="sig-prename descclassname"><span class="pre">spatialetl.utils.bing.core.ogr2ogr.</span></span><span class="sig-name descname"><span class="pre">nLastTick</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1</span></em><a class="headerlink" href="#spatialetl.utils.bing.core.ogr2ogr.nLastTick" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.ogr2ogr.TermProgress">
+<span class="sig-prename descclassname"><span class="pre">spatialetl.utils.bing.core.ogr2ogr.</span></span><span class="sig-name descname"><span class="pre">TermProgress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dfComplete</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pszMessage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pProgressArg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.utils.bing.core.ogr2ogr.TermProgress" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.ogr2ogr.TargetLayerInfo">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spatialetl.utils.bing.core.ogr2ogr.</span></span><span class="sig-name descname"><span class="pre">TargetLayerInfo</span></span><a class="headerlink" href="#spatialetl.utils.bing.core.ogr2ogr.TargetLayerInfo" title="Link to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.ogr2ogr.TargetLayerInfo.poDstLayer">
+<span class="sig-name descname"><span class="pre">poDstLayer</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#spatialetl.utils.bing.core.ogr2ogr.TargetLayerInfo.poDstLayer" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.ogr2ogr.TargetLayerInfo.poCT">
+<span class="sig-name descname"><span class="pre">poCT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#spatialetl.utils.bing.core.ogr2ogr.TargetLayerInfo.poCT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.ogr2ogr.TargetLayerInfo.panMap">
+<span class="sig-name descname"><span class="pre">panMap</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#spatialetl.utils.bing.core.ogr2ogr.TargetLayerInfo.panMap" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.ogr2ogr.TargetLayerInfo.iSrcZField">
+<span class="sig-name descname"><span class="pre">iSrcZField</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#spatialetl.utils.bing.core.ogr2ogr.TargetLayerInfo.iSrcZField" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.ogr2ogr.AssociatedLayers">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spatialetl.utils.bing.core.ogr2ogr.</span></span><span class="sig-name descname"><span class="pre">AssociatedLayers</span></span><a class="headerlink" href="#spatialetl.utils.bing.core.ogr2ogr.AssociatedLayers" title="Link to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.ogr2ogr.AssociatedLayers.poSrcLayer">
+<span class="sig-name descname"><span class="pre">poSrcLayer</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#spatialetl.utils.bing.core.ogr2ogr.AssociatedLayers.poSrcLayer" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.ogr2ogr.AssociatedLayers.psInfo">
+<span class="sig-name descname"><span class="pre">psInfo</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#spatialetl.utils.bing.core.ogr2ogr.AssociatedLayers.psInfo" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.ogr2ogr.bSkipFailures">
+<span class="sig-prename descclassname"><span class="pre">spatialetl.utils.bing.core.ogr2ogr.</span></span><span class="sig-name descname"><span class="pre">bSkipFailures</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#spatialetl.utils.bing.core.ogr2ogr.bSkipFailures" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.ogr2ogr.nGroupTransactions">
+<span class="sig-prename descclassname"><span class="pre">spatialetl.utils.bing.core.ogr2ogr.</span></span><span class="sig-name descname"><span class="pre">nGroupTransactions</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">200</span></em><a class="headerlink" href="#spatialetl.utils.bing.core.ogr2ogr.nGroupTransactions" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.ogr2ogr.bPreserveFID">
+<span class="sig-prename descclassname"><span class="pre">spatialetl.utils.bing.core.ogr2ogr.</span></span><span class="sig-name descname"><span class="pre">bPreserveFID</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#spatialetl.utils.bing.core.ogr2ogr.bPreserveFID" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.ogr2ogr.nFIDToFetch">
+<span class="sig-prename descclassname"><span class="pre">spatialetl.utils.bing.core.ogr2ogr.</span></span><span class="sig-name descname"><span class="pre">nFIDToFetch</span></span><a class="headerlink" href="#spatialetl.utils.bing.core.ogr2ogr.nFIDToFetch" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.ogr2ogr.Enum">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spatialetl.utils.bing.core.ogr2ogr.</span></span><span class="sig-name descname"><span class="pre">Enum</span></span><a class="headerlink" href="#spatialetl.utils.bing.core.ogr2ogr.Enum" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">set</span></code></p>
+<p>set() -&gt; new empty set object
+set(iterable) -&gt; new set object</p>
+<p>Build an unordered collection of unique elements.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.ogr2ogr.Enum.__getattr__">
+<span class="sig-name descname"><span class="pre">__getattr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.utils.bing.core.ogr2ogr.Enum.__getattr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.ogr2ogr.GeomOperation">
+<span class="sig-prename descclassname"><span class="pre">spatialetl.utils.bing.core.ogr2ogr.</span></span><span class="sig-name descname"><span class="pre">GeomOperation</span></span><a class="headerlink" href="#spatialetl.utils.bing.core.ogr2ogr.GeomOperation" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.ogr2ogr.main">
+<span class="sig-prename descclassname"><span class="pre">spatialetl.utils.bing.core.ogr2ogr.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress_func</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">TermProgress</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.utils.bing.core.ogr2ogr.main" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.ogr2ogr.Usage">
+<span class="sig-prename descclassname"><span class="pre">spatialetl.utils.bing.core.ogr2ogr.</span></span><span class="sig-name descname"><span class="pre">Usage</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.utils.bing.core.ogr2ogr.Usage" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.ogr2ogr.CSLFindString">
+<span class="sig-prename descclassname"><span class="pre">spatialetl.utils.bing.core.ogr2ogr.</span></span><span class="sig-name descname"><span class="pre">CSLFindString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mystr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.utils.bing.core.ogr2ogr.CSLFindString" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.ogr2ogr.IsNumber">
+<span class="sig-prename descclassname"><span class="pre">spatialetl.utils.bing.core.ogr2ogr.</span></span><span class="sig-name descname"><span class="pre">IsNumber</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pszStr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.utils.bing.core.ogr2ogr.IsNumber" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.ogr2ogr.LoadGeometry">
+<span class="sig-prename descclassname"><span class="pre">spatialetl.utils.bing.core.ogr2ogr.</span></span><span class="sig-name descname"><span class="pre">LoadGeometry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pszDS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pszSQL</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pszLyr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pszWhere</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.utils.bing.core.ogr2ogr.LoadGeometry" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.ogr2ogr.wkbFlatten">
+<span class="sig-prename descclassname"><span class="pre">spatialetl.utils.bing.core.ogr2ogr.</span></span><span class="sig-name descname"><span class="pre">wkbFlatten</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.utils.bing.core.ogr2ogr.wkbFlatten" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.ogr2ogr.SetZ">
+<span class="sig-prename descclassname"><span class="pre">spatialetl.utils.bing.core.ogr2ogr.</span></span><span class="sig-name descname"><span class="pre">SetZ</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">poGeom</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dfZ</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.utils.bing.core.ogr2ogr.SetZ" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.ogr2ogr.SetupTargetLayer">
+<span class="sig-prename descclassname"><span class="pre">spatialetl.utils.bing.core.ogr2ogr.</span></span><span class="sig-name descname"><span class="pre">SetupTargetLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">poSrcDS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">poSrcLayer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">poDstDS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">papszLCO</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pszNewLayerName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bTransform</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">poOutputSRS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bNullifyOutputSRS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">poSourceSRS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">papszSelFields</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bAppend</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eGType</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bPromoteToMulti</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nCoordDim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bOverwrite</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">papszFieldTypesToString</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bWrapDateline</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bExplodeCollections</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pszZField</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pszWHERE</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.utils.bing.core.ogr2ogr.SetupTargetLayer" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.ogr2ogr.TranslateLayer">
+<span class="sig-prename descclassname"><span class="pre">spatialetl.utils.bing.core.ogr2ogr.</span></span><span class="sig-name descname"><span class="pre">TranslateLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psInfo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">poSrcDS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">poSrcLayer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">poDstDS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">poOutputSRS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bNullifyOutputSRS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eGType</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bPromoteToMulti</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nCoordDim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eGeomOp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dfGeomOpParam</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nCountLayerFeatures</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">poClipSrc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">poClipDst</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bExplodeCollections</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nSrcFileSize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pnReadFeatureCount</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pfnProgress</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pProgressArg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.utils.bing.core.ogr2ogr.TranslateLayer" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.ogr2ogr.version_num">
+<span class="sig-prename descclassname"><span class="pre">spatialetl.utils.bing.core.ogr2ogr.</span></span><span class="sig-name descname"><span class="pre">version_num</span></span><a class="headerlink" href="#spatialetl.utils.bing.core.ogr2ogr.version_num" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../TIFFWriter/index.html" class="btn btn-neutral float-left" title="spatialetl.utils.bing.core.TIFFWriter" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../tilesystem/index.html" class="btn btn-neutral float-right" title="spatialetl.utils.bing.core.tilesystem" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, SNALE.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
