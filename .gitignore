@@ -4,5 +4,3 @@ __pycache__/*
 *.venv/
 doc/build/*
 doc/source/api_reference/*
-
-
