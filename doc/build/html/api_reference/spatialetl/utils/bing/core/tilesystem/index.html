@@ -1,0 +1,351 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>spatialetl.utils.bing.core.tilesystem &mdash; pySpatialETL documentation 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" />
+    <link rel="next" title="spatialetl.utils.distance" href="../../../distance/index.html" />
+    <link rel="prev" title="spatialetl.utils.bing.core.ogr2ogr" href="../ogr2ogr/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../../index.html" class="icon icon-home">
+            pySpatialETL documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../../index.html">spatialetl</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../../../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../../../coverage/index.html">spatialetl.coverage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../exception/index.html">spatialetl.exception</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../operator/index.html">spatialetl.operator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../point/index.html">spatialetl.point</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../../../index.html">spatialetl.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../SYMPHONIEBathymakerWriter/index.html">SYMPHONIEBathymakerWriter</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../../index.html">pySpatialETL documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">spatialetl</a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">spatialetl.utils</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">spatialetl.utils.bing</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">spatialetl.utils.bing.core</a></li>
+      <li class="breadcrumb-item active">spatialetl.utils.bing.core.tilesystem</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../../../_sources/api_reference/spatialetl/utils/bing/core/tilesystem/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-spatialetl.utils.bing.core.tilesystem">
+<span id="spatialetl-utils-bing-core-tilesystem"></span><h1>spatialetl.utils.bing.core.tilesystem<a class="headerlink" href="#module-spatialetl.utils.bing.core.tilesystem" title="Link to this heading"></a></h1>
+<p>__author__ = Linlin Chen
+__email__ = <a class="reference external" href="mailto:lchen96&#37;&#52;&#48;hawk&#46;iit&#46;edu">lchen96<span>&#64;</span>hawk<span>&#46;</span>iit<span>&#46;</span>edu</a></p>
+<p>&#64;Description:
+This module implements a set of static methods used for Bing maps tile system.</p>
+<p>reference: <a class="reference external" href="https://msdn.microsoft.com/en-us/library/bb259689.aspx">https://msdn.microsoft.com/en-us/library/bb259689.aspx</a></p>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#spatialetl.utils.bing.core.tilesystem.TileSystem" title="spatialetl.utils.bing.core.tilesystem.TileSystem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TileSystem</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.tilesystem.TileSystem">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spatialetl.utils.bing.core.tilesystem.</span></span><span class="sig-name descname"><span class="pre">TileSystem</span></span><a class="headerlink" href="#spatialetl.utils.bing.core.tilesystem.TileSystem" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.tilesystem.TileSystem.EARTHRADIUS">
+<span class="sig-name descname"><span class="pre">EARTHRADIUS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6378137</span></em><a class="headerlink" href="#spatialetl.utils.bing.core.tilesystem.TileSystem.EARTHRADIUS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.tilesystem.TileSystem.MAXLEVEL">
+<span class="sig-name descname"><span class="pre">MAXLEVEL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">23</span></em><a class="headerlink" href="#spatialetl.utils.bing.core.tilesystem.TileSystem.MAXLEVEL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.tilesystem.TileSystem.clip">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">clip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minval</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxval</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.utils.bing.core.tilesystem.TileSystem.clip" title="Link to this definition"></a></dt>
+<dd><p>Clips a number to be specified minval and maxval values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>clipped</strong><strong>]</strong> (<em>val {</em><em>[</em><em>double</em><em>]</em><em>} --</em><em> [</em><em>value to be</em>)</p></li>
+<li><p><strong>bound</strong><strong>]</strong> (<em>maxval {</em><em>[</em><em>double</em><em>]</em><em>} --</em><em> [</em><em>maximal value</em>)</p></li>
+<li><p><strong>bound</strong><strong>]</strong></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>[double] – [clipped value]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.tilesystem.TileSystem.map_size">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">map_size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.utils.bing.core.tilesystem.TileSystem.map_size" title="Link to this definition"></a></dt>
+<dd><p>Determines the map width and height (in pixels) at a specified level</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>detail</strong> (<em>level {</em><em>[</em><em>int</em><em>]</em><em>} --</em><em> [</em><em>level of</em>)</p></li>
+<li><p><strong>1</strong> (<em>from</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>[int] – [The map width and height in pixels (width == height)]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.tilesystem.TileSystem.ground_resolution">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ground_resolution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.utils.bing.core.tilesystem.TileSystem.ground_resolution" title="Link to this definition"></a></dt>
+<dd><p>Determines the ground resolution (in meters per pixel) at a specified latitude and level of detail</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>resolution</strong><strong>]</strong> (<em>lat {</em><em>[</em><em>double</em><em>]</em><em>} --</em><em> [</em><em>latitude in degrees at which to measure the ground</em>)</p></li>
+<li><p><strong>detail</strong> (<em>level {</em><em>[</em><em>int</em><em>]</em><em>} --</em><em> [</em><em>level of</em>)</p></li>
+<li><p><strong>1</strong> (<em>from</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>[double] – [The ground resolution, in meters per pixel]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.tilesystem.TileSystem.map_scale">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">map_scale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">screenDpi</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.utils.bing.core.tilesystem.TileSystem.map_scale" title="Link to this definition"></a></dt>
+<dd><p>Determines the map scale at a specified latitude, level of detail, and screen resolution</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>resolution</strong><strong>]</strong> (<em>lat {</em><em>[</em><em>double</em><em>]</em><em>} --</em><em> [</em><em>latitude in degrees at which to measure the ground</em>)</p></li>
+<li><p><strong>detail</strong> (<em>level {</em><em>[</em><em>type</em><em>]</em><em>} --</em><em> [</em><em>level of</em>)</p></li>
+<li><p><strong>1</strong> (<em>from</em>)</p></li>
+<li><p><strong>screen</strong> (<em>screenDpi {</em><em>[</em><em>type</em><em>]</em><em>} --</em><em> [</em><em>Resolution</em><em> of </em><em>the</em>)</p></li>
+<li><p><strong>inch</strong><strong>]</strong> (<em>in dots per</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>N]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>[double] – [The map scale, expressed as the denominator N of the ratio 1</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.tilesystem.TileSystem.latlong_to_pixelXY">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">latlong_to_pixelXY</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">long</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.utils.bing.core.tilesystem.TileSystem.latlong_to_pixelXY" title="Link to this definition"></a></dt>
+<dd><p>Converts a point from latitude/longitude WGS-84 coordinates (in degrees)
+into pixel XY coordinates a specified level of detail</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>point</strong> (<em>long {</em><em>[</em><em>double</em><em>]</em><em>} --</em><em> [</em><em>Longitude</em><em> of </em><em>the</em>)</p></li>
+<li><p><strong>degrees</strong><strong>]</strong> (<em>in</em>)</p></li>
+<li><p><strong>point</strong></p></li>
+<li><p><strong>degrees</strong><strong>]</strong></p></li>
+<li><p><strong>detail</strong> (<em>level {</em><em>[</em><em>int</em><em>]</em><em>} --</em><em> [</em><em>Level of</em>)</p></li>
+<li><p><strong>1</strong> (<em>from</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>[int, int] – [X coordinates in pixels; Y coordinates in pixels]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.tilesystem.TileSystem.pixelXY_to_latlong">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pixelXY_to_latlong</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pixelX</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pixelY</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.utils.bing.core.tilesystem.TileSystem.pixelXY_to_latlong" title="Link to this definition"></a></dt>
+<dd><p>Converts a pixel from pixel XY coordinates at a specified level of detail
+into latitude/longitude WGS-84 coordinates (in degrees)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>point</strong> (<em>pixelY {</em><em>[</em><em>int</em><em>]</em><em>} --</em><em> [</em><em>Y coordinate</em><em> of </em><em>the</em>)</p></li>
+<li><p><strong>pixels.</strong><strong>]</strong> (<em>in</em>)</p></li>
+<li><p><strong>point</strong></p></li>
+<li><p><strong>pixels.</strong><strong>]</strong></p></li>
+<li><p><strong>detail</strong> (<em>level {</em><em>[</em><em>int</em><em>]</em><em>} --</em><em> [</em><em>Level of</em>)</p></li>
+<li><p><strong>1</strong> (<em>from</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>[double, double] – [Latitude in degrees; Longitude in degrees]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.tilesystem.TileSystem.pixelXY_to_tileXY">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pixelXY_to_tileXY</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pixelX</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pixelY</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.utils.bing.core.tilesystem.TileSystem.pixelXY_to_tileXY" title="Link to this definition"></a></dt>
+<dd><p>Converts pixel XY coordinates into tile XY coordinates of the tile containing the specified pixel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>coordinate</strong><strong>]</strong> (<em>pixelY {</em><em>[</em><em>int</em><em>]</em><em>} --</em><em> [</em><em>Pixel Y</em>)</p></li>
+<li><p><strong>coordinate</strong><strong>]</strong></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>[int, int] – [Tile X coordinate; Tile Y coordinate]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.tilesystem.TileSystem.tileXY_to_pixelXY">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tileXY_to_pixelXY</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tileX</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tileY</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.utils.bing.core.tilesystem.TileSystem.tileXY_to_pixelXY" title="Link to this definition"></a></dt>
+<dd><p>Converts tile XY coordinates into pixel XY coordinates of the upper-left pixel of the specified tile</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>coordinate</strong><strong>]</strong> (<em>tileY {</em><em>[</em><em>int</em><em>]</em><em>} --</em><em> [</em><em>Tile Y</em>)</p></li>
+<li><p><strong>coordinate</strong><strong>]</strong></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>[int, int] – [pixel X coordinate; pixel Y coordinate]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.tilesystem.TileSystem.tileXY_to_quadkey">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tileXY_to_quadkey</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tileX</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tileY</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.utils.bing.core.tilesystem.TileSystem.tileXY_to_quadkey" title="Link to this definition"></a></dt>
+<dd><p>Converts tile XY coordinates into a QuadKey at a specified level of detail
+interleaving tileY with tileX</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>coordinate</strong><strong>]</strong> (<em>tileY {</em><em>[</em><em>int</em><em>]</em><em>} --</em><em> [</em><em>Tile Y</em>)</p></li>
+<li><p><strong>coordinate</strong><strong>]</strong></p></li>
+<li><p><strong>detail</strong> (<em>level {</em><em>[</em><em>int</em><em>]</em><em>} --</em><em> [</em><em>Level of</em>)</p></li>
+<li><p><strong>1</strong> (<em>from</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>[string] – [A string containing the QuadKey]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.utils.bing.core.tilesystem.TileSystem.quadkey_to_tileXY">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">quadkey_to_tileXY</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">quadkey</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.utils.bing.core.tilesystem.TileSystem.quadkey_to_tileXY" title="Link to this definition"></a></dt>
+<dd><p>Converts a QuadKey into tile XY coordinate</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tile</strong><strong>]</strong> (<em>quadkey {</em><em>[</em><em>string</em><em>]</em><em>} --</em><em> [</em><em>QuadKey</em><em> of </em><em>the</em>)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>[int, int] – [Tile X coordinate; Tile Y coordinate]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../ogr2ogr/index.html" class="btn btn-neutral float-left" title="spatialetl.utils.bing.core.ogr2ogr" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../../../distance/index.html" class="btn btn-neutral float-right" title="spatialetl.utils.distance" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, SNALE.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
