@@ -2,7 +2,7 @@
 
 ## Requirements
 
-- **Python 3.12**: [Download here](https://www.python.org/downloads/release/python-3120/)
+- **Python 3.9**
 
 ## 1️⃣ Create and Activate a Virtual Environment
 
@@ -25,7 +25,7 @@ pip install -r requirements.txt
 
 The following extensions are used:
 
-- `sphinx~=8.2.3`
+- `sphinx==7.4`
 - `sphinx-autoapi~=3.6` → Automatically generates documentation from source code.
 - `sphinx-rtd-theme~=3.0` → Applies the **Read the Docs** theme, widely used for Python documentation.
 
