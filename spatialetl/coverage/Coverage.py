@@ -24,7 +24,6 @@ from __future__ import division, print_function, absolute_import
 
 import numpy as np
 from array_split import shape_split
-from mpi4py import MPI
 
 from spatialetl.exception.NotFoundInRankError import NotFoundInRankError
 from spatialetl.operator.interpolator.InterpolatorCore import resample_2d_to_grid
@@ -51,11 +50,10 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
 
     def __init__(self, myReader,bbox=None,resolution_x=None,resolution_y=None):
         self.reader = myReader;
-        # MPI
+        # Parallel
         self.map_mpi = None
-        self.comm = MPI.COMM_WORLD
-        self.size = self.comm.Get_size()
-        self.rank = self.comm.Get_rank()
+        self.size = 1
+        self.rank = 0
 
         self.source_regular_grid = self.reader.is_regular_grid()
         self.target_regular_grid = self.source_regular_grid

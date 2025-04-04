@@ -4,12 +4,3 @@ numpy~=1.26.4
 pandas~=1.4.0
 scipy~=1.10.1
 array_split~=0.6.5
-mpi4py~=3.1.6
-netCDF4~=1.7.2
-cftime~=1.0.4.2
-cfgrib~=0.9.7.7
-gdal~=3.4.1
-rasterio~=1.4.3
-shapely~=1.8.2
-geopandas~=0.14.4
-pygeos

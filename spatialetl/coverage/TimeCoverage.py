@@ -26,7 +26,6 @@ import math
 from datetime import datetime
 from datetime import timedelta
 
-import cftime
 import numpy as np
 import pandas
 from array_split import shape_split
@@ -60,7 +59,7 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         if start_time is not None:
 
-            if type(start_time) == datetime or type(start_time) == cftime._cftime.real_datetime:
+            if type(start_time) == datetime:
                 time = start_time
             elif type(start_time) == str:
                 try:
@@ -80,7 +79,7 @@ Elle rajoute une dimension temporelle à la couverture horizontale classique.
 
         if end_time is not None:
 
-            if type(end_time) == datetime or type(end_time) == cftime._cftime.real_datetime:
+            if type(end_time) == datetime:
                 time = end_time
             elif type(end_time) == str:
                 try:

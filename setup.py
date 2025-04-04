@@ -48,11 +48,10 @@ def read_requirements(path):
         if not line.startswith(('"', "#", "-", "git+"))
     ]
 
-
 setup (
-       name='pySpatialETL',
+       name='spatialetl',
        version=read("VERSION"),
-       packages=find_packages(),
+       packages=find_packages(exclude=("spatialetl.providers","spatialetl.providers.*","spatialetl.extensions","spatialetl.extensions.*")),
 
        # Declare your packages' dependencies here, for eg:
        python_requires='>=3.9',

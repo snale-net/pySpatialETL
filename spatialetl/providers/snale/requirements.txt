@@ -1,0 +1,2 @@
+spatialetl~=0.2.0
+spatialetl-gdal~=0.0.1
