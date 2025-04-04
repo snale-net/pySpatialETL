@@ -1,4 +1,4 @@
-# Sphinx Installation and Documentation Deployment V1
+# Sphinx Installation and Documentation Deployment
 
 ## Requirements
 
