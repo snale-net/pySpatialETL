@@ -28,11 +28,7 @@ extensions = [
     'sphinx.ext.autosummary',
 ]
 
-
 templates_path = ['_templates']
-exclude_patterns = ["*SYMPHONIEBathymakerWriter*",
-                    "spatialetl.SYMPHONIEBathymakerWriter"]
-
 
 autoapi_generate_api_docs = True
 autoapi_dirs = ["../../spatialetl"]
@@ -59,10 +55,26 @@ napoleon_use_ivar = False
 napoleon_use_param = True
 napoleon_use_rtype = True
 
-
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
 
+# Exclusion de la classe spécifique de l'API générée
+autodoc_exclude_members = ["SYMPHONIEBathymakerWriter"]
+
+exclude_patterns = [
+    "**/SYMPHONIEBathymakerWriter.*",  # Exclure tous les fichiers liés à cette classe
+    "**/spatialetl/SYMPHONIEBathymakerWriter.*",
+    "**/spatialetl/point/io/netcdf/symphonie/**",  # Exclure tout un répertoire si nécessaire
+]
+
+def skip_symphonie_bathymaker_writer(app, what, name, obj, skip, options):
+    # Exclure la classe SYMPHONIEBathymakerWriter
+    if name == "SYMPHONIEBathymakerWriter":
+        return True
+    return None
+
+def setup(app):
+    app.connect("autoapi-skip-member", skip_symphonie_bathymaker_writer)
