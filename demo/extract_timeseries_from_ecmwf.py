@@ -20,10 +20,6 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-# Lien vers le dossier de la lib
-import sys
-sys.path = ['../'] + sys.path
-
 from spatialetl.point.TimeMultiPoint import TimeMultiPoint
 from spatialetl.point.io.netcdf.ecmwf.ECMWFReader import ECMWFReader
 from spatialetl.point.io.netcdf.DefaultWriter import DefaultWriter as NcWriter

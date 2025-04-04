@@ -20,10 +20,6 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
- # Lien vers le dossier de la lib
-import sys
-sys.path = ['../'] + sys.path
-
 from spatialetl.coverage.TimeCoverage import TimeCoverage
 from spatialetl.coverage.operator.interpolator.CoverageInterpolator import CoverageInterpolator
 from spatialetl.coverage.operator.interpolator.InterpolatorCore import InterpolatorCore

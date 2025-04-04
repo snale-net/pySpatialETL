@@ -1,0 +1,2 @@
+spatialetl~=0.2.0
+cfgrib~=0.9.7.7
