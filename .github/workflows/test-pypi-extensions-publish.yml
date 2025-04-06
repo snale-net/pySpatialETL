@@ -1,39 +1,39 @@
-name: Publish providers distribution 📦 to Test PyPI
+name: Publish extensions distribution 📦 to Test PyPI
 
 on:
   push:
-    tags: providers-[a-z0-9]+/[0-9]+.[0-9]+.[0-9]+rc[0-9]+
+    tags: extensions-[a-z0-9]+/[0-9]+.[0-9]+.[0-9]+rc[0-9]+
 
 jobs:
   release-checks:
     outputs:
-      provider-name: ${{ steps.check-provider.outputs.provider-name }}
+      extension-name: ${{ steps.check-extension.outputs.extension-name }}
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout Code"
         uses: actions/checkout@v2
 
-      - name: "Find provider name"
+      - name: "Find extension name"
         uses: actions-ecosystem/action-regex-match@v2
-        id: provider-parser
+        id: extension-parser
         with:
             text: ${{ github.ref }}
-            regex: '^\/refs\/tags\/providers-([a-z0-9]+)\/.*$'
+            regex: '^\/refs\/tags\/extensions-([a-z0-9]+)\/.*$'
 
       - name: "Check prodiver"
-        if: ${{ (steps.provider-parser.outputs.match != '') && (hashFiles(format('spatialetl/providers/{0}/', steps.providers-parser.outputs.group1)) != '' ) }}
-        id: check-provider
-        run: echo provider-name=${{ steps.providers-parser.outputs.group1 }}>> $GITHUB_OUTPUT
+        if: ${{ (steps.extension-parser.outputs.match != '') && (hashFiles(format('spatialetl/extensions/{0}/', steps.extensions-parser.outputs.group1)) != '' ) }}
+        id: check-extension
+        run: echo extension-name=${{ steps.extensions-parser.outputs.group1 }}>> $GITHUB_OUTPUT
 
   publish-to-pypi:
     name: Publish release to Test PyPI
     runs-on: ubuntu-latest
     needs:
       - release-checks
-    if: ${{ needs.release-checks.outputs.provider-name }} != ''
+    if: ${{ needs.release-checks.outputs.extension-name }} != ''
     environment:
       name: testpypi
-      url: https://test.pypi.org/p/spatialetl-provider-${{ needs.release-checks.outputs.provider-name }}
+      url: https://test.pypi.org/p/spatialetl-${{ needs.release-checks.outputs.extension-name }}
     permissions:
       id-token: write  # IMPORTANT: mandatory for trusted publishing
     steps:
@@ -49,7 +49,7 @@ jobs:
       - name: Build package
         run: |
           python -m build
-      - name: "Publishing ${{ needs.release-checks.outputs.provider-name }} distribution 📦 to Test PyPI"
+      - name: "Publishing ${{ needs.release-checks.outputs.extension-name }} distribution 📦 to Test PyPI"
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           repository-url: https://test.pypi.org/legacy/
