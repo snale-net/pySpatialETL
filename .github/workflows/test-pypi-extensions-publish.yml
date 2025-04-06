@@ -13,17 +13,17 @@ jobs:
       - name: "Checkout Code"
         uses: actions/checkout@v2
 
-      - name: "Find extension name"
+      - name: "Find extension name from tag name"
         uses: actions-ecosystem/action-regex-match@v2
         id: extension-parser
         with:
             text: ${{ github.ref }}
             regex: '^refs\/tags\/extensions-([a-z0-9]+)\/.*$'
 
-      - name: "Check prodiver"
+      - name: "Check if extension name exists"
         if: ${{ (steps.extension-parser.outputs.match != '') && (hashFiles(format('spatialetl/extensions/{0}/', steps.extensions-parser.outputs.group1)) != '' ) }}
         id: check-extension
-        run: echo extension-name=${{ steps.extensions-parser.outputs.group1 }} >> $GITHUB_OUTPUT
+        run: echo extension-name=${{ steps.extension-parser.outputs.group1 }} >> $GITHUB_OUTPUT
 
   publish-to-pypi:
     name: Publish release to Test PyPI
