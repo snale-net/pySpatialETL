@@ -21,9 +21,9 @@ jobs:
             regex: '^\/refs\/tags\/providers-([a-z0-9]+)\/.*$'
 
       - name: "Check prodiver"
-          if: ${{ (steps.provider-parser.outputs.match != '') && (hashFiles(format('spatialetl/providers/{0}/', steps.providers-parser.outputs.group1)) != '' ) }}
-          id: check-provider
-          run: echo provider-name=${{ steps.providers-parser.outputs.group1 }}>> $GITHUB_OUTPUT
+        if: ${{ (steps.provider-parser.outputs.match != '') && (hashFiles(format('spatialetl/providers/{0}/', steps.providers-parser.outputs.group1)) != '' ) }}
+        id: check-provider
+        run: echo provider-name=${{ steps.providers-parser.outputs.group1 }}>> $GITHUB_OUTPUT
 
   publish-to-pypi:
     name: Publish release to PyPI
