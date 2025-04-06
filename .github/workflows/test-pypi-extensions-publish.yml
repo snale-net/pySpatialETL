@@ -18,19 +18,19 @@ jobs:
         id: extension-parser
         with:
             text: ${{ github.ref }}
-            regex: '^\/refs\/tags\/extensions-([a-z0-9]+)\/.*$'
+            regex: '^refs\/tags\/extensions-([a-z0-9]+)\/.*$'
 
       - name: "Check prodiver"
         if: ${{ (steps.extension-parser.outputs.match != '') && (hashFiles(format('spatialetl/extensions/{0}/', steps.extensions-parser.outputs.group1)) != '' ) }}
         id: check-extension
-        run: echo extension-name=${{ steps.extensions-parser.outputs.group1 }}>> $GITHUB_OUTPUT
+        run: echo extension-name=${{ steps.extensions-parser.outputs.group1 }} >> $GITHUB_OUTPUT
 
   publish-to-pypi:
     name: Publish release to Test PyPI
     runs-on: ubuntu-latest
     needs:
       - release-checks
-    if: ${{ needs.release-checks.outputs.extension-name }} != ''
+    if: needs.release-checks.outputs.extension-name != ''
     environment:
       name: testpypi
       url: https://test.pypi.org/p/spatialetl-${{ needs.release-checks.outputs.extension-name }}
