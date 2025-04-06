@@ -22,7 +22,7 @@ jobs:
             regex: '^refs\/tags\/providers-([a-z0-9-]+)\/.*$'
 
       - name: "Test if provider regex match"
-        if: ${{ (steps.provider-parser.outputs.match != '')
+        if: ${{ (steps.provider-parser.outputs.match != '') }}
         id: provider-match
         run: |          
           echo provider-path=$(echo spatialetl/providers/${{ steps.provider-parser.outputs.group1 }}) | sed 's/common-/common\//g' >> $GITHUB_OUTPUT
