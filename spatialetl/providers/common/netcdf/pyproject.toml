@@ -23,8 +23,8 @@ requires = ["setuptools", "wheel", "build"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "spatialetl"
-version = "0.2.0rc3"
+name = "spatialetl-providers-common-netcdf"
+version = "0.0.1rc1"
 dynamic = ["dependencies"]
 requires-python = ">=3.9"
 authors = [
@@ -32,8 +32,7 @@ authors = [
 ]
 description = "Extract - Transform - Load (ETL) of geospatial data, that is, digital geospatial information representing space and time-varying phenomena. This python package deals with multi-dimensional gridded data and multi-dimensional multi-point data."
 readme = "README.md"
-license = "MIT"
-license-files = ["LICEN[CS]E.*"]
+
 
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements.txt"]}
@@ -42,6 +41,3 @@ dependencies = {file = ["requirements.txt"]}
 Homepage = "https://lab.snale.net/produits/pyspatialetl"
 Documentation = "https://readthedocs.org"
 Repository = "https://github.com/snale-net/pySpatialETL.git"
-
-[tool.setuptools.packages.find]
-exclude = ["spatialetl.providers","spatialetl.providers.*"]
