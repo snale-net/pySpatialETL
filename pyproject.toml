@@ -44,7 +44,7 @@ Documentation = "https://readthedocs.org"
 Repository = "https://github.com/snale-net/pySpatialETL.git"
 
 [tool.setuptools.packages.find]
-exclude = ["spatialetl.providers","spatialetl.providers.*"]
+exclude = ["spatialetl.providers","spatialetl.providers.*","*.tests", "*.tests.*", "tests.*", "tests"]
 
 [project.optional-dependencies]
 "netcdf" = [

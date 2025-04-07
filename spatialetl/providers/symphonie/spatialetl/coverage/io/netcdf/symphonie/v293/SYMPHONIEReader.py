@@ -349,11 +349,6 @@ La classe SymphonieReader permet de lire les données du format Symphonie
                                  "No variables found for \'Wind Stress\'",
                                  1000))
 
-        #################
-        # METEO
-        # At 10 m
-        #################
-
     #################
     # METEO
     # At 10 m

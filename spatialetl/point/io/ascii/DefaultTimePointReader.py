@@ -34,6 +34,14 @@ from spatialetl.utils.logger import logging
 
 class DefaultTimePointReader(MultiPointReader):
     def __init__(self, myFilename,names,colsNumber,varNames,checkOverlapping=False):
+        """
+        Initialize a reader
+        :param myFilename: Path of the file
+        :param names: List of point names
+        :param colsNumber: List of index cols to read
+        :param varNames: List of parameter names in the same order than colsNumber
+        :param checkOverlapping: Check if overlapping
+        """
 
         if isinstance(myFilename,str):
             MultiPointReader.__init__(self,myFilename)
@@ -81,21 +89,37 @@ class DefaultTimePointReader(MultiPointReader):
                     raise ValueError(ex)
 
     # Axis
+    def get_x_size(self):
+        return len(self.x);
+
+    def get_y_size(self):
+        return len(self.y);
+
+    def get_t_size(self):
+        return len(self.data.index.to_pydatetime());
+
     def read_axis_x(self):
         return self.x
 
     def read_axis_y(self):
         return self.y
 
-    def read_axis_t(self,timestamp=0):
+    def read_axis_t(self,tmin,tmax,timestamp=0):
+        """
+        Returns the time axis
+        :param tmin: Min slice index
+        :param tmax: Max slice index
+        :param timestamp: True if time in timestamp, else datime
+        :return: Array of time
+        """
 
         result = self.data.index.to_pydatetime()
 
         if timestamp == 1:
             return [(t - TimeMultiPoint.TIME_DATUM).total_seconds() \
-                    for t in result];
+                    for t in result][tmin:tmax];
         else:
-            return result
+            return result[tmin:tmax]
 
     def read_metadata(self):
         metadata = {};
@@ -129,34 +153,22 @@ class DefaultTimePointReader(MultiPointReader):
 
         return metadata
 
-    def read_variable_wind_10m_at_time(self,index_t):
-
-        u = self.data.iloc[index_t].wind_speed_10m * math.cos(math.radians(self.dir_data.iloc[index_t].wind_from_direction_10m))
-        v = self.data.iloc[index_t].wind_speed_10m * math.sin(math.radians(self.dir_data.iloc[index_t].wind_from_direction_10m))
-
-        return [[u],[v]]
-
-    def read_variable_surface_air_pressure_at_time(self,index_t):
-
-        # bar to Pa
-        result = self.data.iloc[index_t].surface_air_pressure * 100000
-
-        return [result]
-
-    def read_variable_rainfall_amount_at_time(self,index_t):
-
-        result = self.data.iloc[index_t].rainfall_amount
-        # to kg/m²
-        #result = self.data.iloc[index_t].rainfall_amount
-
-        return [result]
-
     def read_variable_point_names(self):
         return self.names
 
-    def read_variable_water_volume_transport_into_sea_water_from_rivers_at_time(self,index_t):
+    #################
+    # HYDRO
+    # Sea Surface
+    #################
+    def read_variable_sea_surface_height_above_mean_sea_level_at_time(self, index_t):
 
-        result = self.data.iloc[index_t].water_volume_transport_into_sea_water_from_rivers
+        result = self.data.iloc[index_t].sea_surface_height_above_mean_sea_level
+
+        return [result]
+
+    def read_variable_sea_water_column_thickness_at_time(self, index_t):
+
+        result = self.data.iloc[index_t].sea_water_column_thickness_at_time
 
         return [result]
 
@@ -166,8 +178,62 @@ class DefaultTimePointReader(MultiPointReader):
 
         return [result]
 
-    def read_variable_sea_surface_height_above_mean_sea_level_at_time(self, index_t):
+    #################
+    # HYDRO
+    # Ground level
+    #################
 
-        result = self.data.iloc[index_t].sea_surface_height_above_mean_sea_level
+    #################
+    # HYDRO
+    # 2D
+    #################
+    def read_variable_water_volume_transport_into_sea_water_from_rivers_at_time(self, index_t):
+
+        result = self.data.iloc[index_t].water_volume_transport_into_sea_water_from_rivers
 
         return [result]
+
+    #################
+    # WAVES
+    # Sea Surface
+    #################
+
+    #################
+    # WAVES
+    # Momentum flux
+    #################
+
+    #################
+    # METEO
+    # 2D
+    #################
+
+    #################
+    # METEO
+    # Sea surface
+    #################
+    def read_variable_surface_air_pressure_at_time(self, index_t):
+
+        # bar to Pa
+        result = self.data.iloc[index_t].surface_air_pressure * 100000
+
+        return [result]
+
+    def read_variable_rainfall_amount_at_time(self, index_t):
+
+        result = self.data.iloc[index_t].rainfall_amount
+        # to kg/m²
+        # result = self.data.iloc[index_t].rainfall_amount
+
+        return [result]
+
+    #################
+    # METEO
+    # At 10 m
+    #################
+    def read_variable_wind_10m_at_time(self,index_t):
+
+        u = self.data.iloc[index_t].wind_speed_10m * math.cos(math.radians(self.dir_data.iloc[index_t].wind_from_direction_10m))
+        v = self.data.iloc[index_t].wind_speed_10m * math.sin(math.radians(self.dir_data.iloc[index_t].wind_from_direction_10m))
+
+        return [[u],[v]]

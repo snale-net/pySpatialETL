@@ -25,7 +25,6 @@ from __future__ import division, print_function, absolute_import
 import math
 
 import numpy as np
-from mpi4py import MPI
 
 from spatialetl.utils.logger import logging
 
@@ -82,9 +81,9 @@ class MultiPoint():
 
         # MPI
         self.map_mpi = None
-        self.comm = MPI.COMM_WORLD
-        self.size = self.comm.Get_size()
-        self.rank = self.comm.Get_rank()
+        self.comm = None
+        self.size = 1
+        self.rank = 0
 
         if np.shape(self.reader.read_axis_x())[0] != np.shape(self.reader.read_axis_y())[0] :
             raise ValueError("Longitude axis and latitude axis don't have the same size.")

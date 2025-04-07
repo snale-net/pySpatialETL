@@ -25,7 +25,6 @@ from __future__ import division, print_function, absolute_import
 import math
 from datetime import datetime, timedelta, timezone
 
-import cftime
 import numpy as np
 import pandas
 from array_split import shape_split
@@ -61,7 +60,7 @@ class TimeMultiPoint(MultiPoint):
 
         if start_time is not None:
 
-            if type(start_time) == datetime or type(start_time) == cftime._cftime.real_datetime:
+            if type(start_time) == datetime:
                 time = start_time
             elif type(start_time) == str:
                 try:
@@ -82,7 +81,7 @@ class TimeMultiPoint(MultiPoint):
 
         if end_time is not None:
 
-            if type(end_time) == datetime or type(end_time) == cftime._cftime.real_datetime:
+            if type(end_time) == datetime:
                 time = end_time
             elif type(end_time) == str:
                 try:
@@ -271,7 +270,7 @@ class TimeMultiPoint(MultiPoint):
 
             indexes_t.append(int(t));
 
-        if type(t) == datetime or type(t) == cftime._cftime.datetime or type(t) == cftime._cftime.real_datetime:
+        if type(t) == datetime:
 
             logging.debug("[TimeMultiPoint][find_time_index()] Looking for : "+str(t))
 

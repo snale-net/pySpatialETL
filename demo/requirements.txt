@@ -1,5 +1,5 @@
 spatialetl~=0.2.0
-spatialetl-ecmwf~=0.0.1
-spatialetl-mercator~=0.0.1
-spatialetl-symphonie~=0.0.1
-spatialetl-ww3~=0.0.1
+spatialetl-providers-ecmwf~=0.0.1
+spatialetl-providers-mercator~=0.0.1
+spatialetl-providers-symphonie~=0.0.1
+spatialetl-providers-ww3~=0.0.1
