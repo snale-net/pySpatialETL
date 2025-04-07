@@ -45,3 +45,15 @@ Repository = "https://github.com/snale-net/pySpatialETL.git"
 
 [tool.setuptools.packages.find]
 exclude = ["spatialetl.providers","spatialetl.providers.*"]
+
+[project.optional-dependencies]
+"netcdf" = [
+    "spatialetl-providers-common-netcdf"
+]
+"symphonie" = [
+    "spatialetl-providers-symphonie"
+]
+"all" = [
+    "spatialetl-providers-common-netcdf",
+    "spatialetl-providers-symphonie"
+]

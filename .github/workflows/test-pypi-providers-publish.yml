@@ -2,7 +2,9 @@ name: Publish providers distribution 📦 to Test PyPI
 
 on:
   push:
-    tags: 'providers-[a-z0-9]+/[0-9]+.[0-9]+.[0-9]+rc[0-9]+'
+    tags:
+      - 'providers-[a-z0-9]+/[0-9]+.[0-9]+.[0-9]+rc[0-9]+'
+      - 'providers-common-[a-z0-9]+/[0-9]+.[0-9]+.[0-9]+rc[0-9]+'
 
 jobs:
   release-checks:
