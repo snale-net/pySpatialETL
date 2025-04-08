@@ -33,14 +33,14 @@ from spatialetl.utils.logger import logging
 
 
 class DefaultTimePointReader(MultiPointReader):
-    def __init__(self, myFilename,names,colsNumber,varNames,checkOverlapping=False):
+    def __init__(self, myFilename,colsNumber,varNames,names=[],checkOverlapping=False):
         """
         Initialize a reader
         :param myFilename: Path of the file
-        :param names: List of point names
         :param colsNumber: List of index cols to read
         :param varNames: List of parameter names in the same order than colsNumber
-        :param checkOverlapping: Check if overlapping
+        :param names: (Optional) List of point names
+        :param checkOverlapping: (Optional) Check if overlapping
         """
 
         if isinstance(myFilename,str):
@@ -48,11 +48,14 @@ class DefaultTimePointReader(MultiPointReader):
         elif isinstance(myFilename,list):
             MultiPointReader.__init__(self, myFilename[0])
 
-        self.names = names
         self.header = 0
         self.x = ["Undefinied"]
         self.y = ["Undefinied"]
+        self.names = ["Undefinied"]
         self.read_metadata()
+
+        if len(names) != 0 :
+            self.names = names
 
         if isinstance(myFilename, str):
 
@@ -134,14 +137,15 @@ class DefaultTimePointReader(MultiPointReader):
 
                 if "Station" in line:
                     metadata['name_station'] = re.sub('[^a-zA-Z0-9-_*.]', '', line.rsplit(':', 1)[1])
+                    self.names = [metadata['name_station']]
 
                 if "Longitude" in line:
                     metadata['x_coord'] = re.sub('[^a-zA-Z0-9-_*.]', '', line.rsplit(':', 1)[1])
-                    self.x = [metadata['x_coord']]
+                    self.x = [float(metadata['x_coord'])]
 
                 if "Latitude" in line:
                     metadata['y_coord'] = re.sub('[^a-zA-Z0-9-_*.]', '', line.rsplit(':', 1)[1])
-                    self.y = [metadata['y_coord']]
+                    self.y = [float(metadata['y_coord'])]
 
                 if "Vertical datum" in line:
                     metadata['vertical_datum'] = re.sub('[^a-zA-Z0-9-_*.]', '', line.rsplit(':', 1)[1])

@@ -80,6 +80,7 @@ class MultiPoint():
         self.reader = myReader;
 
         # MPI
+        # TODO Make a multiprocessing version
         self.map_mpi = None
         self.comm = None
         self.size = 1
@@ -90,6 +91,8 @@ class MultiPoint():
 
         self.nb_points = np.shape(self.reader.read_axis_x())[0]
 
+        # TODO Why we need to store these data ?
+        # They should be stored in the reader.
         self.data_source = "Undefined"
         self.name_station = "Undefined"
         self.x_coord = "Undefined"
@@ -99,8 +102,6 @@ class MultiPoint():
 
         # try to fill metadata
         self.read_metadata()
-
-        # Read metadata
 
     def read_metadata(self):
         """
@@ -118,9 +119,9 @@ class MultiPoint():
             if 'data_source' in m:
                 self.data_source = m['data_source']
             if 'x_coord' in m:
-                self.x_coord = float(m['x_coord'])
+                self.x_coord = m['x_coord']
             if 'y_coord' in m:
-                self.y_coord = float(m['y_coord'])
+                self.y_coord = m['y_coord']
             if 'vertical_datum' in m:
                 self.vertical_datum = m['vertical_datum']
             if 'meta_data' in m:

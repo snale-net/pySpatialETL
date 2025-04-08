@@ -28,7 +28,6 @@ class TestTimeMultiPoint(TestCase):
 
     def test_timeseries(self):
         reader = DefaultTimePointReader("../io/ascii/tests/ressources/Port-Sainte-Marie-la-Mer_03-2013_to_03-2013.dat",
-                                        names=["Port-Sainte-Marie"],
                                         colsNumber=[0,1],
                                         varNames=["date","sea_water_column_thickness_at_time"])
         point = TimeMultiPoint(reader);
@@ -38,20 +37,35 @@ class TestTimeMultiPoint(TestCase):
         candidate_size = point.get_nb_points()
         self.assertEqual(expected_size, candidate_size, "get_nb_points()")
 
+        # test_read_variable_point_names
+        expected_value = ["Port-Sainte-Marie-la-Mer"]
+        candidate_value = point.read_variable_point_names()
+        self.assertEqual(expected_value, candidate_value, "read_variable_point_names()")
+
+        # test_read_x_axis
+        expected_value = [3.0381070436335205]
+        candidate_value = point.read_axis_x()
+        self.assertEqual(expected_value, candidate_value, "read_axis_x()")
+
+        # test_read_y_axis
+        expected_value = [42.7230238237492]
+        candidate_value = point.read_axis_y()
+        self.assertEqual(expected_value, candidate_value, "read_axis_y()")
+
         # test_get_t_size
         expected_size = 13
         candidate_size = point.get_t_size()
         self.assertEqual(expected_size, candidate_size, "get_t_size()")
 
         # test_read_axis_t
-        expected_size = datetime.strptime("2013-03-05 02:45:36", '%Y-%m-%d %H:%M:%S')
-        candidate_size = point.read_axis_t()[9]
-        self.assertEqual(expected_size, candidate_size, "read_axis_t()")
+        expected_value = datetime.strptime("2013-03-05 02:45:36", '%Y-%m-%d %H:%M:%S')
+        candidate_value = point.read_axis_t()[9]
+        self.assertEqual(expected_value, candidate_value, "read_axis_t()")
 
         # test_read_variable_sea_water_column_thickness_at_time
-        expected_size = [1.2138863801956177]
-        candidate_size = point.read_variable_sea_water_column_thickness_at_time(datetime.strptime("2013-03-05 02:45:36",'%Y-%m-%d %H:%M:%S'))
-        self.assertEqual(expected_size, candidate_size, "read_variable_sea_water_column_thickness_at_time()")
+        expected_value = [1.2138863801956177]
+        candidate_value = point.read_variable_sea_water_column_thickness_at_time(datetime.strptime("2013-03-05 02:45:36",'%Y-%m-%d %H:%M:%S'))
+        self.assertEqual(expected_value, candidate_value, "read_variable_sea_water_column_thickness_at_time()")
 
 
 
