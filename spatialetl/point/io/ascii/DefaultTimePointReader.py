@@ -24,6 +24,7 @@ from __future__ import division, print_function, absolute_import
 
 import math
 import re
+import numpy as np
 
 import pandas
 
@@ -201,6 +202,11 @@ class DefaultTimePointReader(MultiPointReader):
     # WAVES
     # Sea Surface
     #################
+    def read_variable_sea_surface_wave_significant_height_at_time(self, index_t):
+
+        result = self.data.iloc[index_t].sea_surface_wave_significant_height
+
+        return [result]
 
     #################
     # WAVES
@@ -218,8 +224,13 @@ class DefaultTimePointReader(MultiPointReader):
     #################
     def read_variable_surface_air_pressure_at_time(self, index_t):
 
-        # bar to Pa
-        result = self.data.iloc[index_t].surface_air_pressure * 100000
+        result = self.data.iloc[index_t].surface_air_pressure
+
+        return [result]
+
+    def read_variable_sea_surface_air_pressure_at_time(self, index_t):
+
+        result = self.data.iloc[index_t].sea_surface_air_pressure
 
         return [result]
 
@@ -237,7 +248,7 @@ class DefaultTimePointReader(MultiPointReader):
     #################
     def read_variable_wind_10m_at_time(self,index_t):
 
-        u = self.data.iloc[index_t].wind_speed_10m * math.cos(math.radians(self.dir_data.iloc[index_t].wind_from_direction_10m))
-        v = self.data.iloc[index_t].wind_speed_10m * math.sin(math.radians(self.dir_data.iloc[index_t].wind_from_direction_10m))
+        u = self.data.iloc[index_t].wind_speed_10m * math.cos(math.radians(self.data.iloc[index_t].wind_from_direction_10m))
+        v = self.data.iloc[index_t].wind_speed_10m * math.sin(math.radians(self.data.iloc[index_t].wind_from_direction_10m))
 
         return [[u],[v]]
