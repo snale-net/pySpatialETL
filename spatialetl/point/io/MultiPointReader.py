@@ -287,6 +287,3 @@ class MultiPointReader(object):
     def read_variable_wind_10m_at_time(self,index_t):
         raise NotImplementedError(str(type(self)) + " don't have implemented the function 'read_variable_wind_10m_at_time()'.")
 
-
-
-
