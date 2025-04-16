@@ -173,7 +173,7 @@ class DefaultTimePointReader(MultiPointReader):
 
     def read_variable_sea_water_column_thickness_at_time(self, index_t):
 
-        result = self.data.iloc[index_t].sea_water_column_thickness_at_time
+        result = self.data.iloc[index_t].sea_water_column_thickness
 
         return [result]
 
