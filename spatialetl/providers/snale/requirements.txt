@@ -1,2 +1,2 @@
 spatialetl~=0.2.0
-spatialetl-gdal~=0.0.1
+spatialetl-providers-common-gdal~=0.0.1

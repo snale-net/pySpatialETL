@@ -18,6 +18,26 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from setuptools import setup
+[build-system]
+requires = ["setuptools", "wheel", "build"]
+build-backend = "setuptools.build_meta"
 
-setup()
+[project]
+name = "spatialetl-providers-snale"
+version = "0.0.1"
+dynamic = ["dependencies"]
+requires-python = ">=3.9"
+authors = [
+  {name = "Fabien RÉTIF", email = "fabien.retif@snale.net"},
+]
+description = "Provider package spatialetl-providers-snale for SpatialETL"
+readme = "README.md"
+
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
+[project.urls]
+Homepage = "https://lab.snale.net/produits/pyspatialetl"
+Documentation = "https://readthedocs.org"
+Repository = "https://github.com/snale-net/pySpatialETL.git"
