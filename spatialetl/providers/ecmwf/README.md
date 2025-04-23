@@ -1,1 +1,1 @@
-Package ``spatialetl-providers-common-ecmwf``
+Package ``spatialetl-providers-ecmwf``

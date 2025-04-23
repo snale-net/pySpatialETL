@@ -23,14 +23,14 @@ requires = ["setuptools", "wheel", "build"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "spatialetl-providers-common-ecmwf"
+name = "spatialetl-providers-ecmwf"
 version = "0.0.1"
 dynamic = ["dependencies"]
 requires-python = ">=3.9"
 authors = [
   {name = "Fabien RÉTIF", email = "fabien.retif@snale.net"},
 ]
-description = "Provider package spatialetl-providers-common-ecmwf for SpatialETL"
+description = "Provider package spatialetl-providers-ecmwf for SpatialETL"
 readme = "README.md"
 
 
