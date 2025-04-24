@@ -214,6 +214,22 @@ class DefaultTimePointReader(MultiPointReader):
     #################
 
     #################
+    # WAVES
+    # Interaction with coastal structures
+    #################
+    def read_variable_wave_collision_at_time(self, index_t):
+
+        result = self.data.iloc[index_t].wave_collision
+
+        return [result]
+
+    def read_variable_wave_overtopping_at_time(self, index_t):
+
+        result = self.data.iloc[index_t].wave_overtopping
+
+        return [result]
+
+    #################
     # METEO
     # 2D
     #################

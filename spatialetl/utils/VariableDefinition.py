@@ -390,6 +390,20 @@ class VariableDefinition:
     CANONICAL_UNITS['northward_waves_momentum_flux_to_ocean'] = "m2 s-1"
 
     #################
+    # WAVES
+    # Interaction with coastal structures
+    #################
+    STANDARD_NAME['wave_collision'] = "wave_collision"
+    LONG_NAME['wave_collision'] = "Wave collision"
+    VARIABLE_NAME['wave_collision'] = "wave_collision"
+    CANONICAL_UNITS['wave_collision'] = "num h-1"
+
+    STANDARD_NAME['wave_overtopping'] = "wave_overtopping"
+    LONG_NAME['wave_overtopping'] = "Wave overtopping"
+    VARIABLE_NAME['wave_overtopping'] = "wave_overtopping"
+    CANONICAL_UNITS['wave_overtopping'] = "num h-1"
+
+    #################
     # METEO
     # 2D
     #################
@@ -510,6 +524,8 @@ class VariableDefinition:
     LONG_NAME['wind_from_direction_10m'] = "Wind From Direction 10m"
     VARIABLE_NAME['wind_from_direction_10m'] = "wind_from_dir_10m"
     CANONICAL_UNITS['wind_from_direction_10m'] = "degree" # from North=0 / East=90"
+
+
 
 
 
