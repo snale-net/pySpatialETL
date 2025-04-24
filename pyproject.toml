@@ -47,13 +47,61 @@ Repository = "https://github.com/snale-net/pySpatialETL.git"
 exclude = ["spatialetl.providers","spatialetl.providers.*","*.tests", "*.tests.*", "tests.*", "tests"]
 
 [project.optional-dependencies]
+"gdal" = [
+    "spatialetl-providers-common-gdal"
+]
+"grib" = [
+    "spatialetl-providers-common-grib"
+]
+"mpi" = [
+    "spatialetl-providers-common-mpi"
+]
 "netcdf" = [
     "spatialetl-providers-common-netcdf"
+]
+"ecmwf" = [
+    "spatialetl-providers-ecmwf"
+]
+"gmt" = [
+    "spatialetl-providers-gmt"
+]
+"hycom" = [
+    "spatialetl-providers-hycom"
+]
+"mercator" = [
+    "spatialetl-providers-mercator"
+]
+"meteofrance" = [
+    "spatialetl-providers-meteofrance"
+]
+"snale" = [
+    "spatialetl-providers-snale"
+]
+"swan" = [
+    "spatialetl-providers-swan"
 ]
 "symphonie" = [
     "spatialetl-providers-symphonie"
 ]
+"telemac" = [
+    "spatialetl-providers-telemac"
+]
+"ww3" = [
+    "spatialetl-providers-ww3"
+]
 "all" = [
+    "spatialetl-providers-common-gdal",
+    "spatialetl-providers-common-grib",
+    "spatialetl-providers-common-mpi",
     "spatialetl-providers-common-netcdf",
-    "spatialetl-providers-symphonie"
+    "spatialetl-providers-ecmwf",
+    "spatialetl-providers-gmt",
+    "spatialetl-providers-hycom",
+    "spatialetl-providers-mercator",
+    "spatialetl-providers-meteofrance",
+    "spatialetl-providers-snale",
+    "spatialetl-providers-swan",
+    "spatialetl-providers-symphonie",
+    "spatialetl-providers-telemac",
+    "spatialetl-providers-ww3",
 ]
