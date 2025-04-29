@@ -1,15 +1,10 @@
-# Configuration file for the Sphinx documentation builder.
-#
-# For the full list of built-in configuration values, see the documentation:
-# https://www.sphinx-doc.org/en/master/usage/configuration.html
+# Conf.py Configuration file for the Sphinx documentation builder.
 
-# -- Project information -----------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 import os
 import sys
+from datetime import datetime
 
 sys.path.insert(0, os.path.abspath("../.."))
-from datetime import datetime
 
 project = 'pySpatialETL documentation'
 copyright = f'{datetime.now().year}, SNALE'
@@ -17,8 +12,6 @@ author = 'SNALE'
 release = '0.1'
 
 # -- General configuration ---------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
-
 extensions = [
     'autoapi.extension',
     'sphinx.ext.autodoc',
@@ -30,19 +23,29 @@ extensions = [
 
 templates_path = ['_templates']
 
+exclude_patterns = []
+
+autosummary_generate = True
+
+# -- AutoAPI configuration ---------------------------------------------------
 autoapi_generate_api_docs = True
 autoapi_dirs = ["../../spatialetl"]
 autoapi_root = "api_reference"
 autoapi_keep_files = True
-autoapi_options = [
-    "members",
-    "undoc-members",
-    "private-members",
-    "show-inheritance",
-    "show-module-summary",
-    "special-members",
-]
+autoapi_add_toctree_entry = False
 
+autoapi_options = [
+    "members", # "members": inclut les membres (attributs et méthodes) des classes.
+    "undoc-members", # "undoc-members": inclut les membres non documentés.
+    "private-members", # "private-members": inclut les membres privés (commençant par un underscore).
+    "show-inheritance", # "show-inheritance": affiche l'héritage des classes.
+    "show-module-summary", # "show-module-summary": affiche un résumé du module.
+    "special-members", # "special-members": inclut les méthodes spéciales (par exemple, __init__, __str__).
+]
+# autoapi_ignore = exclude_patterns
+autoapi_exclude = ["api_reference/index.rst"]
+
+# -- Napoleon configuration --------------------------------------------------
 napoleon_google_docstring = True
 napoleon_numpy_docstring = True
 napoleon_include_init_with_doc = False
@@ -56,25 +59,5 @@ napoleon_use_param = True
 napoleon_use_rtype = True
 
 # -- Options for HTML output -------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
-
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
-
-# Exclusion de la classe spécifique de l'API générée
-autodoc_exclude_members = ["SYMPHONIEBathymakerWriter"]
-
-exclude_patterns = [
-    "**/SYMPHONIEBathymakerWriter.*",  # Exclure tous les fichiers liés à cette classe
-    "**/spatialetl/SYMPHONIEBathymakerWriter.*",
-    "**/spatialetl/point/io/netcdf/symphonie/**",  # Exclure tout un répertoire si nécessaire
-]
-
-def skip_symphonie_bathymaker_writer(app, what, name, obj, skip, options):
-    # Exclure la classe SYMPHONIEBathymakerWriter
-    if name == "SYMPHONIEBathymakerWriter":
-        return True
-    return None
-
-def setup(app):
-    app.connect("autoapi-skip-member", skip_symphonie_bathymaker_writer)
