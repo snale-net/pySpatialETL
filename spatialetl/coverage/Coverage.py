@@ -523,11 +523,11 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
     @param target_lat: Coordonnée latitude du point
     @param method : Méthode de calcul. "Classic" = On parcourt toute la grille à la recherche du plus prêt.
     @return: un tableau contenant
-     [0] : l'index x du point le plus proche
-     [1] : l'index y du point le plus proche
-     [2] : la coordonnée en longitude du point le plus proche
-     [3] : la coordonnée en latitude point le plus proche
-     [4] : la distance du point le plus proche en kilomètre."""
+    [0] : l'index x du point le plus proche
+    [1] : l'index y du point le plus proche
+    [2] : la coordonnée en longitude du point le plus proche
+    [3] : la coordonnée en latitude point le plus proche
+    [4] : la distance du point le plus proche en kilomètre."""
         lon = self.read_axis_x(type="source",with_overlap=False)
         lat = self.read_axis_y(type="source",with_overlap=False)
 
@@ -721,8 +721,8 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
     def read_variable_2D_sea_binary_mask(self,type="target",with_overlap=False):
         """Retourne le masque terre/mer sur toute la couverture
     @return: un tableau en deux dimensions [y,x].
-            0 = Terre
-            1 = Mer
+    0 = Terre
+    1 = Mer
     """
         data = self.reader.read_variable_2D_sea_binary_mask(
             self.map_mpi[self.rank]["src_global_x_overlap"].start,
