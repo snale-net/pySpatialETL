@@ -1,0 +1,143 @@
+
+.wy-side-nav-search {
+}
+/* =========================
+   Bandeau supérieur
+   ========================= */
+.pyst-banner {
+    background: linear-gradient(90deg, #1976D2 0%, #00B4D8 100%);
+    color: #fff;
+    padding: 1.5em 2em;
+    margin-bottom: 2em;
+    border-radius: 0 0 10px 10px;
+    font-size: 1.4em;
+    font-weight: 700;
+    letter-spacing: 1px;
+    box-shadow: 0 2px 8px rgba(19,156,90,0.15);
+    text-align: center;
+}
+/* =========================
+    Centrer les titres
+   ========================= */
+.wy-nav-content h1 {
+    text-align: center;
+}
+
+/* =========================
+   Boutons (sphinx-design)
+   ========================= */
+/* Boutons sphinx-design avec dégradés de bleu */
+.sd-btn-primary {
+    background: linear-gradient(90deg, #1976D2 0%, #00B4D8 100%) !important;
+    border: 1px solid #1976D2 !important;
+    color: #fff !important;
+    white-space: nowrap; /* Empêche le retour à la ligne */
+    padding: 0.8em 2em !important;
+    font-weight: 600;
+    font-size: 1.15em;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(25, 118, 210, 0.3);
+    transition: background 0.3s ease;
+}
+
+.sd-btn-primary:hover {
+    background: linear-gradient(90deg, #005ea2 0%, #009ecf 100%) !important;
+    border-color: #005ea2 !important;
+    box-shadow: 0 6px 12px rgba(0, 94, 162, 0.5);
+}
+
+/* Pour les autres boutons, même style mais nuances différentes */
+.sd-btn-secondary {
+    background: linear-gradient(90deg, #005ea2 0%, #009ecf 100%) !important;
+    border: 1px solid #005ea2 !important;
+    color: #fff !important;
+    white-space: nowrap;
+    padding: 0.8em 2em !important;
+    font-weight: 600;
+    font-size: 1.15em;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 94, 162, 0.3);
+    transition: background 0.3s ease;
+}
+
+.sd-btn-secondary:hover {
+    background: linear-gradient(90deg, #1976D2 0%, #00B4D8 100%) !important;
+    border-color: #1976D2 !important;
+    box-shadow: 0 6px 12px rgba(25, 118, 210, 0.5);
+}
+
+/* Pour le warning, un dégradé plus doux */
+.sd-btn-warning {
+    background: linear-gradient(90deg, #7ea6c1 0%, #a9c9e2 100%) !important;
+    border: 1px solid #7ea6c1 !important;
+    color: #212529 !important;
+    white-space: nowrap;
+    padding: 0.8em 2em !important;
+    font-weight: 600;
+    font-size: 1.15em;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(126, 166, 193, 0.3);
+    transition: background 0.3s ease;
+}
+
+.sd-btn-warning:hover {
+    background: linear-gradient(90deg, #5f85a0 0%, #7ea6c1 100%) !important;
+    border-color: #5f85a0 !important;
+    box-shadow: 0 6px 12px rgba(95, 133, 160, 0.5);
+}
+
+/* =========================
+   Liens principaux
+   ========================= */
+a {
+    color: #139C5A;
+}
+a:hover {
+    color: #E70488;
+    text-decoration: underline;
+}
+
+/* =========================
+   Typographie
+   ========================= */
+body, .wy-nav-content {
+    font-family: 'Lato', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 1.04em;
+    background: #fcfcfc;
+}
+/* Grille 2 colonnes pour les boutons */
+.button-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2em;
+    margin: 2em 0;
+    justify-items: center;
+}
+
+/* Boutons identiques, grands, texte centré verticalement/horizontalement */
+.button-grid .sd-btn {
+    width: 260px;         /* Largeur fixe */
+    height: 100px;        /* Hauteur fixe */
+    display: flex;
+    align-items: center;  /* Centrage vertical */
+    justify-content: center; /* Centrage horizontal */
+    font-size: 1.25em;
+    font-weight: 600;
+    border-radius: 10px;
+    margin: 0;
+    box-shadow: 0 2px 8px rgba(25,118,210,0.08);
+    text-align: center;
+    word-break: break-word;
+    white-space: pre-line;
+}
+
+/* Responsive : 1 colonne sur petit écran */
+@media (max-width: 700px) {
+    .button-grid {
+        grid-template-columns: 1fr;
+    }
+    .button-grid .sd-btn {
+        width: 90vw;
+        min-width: 160px;
+    }
+}
