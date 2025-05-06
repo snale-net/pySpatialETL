@@ -33,7 +33,7 @@ from spatialetl.utils.logger import logging
 
 class Coverage(object):
     """
-La classe Coverage représente une couverture spatiale sur l'horizontale. Les point qui représentent cette couverture
+La classe Coverage représente une couverture spatiale sur l'horizontale. Les points qui représentent cette couverture
 peuvent être alignés sur une maille régulière (x,y) ou sur une maille non-régulière ((x1,y1),(x2,y2)). En fonction du
 type de maille, les fonctions de lecture des axes retourneront des tableaux à une ou deux dimensions. Pour éviter
 un chargement en mémoire de la totalité du fichier, la coverage contient un pointeur vers un lecteur. Les couches
@@ -159,6 +159,16 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
         self.read_metadata()
 
     def check_bbox_validity(self,candidate):
+        """
+
+        Parameters
+        ----------
+        candidate
+
+        Returns
+        -------
+
+        """
         Ymin = candidate[2]
         Ymax = candidate[3]
         Xmin = candidate[0]
@@ -181,7 +191,20 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
         return True
 
     def check_point_is_inside(self, target_lon, target_lat, lon, lat,tolerance=5):
+        """
 
+        Parameters
+        ----------
+        target_lon
+        target_lat
+        lon
+        lat
+        tolerance
+
+        Returns
+        -------
+
+        """
         if np.round(target_lat,decimals=tolerance) < np.min(np.round(lat,decimals=tolerance)):
             return False
         if np.round(target_lat,decimals=tolerance) > np.max(np.round(lat,decimals=tolerance)):
@@ -194,6 +217,12 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
         return True
 
     def create_mpi_map(self):
+        """
+        Returns
+        -------
+        None
+
+        """
         self.map_mpi = np.empty(self.size, dtype=object)
         target_sample = (self.target_global_y_size, self.target_global_x_size)
 
@@ -266,7 +295,11 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
             slice_index = slice_index + 1
 
     def update_mpi_map(self):
-
+        """
+        Returns
+        -------
+        None
+        """
         if self.is_regular_grid(type="source"):
 
             idx = np.where((self.source_global_axis_x >= np.min(self.read_axis_x(type="target", with_overlap=False))) &
@@ -355,6 +388,17 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
             m = self.reader.read_metadata()
 
     def get_x_size(self,type="target",with_overlap=False):
+        """
+
+        Parameters
+        ----------
+        type
+        with_overlap
+
+        Returns
+        -------
+
+        """
         if type == "target_global":
             return self.target_global_x_size
         elif type == "source_global":
@@ -369,6 +413,17 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
             return self.map_mpi[self.rank]["dst_local_x_size"]
 
     def get_y_size(self,type="target",with_overlap=False):
+        """
+
+        Parameters
+        ----------
+        type
+        with_overlap
+
+        Returns
+        -------
+
+        """
         if type == "target_global":
             return self.target_global_y_size
         elif type == "source_global":
@@ -507,7 +562,7 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
                 nearest_y_index,nearest_x_index = np.where(dist == np.min(dist))
 
                 if len(nearest_y_index) == 0 or len(nearest_x_index) == 0:
-                    logging.error("no neaarest point found")
+                    logging.error("no nearest point found")
                     raise RuntimeError("No nearest point found")
 
                 nearest_x_index = nearest_x_index[0]
