@@ -38,19 +38,15 @@ The PySpatialETL documentation is organized into four main sections:
       API Reference
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Documentation
 
    User_guide <docs/user_guide>
    Advanced guide <docs/advanced_guide>
    Examples <docs/example>
    API Reference <docs/reference>
-   Changelog <docs/changelog>
+    Providers <docs/reference/providers>
 
-..
-    .. toctree::
-
-        api/pandas.api.extensions.ExtensionDtype.na_value
 
 Index
 -----
