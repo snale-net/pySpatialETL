@@ -13,10 +13,10 @@ release = '0.1'
 
 # -- General configuration ---------------------------------------------------
 extensions = [
-    'autoapi.extension',
-    'sphinx.ext.autodoc',
-    'sphinx.ext.napoleon',
-    'sphinx.ext.viewcode',
+    'autoapi.extension', # Génère automatiquement une API doc depuis le code source
+    'sphinx.ext.autodoc',  # Génération automatique de la doc depuis les docstrings
+    'sphinx.ext.napoleon',  # Support des formats Google et NumPy dans les docstrings
+    'sphinx.ext.viewcode', # Ajoute des liens vers le code source
     'sphinx_rtd_theme',
     'sphinx.ext.autosummary',
     'sphinx_design',
@@ -26,14 +26,14 @@ templates_path = ['_templates']
 
 exclude_patterns = []
 
-autosummary_generate = True
+autosummary_generate = False
 
 # -- AutoAPI configuration ---------------------------------------------------
 autoapi_generate_api_docs = True
 autoapi_dirs = ["../../spatialetl"]
 autoapi_root = "api_reference"
-autoapi_keep_files = True
-autoapi_add_toctree_entry = False
+autoapi_keep_files = True            # Conserve les fichiers .rst générés
+autoapi_add_toctree_entry = False    # Ne pas injecter automatiquement dans la toctree (on le gère à la main)
 
 autoapi_options = [
     "members", # "members": inclut les membres (attributs et méthodes) des classes.
@@ -43,8 +43,10 @@ autoapi_options = [
     "show-module-summary", # "show-module-summary": affiche un résumé du module.
     "special-members", # "special-members": inclut les méthodes spéciales (par exemple, __init__, __str__).
 ]
-# autoapi_ignore = exclude_patterns
-autoapi_exclude = ["api_reference/index.rst"]
+
+autoapi_ignore = [
+    "**/Coverage.py",
+]
 
 # -- Napoleon configuration --------------------------------------------------
 napoleon_google_docstring = True
@@ -60,8 +62,8 @@ napoleon_use_param = True
 napoleon_use_rtype = True
 
 # -- Options for HTML output -------------------------------------------------
-html_theme = 'sphinx_rtd_theme'
-html_static_path = ['_static']
+html_theme = 'sphinx_rtd_theme' # Thème ReadTheDocs
+html_static_path = ['_static'] # Dossier pour les CSS/images statiques
 html_css_files = [
     'custom.css',
 ]
