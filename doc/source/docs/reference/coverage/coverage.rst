@@ -1,7 +1,7 @@
 spatialetl.coverage
 ===================
 
-.. py:module:: spatialetl.coverage
+.. py:module:: spatialetl.coverage.coverage
 
 .. autoapi-nested-parse::
 
@@ -27,7 +27,8 @@ Submodules
 .. toctree::
    :maxdepth: 1
 
-   ClassCoverage/ClassCoverage
+   /docs/reference/coverage/coverage/coverage
+   /api_reference/spatialetl/coverage/Coverage/index
    /api_reference/spatialetl/coverage/LevelCoverage/index
    /api_reference/spatialetl/coverage/TimeCoverage/index
    /api_reference/spatialetl/coverage/TimeLevelCoverage/index

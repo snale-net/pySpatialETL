@@ -5,6 +5,7 @@ import sys
 from datetime import datetime
 
 sys.path.insert(0, os.path.abspath("../.."))
+import spatialetl
 
 project = 'pySpatialETL documentation'
 copyright = f'{datetime.now().year}, SNALE'
@@ -45,7 +46,7 @@ autoapi_options = [
 ]
 
 autoapi_ignore = [
-    "**/Coverage.py",
+    # "**/Coverage.py",
 ]
 
 # -- Napoleon configuration --------------------------------------------------

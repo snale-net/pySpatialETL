@@ -54,10 +54,10 @@ Bienvenue dans la documentation de pySpatialETL
 ===============================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Sommaire général
 
-   docs/reference/coverage
+   docs/reference/coverage/coverage/coverage
    api_reference/spatialetl/index
 
 Index

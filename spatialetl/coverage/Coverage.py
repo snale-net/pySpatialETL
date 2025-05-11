@@ -33,17 +33,27 @@ from spatialetl.utils.logger import logging
 
 class Coverage(object):
     """
-La classe Coverage représente une couverture spatiale sur l'horizontale. Les point qui représentent cette couverture
-peuvent être alignés sur une maille régulière (x,y) ou sur une maille non-régulière ((x1,y1),(x2,y2)). En fonction du
-type de maille, les fonctions de lecture des axes retourneront des tableaux à une ou deux dimensions. Pour éviter
-un chargement en mémoire de la totalité du fichier, la coverage contient un pointeur vers un lecteur. Les couches
-sont donc lues à la demande dans le fichier.
+    The Coverage class represents a spatial coverage on the horizontal plane.
 
-Attention, les axes sont toujours inversés dans les tableaux à cause de NetCDF.
-Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
+    The points representing this coverage can be aligned on a regular grid (x,y) or on an irregular grid ((x1,y1),(x2,y2)).
+    Depending on the grid type, the axis reading functions will return one or two-dimensional arrays.
+    To avoid loading the entire file into memory, the coverage contains a pointer to a reader.
+    Layers are therefore read on demand from the file.
 
-@param  myReader: lecteur de fichier
-"""
+    Note: The axes are always reversed in the arrays because of NetCDF.
+    So the y-axis first, then the x-axis. Example: [y,x]
+
+    Parameters
+    ----------
+    myReader : object
+        File reader.
+    bbox : list, optional
+        Bounding box coordinates [xmin, xmax, ymin, ymax].
+    resolution_x : float, optional
+        Resolution in the x direction.
+    resolution_y : float, optional
+        Resolution in the y direction.
+    """
 
     HORIZONTAL_INTERPOLATION_METHOD = "linear"
     HORIZONTAL_OVERLAPING_SIZE = 2
@@ -66,7 +76,7 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
         self.source_global_axis_y = self.reader.read_axis_y(0, self.source_global_x_size, 0,
                                                             self.source_global_y_size)
 
-        # On réduit en fonction de la bbox
+        # We adjust the computation based on the bbox
         if bbox is None:
             # we compute the destination grid
             Ymin = np.min(self.source_global_axis_y)
@@ -120,7 +130,7 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
             self.target_global_axis_y = self.source_global_axis_y[ymin:ymax, xmin:xmax]
             self.target_global_y_size = ymax - ymin
 
-        # On calcule la grille de destination
+        # Compute the destination grid
         self.target_global_res_x = None
         self.target_global_res_y = None
 
@@ -159,6 +169,19 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
         self.read_metadata()
 
     def check_bbox_validity(self,candidate):
+        """
+        Check the validity of the bounding box.
+
+        Parameters
+        ----------
+        candidate : list
+            Bounding box coordinates [xmin, xmax, ymin, ymax].
+
+        Returns
+        -------
+        bool
+            True if the bounding box is valid, False otherwise.
+        """
         Ymin = candidate[2]
         Ymax = candidate[3]
         Xmin = candidate[0]
@@ -181,6 +204,27 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
         return True
 
     def check_point_is_inside(self, target_lon, target_lat, lon, lat,tolerance=5):
+        """
+        Check if a point is inside the coverage.
+
+        Parameters
+        ----------
+        target_lon : float
+            Longitude of the target point.
+        target_lat : float
+            Latitude of the target point.
+        lon : array
+            Longitude array.
+        lat : array
+            Latitude array.
+        tolerance : int, optional
+            Tolerance for rounding.
+
+        Returns
+        -------
+        bool
+            True if the point is inside the coverage, False otherwise.
+        """
 
         if np.round(target_lat,decimals=tolerance) < np.min(np.round(lat,decimals=tolerance)):
             return False
@@ -194,10 +238,13 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
         return True
 
     def create_mpi_map(self):
+        """
+        Create the MPI map for parallel processing.
+        """
         self.map_mpi = np.empty(self.size, dtype=object)
         target_sample = (self.target_global_y_size, self.target_global_x_size)
 
-        # Découpage des axes
+        # Split the axes
         target_slices = shape_split(target_sample, self.size, axis=[0, 0])
 
         slice_index = 0
@@ -205,7 +252,7 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
             slice = tuple(slyce)
 
             map = {}
-            # Grille source
+            # Source grid
             map["dst_global_x"] = slice[1]
             map["dst_global_y"] = slice[0]
 
@@ -266,7 +313,9 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
             slice_index = slice_index + 1
 
     def update_mpi_map(self):
-
+        """
+        Update the MPI map for parallel processing.
+        """
         if self.is_regular_grid(type="source"):
 
             idx = np.where((self.source_global_axis_x >= np.min(self.read_axis_x(type="target", with_overlap=False))) &
@@ -345,16 +394,27 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
     # Read metadata
     def read_metadata(self):
         """
-        Lit la metadonnée du fichier si le lecteur contient une fonction read_metadata()
-        Returns
-        -------
-
+        Read the metadata from the file if the reader contains a read_metadata() function.
         """
-
         if  "read_metadata" in dir(self.reader):
             m = self.reader.read_metadata()
 
     def get_x_size(self,type="target",with_overlap=False):
+        """
+        Get the x size.
+
+        Parameters
+        ----------
+        type : str, optional
+            Type of the grid ("target", "source", "target_global", "source_global").
+        with_overlap : bool, optional
+            Whether to include overlap.
+
+        Returns
+        -------
+        int
+            The x size.
+        """
         if type == "target_global":
             return self.target_global_x_size
         elif type == "source_global":
@@ -369,6 +429,21 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
             return self.map_mpi[self.rank]["dst_local_x_size"]
 
     def get_y_size(self,type="target",with_overlap=False):
+        """
+        Get the y size.
+
+        Parameters
+        ----------
+        type : str, optional
+            Type of the grid ("target", "source", "target_global", "source_global").
+        with_overlap : bool, optional
+            Whether to include overlap.
+
+        Returns
+        -------
+        int
+            The y size.
+        """
         if type == "target_global":
             return self.target_global_y_size
         elif type == "source_global":
@@ -383,8 +458,19 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
             return self.map_mpi[self.rank]["dst_local_y_size"]
 
     def is_regular_grid(self,type="target"):
-        """Retourne vrai si la maille est régulière, sinon faux.
-    @return:  vrai si la maille est régulière sinon faux."""
+        """
+        Check if the grid is regular.
+
+        Parameters
+        ----------
+        type : str, optional
+            Type of the grid ("target", "source").
+
+        Returns
+        -------
+        bool
+            True if the grid is regular, False otherwise.
+        """
 
         if type == "target":
             return self.target_regular_grid
@@ -393,8 +479,21 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
 
     # Axis        
     def read_axis_x(self,type="target",with_overlap=False):
-        """Retourne les valeurs (souvent la longitude) de l'axe x.
-    @return:  un tableau à une ou deux dimensions selon le type de maille des valeurs de l'axe x (souvent la longitude) : [x] ou [y,x]."""
+        """
+        Return the values (often longitude) of the x axis.
+
+        Parameters
+        ----------
+        type : str, optional
+            Type of the grid ("target", "source", "target_global", "source_global").
+        with_overlap : bool, optional
+            Whether to include overlap.
+
+        Returns
+        -------
+        array
+            A one- or two-dimensional array of x axis values (often longitude): [x] or [y, x], depending on the grid type.
+        """
 
         if type == "target_global":
             return self.target_global_axis_x
@@ -428,9 +527,21 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
                 return self.target_global_axis_x[self.map_mpi[self.rank]["dst_global_y"],self.map_mpi[self.rank]["dst_global_x"]]
         
     def read_axis_y(self,type="target",with_overlap=False):
-        """Retourne les valeurs (souvent la latitude) de l'axe y.
-    @return:  un tableau à une ou deux dimensions selon le type de maille des valeurs de l'axe y (souvent la latitude) : [x] ou [y,x]."""
+        """
+        Return the values (often latitude) of the y axis.
 
+        Parameters
+        ----------
+        type : str, optional
+            Type of the grid ("target", "source", "target_global", "source_global").
+        with_overlap : bool, optional
+            Whether to include overlap.
+
+        Returns
+        -------
+        array
+            A one- or two-dimensional array of y axis values (often latitude): [x] or [y, x], depending on the grid type.
+        """
         if type=="target_global":
             return self.target_global_axis_y
 
@@ -463,16 +574,34 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
                 return self.target_global_axis_y[self.map_mpi[self.rank]["dst_global_y"],self.map_mpi[self.rank]["dst_global_x"]]
         
     def find_point_index(self,target_lon, target_lat, decimal_tolerance=5, method="classic", only_mask_value=True,type="source"):
-        """Retourne le point le plus proche du point donné en paramètre.
-    @param target_lon: Coordonnée longitude du point
-    @param target_lat: Coordonnée latitude du point
-    @param method : Méthode de calcul. "Classic" = On parcourt toute la grille à la recherche du plus prêt.
-    @return: un tableau contenant
-     [0] : l'index x du point le plus proche
-     [1] : l'index y du point le plus proche
-     [2] : la coordonnée en longitude du point le plus proche
-     [3] : la coordonnée en latitude point le plus proche
-     [4] : la distance du point le plus proche en kilomètre."""
+        """
+                Find the index of the closest point to the given point.
+
+                Parameters
+                ----------
+                target_lon : float
+                    Longitude of the target point.
+                target_lat : float
+                    Latitude of the target point.
+                decimal_tolerance : int, optional
+                    Tolerance for rounding coordinates.
+                method : str, optional
+                    Method for calculation ("classic", "quick").
+                only_mask_value : bool, optional
+                    Whether to consider only mask values.
+                type : str, optional
+                    Type of the grid ("source", "source_global").
+
+                Returns
+                -------
+                list
+                    A list containing:
+                    [0] : the x index of the closest point
+                    [1] : the y index of the closest point
+                    [2] : the longitude of the closest point
+                    [3] : the latitude of the closest point
+                    [4] : the distance of the closest point in kilometers.
+                """
         lon = self.read_axis_x(type="source",with_overlap=False)
         lat = self.read_axis_y(type="source",with_overlap=False)
 
@@ -569,8 +698,14 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
     # 2D
     #################
     def read_variable_bathymetry(self):     
-        """Retourne la bathymétrie sur toute la couverture
-    @return: un tableau en deux dimensions [y,x]."""
+        """
+        Read the bathymetry over the entire coverage.
+
+        Returns
+        -------
+        array
+            A two-dimensional array [y, x].
+        """
         data = self.reader.read_variable_bathymetry(
             self.map_mpi[self.rank]["src_global_x_overlap"].start,
             self.map_mpi[self.rank]["src_global_x_overlap"].stop,
@@ -588,8 +723,14 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
         return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
     def read_variable_topography(self):
-        """Retourne la topographie sur toute la couverture
-    @return: un tableau en deux dimensions [y,x]."""
+        """
+        Read the topography over the entire coverage.
+
+        Returns
+        -------
+        array
+            A two-dimensional array [y, x].
+        """
         data = self.reader.read_variable_topography(
             self.map_mpi[self.rank]["src_global_x_overlap"].start,
             self.map_mpi[self.rank]["src_global_x_overlap"].stop,
@@ -607,8 +748,14 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
         return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
     
     def read_variable_mesh_size(self):     
-        """Retourne la taille de la grille sur toute la couverture
-    @return: un tableau en deux dimensions [y,x]."""
+        """
+        Read the mesh size over the entire coverage.
+
+        Returns
+        -------
+        array
+            A two-dimensional array [y, x].
+        """
         data = self.reader.read_variable_mesh_size(
             self.map_mpi[self.rank]["src_global_x_overlap"].start,
             self.map_mpi[self.rank]["src_global_x_overlap"].stop,
@@ -626,8 +773,14 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
         return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
     def read_variable_x_mesh_size(self):
-        """Retourne la taille de la grille sur l'axe X
-    @return: un tableau en deux dimensions [y,x]."""
+        """
+        Read the mesh size on the x axis.
+
+        Returns
+        -------
+        array
+            A two-dimensional array [y, x].
+        """
         data = self.reader.read_variable_x_mesh_size(
             self.map_mpi[self.rank]["src_global_x_overlap"].start,
             self.map_mpi[self.rank]["src_global_x_overlap"].stop,
@@ -645,8 +798,14 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
         return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
     def read_variable_y_mesh_size(self):
-        """Retourne la taille de la grille sur l'axe Y
-    @return: un tableau en deux dimensions [y,x]."""
+        """
+        Read the mesh size on the y axis.
+
+        Returns
+        -------
+        array
+            A two-dimensional array [y, x].
+        """
         data = self.reader.read_variable_y_mesh_size(
             self.map_mpi[self.rank]["src_global_x_overlap"].start,
             self.map_mpi[self.rank]["src_global_x_overlap"].stop,
@@ -664,11 +823,23 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
         return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
     
     def read_variable_2D_sea_binary_mask(self,type="target",with_overlap=False):
-        """Retourne le masque terre/mer sur toute la couverture
-    @return: un tableau en deux dimensions [y,x].
-            0 = Terre
-            1 = Mer
-    """
+        """
+        Read the land/sea mask over the entire coverage.
+
+        Parameters
+        ----------
+        type : str, optional
+            Type of the grid ("target", "source").
+        with_overlap : bool, optional
+            Whether to include overlap.
+
+        Returns
+        -------
+        array
+            A two-dimensional array [y, x].
+            0 = Land
+            1 = Sea
+        """
         data = self.reader.read_variable_2D_sea_binary_mask(
             self.map_mpi[self.rank]["src_global_x_overlap"].start,
             self.map_mpi[self.rank]["src_global_x_overlap"].stop,
@@ -693,8 +864,14 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
             return data[self.map_mpi[self.rank]["dst_local_y"],self.map_mpi[self.rank]["dst_local_x"]]
 
     def read_variable_Ha(self):
-        """Retourne l'amplitude de la réanalyse
-    @return: un tableau en deux dimensions [y,x]."""
+        """
+        Read the amplitude of the reanalysis.
+
+        Returns
+        -------
+        array
+            A two-dimensional array [y, x].
+        """
         data = self.reader.read_variable_Ha(
             self.map_mpi[self.rank]["src_global_x_overlap"].start,
             self.map_mpi[self.rank]["src_global_x_overlap"].stop,
@@ -710,7 +887,3 @@ Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
                                        Coverage.HORIZONTAL_INTERPOLATION_METHOD)
 
         return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-
-
-
-
