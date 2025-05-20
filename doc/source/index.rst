@@ -49,7 +49,6 @@ Documentation de référence
    docs/example
    docs/reference/providers
    docs/reference
-   docs/reference/coverage
 
 Index
 -----
