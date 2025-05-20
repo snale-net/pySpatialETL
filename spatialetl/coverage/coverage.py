@@ -43,6 +43,13 @@ class Coverage(object):
     Note: The axes are always reversed in the arrays because of NetCDF.
     So the y-axis first, then the x-axis. Example: [y,x]
 
+    Attributes
+    ----------
+    HORIZONTAL_INTERPOLATION_METHOD : str
+        Interpolation method used for horizontal resampling. Default is 'linear'.
+    HORIZONTAL_OVERLAPING_SIZE : int
+        Overlap size for parallel computations. Default is 2.
+
     Parameters
     ----------
     myReader : object
@@ -68,6 +75,7 @@ class Coverage(object):
         
         Parameters
         ----------
+        
         myReader : object
             File reader instance.
         bbox : list, optional
@@ -253,7 +261,7 @@ class Coverage(object):
         Examples
         --------
         >>> coverage.check_point_is_inside(5.0, 45.0, lon_array, lat_array)
-    True
+        True
         """
 
         if np.round(target_lat,decimals=tolerance) < np.min(np.round(lat,decimals=tolerance)):

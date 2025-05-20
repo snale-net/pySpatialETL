@@ -30,7 +30,7 @@ import numpy as np
 import pandas
 from array_split import shape_split
 
-from spatialetl.coverage.Coverage import Coverage
+from spatialetl.coverage.coverage import Coverage
 from spatialetl.exception.NotFoundInRankError import NotFoundInRankError
 from spatialetl.operator.interpolator.InterpolatorCore import resample_2d_to_grid
 from spatialetl.utils.logger import logging
