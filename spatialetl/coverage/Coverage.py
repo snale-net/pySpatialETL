@@ -53,6 +53,10 @@ class Coverage(object):
         Resolution in the x direction.
     resolution_y : float, optional
         Resolution in the y direction.
+
+    Examples
+    --------
+    >>> coverage = Coverage(myReader, bbox=[-5, 5, -5, 5], resolution_x=0.1, resolution_y=0.1)
     """
 
     HORIZONTAL_INTERPOLATION_METHOD = "linear"
@@ -60,6 +64,23 @@ class Coverage(object):
 
     def __init__(self, myReader,bbox=None,resolution_x=None,resolution_y=None):
         self.reader = myReader;
+        """Initialize the Coverage object with a file reader and optional bounding box and resolution.
+        
+        Parameters
+        ----------
+        myReader : object
+            File reader instance.
+        bbox : list, optional
+            Bounding box coordinates [xmin, xmax, ymin, ymax].
+        resolution_x : float, optional
+            Resolution along the x-axis.
+        resolution_y : float, optional
+            Resolution along the y-axis.
+
+        Examples
+        --------
+        >>> coverage = Coverage(myReader, bbox=[0, 10, 0, 10], resolution_x=1.0, resolution_y=1.0)
+        """
         # Parallel
         self.map_mpi = None
         self.size = 1
@@ -85,7 +106,7 @@ class Coverage(object):
             Xmax = np.max(self.source_global_axis_x)
         else:
             if self.check_bbox_validity(bbox) is False:
-                raise ValueError("Your Bbox is not valid or is out side the coverage")
+                raise ValueError("Your Bbox is not valid or is outside the coverage")
             Ymin = bbox[2]
             Ymax = bbox[3]
             Xmin = bbox[0]
@@ -181,6 +202,10 @@ class Coverage(object):
         -------
         bool
             True if the bounding box is valid, False otherwise.
+
+        Examples
+        --------
+        >>> coverage = Coverage(myReader, bbox=[0, 10, 0, 10], resolution_x=1.0, resolution_y=1.0)
         """
         Ymin = candidate[2]
         Ymax = candidate[3]
@@ -224,6 +249,11 @@ class Coverage(object):
         -------
         bool
             True if the point is inside the coverage, False otherwise.
+
+        Examples
+        --------
+        >>> coverage.check_point_is_inside(5.0, 45.0, lon_array, lat_array)
+    True
         """
 
         if np.round(target_lat,decimals=tolerance) < np.min(np.round(lat,decimals=tolerance)):
@@ -240,6 +270,11 @@ class Coverage(object):
     def create_mpi_map(self):
         """
         Create the MPI map for parallel processing.
+        The MPI map is a dictionary that contains the mapping of the source and destination grids for each MPI rank.
+
+        Examples
+        --------
+        >>> coverage.create_mpi_map()
         """
         self.map_mpi = np.empty(self.size, dtype=object)
         target_sample = (self.target_global_y_size, self.target_global_x_size)
@@ -315,6 +350,11 @@ class Coverage(object):
     def update_mpi_map(self):
         """
         Update the MPI map for parallel processing.
+            This method recalculates the source and overlap slices for each process based on the current grid.
+
+        Examples
+        --------
+        >>> coverage.update_mpi_map()
         """
         if self.is_regular_grid(type="source"):
 
@@ -395,6 +435,9 @@ class Coverage(object):
     def read_metadata(self):
         """
         Read the metadata from the file if the reader contains a read_metadata() function.
+        Examples
+        --------
+        >>> coverage.read_metadata()
         """
         if  "read_metadata" in dir(self.reader):
             m = self.reader.read_metadata()
@@ -414,6 +457,12 @@ class Coverage(object):
         -------
         int
             The x size.
+        Examples
+        --------
+        >>> coverage.get_x_size()
+        120
+        >>> coverage.get_x_size(type="source", with_overlap=True)
+        124
         """
         if type == "target_global":
             return self.target_global_x_size
@@ -443,6 +492,13 @@ class Coverage(object):
         -------
         int
             The y size.
+
+        Examples
+        --------
+        >>> coverage.get_y_size()
+        80
+        >>> coverage.get_y_size(type="source", with_overlap=True)
+        84
         """
         if type == "target_global":
             return self.target_global_y_size
@@ -470,8 +526,13 @@ class Coverage(object):
         -------
         bool
             True if the grid is regular, False otherwise.
+        Examples
+        --------
+        >>> coverage.is_regular_grid()
+        True
+        >>> coverage.is_regular_grid(type="source")
+        False
         """
-
         if type == "target":
             return self.target_regular_grid
         else:
@@ -493,6 +554,11 @@ class Coverage(object):
         -------
         array
             A one- or two-dimensional array of x axis values (often longitude): [x] or [y, x], depending on the grid type.
+
+        Examples
+        --------
+        >>> x_axis = coverage.read_axis_x()
+        >>> x_axis = coverage.read_axis_x(type="source", with_overlap=True)
         """
 
         if type == "target_global":
@@ -541,6 +607,11 @@ class Coverage(object):
         -------
         array
             A one- or two-dimensional array of y axis values (often latitude): [x] or [y, x], depending on the grid type.
+
+        Examples
+        --------
+        >>> y_axis = coverage.read_axis_y()
+        >>> y_axis = coverage.read_axis_y(type="source", with_overlap=True)
         """
         if type=="target_global":
             return self.target_global_axis_y
@@ -601,6 +672,11 @@ class Coverage(object):
                     [2] : the longitude of the closest point
                     [3] : the latitude of the closest point
                     [4] : the distance of the closest point in kilometers.
+
+                Examples
+                --------
+                >>> idx = coverage.find_point_index(5.0, 45.0)
+                >>> idx = coverage.find_point_index(5.0, 45.0, method="quick", type="source_global")
                 """
         lon = self.read_axis_x(type="source",with_overlap=False)
         lat = self.read_axis_y(type="source",with_overlap=False)
@@ -705,6 +781,10 @@ class Coverage(object):
         -------
         array
             A two-dimensional array [y, x].
+
+        Examples
+        --------
+        >>> bathymetry = coverage.read_variable_bathymetry()
         """
         data = self.reader.read_variable_bathymetry(
             self.map_mpi[self.rank]["src_global_x_overlap"].start,
@@ -730,6 +810,10 @@ class Coverage(object):
         -------
         array
             A two-dimensional array [y, x].
+
+        Examples
+        --------
+        >>> topography = coverage.read_variable_topography()
         """
         data = self.reader.read_variable_topography(
             self.map_mpi[self.rank]["src_global_x_overlap"].start,
@@ -755,6 +839,10 @@ class Coverage(object):
         -------
         array
             A two-dimensional array [y, x].
+
+        Examples
+        --------
+        >>> mesh_size = coverage.read_variable_mesh_size()
         """
         data = self.reader.read_variable_mesh_size(
             self.map_mpi[self.rank]["src_global_x_overlap"].start,
@@ -780,6 +868,10 @@ class Coverage(object):
         -------
         array
             A two-dimensional array [y, x].
+
+        Examples
+        --------
+        >>> x_mesh_size = coverage.read_variable_x_mesh_size()
         """
         data = self.reader.read_variable_x_mesh_size(
             self.map_mpi[self.rank]["src_global_x_overlap"].start,
@@ -805,6 +897,10 @@ class Coverage(object):
         -------
         array
             A two-dimensional array [y, x].
+
+        Examples
+        --------
+        >>> y_mesh_size = coverage.read_variable_y_mesh_size()
         """
         data = self.reader.read_variable_y_mesh_size(
             self.map_mpi[self.rank]["src_global_x_overlap"].start,
@@ -839,6 +935,9 @@ class Coverage(object):
             A two-dimensional array [y, x].
             0 = Land
             1 = Sea
+        Examples
+        --------
+        >>> mask = coverage.read_variable_2D_sea_binary_mask()
         """
         data = self.reader.read_variable_2D_sea_binary_mask(
             self.map_mpi[self.rank]["src_global_x_overlap"].start,
@@ -871,6 +970,10 @@ class Coverage(object):
         -------
         array
             A two-dimensional array [y, x].
+
+        Examples
+        --------
+        >>> Ha = coverage.read_variable_Ha()
         """
         data = self.reader.read_variable_Ha(
             self.map_mpi[self.rank]["src_global_x_overlap"].start,
