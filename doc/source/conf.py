@@ -1,5 +1,3 @@
-# Conf.py Configuration file for the Sphinx documentation builder.
-
 import os
 import sys
 from datetime import datetime
@@ -27,9 +25,12 @@ templates_path = ['_templates']
 
 exclude_patterns = []
 
-autosummary_generate = False
+autosummary_generate = True
 
 # -- AutoAPI configuration ---------------------------------------------------
+autoapi_ignore = [
+   "spatialetl/coverage/Coverage.py",
+]
 autoapi_generate_api_docs = True
 autoapi_dirs = ["../../spatialetl"]
 autoapi_root = "api_reference"
@@ -43,10 +44,6 @@ autoapi_options = [
     "show-inheritance", # "show-inheritance": affiche l'héritage des classes.
     "show-module-summary", # "show-module-summary": affiche un résumé du module.
     "special-members", # "special-members": inclut les méthodes spéciales (par exemple, __init__, __str__).
-]
-
-autoapi_ignore = [
-    # "**/Coverage.py",
 ]
 
 # -- Napoleon configuration --------------------------------------------------
@@ -68,3 +65,4 @@ html_static_path = ['_static'] # Dossier pour les CSS/images statiques
 html_css_files = [
     'custom.css',
 ]
+autodoc_mock_imports = [] # Liste des modules à ignorer pour éviter les erreurs d'importation

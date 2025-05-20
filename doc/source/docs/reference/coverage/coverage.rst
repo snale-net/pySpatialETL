@@ -1,39 +1,11 @@
-spatialetl.coverage
-===================
+Class Coverage
+==============
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
-.. py:module:: spatialetl.coverage.coverage
+.. py:module:: spatialetl.coverage.Coverage
 
-.. autoapi-nested-parse::
-
-   Coverage Processing
-   ================================================
-
-   Subpackages
-   -----------
-   Using any of these subpackages requires an explicit import.  For example,
-   ``import coverage.operator``.
-
-   ::
-
-    io                           --- Data input and output
-    operator                     --- Grid operator
-    util                         --- Tools utils
-
-
-
-Submodules
-----------
-
-.. toctree::
-   :maxdepth: 1
-
-   /docs/reference/coverage/coverage/coverage
-   /api_reference/spatialetl/coverage/Coverage/index
-   /api_reference/spatialetl/coverage/LevelCoverage/index
-   /api_reference/spatialetl/coverage/TimeCoverage/index
-   /api_reference/spatialetl/coverage/TimeLevelCoverage/index
-   /api_reference/spatialetl/coverage/io/index
-   /api_reference/spatialetl/coverage/tests/index
-   /api_reference/spatialetl/coverage/utils/index
-
-
+.. autoclass:: spatialetl.coverage.Coverage
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :exclude-members: __dict__, __weakref__, __module__, __doc__, __init__, __repr__, __str__

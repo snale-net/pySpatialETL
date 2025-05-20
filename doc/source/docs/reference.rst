@@ -8,7 +8,7 @@ The API reference
 .. toctree::
    :maxdepth: 1
 
-   reference/coverage/coverage
+   reference/coverage
    /api_reference/spatialetl/exception/index
    /api_reference/spatialetl/operator/index
    /api_reference/spatialetl/point/index

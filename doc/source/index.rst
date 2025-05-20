@@ -49,16 +49,7 @@ Documentation de référence
    docs/example
    docs/reference/providers
    docs/reference
-
-Bienvenue dans la documentation de pySpatialETL
-===============================================
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Sommaire général
-
-   docs/reference/coverage/coverage/coverage
-   api_reference/spatialetl/index
+   docs/reference/coverage
 
 Index
 -----
