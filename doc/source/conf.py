@@ -28,9 +28,6 @@ exclude_patterns = []
 autosummary_generate = True
 
 # -- AutoAPI configuration ---------------------------------------------------
-autoapi_ignore = [
-   "spatialetl/coverage/Coverage.py",
-]
 autoapi_generate_api_docs = True
 autoapi_dirs = ["../../spatialetl"]
 autoapi_root = "api_reference"
@@ -65,4 +62,3 @@ html_static_path = ['_static'] # Dossier pour les CSS/images statiques
 html_css_files = [
     'custom.css',
 ]
-autodoc_mock_imports = [] # Liste des modules à ignorer pour éviter les erreurs d'importation
