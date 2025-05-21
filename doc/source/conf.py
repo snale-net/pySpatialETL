@@ -1,10 +1,9 @@
-# Conf.py Configuration file for the Sphinx documentation builder.
-
 import os
 import sys
 from datetime import datetime
 
 sys.path.insert(0, os.path.abspath("../.."))
+import spatialetl
 
 project = 'pySpatialETL documentation'
 copyright = f'{datetime.now().year}, SNALE'
@@ -13,13 +12,13 @@ release = '0.1'
 
 # -- General configuration ---------------------------------------------------
 extensions = [
-    'autoapi.extension',
-    'sphinx.ext.autodoc',
-    'sphinx.ext.napoleon',
-    'sphinx.ext.viewcode',
-    'sphinx_rtd_theme',
-    'sphinx.ext.autosummary',
-    'sphinx_design',
+    'autoapi.extension',      # Automatically generate API docs from source code
+    'sphinx.ext.autodoc',     # Auto-generate documentation from docstrings
+    'sphinx.ext.napoleon',    # Support for Google and NumPy docstring formats
+    'sphinx.ext.viewcode',    # Add links to highlighted source code
+    'sphinx_rtd_theme',       # ReadTheDocs theme for HTML output
+    'sphinx.ext.autosummary', # Generate summary tables for modules/classes/functions
+    'sphinx_design',          # Enhanced design elements (buttons, grids, etc.)
 ]
 
 templates_path = ['_templates']
@@ -32,19 +31,17 @@ autosummary_generate = True
 autoapi_generate_api_docs = True
 autoapi_dirs = ["../../spatialetl"]
 autoapi_root = "api_reference"
-autoapi_keep_files = True
-autoapi_add_toctree_entry = False
+autoapi_keep_files = True            # Keep generated .rst files
+autoapi_add_toctree_entry = False    # Do not auto-inject into the toctree (manual control)
 
 autoapi_options = [
-    "members", # "members": inclut les membres (attributs et méthodes) des classes.
-    "undoc-members", # "undoc-members": inclut les membres non documentés.
-    "private-members", # "private-members": inclut les membres privés (commençant par un underscore).
-    "show-inheritance", # "show-inheritance": affiche l'héritage des classes.
-    "show-module-summary", # "show-module-summary": affiche un résumé du module.
-    "special-members", # "special-members": inclut les méthodes spéciales (par exemple, __init__, __str__).
+    "members",              # Include class members (attributes and methods)
+    "undoc-members",        # Include undocumented members
+    "private-members",      # Include private members (starting with _)
+    "show-inheritance",     # Show class inheritance
+    "show-module-summary",  # Show a summary at the top of each module
+    "special-members",      # Include special methods (e.g., __init__, __str__)
 ]
-# autoapi_ignore = exclude_patterns
-autoapi_exclude = ["api_reference/index.rst"]
 
 # -- Napoleon configuration --------------------------------------------------
 napoleon_google_docstring = True
@@ -60,8 +57,8 @@ napoleon_use_param = True
 napoleon_use_rtype = True
 
 # -- Options for HTML output -------------------------------------------------
-html_theme = 'sphinx_rtd_theme'
-html_static_path = ['_static']
+html_theme = 'sphinx_rtd_theme'            # Use the ReadTheDocs HTML theme
+html_static_path = ['_static']             # Directory for static CSS/images
 html_css_files = [
     'custom.css',
 ]

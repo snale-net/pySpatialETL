@@ -37,17 +37,18 @@ The PySpatialETL documentation is organized into four main sections:
 
       API Reference
 
+Documentation
+=============
+
 .. toctree::
    :maxdepth: 1
    :caption: Documentation
 
-    User_guide <docs/user_guide>
-    Advanced guide <docs/advanced_guide>
-    Examples <docs/example>
-    Providers <docs/reference/providers>
-    API Reference <docs/reference>
-
-
+   docs/user_guide
+   docs/advanced_guide
+   docs/example
+   docs/reference/providers
+   docs/reference
 
 Index
 -----
