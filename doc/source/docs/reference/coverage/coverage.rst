@@ -4,8 +4,8 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor i
 
 .. currentmodule:: spatialetl.coverage
 
-Attributs statiques
--------------------
+Static attributes
+-----------------
 
 .. autosummary::
    :toctree: _generated
@@ -14,8 +14,8 @@ Attributs statiques
    Coverage.HORIZONTAL_INTERPOLATION_METHOD
    Coverage.HORIZONTAL_OVERLAPING_SIZE
 
-Définition de la classe
------------------------
+Class definition
+----------------
 
 .. autoclass:: Coverage
    :noindex:
@@ -28,8 +28,8 @@ Constructeur
 .. automethod:: Coverage.__init__
    :noindex:
 
-Méthodes
---------
+Methods
+-------
 
 .. autosummary::
    :toctree: _generated
