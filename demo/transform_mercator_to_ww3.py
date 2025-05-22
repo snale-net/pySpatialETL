@@ -20,7 +20,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from spatialetl.coverage.TimeLevelCoverage import TimeLevelCoverage
+from spatialetl.coverage.time_level_coverage import TimeLevelCoverage
 from spatialetl.coverage.io.netcdf.mercator.v2020.MERCATORReader import MERCATORReader
 from spatialetl.coverage.io.netcdf.ww3.WW3Writer import WW3Writer
 import logging

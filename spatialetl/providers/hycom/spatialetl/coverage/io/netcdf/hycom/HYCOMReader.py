@@ -28,7 +28,7 @@ from datetime import datetime
 import numpy as np
 from netCDF4 import Dataset, MFDataset, num2date
 
-from spatialetl.coverage.TimeCoverage import TimeCoverage
+from spatialetl.coverage.time_coverage import TimeCoverage
 from spatialetl.coverage.io.CoverageReader import CoverageReader
 
 class HYCOMReader(CoverageReader):

@@ -28,7 +28,7 @@ import cftime
 import numpy as np
 from scipy.io import loadmat
 
-from spatialetl.coverage.TimeCoverage import TimeCoverage
+from spatialetl.coverage.time_coverage import TimeCoverage
 from spatialetl.coverage.io.CoverageReader import CoverageReader
 
 

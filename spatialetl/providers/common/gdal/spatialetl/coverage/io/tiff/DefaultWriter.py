@@ -28,8 +28,8 @@ import numpy as np
 from osgeo import gdal
 from osgeo import osr
 
-from spatialetl.coverage.TimeCoverage import TimeCoverage
-from spatialetl.coverage.TimeLevelCoverage import TimeLevelCoverage
+from spatialetl.coverage.time_coverage import TimeCoverage
+from spatialetl.coverage.time_level_coverage import TimeLevelCoverage
 from spatialetl.coverage.io.CoverageWriter import CoverageWriter
 from spatialetl.exception.CoverageError import CoverageError
 from spatialetl.utils.VariableDefinition import VariableDefinition
