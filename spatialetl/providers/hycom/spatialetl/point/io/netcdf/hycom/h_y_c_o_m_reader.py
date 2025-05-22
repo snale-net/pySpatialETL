@@ -22,7 +22,7 @@
 # SOFTWARE.
 from __future__ import division, print_function, absolute_import
 
-from spatialetl.providers.hycom.spatialetl.coverage.io.netcdf.hycom.HYCOMReader import HYCOMReader as CovReader
+from spatialetl.providers.hycom.spatialetl.coverage.io.netcdf.hycom.hycom_reader import HYCOMReader as CovReader
 from spatialetl.point.io.abstract_coverage_reader import AbstractCoverageReader
 
 
