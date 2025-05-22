@@ -24,7 +24,7 @@ from __future__ import division, print_function, absolute_import
 
 import numpy as np
 
-from spatialetl.point.io.MultiPointReader import MultiPointReader
+from spatialetl.point.io.multi_point_reader import MultiPointReader
 from spatialetl.utils.distance import distance_on_unit_sphere
 from spatialetl.utils.logger import logging
 

@@ -25,7 +25,7 @@ from __future__ import division, print_function, absolute_import
 import numpy as np
 from spatialetl.providers.ww3.spatialetl.coverage.io.netcdf.ww3.WW3Reader import WW3Reader as CovReader
 from spatialetl.point.MultiPoint import distance_on_unit_sphere
-from spatialetl.point.io.MultiPointReader import MultiPointReader
+from spatialetl.point.io.multi_point_reader import MultiPointReader
 from spatialetl.utils.logger import logging
 
 
