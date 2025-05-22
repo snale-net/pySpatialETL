@@ -20,7 +20,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from spatialetl.point.TimeMultiPoint import TimeMultiPoint
+from spatialetl.point.time_multi_point import TimeMultiPoint
 from spatialetl.point.io.netcdf.ecmwf.ECMWFReader import ECMWFReader
 from spatialetl.point.io.netcdf.DefaultWriter import DefaultWriter as NcWriter
 from spatialetl.point.io.ascii.default_time_point_writer import DefaultTimePointWriter as AsciiWriter

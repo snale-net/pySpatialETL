@@ -30,7 +30,7 @@ import pandas
 from array_split import shape_split
 
 from spatialetl.operator.interpolator.interpolator_core import time_1d_interpolation
-from spatialetl.point.MultiPoint import MultiPoint
+from spatialetl.point.multi_point import MultiPoint
 from spatialetl.utils.logger import logging
 
 
