@@ -3,7 +3,7 @@ import sys
 from datetime import datetime
 
 sys.path.insert(0, os.path.abspath("../.."))
-import spatialetl
+
 
 project = 'pySpatialETL documentation'
 copyright = f'{datetime.now().year}, SNALE'
@@ -21,6 +21,13 @@ extensions = [
     'sphinx_design',          # Enhanced design elements (buttons, grids, etc.)
 ]
 
+autodoc_mock_imports = [
+    "numpy",
+    "scipy",
+    "pandas",
+    "array_split",
+#setuptools, cython
+]
 templates_path = ['_templates']
 
 exclude_patterns = []
