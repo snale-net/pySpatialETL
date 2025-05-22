@@ -29,7 +29,7 @@ import numpy as np
 import pandas
 
 from spatialetl.point.TimeMultiPoint import TimeMultiPoint
-from spatialetl.point.io.MultiPointReader import MultiPointReader
+from spatialetl.point.io.multi_point_reader import MultiPointReader
 from spatialetl.utils.logger import logging
 
 

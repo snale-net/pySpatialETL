@@ -25,7 +25,7 @@ from __future__ import division, print_function, absolute_import
 import pandas
 
 from spatialetl.point.MultiPoint import MultiPoint
-from spatialetl.point.io.MultiPointWriter import MultiPointWriter
+from spatialetl.point.io.multi_point_writer import MultiPointWriter
 from spatialetl.utils.VariableDefinition import VariableDefinition
 from spatialetl.utils.logger import logging
 

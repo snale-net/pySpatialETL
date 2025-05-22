@@ -25,7 +25,7 @@ from __future__ import division, print_function, absolute_import
 import numpy as np
 from osgeo import ogr
 
-from spatialetl.point.io.MultiPointReader import MultiPointReader
+from spatialetl.point.io.multi_point_reader import MultiPointReader
 
 
 class XYCoordinatesReader(MultiPointReader):

@@ -29,7 +29,7 @@ import numpy as np
 import pandas
 
 from spatialetl.point.TimeMultiPoint import TimeMultiPoint
-from spatialetl.point.io.MultiPointWriter import MultiPointWriter
+from spatialetl.point.io.multi_point_writer import MultiPointWriter
 from spatialetl.utils.VariableDefinition import VariableDefinition
 from spatialetl.utils.logger import logging
 
