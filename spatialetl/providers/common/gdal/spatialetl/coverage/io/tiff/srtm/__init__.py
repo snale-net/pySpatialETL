@@ -9,6 +9,6 @@ TIFF SRTM (:mod:`coverage.io.tiff.srtm`)
 """
 from __future__ import division, print_function, absolute_import
 
-from .SRTMReader import SRTMReader
+from .srtm_reader import SRTMReader
 
 __all__ = ['SRTMReader']
