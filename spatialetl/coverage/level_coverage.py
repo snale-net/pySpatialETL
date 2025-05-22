@@ -27,8 +27,8 @@ from itertools import product
 import numpy as np
 
 from spatialetl.coverage.coverage import Coverage
-from spatialetl.operator.interpolator.InterpolatorCore import resample_2d_to_grid
-from spatialetl.operator.interpolator.InterpolatorCore import vertical_interpolation
+from spatialetl.operator.interpolator.interpolator_core import resample_2d_to_grid
+from spatialetl.operator.interpolator.interpolator_core import vertical_interpolation
 from spatialetl.utils.logger import logging
 
 

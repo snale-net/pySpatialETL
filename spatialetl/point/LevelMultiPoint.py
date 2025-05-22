@@ -24,7 +24,7 @@ from __future__ import division, print_function, absolute_import
 
 import numpy as np
 
-from spatialetl.operator.interpolator.InterpolatorCore import vertical_interpolation
+from spatialetl.operator.interpolator.interpolator_core import vertical_interpolation
 from spatialetl.point.MultiPoint import MultiPoint
 from spatialetl.utils.logger import logging
 

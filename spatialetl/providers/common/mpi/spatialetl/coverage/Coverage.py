@@ -27,7 +27,7 @@ from array_split import shape_split
 from mpi4py import MPI
 
 from spatialetl.exception.not_found_in_rank_error import NotFoundInRankError
-from spatialetl.operator.interpolator.InterpolatorCore import resample_2d_to_grid
+from spatialetl.operator.interpolator.interpolator_core import resample_2d_to_grid
 from spatialetl.utils.distance import distance_on_unit_sphere
 from spatialetl.utils.logger import logging
 
