@@ -27,7 +27,7 @@ import cftime
 
 from spatialetl.coverage import TimeCoverage
 from spatialetl.coverage.io.netcdf.symphonie.v293.SYMPHONIEReader import SYMPHONIEReader
-from spatialetl.exception.NotFoundInRankError import NotFoundInRankError
+from spatialetl.exception.not_found_in_rank_error import NotFoundInRankError
 
 
 class TestTimeCoverage(TestCase):

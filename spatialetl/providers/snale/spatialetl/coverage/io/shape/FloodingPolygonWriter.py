@@ -34,7 +34,7 @@ from shapely.ops import unary_union
 from spatialetl.coverage.time_coverage import TimeCoverage
 from spatialetl.coverage.time_level_coverage import TimeLevelCoverage
 from spatialetl.coverage.io.CoverageWriter import CoverageWriter
-from spatialetl.exception.CoverageError import CoverageError
+from spatialetl.exception.coverage_error import CoverageError
 from spatialetl.utils.VariableDefinition import VariableDefinition
 from spatialetl.utils.logger import logging
 

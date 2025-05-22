@@ -25,7 +25,7 @@ from __future__ import division, print_function, absolute_import
 import numpy as np
 
 from spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader import SYMPHONIEReader as AbstractSYMPHONIEReader
-from spatialetl.exception.VariableNameError import VariableNameError
+from spatialetl.exception.variable_name_error import VariableNameError
 from spatialetl.utils.VariableDefinition import VariableDefinition
 from spatialetl.utils.logger import logging
 
