@@ -23,7 +23,7 @@
 from spatialetl.point.TimeMultiPoint import TimeMultiPoint
 from spatialetl.point.io.netcdf.ecmwf.ECMWFReader import ECMWFReader
 from spatialetl.point.io.netcdf.DefaultWriter import DefaultWriter as NcWriter
-from spatialetl.point.io.ascii.DefaultTimePointWriter import DefaultTimePointWriter as AsciiWriter
+from spatialetl.point.io.ascii.default_time_point_writer import DefaultTimePointWriter as AsciiWriter
 import logging
 from datetime import timedelta
 

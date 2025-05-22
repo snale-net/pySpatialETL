@@ -21,7 +21,7 @@
 from unittest import TestCase
 from datetime import datetime
 from spatialetl.point.TimeMultiPoint import TimeMultiPoint
-from spatialetl.point.io.ascii.DefaultTimePointReader import DefaultTimePointReader
+from spatialetl.point.io.ascii.default_time_point_reader import DefaultTimePointReader
 
 
 class TestTimeMultiPoint(TestCase):
