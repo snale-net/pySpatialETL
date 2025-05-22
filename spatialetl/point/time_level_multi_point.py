@@ -24,8 +24,8 @@ from __future__ import division, print_function, absolute_import
 
 import numpy as np
 
-from spatialetl.point.LevelMultiPoint import LevelMultiPoint
-from spatialetl.point.TimeMultiPoint import TimeMultiPoint
+from spatialetl.point.level_multi_point import LevelMultiPoint
+from spatialetl.point.time_multi_point import TimeMultiPoint
 
 
 class TimeLevelMultiPoint(LevelMultiPoint, TimeMultiPoint):
