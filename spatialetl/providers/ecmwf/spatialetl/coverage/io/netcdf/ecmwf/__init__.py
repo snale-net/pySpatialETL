@@ -9,7 +9,7 @@ NetCDF ECMWF (:mod:`coverage.io.netcdf.ecmwf`)
 """
 from __future__ import division, print_function, absolute_import
 
-from .ECMWFReader import ECMWFReader
-from .ECMWFWriter import ECMWFWriter
+from .ecmwf_reader import ECMWFReader
+from .ecmwf_writer import ECMWFWriter
 
 __all__ = ['ECMWFReader', 'ECMWFWriter']
