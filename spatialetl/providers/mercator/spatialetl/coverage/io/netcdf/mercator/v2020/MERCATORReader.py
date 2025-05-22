@@ -27,7 +27,7 @@ import os
 import numpy as np
 from netCDF4 import Dataset, MFDataset, num2date
 
-from spatialetl.coverage.TimeCoverage import TimeCoverage
+from spatialetl.coverage.time_coverage import TimeCoverage
 from spatialetl.coverage.io.CoverageReader import CoverageReader
 from spatialetl.exception.VariableNameError import VariableNameError
 from spatialetl.utils.VariableDefinition import VariableDefinition

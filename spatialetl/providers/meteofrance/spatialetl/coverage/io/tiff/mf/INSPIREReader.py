@@ -30,7 +30,7 @@ import cftime
 import numpy as np
 from osgeo import gdal
 
-from spatialetl.coverage.TimeCoverage import TimeCoverage
+from spatialetl.coverage.time_coverage import TimeCoverage
 from spatialetl.coverage.io.CoverageReader import CoverageReader
 from spatialetl.utils.path import path_leaf
 

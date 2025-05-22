@@ -25,8 +25,8 @@ from __future__ import division, print_function, absolute_import
 import numpy as np
 
 from spatialetl.coverage.coverage import Coverage
-from spatialetl.coverage.LevelCoverage import LevelCoverage
-from spatialetl.coverage.TimeCoverage import TimeCoverage
+from spatialetl.coverage.level_coverage import LevelCoverage
+from spatialetl.coverage.time_coverage import TimeCoverage
 from spatialetl.operator.interpolator.InterpolatorCore import resample_2d_to_grid
 from spatialetl.operator.interpolator.InterpolatorCore import vertical_interpolation
 from spatialetl.utils.logger import logging
