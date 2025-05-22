@@ -30,7 +30,7 @@ import numpy as np
 
 from spatialetl.coverage.time_coverage import TimeCoverage
 from spatialetl.coverage.io.CoverageReader import CoverageReader
-from spatialetl.exception.VariableNameError import VariableNameError
+from spatialetl.exception.variable_name_error import VariableNameError
 from spatialetl.utils.VariableDefinition import VariableDefinition
 from spatialetl.utils.logger import logging
 

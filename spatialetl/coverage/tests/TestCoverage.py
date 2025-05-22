@@ -25,7 +25,7 @@ import numpy as np
 
 from spatialetl.coverage import Coverage
 from spatialetl.coverage.io.netcdf.symphonie.v293 import SYMPHONIEReader
-from spatialetl.exception.NotFoundInRankError import NotFoundInRankError
+from spatialetl.exception.not_found_in_rank_error import NotFoundInRankError
 
 
 class TestCoverage(TestCase):
