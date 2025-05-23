@@ -27,7 +27,7 @@ from netCDF4 import Dataset, num2date
 
 from spatialetl.point.time_multi_point import TimeMultiPoint
 from spatialetl.point.io.multi_point_reader import MultiPointReader
-from spatialetl.utils.VariableDefinition import VariableDefinition
+from spatialetl.utils.variable_definition import VariableDefinition
 
 
 class DefaultTimeLevelMultiPointReader(MultiPointReader):
