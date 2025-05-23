@@ -28,9 +28,9 @@ Submodules
    :maxdepth: 1
 
    /docs/reference/coverage/coverage
-   /api_reference/spatialetl/coverage/LevelCoverage/index
-   /api_reference/spatialetl/coverage/TimeCoverage/index
-   /api_reference/spatialetl/coverage/TimeLevelCoverage/index
+   /api_reference/spatialetl/coverage/level_coverage/index
+   /api_reference/spatialetl/coverage/time_coverage/index
+   /api_reference/spatialetl/coverage/time_level_coverage/index
    /api_reference/spatialetl/coverage/io/index
    /api_reference/spatialetl/coverage/tests/index
    /api_reference/spatialetl/coverage/utils/index
