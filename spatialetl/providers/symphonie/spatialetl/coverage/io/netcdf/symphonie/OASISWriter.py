@@ -26,7 +26,7 @@ import numpy as np
 from netCDF4 import Dataset
 from numpy import float64
 
-from spatialetl.providers.ww3.spatialetl.coverage.io.netcdf.ww3.WW3UnstructuredReader import WW3UnstructuredReader
+from spatialetl.providers.ww3.spatialetl.coverage.io.netcdf.ww3.ww3_unstructured_reader import WW3UnstructuredReader
 from spatialetl.utils.logger import logging
 
 
