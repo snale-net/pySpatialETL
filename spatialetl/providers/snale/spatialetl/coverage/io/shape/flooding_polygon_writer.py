@@ -35,7 +35,7 @@ from spatialetl.coverage.time_coverage import TimeCoverage
 from spatialetl.coverage.time_level_coverage import TimeLevelCoverage
 from spatialetl.coverage.io.CoverageWriter import CoverageWriter
 from spatialetl.exception.coverage_error import CoverageError
-from spatialetl.utils.VariableDefinition import VariableDefinition
+from spatialetl.utils.variable_definition import VariableDefinition
 from spatialetl.utils.logger import logging
 
 def union(x):

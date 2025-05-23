@@ -29,7 +29,7 @@ from numpy import float32
 from numpy import float64
 
 from spatialetl.coverage.io.CoverageWriter import CoverageWriter
-from spatialetl.utils.VariableDefinition import VariableDefinition
+from spatialetl.utils.variable_definition import VariableDefinition
 from spatialetl.utils.logger import logging
 
 

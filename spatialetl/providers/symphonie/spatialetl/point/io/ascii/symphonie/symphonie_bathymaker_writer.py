@@ -26,7 +26,7 @@ import pandas
 
 from spatialetl.point.multi_point import MultiPoint
 from spatialetl.point.io.multi_point_writer import MultiPointWriter
-from spatialetl.utils.VariableDefinition import VariableDefinition
+from spatialetl.utils.variable_definition import VariableDefinition
 from spatialetl.utils.logger import logging
 
 
