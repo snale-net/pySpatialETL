@@ -10,7 +10,7 @@ NetCDF SYMPHONIE (:mod:`coverage.io.netcdf.symphonie`)
 from __future__ import division, print_function, absolute_import
 
 
-from .SYMPHONIEBathycoteInReader import SYMPHONIEBathycoteInReader
-from .SYMPHONIEReader import SYMPHONIEReader
+from .symphonie_bathycote_in_reader import SYMPHONIEBathycoteInReader
+from .symphonie_reader import SYMPHONIEReader
 
 __all__ = ['SYMPHONIEBathycoteInReader', 'SYMPHONIEReader',]

@@ -9,6 +9,6 @@ NetCDF SYMPHONIE OLD (:mod:`coverage.io.netcdf.symphonie.old`)
 """
 from __future__ import division, print_function, absolute_import
 
-from .SYMPHONIEReader import SYMPHONIEReader
+from .symphonie_reader import SYMPHONIEReader
 
 __all__ = ['SYMPHONIEReader']
