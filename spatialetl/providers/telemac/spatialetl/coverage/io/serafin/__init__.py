@@ -9,8 +9,8 @@ SERAFIN (:mod:`coverage.io.serafin`)
 """
 from __future__ import division, print_function, absolute_import
 
-from .SerafinHeader import SerafinHeader
-from .SerafinReader import SerafinReader
-from .SerafinWriter import SerafinWriter
+from .serafin_header import SerafinHeader
+from .serafin_reader import SerafinReader
+from .serafin_writer import SerafinWriter
 
 __all__ = ['SerafinHeader', 'SerafinReader', 'SerafinWriter']
