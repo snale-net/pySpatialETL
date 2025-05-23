@@ -37,7 +37,7 @@ from datetime import datetime, timedelta
 import numpy as np
 
 from spatialetl.coverage.io.CoverageReader import CoverageReader
-from spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader import SerafinHeader
+from spatialetl.providers.telemac.spatialetl.coverage.io.serafin.serafin_header import SerafinHeader
 from spatialetl.utils.logger import logging
 
 
