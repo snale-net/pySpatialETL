@@ -26,7 +26,7 @@ from tempfile import NamedTemporaryFile
 
 from osgeo import gdal
 
-from spatialetl.utils.bing.core.AerialImageRetrieval import AerialImageRetrieval
+from spatialetl.utils.bing.core.aerial_image_retrieval import AerialImageRetrieval
 from spatialetl.utils.logger import logging
 
 

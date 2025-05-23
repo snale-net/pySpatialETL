@@ -31,7 +31,7 @@ from spatialetl.point.level_multi_point import LevelMultiPoint
 from spatialetl.point.time_level_multi_point import TimeLevelMultiPoint
 from spatialetl.point.time_multi_point import TimeMultiPoint
 from spatialetl.point.io.multi_point_writer import MultiPointWriter
-from spatialetl.utils.VariableDefinition import VariableDefinition
+from spatialetl.utils.variable_definition import VariableDefinition
 from spatialetl.utils.logger import logging
 
 

@@ -30,7 +30,7 @@ import pandas
 
 from spatialetl.point.time_multi_point import TimeMultiPoint
 from spatialetl.point.io.multi_point_writer import MultiPointWriter
-from spatialetl.utils.VariableDefinition import VariableDefinition
+from spatialetl.utils.variable_definition import VariableDefinition
 from spatialetl.utils.logger import logging
 
 

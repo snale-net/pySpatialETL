@@ -26,7 +26,7 @@ import numpy as np
 
 from spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader import SYMPHONIEReader as AbstractSYMPHONIEReader
 from spatialetl.exception.variable_name_error import VariableNameError
-from spatialetl.utils.VariableDefinition import VariableDefinition
+from spatialetl.utils.variable_definition import VariableDefinition
 from spatialetl.utils.logger import logging
 
 
