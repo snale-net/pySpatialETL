@@ -9,6 +9,6 @@ NetCDF SYMPHONIE V293 (:mod:`point.io.netcdf.symphonie.v293`)
 """
 from __future__ import division, print_function, absolute_import
 
-from .SYMPHONIEReader import AbstractSYMPHONIEReader
+from .symphonie_reader import AbstractSYMPHONIEReader
 
 __all__ = ['AbstractSYMPHONIEReader']

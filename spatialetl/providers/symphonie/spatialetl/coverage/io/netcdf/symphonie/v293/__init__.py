@@ -9,6 +9,6 @@ NetCDF SYMPHONIE V293 (:mod:`coverage.io.netcdf.symphonie.v293`)
 """
 from __future__ import division, print_function, absolute_import
 
-from .SYMPHONIEReader import SYMPHONIEReader
+from .symphonie_reader import SYMPHONIEReader
 
 __all__ = ['SYMPHONIEReader']
