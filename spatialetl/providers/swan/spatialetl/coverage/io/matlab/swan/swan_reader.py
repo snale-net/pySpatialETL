@@ -29,7 +29,7 @@ import numpy as np
 from scipy.io import loadmat
 
 from spatialetl.coverage.time_coverage import TimeCoverage
-from spatialetl.coverage.io.CoverageReader import CoverageReader
+from spatialetl.coverage.io.coverage_reader import CoverageReader
 
 
 class SWANReader(CoverageReader):

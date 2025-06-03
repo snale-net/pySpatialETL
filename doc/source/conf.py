@@ -2,8 +2,7 @@ import os
 import sys
 from datetime import datetime
 
-sys.path.insert(0, os.path.abspath("../.."))
-import spatialetl
+sys.path.insert(0, os.path.abspath("../spatialetl"))  # Path to the spatialetl package
 
 project = 'pySpatialETL documentation'
 copyright = f'{datetime.now().year}, SNALE'
@@ -25,7 +24,7 @@ templates_path = ['_templates']
 
 exclude_patterns = []
 
-autosummary_generate = True
+autosummary_generate = False
 
 # -- AutoAPI configuration ---------------------------------------------------
 autoapi_generate_api_docs = True

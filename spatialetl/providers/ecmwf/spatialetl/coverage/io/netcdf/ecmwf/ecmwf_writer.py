@@ -28,7 +28,7 @@ from netCDF4 import date2num
 from numpy import float32
 from numpy import float64
 
-from spatialetl.coverage.io.CoverageWriter import CoverageWriter
+from spatialetl.coverage.io.coverage_writer import CoverageWriter
 from spatialetl.utils.variable_definition import VariableDefinition
 from spatialetl.utils.logger import logging
 

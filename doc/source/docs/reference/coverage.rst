@@ -1,7 +1,7 @@
 spatialetl.coverage
 ===================
 
-.. py:module:: spatialetl.coverage.coverage
+.. automodule:: coverage
 
 .. autoapi-nested-parse::
 

@@ -24,7 +24,7 @@ from __future__ import division, print_function, absolute_import
 
 import numpy as np
 
-from spatialetl.coverage.io.CoverageWriter import CoverageWriter
+from spatialetl.coverage.io.coverage_writer import CoverageWriter
 
 
 class GMTWriter(CoverageWriter):

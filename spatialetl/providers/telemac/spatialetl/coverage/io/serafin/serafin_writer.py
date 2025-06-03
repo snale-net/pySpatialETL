@@ -22,7 +22,7 @@
 # SOFTWARE.
 from __future__ import division, print_function, absolute_import
 
-from spatialetl.coverage.io.CoverageWriter import CoverageWriter
+from spatialetl.coverage.io.coverage_writer import CoverageWriter
 
 
 class SerafinWriter(CoverageWriter):
