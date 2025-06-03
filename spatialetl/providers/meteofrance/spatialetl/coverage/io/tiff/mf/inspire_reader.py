@@ -31,7 +31,7 @@ import numpy as np
 from osgeo import gdal
 
 from spatialetl.coverage.time_coverage import TimeCoverage
-from spatialetl.coverage.io.CoverageReader import CoverageReader
+from spatialetl.coverage.io.coverage_reader import CoverageReader
 from spatialetl.utils.path import path_leaf
 
 

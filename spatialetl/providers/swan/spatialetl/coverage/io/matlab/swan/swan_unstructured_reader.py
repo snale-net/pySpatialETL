@@ -28,7 +28,7 @@ import cftime
 import numpy as np
 from scipy.io import loadmat
 
-from spatialetl.coverage.io.CoverageReader import CoverageReader
+from spatialetl.coverage.io.coverage_reader import CoverageReader
 
 
 class SWANUnstructuredReader(CoverageReader):

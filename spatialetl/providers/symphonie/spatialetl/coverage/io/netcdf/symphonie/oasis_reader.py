@@ -25,7 +25,7 @@ from __future__ import division, print_function, absolute_import
 import numpy as np
 from netCDF4 import Dataset, num2date
 
-from spatialetl.coverage.io.CoverageReader import CoverageReader
+from spatialetl.coverage.io.coverage_reader import CoverageReader
 
 
 class OASISReader(CoverageReader):

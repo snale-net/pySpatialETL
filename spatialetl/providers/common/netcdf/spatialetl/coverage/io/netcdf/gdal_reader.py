@@ -24,7 +24,7 @@ from __future__ import division, print_function, absolute_import
 
 from netCDF4 import Dataset
 
-from spatialetl.coverage.io.CoverageReader import CoverageReader
+from spatialetl.coverage.io.coverage_reader import CoverageReader
 
 
 class GDALReader (CoverageReader):

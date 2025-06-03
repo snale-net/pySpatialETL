@@ -30,7 +30,7 @@ import numpy as np
 import pandas
 import scipy.io
 
-from spatialetl.coverage.io.CoverageReader import CoverageReader
+from spatialetl.coverage.io.coverage_reader import CoverageReader
 
 class SWANUnstructuredReader(CoverageReader):
 
