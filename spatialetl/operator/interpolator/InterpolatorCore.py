@@ -33,6 +33,9 @@ from spatialetl.utils.logger import logging
 
 
 def resample_2d_to_grid(gridX,gridY,newX,newY,data,method):
+    """
+    2D resampling function
+    """
 
     logging.debug("[InterpolatorCore][horizontal_interpolation()] starting interpolation with method '" + str(method) + "'")
 

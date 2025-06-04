@@ -9,7 +9,6 @@ Interpolator (:mod:`coverage.operator.interpolator`)
 """
 from __future__ import division, print_function, absolute_import
 
-#from .CoverageInterpolator import CoverageInterpolator
-#from .InterpolatorCore import InterpolatorCore
+from .InterpolatorCore import time_1d_interpolation, resample_2d_to_grid, vertical_interpolation
 
-#__all__ = ['CoverageInterpolator', 'InterpolatorCore']
+__all__ = ["time_1d_interpolation", "resample_2d_to_grid", "vertical_interpolation"]
