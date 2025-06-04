@@ -43,24 +43,6 @@ class Coverage(object):
     Note: The axes are always reversed in the arrays because of NetCDF.
     So the y-axis first, then the x-axis. Example: [y,x]
 
-    Attributes
-    ----------
-    HORIZONTAL_INTERPOLATION_METHOD : str
-        Interpolation method used for horizontal resampling. Default is 'linear'.
-    HORIZONTAL_OVERLAPING_SIZE : int
-        Overlap size for parallel computations. Default is 2.
-
-    Parameters
-    ----------
-    myReader : object
-        File reader.
-    bbox : list, optional
-        Bounding box coordinates [xmin, xmax, ymin, ymax].
-    resolution_x : float, optional
-        Resolution in the x direction.
-    resolution_y : float, optional
-        Resolution in the y direction.
-
     Examples
     --------
     >>> coverage = Coverage(myReader, bbox=[-5, 5, -5, 5], resolution_x=0.1, resolution_y=0.1)
@@ -69,9 +51,9 @@ class Coverage(object):
     HORIZONTAL_INTERPOLATION_METHOD = "linear"
     HORIZONTAL_OVERLAPING_SIZE = 2
 
-    def __init__(self, myReader,bbox=None,resolution_x=None,resolution_y=None):
-        self.reader = myReader;
-        """Initialize the Coverage object with a file reader and optional bounding box and resolution.
+    def __init__(self, myReader, bbox=None, resolution_x=None, resolution_y=None):
+        """
+        Initialize the Coverage object with a file reader and optional bounding box and resolution.
         
         Parameters
         ----------
@@ -89,6 +71,9 @@ class Coverage(object):
         --------
         >>> coverage = Coverage(myReader, bbox=[0, 10, 0, 10], resolution_x=1.0, resolution_y=1.0)
         """
+
+        self.reader = myReader;
+
         # Parallel
         self.map_mpi = None
         self.size = 1
@@ -150,9 +135,9 @@ class Coverage(object):
                 raise ValueError("No values found")
 
             ymin = np.min(idx[0])
-            ymax = np.max(idx[0])+1
+            ymax = np.max(idx[0]) + 1
             xmin = np.min(idx[1])
-            xmax = np.max(idx[1])+1
+            xmax = np.max(idx[1]) + 1
 
             self.target_global_axis_x = self.source_global_axis_x[ymin:ymax, xmin:xmax]
             self.target_global_x_size = xmax - xmin
@@ -175,29 +160,31 @@ class Coverage(object):
             self.target_global_axis_x = np.arange(Xmin, Xmax, res)
             self.target_global_axis_y = np.arange(Ymin, Ymax, res)
 
-            self.target_global_x_size=len(self.target_global_axis_x)
-            self.target_global_y_size=len(self.target_global_axis_y)
+            self.target_global_x_size = len(self.target_global_axis_x)
+            self.target_global_y_size = len(self.target_global_axis_y)
 
             if type(self) == Coverage:
                 if self.rank == 0:
-                    logging.info('[horizontal_interpolation] Source grid size : (' + str(self.source_global_x_size) + ", " + str(
-                        self.source_global_y_size) + ")")
-                    logging.info('[horizontal_interpolation] Target grid size : (' + str(self.target_global_x_size) + ", " + str(
-                        self.target_global_y_size) + ")")
+                    logging.info(
+                        '[horizontal_interpolation] Source grid size : (' + str(self.source_global_x_size) + ", " + str(
+                            self.source_global_y_size) + ")")
+                    logging.info(
+                        '[horizontal_interpolation] Target grid size : (' + str(self.target_global_x_size) + ", " + str(
+                            self.target_global_y_size) + ")")
 
-        if type(self)== Coverage:
+        if type(self) == Coverage:
             self.create_mpi_map()
             self.update_mpi_map()
-            if self.rank==0:
+            if self.rank == 0:
                 logging.debug("MPI map:")
             for key in self.map_mpi[self.rank]:
-                logging.debug("Proc n°"+str(self.rank)+" "+str(key)+"="+str(self.map_mpi[self.rank][key]))
+                logging.debug("Proc n°" + str(self.rank) + " " + str(key) + "=" + str(self.map_mpi[self.rank][key]))
             logging.debug("---------")
 
         # try to fill metadata
         self.read_metadata()
 
-    def check_bbox_validity(self,candidate):
+    def check_bbox_validity(self, candidate):
         """
         Check the validity of the bounding box.
 
@@ -236,7 +223,7 @@ class Coverage(object):
 
         return True
 
-    def check_point_is_inside(self, target_lon, target_lat, lon, lat,tolerance=5):
+    def check_point_is_inside(self, target_lon, target_lat, lon, lat, tolerance=5):
         """
         Check if a point is inside the coverage.
 
@@ -264,13 +251,13 @@ class Coverage(object):
         True
         """
 
-        if np.round(target_lat,decimals=tolerance) < np.min(np.round(lat,decimals=tolerance)):
+        if np.round(target_lat, decimals=tolerance) < np.min(np.round(lat, decimals=tolerance)):
             return False
-        if np.round(target_lat,decimals=tolerance) > np.max(np.round(lat,decimals=tolerance)):
+        if np.round(target_lat, decimals=tolerance) > np.max(np.round(lat, decimals=tolerance)):
             return False
-        if np.round(target_lon,decimals=tolerance) < np.min(np.round(lon,decimals=tolerance)):
+        if np.round(target_lon, decimals=tolerance) < np.min(np.round(lon, decimals=tolerance)):
             return False
-        if np.round(target_lon,decimals=tolerance) > np.max(np.round(lon,decimals=tolerance)):
+        if np.round(target_lon, decimals=tolerance) > np.max(np.round(lon, decimals=tolerance)):
             return False
 
         return True
@@ -447,10 +434,10 @@ class Coverage(object):
         --------
         >>> coverage.read_metadata()
         """
-        if  "read_metadata" in dir(self.reader):
+        if "read_metadata" in dir(self.reader):
             m = self.reader.read_metadata()
 
-    def get_x_size(self,type="target",with_overlap=False):
+    def get_x_size(self, type="target", with_overlap=False):
         """
         Get the x size.
 
@@ -485,7 +472,7 @@ class Coverage(object):
         else:
             return self.map_mpi[self.rank]["dst_local_x_size"]
 
-    def get_y_size(self,type="target",with_overlap=False):
+    def get_y_size(self, type="target", with_overlap=False):
         """
         Get the y size.
 
@@ -521,7 +508,7 @@ class Coverage(object):
         else:
             return self.map_mpi[self.rank]["dst_local_y_size"]
 
-    def is_regular_grid(self,type="target"):
+    def is_regular_grid(self, type="target"):
         """
         Check if the grid is regular.
 
@@ -547,7 +534,7 @@ class Coverage(object):
             return self.source_regular_grid
 
     # Axis        
-    def read_axis_x(self,type="target",with_overlap=False):
+    def read_axis_x(self, type="target", with_overlap=False):
         """
         Return the values (often longitude) of the x axis.
 
@@ -582,9 +569,9 @@ class Coverage(object):
                                            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
         elif type == "source" and with_overlap is False:
             return self.reader.read_axis_x(self.map_mpi[self.rank]["src_global_x"].start,
-                                    self.map_mpi[self.rank]["src_global_x"].stop,
-                                    self.map_mpi[self.rank]["src_global_y"].start,
-                                    self.map_mpi[self.rank]["src_global_y"].stop)
+                                           self.map_mpi[self.rank]["src_global_x"].stop,
+                                           self.map_mpi[self.rank]["src_global_y"].start,
+                                           self.map_mpi[self.rank]["src_global_y"].stop)
 
         elif type == "target" and with_overlap is True:
 
@@ -592,15 +579,16 @@ class Coverage(object):
                 return self.target_global_axis_x[self.map_mpi[self.rank]["dst_global_x_overlap"]]
             else:
                 return self.target_global_axis_x[self.map_mpi[self.rank]["dst_global_y_overlap"],
-                                                 self.map_mpi[self.rank]["dst_global_x_overlap"]]
-        else :
+                self.map_mpi[self.rank]["dst_global_x_overlap"]]
+        else:
 
             if self.is_regular_grid():
                 return self.target_global_axis_x[self.map_mpi[self.rank]["dst_global_x"]]
             else:
-                return self.target_global_axis_x[self.map_mpi[self.rank]["dst_global_y"],self.map_mpi[self.rank]["dst_global_x"]]
-        
-    def read_axis_y(self,type="target",with_overlap=False):
+                return self.target_global_axis_x[
+                    self.map_mpi[self.rank]["dst_global_y"], self.map_mpi[self.rank]["dst_global_x"]]
+
+    def read_axis_y(self, type="target", with_overlap=False):
         """
         Return the values (often latitude) of the y axis.
 
@@ -621,7 +609,7 @@ class Coverage(object):
         >>> y_axis = coverage.read_axis_y()
         >>> y_axis = coverage.read_axis_y(type="source", with_overlap=True)
         """
-        if type=="target_global":
+        if type == "target_global":
             return self.target_global_axis_y
 
         elif type == "source_global":
@@ -644,15 +632,17 @@ class Coverage(object):
                 return self.target_global_axis_y[self.map_mpi[self.rank]["dst_global_y_overlap"]]
             else:
                 return self.target_global_axis_y[self.map_mpi[self.rank]["dst_global_y_overlap"],
-                                                 self.map_mpi[self.rank]["dst_global_x_overlap"]]
+                self.map_mpi[self.rank]["dst_global_x_overlap"]]
         else:
 
             if self.is_regular_grid():
                 return self.target_global_axis_y[self.map_mpi[self.rank]["dst_global_y"]]
             else:
-                return self.target_global_axis_y[self.map_mpi[self.rank]["dst_global_y"],self.map_mpi[self.rank]["dst_global_x"]]
-        
-    def find_point_index(self,target_lon, target_lat, decimal_tolerance=5, method="classic", only_mask_value=True,type="source"):
+                return self.target_global_axis_y[
+                    self.map_mpi[self.rank]["dst_global_y"], self.map_mpi[self.rank]["dst_global_x"]]
+
+    def find_point_index(self, target_lon, target_lat, decimal_tolerance=5, method="classic", only_mask_value=True,
+                         type="source"):
         """
                 Find the index of the closest point to the given point.
 
@@ -686,38 +676,39 @@ class Coverage(object):
                 >>> idx = coverage.find_point_index(5.0, 45.0)
                 >>> idx = coverage.find_point_index(5.0, 45.0, method="quick", type="source_global")
                 """
-        lon = self.read_axis_x(type="source",with_overlap=False)
-        lat = self.read_axis_y(type="source",with_overlap=False)
+        lon = self.read_axis_x(type="source", with_overlap=False)
+        lat = self.read_axis_y(type="source", with_overlap=False)
 
         if self.check_point_is_inside(target_lon, target_lat, lon, lat, tolerance=decimal_tolerance):
             try:
-                mask = self.read_variable_2D_sea_binary_mask(type="source",with_overlap=False)
+                mask = self.read_variable_2D_sea_binary_mask(type="source", with_overlap=False)
                 print(np.shape(mask))
             except NotImplementedError:
                 logging.warning("No 2D sea binary mask found")
-                #mask = np.ones([self.source_global_y_size, self.source_global_x_size])
+                # mask = np.ones([self.source_global_y_size, self.source_global_x_size])
                 only_mask_value = False
 
-            dist = np.zeros([self.get_y_size(type="source",with_overlap=False), self.get_x_size(type="source",with_overlap=False)])
+            dist = np.zeros([self.get_y_size(type="source", with_overlap=False),
+                             self.get_x_size(type="source", with_overlap=False)])
             dist[:] = 10000000
 
-            if method=="classic":
-                for x in range(0, self.get_x_size(type="source",with_overlap=False)):
-                    for y in range(0, self.get_y_size(type="source",with_overlap=False)):
+            if method == "classic":
+                for x in range(0, self.get_x_size(type="source", with_overlap=False)):
+                    for y in range(0, self.get_y_size(type="source", with_overlap=False)):
 
                         if only_mask_value:
-                            if(mask[y,x] == 1): #=Terre
+                            if (mask[y, x] == 1):  # =Terre
                                 if self.reader.is_regular_grid():
-                                    dist[y,x] = distance_on_unit_sphere(target_lon,target_lat,lon[x],lat[y])
+                                    dist[y, x] = distance_on_unit_sphere(target_lon, target_lat, lon[x], lat[y])
                                 else:
-                                    dist[y,x] = distance_on_unit_sphere(target_lon,target_lat,lon[y,x],lat[y,x])
+                                    dist[y, x] = distance_on_unit_sphere(target_lon, target_lat, lon[y, x], lat[y, x])
                         else:
                             if self.reader.is_regular_grid():
                                 dist[y, x] = distance_on_unit_sphere(target_lon, target_lat, lon[x], lat[y])
                             else:
                                 dist[y, x] = distance_on_unit_sphere(target_lon, target_lat, lon[y, x], lat[y, x])
 
-                nearest_y_index,nearest_x_index = np.where(dist == np.min(dist))
+                nearest_y_index, nearest_x_index = np.where(dist == np.min(dist))
 
                 if len(nearest_y_index) == 0 or len(nearest_x_index) == 0:
                     logging.error("no neaarest point found")
@@ -725,7 +716,7 @@ class Coverage(object):
 
                 nearest_x_index = nearest_x_index[0]
                 nearest_y_index = nearest_y_index[0]
-                min_dist = dist[nearest_y_index,nearest_x_index]
+                min_dist = dist[nearest_y_index, nearest_x_index]
 
                 if self.is_regular_grid(type="source"):
                     nearest_lon = lon[nearest_x_index]
@@ -737,7 +728,9 @@ class Coverage(object):
                 if type == "source":
                     return [nearest_x_index, nearest_y_index, nearest_lon, nearest_lat, min_dist]
                 elif type == "source_global":
-                    return [self.map_mpi[self.rank]["src_global_x"].start+nearest_x_index, self.map_mpi[self.rank]["src_global_y"].start+nearest_y_index, nearest_lon, nearest_lat, min_dist]
+                    return [self.map_mpi[self.rank]["src_global_x"].start + nearest_x_index,
+                            self.map_mpi[self.rank]["src_global_y"].start + nearest_y_index, nearest_lon, nearest_lat,
+                            min_dist]
                 else:
                     raise ValueError("Type doesn't match [source, source_global]")
 
@@ -756,7 +749,7 @@ class Coverage(object):
                     nearest_lon = lon[nearest_x_index]
                     nearest_lat = lat[nearest_y_index]
 
-                    min_dist = distance_on_unit_sphere(target_lon, target_lat,nearest_lon,nearest_lat)
+                    min_dist = distance_on_unit_sphere(target_lon, target_lat, nearest_lon, nearest_lat)
 
                     if type == "source":
                         return [nearest_x_index, nearest_y_index, nearest_lon, nearest_lat, min_dist]
@@ -771,17 +764,17 @@ class Coverage(object):
                     raise NotImplementedError("Method " + str(method) + " is not implemented for regular grid.")
 
             else:
-                raise RuntimeError("Method "+str(method)+" is not implemented yet.")
+                raise RuntimeError("Method " + str(method) + " is not implemented yet.")
         else:
-            logging.warning("Point is outside the rank n°"+str(self.rank))
-            raise NotFoundInRankError(self.rank,"Point is outside the rank")
-    
+            logging.warning("Point is outside the rank n°" + str(self.rank))
+            raise NotFoundInRankError(self.rank, "Point is outside the rank")
+
     # Variables
     #################
     # HYDRO
     # 2D
     #################
-    def read_variable_bathymetry(self):     
+    def read_variable_bathymetry(self):
         """
         Read the bathymetry over the entire coverage.
 
@@ -838,8 +831,8 @@ class Coverage(object):
                                        Coverage.HORIZONTAL_INTERPOLATION_METHOD)
 
         return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-    
-    def read_variable_mesh_size(self):     
+
+    def read_variable_mesh_size(self):
         """
         Read the mesh size over the entire coverage.
 
@@ -925,8 +918,8 @@ class Coverage(object):
                                        Coverage.HORIZONTAL_INTERPOLATION_METHOD)
 
         return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-    
-    def read_variable_2D_sea_binary_mask(self,type="target",with_overlap=False):
+
+    def read_variable_2D_sea_binary_mask(self, type="target", with_overlap=False):
         """
         Read the land/sea mask over the entire coverage.
 
@@ -960,7 +953,6 @@ class Coverage(object):
         elif type == "target":
 
             if self.horizontal_resampling:
-
                 data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
                                            self.read_axis_y(type="source", with_overlap=True),
                                            self.read_axis_x(type="target", with_overlap=True),
@@ -968,7 +960,7 @@ class Coverage(object):
                                            data,
                                            Coverage.HORIZONTAL_INTERPOLATION_METHOD)
 
-            return data[self.map_mpi[self.rank]["dst_local_y"],self.map_mpi[self.rank]["dst_local_x"]]
+            return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
 
     def read_variable_Ha(self):
         """

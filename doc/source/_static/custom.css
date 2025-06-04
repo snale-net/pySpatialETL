@@ -1,6 +1,30 @@
-
-.wy-side-nav-search {
+/* Font & Background color  */
+body, .wy-nav-content {
+    font-family: 'Lato', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 1.04em;
+    background: #fcfcfc;
 }
+
+/* Links color */
+a {
+    color: #139C5A;
+}
+a:hover {
+    color: #E70488;
+    text-decoration: underline;
+}
+
+/* Change title font size */
+.wy-nav-content h1 {
+    font-size: 2.625rem;
+    word-break: break-all;
+}
+
+/* Make the content wider */
+.wy-nav-content {
+    max-width: 1200px !important;
+}
+
 /* =========================
    Bandeau supérieur
    ========================= */
@@ -14,12 +38,6 @@
     font-weight: 700;
     letter-spacing: 1px;
     box-shadow: 0 2px 8px rgba(19,156,90,0.15);
-    text-align: center;
-}
-/* =========================
-    Centrer les titres
-   ========================= */
-.wy-nav-content h1 {
     text-align: center;
 }
 
@@ -86,25 +104,6 @@
     box-shadow: 0 6px 12px rgba(95, 133, 160, 0.5);
 }
 
-/* =========================
-   Liens principaux
-   ========================= */
-a {
-    color: #139C5A;
-}
-a:hover {
-    color: #E70488;
-    text-decoration: underline;
-}
-
-/* =========================
-   Typographie
-   ========================= */
-body, .wy-nav-content {
-    font-family: 'Lato', 'Helvetica Neue', Arial, sans-serif;
-    font-size: 1.04em;
-    background: #fcfcfc;
-}
 /* Grille 2 colonnes pour les boutons */
 .button-grid {
     display: grid;

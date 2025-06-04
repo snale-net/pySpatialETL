@@ -34,9 +34,13 @@ from spatialetl.utils.logger import logging
 
 class LevelCoverage(Coverage):
     """
-La classe LevelCoverage est une extension de la classe Coverage.
-Elle rajoute une dimension verticale à la couverture horizontale classique.
-"""
+    La classe LevelCoverage est une extension de la classe Coverage.
+    Elle rajoute une dimension verticale à la couverture horizontale classique.
+
+    Examples
+    --------
+    >>> coverage = LevelCoverage(myReader, bbox=[-5, 5, -5, 5], resolution_x=0.1, resolution_y=0.1, resolution_z=0.1)
+    """
     DEPTH_DELTA = 1.0; #meters
     VERTICAL_INTERPOLATION_METHOD = "linear"
     

@@ -1,15 +1,15 @@
-.. PySpatialETL documentation
+.. SpatialETL documentation
 
 .. raw:: html
 
    <div class="pyst-banner">
-      PySpatialETL Documentation
+      SpatialETL Documentation
    </div>
 
-Welcome to the PySpatialETL Documentation
+Welcome to the SpatialETL Documentation
 =========================================
 
-The PySpatialETL documentation is organized into four main sections:
+The SpatialETL documentation is organized into four main sections:
 - :doc:`User Guide <docs/user_guide>`: a high-level overview of the core concepts and main features
 - :doc:`Advanced Guide <docs/advanced_guide>`: deeper dives into more complex functionality and use cases
 - :doc:`Examples <docs/example>`: real-world usage examples and tutorials
@@ -42,7 +42,6 @@ Documentation
 
 .. toctree::
    :maxdepth: 1
-   :caption: Documentation
 
    docs/user_guide
    docs/advanced_guide
