@@ -9,6 +9,6 @@ ASCII GMT (:mod:`coverage.io.ascii.gmt`)
 """
 from __future__ import division, print_function, absolute_import
 
-from .GMTWriter import GMTWriter
+from .gmt_writer import GMTWriter
 
 __all__ = ['GMTWriter']
