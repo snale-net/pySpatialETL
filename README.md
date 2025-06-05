@@ -11,6 +11,5 @@ SpatialETL is an open-source project for Extract - Transform - Load (ETL) of geo
 
 Documentation is available at [Read the Docs](https://spatialetl.readthedocs.io/en/latest/index.html).
 
-##Licence
-
-This project is under MIT. Read the file LICENSE to get more details.
+## Licence
+This project is under [MIT](./LICENSE). Read the file `LICENSE` to get more details.
