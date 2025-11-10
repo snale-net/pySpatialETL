@@ -1,0 +1,7 @@
+read_variable_time
+==================
+
+.. py:method:: spatialetl.providers.common.mpi.spatialetl.point.MultiPoint.MultiPoint.read_variable_time()
+
+   Read time for all point
+

@@ -1,0 +1,4 @@
+read_variable_2D_sea_binary_mask
+================================
+
+.. py:method:: spatialetl.providers.common.gdal.spatialetl.coverage.io.tiff.srtm.SRTMReader.SRTMReader.read_variable_2D_sea_binary_mask()

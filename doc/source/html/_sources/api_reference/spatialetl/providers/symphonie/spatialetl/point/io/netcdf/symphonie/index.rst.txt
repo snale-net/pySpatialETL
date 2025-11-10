@@ -1,0 +1,16 @@
+spatialetl.providers.symphonie.spatialetl.point.io.netcdf.symphonie
+===================================================================
+
+.. py:module:: spatialetl.providers.symphonie.spatialetl.point.io.netcdf.symphonie
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /api_reference/spatialetl/providers/symphonie/spatialetl/point/io/netcdf/symphonie/SYMPHONIEReader/SYMPHONIEReader
+   /api_reference/spatialetl/providers/symphonie/spatialetl/point/io/netcdf/symphonie/v293/index
+
+

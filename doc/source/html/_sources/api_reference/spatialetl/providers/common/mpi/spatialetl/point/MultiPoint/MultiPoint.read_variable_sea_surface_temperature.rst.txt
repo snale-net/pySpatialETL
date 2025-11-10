@@ -1,0 +1,7 @@
+read_variable_sea_surface_temperature
+=====================================
+
+.. py:method:: spatialetl.providers.common.mpi.spatialetl.point.MultiPoint.MultiPoint.read_variable_sea_surface_temperature()
+
+   Read sea_surface_temperature for all point
+

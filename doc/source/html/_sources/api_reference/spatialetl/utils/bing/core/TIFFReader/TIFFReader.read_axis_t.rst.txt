@@ -1,0 +1,4 @@
+read_axis_t
+===========
+
+.. py:method:: spatialetl.utils.bing.core.TIFFReader.TIFFReader.read_axis_t(timestamp)

@@ -1,0 +1,22 @@
+get_y_size
+==========
+
+.. py:method:: spatialetl.coverage.coverage.Coverage.get_y_size(type='target', with_overlap=False)
+
+   Get the y size.
+
+   :param type: Type of the grid ("target", "source", "target_global", "source_global").
+   :type type: str, optional
+   :param with_overlap: Whether to include overlap.
+   :type with_overlap: bool, optional
+
+   :returns: The y size.
+   :rtype: int
+
+   .. rubric:: Examples
+
+   >>> coverage.get_y_size()
+   80
+   >>> coverage.get_y_size(type="source", with_overlap=True)
+   84
+

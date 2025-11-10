@@ -1,0 +1,6 @@
+read_variable_depth
+===================
+
+.. py:method:: spatialetl.point.io.MultiPointReader.MultiPointReader.read_variable_depth()
+   :abstractmethod:
+

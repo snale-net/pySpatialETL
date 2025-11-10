@@ -1,0 +1,29 @@
+Enum
+====
+
+.. py:module:: spatialetl.utils.bing.core.ogr2ogr.Enum
+
+.. autoapi-nested-parse::
+
+   set() -> new empty set object
+   set(iterable) -> new set object
+
+   Build an unordered collection of unique elements.
+
+
+Constructor
+-----------
+
+.. autoapimethod:: spatialetl.utils.bing.core.ogr2ogr.Enum.__init__
+
+
+
+
+Methods
+-------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.utils.bing.core.ogr2ogr.Enum.__getattr__
+

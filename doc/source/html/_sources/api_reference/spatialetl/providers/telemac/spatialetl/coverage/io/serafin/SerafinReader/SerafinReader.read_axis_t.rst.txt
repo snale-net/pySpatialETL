@@ -1,0 +1,4 @@
+read_axis_t
+===========
+
+.. py:method:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.read_axis_t(tmin, tmax, timestamp)

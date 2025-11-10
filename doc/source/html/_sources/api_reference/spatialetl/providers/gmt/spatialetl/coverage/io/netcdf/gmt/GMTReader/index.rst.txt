@@ -1,0 +1,19 @@
+spatialetl.providers.gmt.spatialetl.coverage.io.netcdf.gmt.GMTReader
+====================================================================
+
+.. py:module:: spatialetl.providers.gmt.spatialetl.coverage.io.netcdf.gmt.GMTReader
+
+
+Classes
+-------
+
+.. toctree::
+   :hidden:
+
+   /api_reference/spatialetl/providers/gmt/spatialetl/coverage/io/netcdf/gmt/GMTReader/GMTReader
+
+.. autoapisummary::
+
+   spatialetl.providers.gmt.spatialetl.coverage.io.netcdf.gmt.GMTReader.GMTReader
+
+

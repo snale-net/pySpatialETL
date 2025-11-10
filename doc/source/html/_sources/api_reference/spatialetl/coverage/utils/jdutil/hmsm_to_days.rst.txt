@@ -1,0 +1,24 @@
+hmsm_to_days
+============
+
+.. py:function:: spatialetl.coverage.utils.jdutil.hmsm_to_days(hour=0, min=0, sec=0, micro=0)
+
+   Convert hours, minutes, seconds, and microseconds to fractional days.
+
+   :param hour: Hour number. Defaults to 0.
+   :type hour: int, optional
+   :param min: Minute number. Defaults to 0.
+   :type min: int, optional
+   :param sec: Second number. Defaults to 0.
+   :type sec: int, optional
+   :param micro: Microsecond number. Defaults to 0.
+   :type micro: int, optional
+
+   :returns: **days** -- Fractional days.
+   :rtype: float
+
+   .. rubric:: Examples
+
+   >>> hmsm_to_days(hour=6)
+   0.25
+

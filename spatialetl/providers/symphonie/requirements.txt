@@ -1,2 +1,0 @@
-spatialetl~=0.2.0
-spatialetl-providers-common-netcdf~=0.0.1

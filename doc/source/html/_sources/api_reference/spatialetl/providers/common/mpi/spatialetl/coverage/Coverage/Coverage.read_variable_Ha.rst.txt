@@ -1,0 +1,8 @@
+read_variable_Ha
+================
+
+.. py:method:: spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.read_variable_Ha()
+
+   Retourne l'amplitude de la réanalyse
+   @return: un tableau en deux dimensions [y,x].
+

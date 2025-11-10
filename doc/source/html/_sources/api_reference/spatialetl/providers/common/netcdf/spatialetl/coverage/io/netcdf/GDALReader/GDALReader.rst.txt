@@ -1,0 +1,34 @@
+GDALReader
+==========
+
+.. py:module:: spatialetl.providers.common.netcdf.spatialetl.coverage.io.netcdf.GDALReader.GDALReader
+Constructor
+-----------
+
+.. autoapimethod:: spatialetl.providers.common.netcdf.spatialetl.coverage.io.netcdf.GDALReader.GDALReader.__init__
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.providers.common.netcdf.spatialetl.coverage.io.netcdf.GDALReader.GDALReader.ncfile
+
+Methods
+-------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.providers.common.netcdf.spatialetl.coverage.io.netcdf.GDALReader.GDALReader.close
+   spatialetl.providers.common.netcdf.spatialetl.coverage.io.netcdf.GDALReader.GDALReader.is_regular_grid
+   spatialetl.providers.common.netcdf.spatialetl.coverage.io.netcdf.GDALReader.GDALReader.read_axis_x
+   spatialetl.providers.common.netcdf.spatialetl.coverage.io.netcdf.GDALReader.GDALReader.read_axis_y
+   spatialetl.providers.common.netcdf.spatialetl.coverage.io.netcdf.GDALReader.GDALReader.read_variable_longitude
+   spatialetl.providers.common.netcdf.spatialetl.coverage.io.netcdf.GDALReader.GDALReader.read_variable_latitude
+   spatialetl.providers.common.netcdf.spatialetl.coverage.io.netcdf.GDALReader.GDALReader.read_variable_2D_sea_binary_mask
+   spatialetl.providers.common.netcdf.spatialetl.coverage.io.netcdf.GDALReader.GDALReader.read_variable_bathymetry
+

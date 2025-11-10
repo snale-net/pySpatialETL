@@ -1,0 +1,8 @@
+dir2cat
+=======
+
+.. py:function:: spatialetl.providers.swan.spatialetl.coverage.io.ascii.swan.SWANUnstructuredReader.dir2cat(theta)
+
+   Given a array of directions, will return the respective
+   categoreis (N,S,E,W, ect..). Credits to Eric Nardi.
+

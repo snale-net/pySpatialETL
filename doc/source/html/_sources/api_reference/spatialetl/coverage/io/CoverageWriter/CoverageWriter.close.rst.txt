@@ -1,0 +1,6 @@
+close
+=====
+
+.. py:method:: spatialetl.coverage.io.CoverageWriter.CoverageWriter.close()
+   :abstractmethod:
+

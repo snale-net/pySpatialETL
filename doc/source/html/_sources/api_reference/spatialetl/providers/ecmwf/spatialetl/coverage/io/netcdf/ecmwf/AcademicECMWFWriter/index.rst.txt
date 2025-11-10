@@ -1,0 +1,19 @@
+spatialetl.providers.ecmwf.spatialetl.coverage.io.netcdf.ecmwf.AcademicECMWFWriter
+==================================================================================
+
+.. py:module:: spatialetl.providers.ecmwf.spatialetl.coverage.io.netcdf.ecmwf.AcademicECMWFWriter
+
+
+Classes
+-------
+
+.. toctree::
+   :hidden:
+
+   /api_reference/spatialetl/providers/ecmwf/spatialetl/coverage/io/netcdf/ecmwf/AcademicECMWFWriter/AcademicECMWFWriter
+
+.. autoapisummary::
+
+   spatialetl.providers.ecmwf.spatialetl.coverage.io.netcdf.ecmwf.AcademicECMWFWriter.AcademicECMWFWriter
+
+

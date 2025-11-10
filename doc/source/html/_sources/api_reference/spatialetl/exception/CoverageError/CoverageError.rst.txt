@@ -1,0 +1,25 @@
+CoverageError
+=============
+
+.. py:module:: spatialetl.exception.CoverageError.CoverageError
+
+.. autoapi-nested-parse::
+
+   Base class for exceptions in this module.
+
+
+Constructor
+-----------
+
+.. autoapimethod:: spatialetl.exception.CoverageError.CoverageError.__init__
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.exception.CoverageError.CoverageError.module
+

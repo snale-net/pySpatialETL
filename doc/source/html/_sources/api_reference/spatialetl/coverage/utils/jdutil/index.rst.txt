@@ -1,0 +1,58 @@
+spatialetl.coverage.utils.jdutil
+================================
+
+.. py:module:: spatialetl.coverage.utils.jdutil
+
+.. autoapi-nested-parse::
+
+   Functions for converting dates to/from JD and MJD. Assumes dates are historical
+   dates, including the transition from the Julian calendar to the Gregorian
+   calendar in 1582. No support for proleptic Gregorian/Julian calendars.
+
+   :Author: Matt Davis
+   :Website: http://github.com/jiffyclub
+
+
+
+Classes
+-------
+
+.. toctree::
+   :hidden:
+
+   /api_reference/spatialetl/coverage/utils/jdutil/datetime
+
+.. autoapisummary::
+
+   spatialetl.coverage.utils.jdutil.datetime
+
+
+Functions
+---------
+
+.. toctree::
+   :hidden:
+
+   /api_reference/spatialetl/coverage/utils/jdutil/mjd_to_jd
+   /api_reference/spatialetl/coverage/utils/jdutil/jd_to_mjd
+   /api_reference/spatialetl/coverage/utils/jdutil/date_to_jd
+   /api_reference/spatialetl/coverage/utils/jdutil/jd_to_date
+   /api_reference/spatialetl/coverage/utils/jdutil/hmsm_to_days
+   /api_reference/spatialetl/coverage/utils/jdutil/days_to_hmsm
+   /api_reference/spatialetl/coverage/utils/jdutil/datetime_to_jd
+   /api_reference/spatialetl/coverage/utils/jdutil/jd_to_datetime
+   /api_reference/spatialetl/coverage/utils/jdutil/timedelta_to_days
+
+.. autoapisummary::
+
+   spatialetl.coverage.utils.jdutil.mjd_to_jd
+   spatialetl.coverage.utils.jdutil.jd_to_mjd
+   spatialetl.coverage.utils.jdutil.date_to_jd
+   spatialetl.coverage.utils.jdutil.jd_to_date
+   spatialetl.coverage.utils.jdutil.hmsm_to_days
+   spatialetl.coverage.utils.jdutil.days_to_hmsm
+   spatialetl.coverage.utils.jdutil.datetime_to_jd
+   spatialetl.coverage.utils.jdutil.jd_to_datetime
+   spatialetl.coverage.utils.jdutil.timedelta_to_days
+
+

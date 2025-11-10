@@ -1,0 +1,15 @@
+spatialetl.providers.swan.spatialetl.point.io
+=============================================
+
+.. py:module:: spatialetl.providers.swan.spatialetl.point.io
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /api_reference/spatialetl/providers/swan/spatialetl/point/io/netcdf/index
+
+

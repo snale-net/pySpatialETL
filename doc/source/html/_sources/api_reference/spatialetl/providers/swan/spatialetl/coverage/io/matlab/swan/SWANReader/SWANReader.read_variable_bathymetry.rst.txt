@@ -1,0 +1,4 @@
+read_variable_bathymetry
+========================
+
+.. py:method:: spatialetl.providers.swan.spatialetl.coverage.io.matlab.swan.SWANReader.SWANReader.read_variable_bathymetry(xmin, xmax, ymin, ymax)

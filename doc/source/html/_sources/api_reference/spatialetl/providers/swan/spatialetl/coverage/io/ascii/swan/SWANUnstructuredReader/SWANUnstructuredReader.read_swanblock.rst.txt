@@ -1,0 +1,14 @@
+read_swanblock
+==============
+
+.. py:method:: spatialetl.providers.swan.spatialetl.coverage.io.ascii.swan.SWANUnstructuredReader.SWANUnstructuredReader.read_swanblock(fname, variables, stat=False)
+
+   Function to read SWAN's BLOCK output statement.
+   Both stationary and non-stationary versions can be handle.
+   inputs :
+       fname     = full name of the block file
+       variables = list of variables to be read
+       stat      = Whether stationary block or nor, default is False
+   Obs: Curvilinear grids can't be read yet.
+   Returns a xray DataSet
+

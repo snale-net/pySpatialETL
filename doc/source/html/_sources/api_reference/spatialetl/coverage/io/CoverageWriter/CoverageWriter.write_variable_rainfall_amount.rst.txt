@@ -1,0 +1,6 @@
+write_variable_rainfall_amount
+==============================
+
+.. py:method:: spatialetl.coverage.io.CoverageWriter.CoverageWriter.write_variable_rainfall_amount()
+   :abstractmethod:
+

@@ -1,0 +1,4 @@
+read_axis_y
+===========
+
+.. py:method:: spatialetl.providers.common.netcdf.spatialetl.coverage.io.netcdf.GDALReader.GDALReader.read_axis_y(xmin, xmax, ymin, ymax)

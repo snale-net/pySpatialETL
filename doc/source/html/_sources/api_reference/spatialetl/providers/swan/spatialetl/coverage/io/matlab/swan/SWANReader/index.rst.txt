@@ -1,0 +1,19 @@
+spatialetl.providers.swan.spatialetl.coverage.io.matlab.swan.SWANReader
+=======================================================================
+
+.. py:module:: spatialetl.providers.swan.spatialetl.coverage.io.matlab.swan.SWANReader
+
+
+Classes
+-------
+
+.. toctree::
+   :hidden:
+
+   /api_reference/spatialetl/providers/swan/spatialetl/coverage/io/matlab/swan/SWANReader/SWANReader
+
+.. autoapisummary::
+
+   spatialetl.providers.swan.spatialetl.coverage.io.matlab.swan.SWANReader.SWANReader
+
+

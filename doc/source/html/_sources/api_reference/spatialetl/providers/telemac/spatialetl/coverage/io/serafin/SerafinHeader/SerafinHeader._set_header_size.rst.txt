@@ -1,0 +1,7 @@
+_set_header_size
+================
+
+.. py:method:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._set_header_size()
+
+   Set header size
+

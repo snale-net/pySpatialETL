@@ -1,0 +1,4 @@
+butter_lowpass
+==============
+
+.. py:function:: spatialetl.point.utils.filters.butter_lowpass(cutoff, fs, order=5)

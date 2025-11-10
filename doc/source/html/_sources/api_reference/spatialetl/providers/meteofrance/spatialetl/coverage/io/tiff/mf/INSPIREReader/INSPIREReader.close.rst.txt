@@ -1,0 +1,4 @@
+close
+=====
+
+.. py:method:: spatialetl.providers.meteofrance.spatialetl.coverage.io.tiff.mf.INSPIREReader.INSPIREReader.close()

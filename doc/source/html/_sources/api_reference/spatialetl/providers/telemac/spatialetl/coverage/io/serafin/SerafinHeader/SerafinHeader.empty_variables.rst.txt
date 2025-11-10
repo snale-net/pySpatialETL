@@ -1,0 +1,7 @@
+empty_variables
+===============
+
+.. py:method:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.empty_variables()
+
+   Empty all variables
+

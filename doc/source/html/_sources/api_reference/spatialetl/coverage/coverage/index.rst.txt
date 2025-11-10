@@ -1,0 +1,19 @@
+spatialetl.coverage.coverage
+============================
+
+.. py:module:: spatialetl.coverage.coverage
+
+
+Classes
+-------
+
+.. toctree::
+   :hidden:
+
+   /api_reference/spatialetl/coverage/coverage/Coverage
+
+.. autoapisummary::
+
+   spatialetl.coverage.coverage.Coverage
+
+

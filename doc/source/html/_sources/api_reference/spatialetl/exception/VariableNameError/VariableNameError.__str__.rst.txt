@@ -1,0 +1,7 @@
+__str__
+=======
+
+.. py:method:: spatialetl.exception.VariableNameError.VariableNameError.__str__()
+
+   Return str(self).
+

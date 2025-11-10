@@ -1,0 +1,6 @@
+iocheck
+=======
+
+.. py:method:: spatialetl.providers.swan.spatialetl.coverage.io.ascii.swan.SWANUnstructuredReader.SWANUnstructuredReader.iocheck(fname)
+   :classmethod:
+

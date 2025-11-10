@@ -1,0 +1,12 @@
+SerafinWriter
+=============
+
+.. py:module:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinWriter.SerafinWriter
+Constructor
+-----------
+
+.. autoapimethod:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinWriter.SerafinWriter.__init__
+
+
+
+

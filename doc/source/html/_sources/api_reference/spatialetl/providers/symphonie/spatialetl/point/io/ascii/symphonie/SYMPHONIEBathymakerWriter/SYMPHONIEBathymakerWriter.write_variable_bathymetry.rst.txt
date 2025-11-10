@@ -1,0 +1,4 @@
+write_variable_bathymetry
+=========================
+
+.. py:method:: spatialetl.providers.symphonie.spatialetl.point.io.ascii.symphonie.SYMPHONIEBathymakerWriter.SYMPHONIEBathymakerWriter.write_variable_bathymetry()

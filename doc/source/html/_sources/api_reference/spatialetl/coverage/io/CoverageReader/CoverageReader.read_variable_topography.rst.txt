@@ -1,0 +1,6 @@
+read_variable_topography
+========================
+
+.. py:method:: spatialetl.coverage.io.CoverageReader.CoverageReader.read_variable_topography(xmin, xmax, ymin, ymax)
+   :abstractmethod:
+

@@ -1,0 +1,434 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SerafinHeader &mdash; SpatialETL documentation 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../../../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../../../../_static/custom.css?v=30bed479" />
+
+  
+      <script src="../../../../../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../../../../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../../../../../../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../../../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../../../../../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../../../../search.html" />
+    <link rel="next" title="SerafinReader" href="../SerafinReader/SerafinReader.html" />
+    <link rel="prev" title="spatialetl.providers.telemac.spatialetl.coverage.io.serafin" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../../../../../index.html" class="icon icon-home">
+            SpatialETL documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../../../docs/user_guide.html">User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../../../docs/advanced_guide.html">Advanced guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../../../docs/example.html">Examples Gallery</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../../../../../../docs/reference/providers.html">Providers</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../common/index.html">spatialetl.providers.common</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../ecmwf/index.html">spatialetl.providers.ecmwf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../gmt/index.html">spatialetl.providers.gmt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../hycom/index.html">spatialetl.providers.hycom</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../mercator/index.html">spatialetl.providers.mercator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../meteofrance/index.html">spatialetl.providers.meteofrance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../snale/index.html">spatialetl.providers.snale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../swan/index.html">spatialetl.providers.swan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../symphonie/index.html">spatialetl.providers.symphonie</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../../../../index.html">spatialetl.providers.telemac</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../../../../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="../../../../index.html">spatialetl.providers.telemac.spatialetl</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../ww3/index.html">spatialetl.providers.ww3</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../../../docs/reference.html">API reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../../../../../index.html">SpatialETL documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../../../../../../docs/reference/providers.html">Providers</a></li>
+          <li class="breadcrumb-item"><a href="../../../../../index.html">spatialetl.providers.telemac</a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">spatialetl.providers.telemac.spatialetl</a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">spatialetl.providers.telemac.spatialetl.coverage</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">spatialetl.providers.telemac.spatialetl.coverage.io</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">spatialetl.providers.telemac.spatialetl.coverage.io.serafin</a></li>
+      <li class="breadcrumb-item active">SerafinHeader</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../../../../../../_sources/api_reference/spatialetl/providers/telemac/spatialetl/coverage/io/serafin/SerafinHeader/SerafinHeader.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader">
+<span id="serafinheader"></span><h1>SerafinHeader<a class="headerlink" href="#module-spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader" title="Link to this heading"></a></h1>
+<p>!
+&#64;brief: Data type for reading and storing the Serafin file header</p>
+<p># Attributes:
+## Sizes
+- file_size &lt;int&gt;: total file size
+- header_size &lt;int&gt;: size taken by header only (set by <cite>_set_header_size</cite>)
+- frame_size &lt;int&gt;: size taken by a single frame (set by <cite>_set_frame_size</cite>)</p>
+<dl class="simple">
+<dt>## Float precision: simple or double precision</dt><dd><p>(attributes are set by <cite>_set_as_single_precision</cite> or <cite>_set_as_double_precision</cite>)</p>
+</dd>
+</dl>
+<ul class="simple">
+<li><p>float_type &lt;str&gt;: ‘f’ or ‘d’</p></li>
+<li><p>float_size &lt;int&gt;: 4 or 8</p></li>
+<li><p>np_float_type: np.float32 or np.float64</p></li>
+<li><p>endian &lt;str&gt;: file endianness (‘&gt;’ = big-endian, ‘&lt;’ = little-endian)</p></li>
+<li><p>title &lt;bytes:72&gt;: title of the simulation</p></li>
+<li><p>file_format &lt;bytes:8&gt;: file format type (e.g. b’SERAFIN ‘)</p></li>
+<li><p>language &lt;str&gt;: language for variables (‘fr’ or ‘en’)</p></li>
+<li><p>is_2d &lt;bool&gt;: True in 2D else False</p></li>
+<li><p>has_knolg &lt;bool&gt;: True if ipobo is replaced by KNOLG array</p></li>
+<li><p>date &lt;[int]&gt;: list with 6 integers (year, month, day, hour, minute and second) or None if not available</p></li>
+<li><p>nb_frames &lt;int&gt;: number of frames</p></li>
+<li><p>nb_var &lt;int&gt;: number of variables</p></li>
+<li><p>nb_var_quadratic &lt;int&gt;: ?</p></li>
+<li><p>nb_nodes_per_elem &lt;int&gt;: number of nodes per element</p></li>
+<li><p>nb_planes &lt;int&gt;: number of layers (should be 0 in 2D)</p></li>
+<li><p>var_IDs &lt;[str]&gt;: variable identifiers</p></li>
+<li><p>var_names &lt;[str]&gt;: variable names</p></li>
+<li><p>var_units &lt;[str]&gt;: variable units</p></li>
+<li><p>params &lt;(int)&gt;: tuple of 10 integer parameters</p></li>
+<li><p>nb_elements &lt;int&gt;: number of 3D elements</p></li>
+<li><p>nb_nodes &lt;int&gt;: number of 3D nodes</p></li>
+<li><p>nb_nodes_per_elem &lt;int&gt;: number of nodes per element (= 3 in 2D and 6 in 3D)</p></li>
+<li><p>nb_nodes_2d &lt;int&gt;: number of 2D nodes (equals to <cite>nb_nodes</cite> in 2D)</p></li>
+<li><p>mesh_origin &lt;(float, float)&gt;: x and y shift to apply to written coordinates (set by <cite>set_mesh_origin</cite>)</p></li>
+<li><p>x_stored &lt;numpy.1D-array&gt;: east written coordinates [shape = nb_nodes]</p></li>
+<li><p>y_stored &lt;numpy.1D-array&gt;: north written coordinates [shape = nb_nodes]</p></li>
+<li><p>x &lt;numpy.1D-array&gt;: east coordinates [shape = nb_nodes] (set by <cite>_compute_mesh_coordinates</cite>)</p></li>
+<li><p>y &lt;numpy.1D-array&gt;: north coordinates [shape = nb_nodes] (set by <cite>_compute_mesh_coordinates</cite>)</p></li>
+<li><p>ikle &lt;numpy.1D-array&gt;: connectivity table with 1-indexed nodes number [shape = nb_nodes_per_elem * nb_elements]</p></li>
+<li><dl class="simple">
+<dt>ikle_2d &lt;numpy.2D-array&gt;: reshaped connectivity table</dt><dd><p>[shape = (nb_elements, nb_nodes_per_elem)] (set by <cite>_build_ikle_2d</cite>)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>ipobo &lt;numpy.1D-array&gt;: array with 0 values for inner nodes and 1-indexed node number for boundary nodes</dt><dd><p>[shape = nb_nodes]</p>
+</dd>
+</dl>
+</li>
+</ul>
+<section id="constructor">
+<h2>Constructor<a class="headerlink" href="#constructor" title="Link to this heading"></a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.__init__">
+<span class="sig-prename descclassname"><span class="pre">SerafinHeader.</span></span><span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SERAFIN</span> <span class="pre">'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lang</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'fr'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endian</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'&gt;'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.__init__" title="Link to this definition"></a></dt>
+<dd><p>&#64;param title &lt;str&gt;: title of the simulation
+&#64;param format_type &lt;str&gt;:
+&#64;param lang &lt;str&gt;: language for variables</p>
+</dd></dl>
+
+</section>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">file_size</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">header_size</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">frame_size</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">float_type</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">float_size</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">np_float_type</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">endian</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">title</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">file_format</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">language</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_2d</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_knolg</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">date</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nb_var</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nb_var_quadratic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nb_planes</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nb_frames</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">var_IDs</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">var_names</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">var_units</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">params</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nb_elements</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nb_nodes</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nb_nodes_per_elem</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nb_nodes_2d</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">mesh_origin</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">x_stored</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">y_stored</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">x</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">y</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ikle</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ikle_2d</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ipobo</span></code></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="methods">
+<h2>Methods<a class="headerlink" href="#methods" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="SerafinHeader._check_dim.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._check_dim" title="spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._check_dim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_check_dim</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="SerafinHeader._set_file_format_and_precision.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._set_file_format_and_precision" title="spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._set_file_format_and_precision"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_set_file_format_and_precision</span></code></a>(file_format)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="SerafinHeader._set_has_knolg.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._set_has_knolg" title="spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._set_has_knolg"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_set_has_knolg</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="SerafinHeader._build_ikle_2d.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._build_ikle_2d" title="spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._build_ikle_2d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_build_ikle_2d</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="SerafinHeader._set_as_single_precision.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._set_as_single_precision" title="spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._set_as_single_precision"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_set_as_single_precision</span></code></a>()</p></td>
+<td><p>Set Serafin as single precision</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="SerafinHeader._set_as_double_precision.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._set_as_double_precision" title="spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._set_as_double_precision"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_set_as_double_precision</span></code></a>()</p></td>
+<td><p>Set Serafin as double precision</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="SerafinHeader.unpack_int.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.unpack_int" title="spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.unpack_int"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unpack_int</span></code></a>(bytes2unpack[, nb])</p></td>
+<td><p>Unpack bytes to integer(s)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="SerafinHeader.unpack_float.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.unpack_float" title="spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.unpack_float"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unpack_float</span></code></a>(bytes2unpack[, nb])</p></td>
+<td><p>Unpack bytes to float(s)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="SerafinHeader.pack_int.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.pack_int" title="spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.pack_int"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pack_int</span></code></a>(*args[, nb])</p></td>
+<td><p>Pack integers</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="SerafinHeader.pack_float.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.pack_float" title="spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.pack_float"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pack_float</span></code></a>(*args[, nb])</p></td>
+<td><p>Pack floats</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="SerafinHeader.toggle_endianness.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.toggle_endianness" title="spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.toggle_endianness"><code class="xref py py-obj docutils literal notranslate"><span class="pre">toggle_endianness</span></code></a>()</p></td>
+<td><p>Toggle original endianness (between big or little endian)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="SerafinHeader._compute_mesh_coordinates.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._compute_mesh_coordinates" title="spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._compute_mesh_coordinates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_compute_mesh_coordinates</span></code></a>()</p></td>
+<td><p>Compute mesh coordinates from origin</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="SerafinHeader._set_header_size.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._set_header_size" title="spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._set_header_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_set_header_size</span></code></a>()</p></td>
+<td><p>Set header size</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="SerafinHeader._set_frame_size.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._set_frame_size" title="spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._set_frame_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_set_frame_size</span></code></a>()</p></td>
+<td><p>Set frame size (all variable values for one time step)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="SerafinHeader._expected_file_size.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._expected_file_size" title="spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._expected_file_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_expected_file_size</span></code></a>()</p></td>
+<td><p>Returns expected file size</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="SerafinHeader.summary.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.summary" title="spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.summary"><code class="xref py py-obj docutils literal notranslate"><span class="pre">summary</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="SerafinHeader.copy.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.copy" title="spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>()</p></td>
+<td><p>Returns a deep copy of the current instance</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="SerafinHeader.copy_as_2d.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.copy_as_2d" title="spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.copy_as_2d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy_as_2d</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="SerafinHeader.copy_as_3d.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.copy_as_3d" title="spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.copy_as_3d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy_as_3d</span></code></a>(nb_planes)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="SerafinHeader.nearest_node.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.nearest_node" title="spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.nearest_node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nearest_node</span></code></a>(target_x, target_y)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="SerafinHeader.same_2d_mesh.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.same_2d_mesh" title="spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.same_2d_mesh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">same_2d_mesh</span></code></a>(other)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="SerafinHeader.is_double_precision.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.is_double_precision" title="spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.is_double_precision"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_double_precision</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="SerafinHeader.to_single_precision.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.to_single_precision" title="spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.to_single_precision"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_single_precision</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="SerafinHeader.empty_variables.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.empty_variables" title="spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.empty_variables"><code class="xref py py-obj docutils literal notranslate"><span class="pre">empty_variables</span></code></a>()</p></td>
+<td><p>Empty all variables</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="SerafinHeader.add_variable.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.add_variable" title="spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.add_variable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_variable</span></code></a>(var_ID, var_name, var_unit)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="SerafinHeader.add_variable_str.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.add_variable_str" title="spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.add_variable_str"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_variable_str</span></code></a>(var_ID, var_name, var_unit)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="SerafinHeader.add_variable_from_ID.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.add_variable_from_ID" title="spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.add_variable_from_ID"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_variable_from_ID</span></code></a>(var_ID)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="SerafinHeader.set_mesh_origin.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.set_mesh_origin" title="spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.set_mesh_origin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_mesh_origin</span></code></a>(x, y)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="SerafinHeader.set_variables.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.set_variables" title="spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.set_variables"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_variables</span></code></a>(selected_vars)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="SerafinHeader.iter_on_all_variables.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.iter_on_all_variables" title="spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.iter_on_all_variables"><code class="xref py py-obj docutils literal notranslate"><span class="pre">iter_on_all_variables</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="SerafinHeader.transform_mesh_copy.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.transform_mesh_copy" title="spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.transform_mesh_copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transform_mesh_copy</span></code></a>(transformations)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="SerafinHeader.transform_mesh.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.transform_mesh" title="spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.transform_mesh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transform_mesh</span></code></a>(transformations)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="SerafinHeader.get_all_edges.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.get_all_edges" title="spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.get_all_edges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_all_edges</span></code></a>()</p></td>
+<td><p>Get all edges (pair of nodes)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="SerafinHeader.get_external_edges.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.get_external_edges" title="spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.get_external_edges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_external_edges</span></code></a>()</p></td>
+<td><p>Get external edges (pair of nodes)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="SerafinHeader.iter_on_boundaries.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.iter_on_boundaries" title="spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.iter_on_boundaries"><code class="xref py py-obj docutils literal notranslate"><span class="pre">iter_on_boundaries</span></code></a>()</p></td>
+<td><p>Iterate over all boundaries to get the nodes describing them</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="SerafinHeader.build_ipobo.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.build_ipobo" title="spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.build_ipobo"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_ipobo</span></code></a>()</p></td>
+<td><p>Build IPOBO array containing 0 values for inner nodes and 1-indexed node number for boundary nodes</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="SerafinHeader._set_as_2d.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._set_as_2d" title="spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._set_as_2d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_set_as_2d</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="SerafinHeader.from_triangulation.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.from_triangulation" title="spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.from_triangulation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_triangulation</span></code></a>(nodes, ikle)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="SerafinHeader.from_file.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.from_file" title="spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.from_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_file</span></code></a>(file, file_size)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="spatialetl.providers.telemac.spatialetl.coverage.io.serafin" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../SerafinReader/SerafinReader.html" class="btn btn-neutral float-right" title="SerafinReader" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, SNALE.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

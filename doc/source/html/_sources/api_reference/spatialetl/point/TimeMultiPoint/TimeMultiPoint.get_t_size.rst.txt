@@ -1,0 +1,4 @@
+get_t_size
+==========
+
+.. py:method:: spatialetl.point.TimeMultiPoint.TimeMultiPoint.get_t_size(type='target', with_overlap=False)

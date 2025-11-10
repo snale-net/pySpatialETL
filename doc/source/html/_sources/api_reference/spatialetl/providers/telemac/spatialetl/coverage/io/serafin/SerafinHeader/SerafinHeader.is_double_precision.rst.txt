@@ -1,0 +1,4 @@
+is_double_precision
+===================
+
+.. py:method:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.is_double_precision()

@@ -1,0 +1,17 @@
+check_bbox_validity
+===================
+
+.. py:method:: spatialetl.coverage.coverage.Coverage.check_bbox_validity(candidate)
+
+   Check the validity of the bounding box.
+
+   :param candidate: Bounding box coordinates [xmin, xmax, ymin, ymax].
+   :type candidate: list
+
+   :returns: True if the bounding box is valid, False otherwise.
+   :rtype: bool
+
+   .. rubric:: Examples
+
+   >>> coverage = Coverage(myReader, bbox=[0, 10, 0, 10], resolution_x=1.0, resolution_y=1.0)
+

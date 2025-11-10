@@ -1,0 +1,4 @@
+pixel2coord
+===========
+
+.. py:method:: spatialetl.providers.common.gdal.spatialetl.coverage.io.img.ImageReader.ImageReader.pixel2coord(y, x)

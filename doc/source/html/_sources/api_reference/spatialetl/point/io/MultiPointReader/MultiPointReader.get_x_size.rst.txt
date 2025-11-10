@@ -1,0 +1,6 @@
+get_x_size
+==========
+
+.. py:method:: spatialetl.point.io.MultiPointReader.MultiPointReader.get_x_size()
+   :abstractmethod:
+

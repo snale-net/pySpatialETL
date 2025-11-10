@@ -1,0 +1,19 @@
+spatialetl.point.TimeMultiPoint
+===============================
+
+.. py:module:: spatialetl.point.TimeMultiPoint
+
+
+Classes
+-------
+
+.. toctree::
+   :hidden:
+
+   /api_reference/spatialetl/point/TimeMultiPoint/TimeMultiPoint
+
+.. autoapisummary::
+
+   spatialetl.point.TimeMultiPoint.TimeMultiPoint
+
+

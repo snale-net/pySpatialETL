@@ -1,0 +1,4 @@
+write_variable_wind_to_direction_10m
+====================================
+
+.. py:method:: spatialetl.providers.common.netcdf.spatialetl.coverage.io.netcdf.DefaultWriter.DefaultWriter.write_variable_wind_to_direction_10m()

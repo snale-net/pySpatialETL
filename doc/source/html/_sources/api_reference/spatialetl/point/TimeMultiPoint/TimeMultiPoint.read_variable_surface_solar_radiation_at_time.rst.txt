@@ -1,0 +1,4 @@
+read_variable_surface_solar_radiation_at_time
+=============================================
+
+.. py:method:: spatialetl.point.TimeMultiPoint.TimeMultiPoint.read_variable_surface_solar_radiation_at_time(date)

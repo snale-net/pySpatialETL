@@ -1,0 +1,4 @@
+read_variable_sea_surface_wave_significant_height_at_time
+=========================================================
+
+.. py:method:: spatialetl.providers.swan.spatialetl.coverage.io.matlab.swan.SWANUnstructuredReader.SWANUnstructuredReader.read_variable_sea_surface_wave_significant_height_at_time(t, xmin, xmax, ymin, ymax)

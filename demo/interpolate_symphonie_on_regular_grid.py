@@ -21,8 +21,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 from spatialetl.coverage.time_level_coverage import TimeLevelCoverage
-from spatialetl.coverage.io.netcdf.symphonie.v293.SYMPHONIEReader import SYMPHONIEReader as CoverageReader
-from spatialetl.coverage.io.netcdf.DefaultWriter import DefaultWriter
+from spatialetl.providers.symphonie.coverage.netcdf.v293.symphonie_reader import SYMPHONIEReader as CoverageReader
+from spatialetl.providers.common.netcdf.coverage.default_writer import DefaultWriter
 from spatialetl.utils.logger import logging
 
 if __name__ == "__main__":

@@ -1,0 +1,6 @@
+write_variable_baroclinic_sea_water_velocity_and_depth
+======================================================
+
+.. py:method:: spatialetl.coverage.io.CoverageWriter.CoverageWriter.write_variable_baroclinic_sea_water_velocity_and_depth(index_z)
+   :abstractmethod:
+

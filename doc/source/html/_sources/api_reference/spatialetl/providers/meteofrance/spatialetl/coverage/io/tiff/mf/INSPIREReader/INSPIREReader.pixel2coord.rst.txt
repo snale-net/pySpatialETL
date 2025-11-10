@@ -1,0 +1,4 @@
+pixel2coord
+===========
+
+.. py:method:: spatialetl.providers.meteofrance.spatialetl.coverage.io.tiff.mf.INSPIREReader.INSPIREReader.pixel2coord(y, x)

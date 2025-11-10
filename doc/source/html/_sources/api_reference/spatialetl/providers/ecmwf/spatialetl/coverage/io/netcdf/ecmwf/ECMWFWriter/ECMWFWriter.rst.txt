@@ -1,0 +1,40 @@
+ECMWFWriter
+===========
+
+.. py:module:: spatialetl.providers.ecmwf.spatialetl.coverage.io.netcdf.ecmwf.ECMWFWriter.ECMWFWriter
+Constructor
+-----------
+
+.. autoapimethod:: spatialetl.providers.ecmwf.spatialetl.coverage.io.netcdf.ecmwf.ECMWFWriter.ECMWFWriter.__init__
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.providers.ecmwf.spatialetl.coverage.io.netcdf.ecmwf.ECMWFWriter.ECMWFWriter.ncfile
+
+Methods
+-------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.providers.ecmwf.spatialetl.coverage.io.netcdf.ecmwf.ECMWFWriter.ECMWFWriter.close
+   spatialetl.providers.ecmwf.spatialetl.coverage.io.netcdf.ecmwf.ECMWFWriter.ECMWFWriter.write_variable_3D_land_binary_mask
+   spatialetl.providers.ecmwf.spatialetl.coverage.io.netcdf.ecmwf.ECMWFWriter.ECMWFWriter.write_variable_surface_air_pressure
+   spatialetl.providers.ecmwf.spatialetl.coverage.io.netcdf.ecmwf.ECMWFWriter.ECMWFWriter.write_variable_sea_surface_air_pressure
+   spatialetl.providers.ecmwf.spatialetl.coverage.io.netcdf.ecmwf.ECMWFWriter.ECMWFWriter.write_variable_surface_downward_sensible_heat_flux
+   spatialetl.providers.ecmwf.spatialetl.coverage.io.netcdf.ecmwf.ECMWFWriter.ECMWFWriter.write_variable_surface_downward_latent_heat_flux
+   spatialetl.providers.ecmwf.spatialetl.coverage.io.netcdf.ecmwf.ECMWFWriter.ECMWFWriter.write_variable_wind_10m
+   spatialetl.providers.ecmwf.spatialetl.coverage.io.netcdf.ecmwf.ECMWFWriter.ECMWFWriter.write_variable_surface_air_temperature
+   spatialetl.providers.ecmwf.spatialetl.coverage.io.netcdf.ecmwf.ECMWFWriter.ECMWFWriter.write_variable_dew_point_temperature
+   spatialetl.providers.ecmwf.spatialetl.coverage.io.netcdf.ecmwf.ECMWFWriter.ECMWFWriter.write_variable_surface_downward_solar_radiation
+   spatialetl.providers.ecmwf.spatialetl.coverage.io.netcdf.ecmwf.ECMWFWriter.ECMWFWriter.write_variable_surface_downward_thermal_radiation
+   spatialetl.providers.ecmwf.spatialetl.coverage.io.netcdf.ecmwf.ECMWFWriter.ECMWFWriter.write_variable_surface_solar_radiation
+   spatialetl.providers.ecmwf.spatialetl.coverage.io.netcdf.ecmwf.ECMWFWriter.ECMWFWriter.write_variable_surface_thermal_radiation
+   spatialetl.providers.ecmwf.spatialetl.coverage.io.netcdf.ecmwf.ECMWFWriter.ECMWFWriter.write_variable_rainfall_amount
+

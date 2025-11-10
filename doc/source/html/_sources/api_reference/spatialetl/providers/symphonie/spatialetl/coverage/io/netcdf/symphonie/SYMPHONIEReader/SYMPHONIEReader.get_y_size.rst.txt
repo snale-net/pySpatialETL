@@ -1,0 +1,4 @@
+get_y_size
+==========
+
+.. py:method:: spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.get_y_size()

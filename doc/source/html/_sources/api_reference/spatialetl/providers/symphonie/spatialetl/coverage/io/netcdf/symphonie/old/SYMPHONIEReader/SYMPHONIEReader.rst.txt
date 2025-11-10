@@ -1,0 +1,20 @@
+SYMPHONIEReader
+===============
+
+.. py:module:: spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.old.SYMPHONIEReader.SYMPHONIEReader
+Constructor
+-----------
+
+.. autoapimethod:: spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.old.SYMPHONIEReader.SYMPHONIEReader.__init__
+
+
+
+
+Methods
+-------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.old.SYMPHONIEReader.SYMPHONIEReader.read_variable_current_at_time_and_depth
+

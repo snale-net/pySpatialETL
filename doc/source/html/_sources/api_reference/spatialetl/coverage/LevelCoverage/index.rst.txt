@@ -1,0 +1,19 @@
+spatialetl.coverage.LevelCoverage
+=================================
+
+.. py:module:: spatialetl.coverage.LevelCoverage
+
+
+Classes
+-------
+
+.. toctree::
+   :hidden:
+
+   /api_reference/spatialetl/coverage/LevelCoverage/LevelCoverage
+
+.. autoapisummary::
+
+   spatialetl.coverage.LevelCoverage.LevelCoverage
+
+

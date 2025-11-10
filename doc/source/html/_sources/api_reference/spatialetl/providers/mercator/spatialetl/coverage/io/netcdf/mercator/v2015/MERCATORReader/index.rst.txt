@@ -1,0 +1,19 @@
+spatialetl.providers.mercator.spatialetl.coverage.io.netcdf.mercator.v2015.MERCATORReader
+=========================================================================================
+
+.. py:module:: spatialetl.providers.mercator.spatialetl.coverage.io.netcdf.mercator.v2015.MERCATORReader
+
+
+Classes
+-------
+
+.. toctree::
+   :hidden:
+
+   /api_reference/spatialetl/providers/mercator/spatialetl/coverage/io/netcdf/mercator/v2015/MERCATORReader/MERCATORReader
+
+.. autoapisummary::
+
+   spatialetl.providers.mercator.spatialetl.coverage.io.netcdf.mercator.v2015.MERCATORReader.MERCATORReader
+
+

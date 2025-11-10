@@ -1,0 +1,48 @@
+WW3Reader
+=========
+
+.. py:module:: spatialetl.providers.ww3.spatialetl.point.io.netcdf.ww3.WW3Reader.WW3Reader
+Constructor
+-----------
+
+.. autoapimethod:: spatialetl.providers.ww3.spatialetl.point.io.netcdf.ww3.WW3Reader.WW3Reader.__init__
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.providers.ww3.spatialetl.point.io.netcdf.ww3.WW3Reader.WW3Reader.reader
+   spatialetl.providers.ww3.spatialetl.point.io.netcdf.ww3.WW3Reader.WW3Reader.source_xy_coords
+   spatialetl.providers.ww3.spatialetl.point.io.netcdf.ww3.WW3Reader.WW3Reader.names
+   spatialetl.providers.ww3.spatialetl.point.io.netcdf.ww3.WW3Reader.WW3Reader.xy_coords
+   spatialetl.providers.ww3.spatialetl.point.io.netcdf.ww3.WW3Reader.WW3Reader.xy_values
+   spatialetl.providers.ww3.spatialetl.point.io.netcdf.ww3.WW3Reader.WW3Reader.meta_data
+
+Methods
+-------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.providers.ww3.spatialetl.point.io.netcdf.ww3.WW3Reader.WW3Reader.find_points_coordinates
+   spatialetl.providers.ww3.spatialetl.point.io.netcdf.ww3.WW3Reader.WW3Reader.close
+   spatialetl.providers.ww3.spatialetl.point.io.netcdf.ww3.WW3Reader.WW3Reader.find_point_index
+   spatialetl.providers.ww3.spatialetl.point.io.netcdf.ww3.WW3Reader.WW3Reader.get_z_size
+   spatialetl.providers.ww3.spatialetl.point.io.netcdf.ww3.WW3Reader.WW3Reader.get_t_size
+   spatialetl.providers.ww3.spatialetl.point.io.netcdf.ww3.WW3Reader.WW3Reader.read_axis_x
+   spatialetl.providers.ww3.spatialetl.point.io.netcdf.ww3.WW3Reader.WW3Reader.read_axis_y
+   spatialetl.providers.ww3.spatialetl.point.io.netcdf.ww3.WW3Reader.WW3Reader.read_axis_t
+   spatialetl.providers.ww3.spatialetl.point.io.netcdf.ww3.WW3Reader.WW3Reader.read_metadata
+   spatialetl.providers.ww3.spatialetl.point.io.netcdf.ww3.WW3Reader.WW3Reader.read_variable_longitude
+   spatialetl.providers.ww3.spatialetl.point.io.netcdf.ww3.WW3Reader.WW3Reader.read_variable_latitude
+   spatialetl.providers.ww3.spatialetl.point.io.netcdf.ww3.WW3Reader.WW3Reader.read_variable_time
+   spatialetl.providers.ww3.spatialetl.point.io.netcdf.ww3.WW3Reader.WW3Reader.read_variable_point_names
+   spatialetl.providers.ww3.spatialetl.point.io.netcdf.ww3.WW3Reader.WW3Reader.read_variable_sea_surface_wave_significant_height_at_time
+   spatialetl.providers.ww3.spatialetl.point.io.netcdf.ww3.WW3Reader.WW3Reader.read_variable_sea_surface_wave_mean_period_at_time
+   spatialetl.providers.ww3.spatialetl.point.io.netcdf.ww3.WW3Reader.WW3Reader.read_variable_sea_surface_wave_to_direction_at_time
+   spatialetl.providers.ww3.spatialetl.point.io.netcdf.ww3.WW3Reader.WW3Reader.read_variable_sea_surface_wave_stokes_drift_velocity_at_time
+

@@ -1,0 +1,6 @@
+spatialetl.providers.gmt.setup
+==============================
+
+.. py:module:: spatialetl.providers.gmt.setup
+
+

@@ -1,0 +1,10 @@
+unpack_float
+============
+
+.. py:method:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.unpack_float(bytes2unpack, nb=1)
+
+   Unpack bytes to float(s)
+   @param bytes2unpack <bytes>: bytes to unpack
+   @param nb <int>: number of consecutive float
+   @return <(float)>
+

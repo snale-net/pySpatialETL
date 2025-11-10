@@ -1,0 +1,4 @@
+TranslateLayer
+==============
+
+.. py:function:: spatialetl.utils.bing.core.ogr2ogr.TranslateLayer(psInfo, poSrcDS, poSrcLayer, poDstDS, poOutputSRS, bNullifyOutputSRS, eGType, bPromoteToMulti, nCoordDim, eGeomOp, dfGeomOpParam, nCountLayerFeatures, poClipSrc, poClipDst, bExplodeCollections, nSrcFileSize, pnReadFeatureCount, pfnProgress, pProgressArg)

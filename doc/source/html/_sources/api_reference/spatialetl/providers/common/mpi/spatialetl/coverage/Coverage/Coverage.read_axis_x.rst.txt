@@ -1,0 +1,8 @@
+read_axis_x
+===========
+
+.. py:method:: spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.read_axis_x(type='target', with_overlap=False)
+
+   Retourne les valeurs (souvent la longitude) de l'axe x.
+   @return:  un tableau à une ou deux dimensions selon le type de maille des valeurs de l'axe x (souvent la longitude) : [x] ou [y,x].
+

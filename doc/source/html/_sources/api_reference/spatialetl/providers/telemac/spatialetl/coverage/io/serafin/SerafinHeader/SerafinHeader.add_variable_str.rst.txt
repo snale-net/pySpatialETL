@@ -1,0 +1,11 @@
+add_variable_str
+================
+
+.. py:method:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.add_variable_str(var_ID, var_name, var_unit)
+
+   !
+   @brief: Add a single variable with strings
+   @param var_ID <str>: variables identifier (abbreviation)
+   @param var_name <str>: variable name
+   @param var_unit <str>: variable unit
+

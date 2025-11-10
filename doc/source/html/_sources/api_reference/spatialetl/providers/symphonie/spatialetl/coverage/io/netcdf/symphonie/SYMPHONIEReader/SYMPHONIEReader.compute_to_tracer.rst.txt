@@ -1,0 +1,4 @@
+compute_to_tracer
+=================
+
+.. py:method:: spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.compute_to_tracer(data_u, data_v, mask_t, mask_u, mask_v)

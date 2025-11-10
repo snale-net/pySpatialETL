@@ -1,0 +1,14 @@
+pixelXY_to_tileXY
+=================
+
+.. py:method:: spatialetl.utils.bing.core.tilesystem.TileSystem.pixelXY_to_tileXY(pixelX, pixelY)
+   :staticmethod:
+
+
+   Converts pixel XY coordinates into tile XY coordinates of the tile containing the specified pixel.
+
+   :param pixelX {[int]} -- [Pixel X coordinate]:
+   :param pixelY {[int]} -- [Pixel Y coordinate]:
+
+   :returns: [int, int] -- [Tile X coordinate; Tile Y coordinate]
+

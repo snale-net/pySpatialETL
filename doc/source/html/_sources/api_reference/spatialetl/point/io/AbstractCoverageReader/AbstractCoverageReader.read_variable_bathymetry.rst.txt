@@ -1,0 +1,4 @@
+read_variable_bathymetry
+========================
+
+.. py:method:: spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.read_variable_bathymetry()

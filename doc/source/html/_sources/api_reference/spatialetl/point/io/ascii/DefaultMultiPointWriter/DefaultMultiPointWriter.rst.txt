@@ -1,0 +1,44 @@
+DefaultMultiPointWriter
+=======================
+
+.. py:module:: spatialetl.point.io.ascii.DefaultMultiPointWriter.DefaultMultiPointWriter
+Constructor
+-----------
+
+.. autoapimethod:: spatialetl.point.io.ascii.DefaultMultiPointWriter.DefaultMultiPointWriter.__init__
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.point.io.ascii.DefaultMultiPointWriter.DefaultMultiPointWriter.data
+
+Methods
+-------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.point.io.ascii.DefaultMultiPointWriter.DefaultMultiPointWriter.close
+   spatialetl.point.io.ascii.DefaultMultiPointWriter.DefaultMultiPointWriter.write_variable_time
+   spatialetl.point.io.ascii.DefaultMultiPointWriter.DefaultMultiPointWriter.write_variable_sea_surface_height_above_mean_sea_level
+   spatialetl.point.io.ascii.DefaultMultiPointWriter.DefaultMultiPointWriter.write_variable_sea_surface_height_above_geoid
+   spatialetl.point.io.ascii.DefaultMultiPointWriter.DefaultMultiPointWriter.write_variable_sea_surface_temperature
+   spatialetl.point.io.ascii.DefaultMultiPointWriter.DefaultMultiPointWriter.write_variable_sea_surface_wave_significant_height
+   spatialetl.point.io.ascii.DefaultMultiPointWriter.DefaultMultiPointWriter.write_variable_sea_surface_wave_mean_period
+   spatialetl.point.io.ascii.DefaultMultiPointWriter.DefaultMultiPointWriter.write_variable_sea_surface_salinity
+   spatialetl.point.io.ascii.DefaultMultiPointWriter.DefaultMultiPointWriter.write_variable_sea_surface_density
+   spatialetl.point.io.ascii.DefaultMultiPointWriter.DefaultMultiPointWriter.write_variable_sea_water_turbidity
+   spatialetl.point.io.ascii.DefaultMultiPointWriter.DefaultMultiPointWriter.write_variable_bathymetry
+   spatialetl.point.io.ascii.DefaultMultiPointWriter.DefaultMultiPointWriter.write_variable_wind_speed_10m
+   spatialetl.point.io.ascii.DefaultMultiPointWriter.DefaultMultiPointWriter.write_variable_wind_from_direction_10m
+   spatialetl.point.io.ascii.DefaultMultiPointWriter.DefaultMultiPointWriter.write_variable_wind_to_direction_10m
+   spatialetl.point.io.ascii.DefaultMultiPointWriter.DefaultMultiPointWriter.write_variable_surface_air_pressure
+   spatialetl.point.io.ascii.DefaultMultiPointWriter.DefaultMultiPointWriter.write_variable_rainfall_amount
+   spatialetl.point.io.ascii.DefaultMultiPointWriter.DefaultMultiPointWriter.write_variable_sea_water_pressure_at_sea_water_surface
+   spatialetl.point.io.ascii.DefaultMultiPointWriter.DefaultMultiPointWriter.write_variable_sea_water_electrical_conductivity
+

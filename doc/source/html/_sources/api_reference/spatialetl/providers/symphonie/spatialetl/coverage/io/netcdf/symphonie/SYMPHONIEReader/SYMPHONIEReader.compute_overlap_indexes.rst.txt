@@ -1,0 +1,4 @@
+compute_overlap_indexes
+=======================
+
+.. py:method:: spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.compute_overlap_indexes(xmin, xmax, ymin, ymax)

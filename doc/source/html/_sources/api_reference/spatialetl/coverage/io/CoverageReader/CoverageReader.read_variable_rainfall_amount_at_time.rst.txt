@@ -1,0 +1,6 @@
+read_variable_rainfall_amount_at_time
+=====================================
+
+.. py:method:: spatialetl.coverage.io.CoverageReader.CoverageReader.read_variable_rainfall_amount_at_time(index_t, xmin, xmax, ymin, ymax)
+   :abstractmethod:
+

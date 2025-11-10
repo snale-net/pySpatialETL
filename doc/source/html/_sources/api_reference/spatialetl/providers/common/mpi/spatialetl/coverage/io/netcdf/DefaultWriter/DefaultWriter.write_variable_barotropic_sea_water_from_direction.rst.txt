@@ -1,0 +1,4 @@
+write_variable_barotropic_sea_water_from_direction
+==================================================
+
+.. py:method:: spatialetl.providers.common.mpi.spatialetl.coverage.io.netcdf.DefaultWriter.DefaultWriter.write_variable_barotropic_sea_water_from_direction()

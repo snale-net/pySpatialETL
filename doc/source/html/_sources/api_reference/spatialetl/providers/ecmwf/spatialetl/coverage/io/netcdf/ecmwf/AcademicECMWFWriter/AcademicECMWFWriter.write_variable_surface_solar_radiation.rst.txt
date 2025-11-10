@@ -1,0 +1,4 @@
+write_variable_surface_solar_radiation
+======================================
+
+.. py:method:: spatialetl.providers.ecmwf.spatialetl.coverage.io.netcdf.ecmwf.AcademicECMWFWriter.AcademicECMWFWriter.write_variable_surface_solar_radiation()

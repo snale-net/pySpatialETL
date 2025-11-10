@@ -1,0 +1,4 @@
+close
+=====
+
+.. py:method:: spatialetl.providers.symphonie.spatialetl.point.io.ascii.symphonie.SYMPHONIEBathymakerWriter.SYMPHONIEBathymakerWriter.close()

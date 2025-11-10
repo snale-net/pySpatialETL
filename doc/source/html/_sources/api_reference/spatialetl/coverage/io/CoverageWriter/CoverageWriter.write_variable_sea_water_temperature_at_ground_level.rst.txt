@@ -1,0 +1,6 @@
+write_variable_sea_water_temperature_at_ground_level
+====================================================
+
+.. py:method:: spatialetl.coverage.io.CoverageWriter.CoverageWriter.write_variable_sea_water_temperature_at_ground_level()
+   :abstractmethod:
+

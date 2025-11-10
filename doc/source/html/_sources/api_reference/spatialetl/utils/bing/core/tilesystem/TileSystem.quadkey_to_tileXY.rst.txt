@@ -1,0 +1,13 @@
+quadkey_to_tileXY
+=================
+
+.. py:method:: spatialetl.utils.bing.core.tilesystem.TileSystem.quadkey_to_tileXY(quadkey)
+   :staticmethod:
+
+
+   Converts a QuadKey into tile XY coordinate
+
+   :param quadkey {[string]} -- [QuadKey of the tile]:
+
+   :returns: [int, int] -- [Tile X coordinate; Tile Y coordinate]
+

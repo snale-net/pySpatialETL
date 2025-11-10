@@ -1,0 +1,25 @@
+
+spatialetl.point.tests.TestTimeMultiPoint
+=========================================
+
+.. py:module:: spatialetl.point.tests.TestTimeMultiPoint
+
+
+Classes
+-------
+
+.. toctree::
+   :hidden:
+
+   /api_reference/spatialetl/point/tests/TestTimeMultiPoint/TestTimeMultiPoint
+
+.. list-table:: Classes
+   :widths: auto
+   :header-rows: 0
+
+   * - TestTimeMultiPoint
+     - A class whose instances are single test cases.
+
+
+
+

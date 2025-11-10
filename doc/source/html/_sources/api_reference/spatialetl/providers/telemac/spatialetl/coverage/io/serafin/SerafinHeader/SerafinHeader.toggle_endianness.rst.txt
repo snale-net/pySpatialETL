@@ -1,0 +1,7 @@
+toggle_endianness
+=================
+
+.. py:method:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.toggle_endianness()
+
+   Toggle original endianness (between big or little endian)
+

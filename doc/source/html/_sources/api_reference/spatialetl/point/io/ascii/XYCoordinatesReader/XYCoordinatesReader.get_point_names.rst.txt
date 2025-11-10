@@ -1,0 +1,4 @@
+get_point_names
+===============
+
+.. py:method:: spatialetl.point.io.ascii.XYCoordinatesReader.XYCoordinatesReader.get_point_names()

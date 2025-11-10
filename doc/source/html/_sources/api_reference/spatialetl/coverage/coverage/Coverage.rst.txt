@@ -1,0 +1,82 @@
+Coverage
+========
+
+.. py:module:: spatialetl.coverage.coverage.Coverage
+
+.. autoapi-nested-parse::
+
+   The Coverage class represents a spatial coverage on the horizontal plane.
+
+   The points representing this coverage can be aligned on a regular grid (x,y) or on an irregular grid ((x1,y1),(x2,y2)).
+   Depending on the grid type, the axis reading functions will return one or two-dimensional arrays.
+   To avoid loading the entire file into memory, the coverage contains a pointer to a reader.
+   Layers are therefore read on demand from the file.
+
+   Note: The axes are always reversed in the arrays because of NetCDF.
+   So the y-axis first, then the x-axis. Example: [y,x]
+
+   .. rubric:: Examples
+
+   >>> coverage = Coverage(myReader, bbox=[-5, 5, -5, 5], resolution_x=0.1, resolution_y=0.1)
+
+
+Constructor
+-----------
+
+.. autoapimethod:: spatialetl.coverage.coverage.Coverage.__init__
+
+
+Static attributes
+-----------------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.coverage.coverage.Coverage.HORIZONTAL_INTERPOLATION_METHOD
+   spatialetl.coverage.coverage.Coverage.HORIZONTAL_OVERLAPING_SIZE
+
+Attributes
+----------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.coverage.coverage.Coverage.reader
+   spatialetl.coverage.coverage.Coverage.map_mpi
+   spatialetl.coverage.coverage.Coverage.size
+   spatialetl.coverage.coverage.Coverage.rank
+   spatialetl.coverage.coverage.Coverage.source_regular_grid
+   spatialetl.coverage.coverage.Coverage.target_regular_grid
+   spatialetl.coverage.coverage.Coverage.horizontal_resampling
+   spatialetl.coverage.coverage.Coverage.source_global_x_size
+   spatialetl.coverage.coverage.Coverage.source_global_y_size
+   spatialetl.coverage.coverage.Coverage.source_global_axis_x
+   spatialetl.coverage.coverage.Coverage.source_global_axis_y
+   spatialetl.coverage.coverage.Coverage.target_global_res_x
+   spatialetl.coverage.coverage.Coverage.target_global_res_y
+
+Methods
+-------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.coverage.coverage.Coverage.check_bbox_validity
+   spatialetl.coverage.coverage.Coverage.check_point_is_inside
+   spatialetl.coverage.coverage.Coverage.create_mpi_map
+   spatialetl.coverage.coverage.Coverage.update_mpi_map
+   spatialetl.coverage.coverage.Coverage.read_metadata
+   spatialetl.coverage.coverage.Coverage.get_x_size
+   spatialetl.coverage.coverage.Coverage.get_y_size
+   spatialetl.coverage.coverage.Coverage.is_regular_grid
+   spatialetl.coverage.coverage.Coverage.read_axis_x
+   spatialetl.coverage.coverage.Coverage.read_axis_y
+   spatialetl.coverage.coverage.Coverage.find_point_index
+   spatialetl.coverage.coverage.Coverage.read_variable_bathymetry
+   spatialetl.coverage.coverage.Coverage.read_variable_topography
+   spatialetl.coverage.coverage.Coverage.read_variable_mesh_size
+   spatialetl.coverage.coverage.Coverage.read_variable_x_mesh_size
+   spatialetl.coverage.coverage.Coverage.read_variable_y_mesh_size
+   spatialetl.coverage.coverage.Coverage.read_variable_2D_sea_binary_mask
+   spatialetl.coverage.coverage.Coverage.read_variable_Ha
+

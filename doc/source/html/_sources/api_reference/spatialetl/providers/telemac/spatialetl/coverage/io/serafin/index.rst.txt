@@ -1,0 +1,27 @@
+spatialetl.providers.telemac.spatialetl.coverage.io.serafin
+===========================================================
+
+.. py:module:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin
+
+.. autoapi-nested-parse::
+
+   ==================================
+   SERAFIN (:mod:`coverage.io.serafin`)
+   ==================================
+
+   .. currentmodule:: coverage.io.serafin
+
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /api_reference/spatialetl/providers/telemac/spatialetl/coverage/io/serafin/SerafinHeader/SLF_EIT
+   /api_reference/spatialetl/providers/telemac/spatialetl/coverage/io/serafin/SerafinHeader/SerafinHeader
+   /api_reference/spatialetl/providers/telemac/spatialetl/coverage/io/serafin/SerafinReader/SerafinReader
+   /api_reference/spatialetl/providers/telemac/spatialetl/coverage/io/serafin/SerafinWriter/SerafinWriter
+
+

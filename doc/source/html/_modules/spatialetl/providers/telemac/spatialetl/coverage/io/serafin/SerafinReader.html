@@ -1,0 +1,343 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader &mdash; pySpatialETL documentation 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../../../_static/custom.css?v=1abc5f28" />
+
+  
+      <script src="../../../../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../../../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../../../../../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../../../../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../../../../index.html" class="icon icon-home">
+            pySpatialETL documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../../docs/user_guide.html">User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../../docs/advanced_guide.html">Advanced guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../../docs/example.html">Examples Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../../docs/reference/providers.html">Providers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../../docs/reference.html">API reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../../../../index.html">pySpatialETL documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader</h1><div class="highlight"><pre>
+<span></span><span class="ch">#! /usr/bin/env python2.7</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># MIT License</span>
+<span class="c1"># Copyright (c) 2024 [SNALE - French SAS Company - RCS 951 724 616]</span>
+<span class="c1">#</span>
+<span class="c1"># Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c1"># of this software and associated documentation files (the &quot;Software&quot;), to deal</span>
+<span class="c1"># in the Software without restriction, including without limitation the rights</span>
+<span class="c1"># to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c1"># copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c1"># furnished to do so, subject to the following conditions:</span>
+<span class="c1">#</span>
+<span class="c1"># The above copyright notice and this permission notice shall be included in all</span>
+<span class="c1"># copies or substantial portions of the Software.</span>
+<span class="c1">#</span>
+<span class="c1"># THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c1"># IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c1"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c1"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c1"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c1"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="c1"># SOFTWARE.</span>
+<span class="sd">&quot;&quot;&quot;!</span>
+<span class="sd">Read/Write Serafin files and manipulate associated data.</span>
+
+<span class="sd">Handles Serafin file with:</span>
+<span class="sd">  - single and double precision</span>
+<span class="sd">  - big and little endian</span>
+
+<span class="sd">The sizes (file, header, frame) are in bytes (8 bits).</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">absolute_import</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">spatialetl.coverage.io.CoverageReader</span><span class="w"> </span><span class="kn">import</span> <span class="n">CoverageReader</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader</span><span class="w"> </span><span class="kn">import</span> <span class="n">SerafinHeader</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">spatialetl.utils.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging</span>
+
+
+<div class="viewcode-block" id="SerafinReader">
+<a class="viewcode-back" href="../../../../../../../../api_reference/spatialetl/providers/telemac/spatialetl/coverage/io/serafin/SerafinReader/index.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SerafinReader</span><span class="p">(</span><span class="n">CoverageReader</span><span class="p">):</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">myFilename</span><span class="p">,</span><span class="n">language</span><span class="o">=</span><span class="s2">&quot;fr&quot;</span><span class="p">):</span>
+        <span class="n">CoverageReader</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">myFilename</span><span class="p">);</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">language</span> <span class="o">=</span> <span class="n">language</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_size</span> <span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="n">SerafinHeader</span><span class="p">(</span><span class="n">lang</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">language</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_size</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">x</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">y</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_ref</span><span class="o">=</span><span class="n">datetime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">date</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">date</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">date</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">date</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">date</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">date</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
+
+<div class="viewcode-block" id="SerafinReader.close">
+<a class="viewcode-back" href="../../../../../../../../api_reference/spatialetl/providers/telemac/spatialetl/coverage/io/serafin/SerafinReader/index.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.close">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="SerafinReader.is_regular_grid">
+<a class="viewcode-back" href="../../../../../../../../api_reference/spatialetl/providers/telemac/spatialetl/coverage/io/serafin/SerafinReader/index.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.is_regular_grid">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_regular_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="SerafinReader.get_x_size">
+<a class="viewcode-back" href="../../../../../../../../api_reference/spatialetl/providers/telemac/spatialetl/coverage/io/serafin/SerafinReader/index.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.get_x_size">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_x_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_size</span></div>
+
+
+<div class="viewcode-block" id="SerafinReader.get_y_size">
+<a class="viewcode-back" href="../../../../../../../../api_reference/spatialetl/providers/telemac/spatialetl/coverage/io/serafin/SerafinReader/index.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.get_y_size">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_y_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_size</span></div>
+
+
+<div class="viewcode-block" id="SerafinReader.get_t_size">
+<a class="viewcode-back" href="../../../../../../../../api_reference/spatialetl/providers/telemac/spatialetl/coverage/io/serafin/SerafinReader/index.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.get_t_size">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_t_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">nb_frames</span></div>
+
+
+<div class="viewcode-block" id="SerafinReader.read_axis_x">
+<a class="viewcode-back" href="../../../../../../../../api_reference/spatialetl/providers/telemac/spatialetl/coverage/io/serafin/SerafinReader/index.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.read_axis_x">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_axis_x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">xmin</span><span class="p">,</span><span class="n">xmax</span><span class="p">,</span><span class="n">ymin</span><span class="p">,</span><span class="n">ymax</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">xmin</span><span class="p">:</span><span class="n">xmax</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="SerafinReader.read_axis_y">
+<a class="viewcode-back" href="../../../../../../../../api_reference/spatialetl/providers/telemac/spatialetl/coverage/io/serafin/SerafinReader/index.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.read_axis_y">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_axis_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">xmin</span><span class="p">,</span><span class="n">xmax</span><span class="p">,</span><span class="n">ymin</span><span class="p">,</span><span class="n">ymax</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">ymin</span><span class="p">:</span><span class="n">ymax</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="SerafinReader.read_axis_t">
+<a class="viewcode-back" href="../../../../../../../../api_reference/spatialetl/providers/telemac/spatialetl/coverage/io/serafin/SerafinReader/index.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.read_axis_t">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_axis_t</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">tmin</span><span class="p">,</span><span class="n">tmax</span><span class="p">,</span><span class="n">timestamp</span><span class="p">):</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Cannot read time without any header (forgot read_header ?)&#39;</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Reading the time series from the file&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">header_size</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">nb_frames</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">unpack_float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">float_size</span><span class="p">),</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">temp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_ref</span><span class="o">+</span><span class="n">d</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">frame_size</span> <span class="o">-</span> <span class="mi">8</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">float_size</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">temp</span><span class="p">[</span><span class="n">tmin</span><span class="p">:</span><span class="n">tmax</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">timestamp</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[(</span><span class="n">t</span> <span class="o">-</span> <span class="n">TimeCoverage</span><span class="o">.</span><span class="n">TIME_DATUM</span><span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span> \
+                    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">result</span><span class="p">];</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span><span class="p">;</span></div>
+
+
+
+    <span class="c1"># Variables</span>
+<div class="viewcode-block" id="SerafinReader.read_variable_longitude">
+<a class="viewcode-back" href="../../../../../../../../api_reference/spatialetl/providers/telemac/spatialetl/coverage/io/serafin/SerafinReader/index.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.read_variable_longitude">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_variable_longitude</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">xmin</span><span class="p">,</span><span class="n">xmax</span><span class="p">,</span><span class="n">ymin</span><span class="p">,</span><span class="n">ymax</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_axis_x</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span><span class="n">xmax</span><span class="p">,</span><span class="n">ymin</span><span class="p">,</span><span class="n">ymax</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SerafinReader.read_variable_latitude">
+<a class="viewcode-back" href="../../../../../../../../api_reference/spatialetl/providers/telemac/spatialetl/coverage/io/serafin/SerafinReader/index.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.read_variable_latitude">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_variable_latitude</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">xmin</span><span class="p">,</span><span class="n">xmax</span><span class="p">,</span><span class="n">ymin</span><span class="p">,</span><span class="n">ymax</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_axis_y</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span><span class="n">xmax</span><span class="p">,</span><span class="n">ymin</span><span class="p">,</span><span class="n">ymax</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SerafinReader.read_variable_time">
+<a class="viewcode-back" href="../../../../../../../../api_reference/spatialetl/providers/telemac/spatialetl/coverage/io/serafin/SerafinReader/index.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.read_variable_time">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_variable_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">tmin</span><span class="p">,</span><span class="n">tmax</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_axis_t</span><span class="p">(</span><span class="n">tmin</span><span class="p">,</span><span class="n">tmax</span><span class="p">,</span><span class="n">timestamp</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SerafinReader._get_var_index">
+<a class="viewcode-back" href="../../../../../../../../api_reference/spatialetl/providers/telemac/spatialetl/coverage/io/serafin/SerafinReader/index.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader._get_var_index">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_var_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_ID</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;!</span>
+<span class="sd">        @brief Handle data request by variable ID</span>
+<span class="sd">        @param var_ID &lt;str&gt;: the ID of the requested variable</span>
+<span class="sd">        @return index &lt;int&gt; the index of the frame (0-based)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Cannot extract variable from empty list (forgot read_header ?)&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">var_IDs</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">var_ID</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Variable ID </span><span class="si">%s</span><span class="s1"> not found&#39;</span> <span class="o">%</span> <span class="n">var_ID</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">index</span></div>
+
+
+<div class="viewcode-block" id="SerafinReader.read_variable_bathymetry">
+<a class="viewcode-back" href="../../../../../../../../api_reference/spatialetl/providers/telemac/spatialetl/coverage/io/serafin/SerafinReader/index.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.read_variable_bathymetry">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_variable_bathymetry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">xmin</span><span class="p">,</span><span class="n">xmax</span><span class="p">,</span><span class="n">ymin</span><span class="p">,</span><span class="n">ymax</span><span class="p">):</span>
+        <span class="n">time_index</span><span class="o">=</span><span class="mi">0</span>
+        <span class="n">var_ID</span><span class="o">=</span><span class="s2">&quot;WATER DEPTH&quot;</span>
+        <span class="n">pos_var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_var_index</span><span class="p">(</span><span class="n">var_ID</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">header_size</span> <span class="o">+</span> <span class="n">time_index</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">frame_size</span>
+                       <span class="o">+</span> <span class="mi">8</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">float_size</span> <span class="o">+</span> <span class="n">pos_var</span> <span class="o">*</span> <span class="p">(</span><span class="mi">8</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">float_size</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">nb_nodes</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">unpack_float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">float_size</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">nb_nodes</span><span class="p">),</span>
+                                                 <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">nb_nodes</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">np_float_type</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="n">ymin</span><span class="p">:</span><span class="n">ymax</span><span class="p">,</span><span class="n">xmin</span><span class="p">:</span><span class="n">xmax</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="SerafinReader.read_var_in_frame">
+<a class="viewcode-back" href="../../../../../../../../api_reference/spatialetl/providers/telemac/spatialetl/coverage/io/serafin/SerafinReader/index.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.read_var_in_frame">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_var_in_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_index</span><span class="p">,</span> <span class="n">var_ID</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;!</span>
+<span class="sd">        @brief Read a single variable in a frame</span>
+<span class="sd">        @param time_index &lt;int&gt;: the index of the frame (0-based)</span>
+<span class="sd">        @param var_ID &lt;str&gt;: variable ID</span>
+<span class="sd">        @return &lt;numpy 1D-array&gt;: values of the variables, of length equal to the number of nodes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">time_index</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SerafinRequestError</span><span class="p">(</span><span class="s1">&#39;Impossible to read a negative time index!&#39;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Reading variable </span><span class="si">%s</span><span class="s1"> at frame </span><span class="si">%i</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">var_ID</span><span class="p">,</span> <span class="n">time_index</span><span class="p">))</span>
+        <span class="n">pos_var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_var_index</span><span class="p">(</span><span class="n">var_ID</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">header_size</span> <span class="o">+</span> <span class="n">time_index</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">frame_size</span>
+                       <span class="o">+</span> <span class="mi">8</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">float_size</span> <span class="o">+</span> <span class="n">pos_var</span> <span class="o">*</span> <span class="p">(</span><span class="mi">8</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">float_size</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">nb_nodes</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">unpack_float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">float_size</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">nb_nodes</span><span class="p">),</span>
+                                                 <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">nb_nodes</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">np_float_type</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SerafinReader.read_var_in_frame_as_3d">
+<a class="viewcode-back" href="../../../../../../../../api_reference/spatialetl/providers/telemac/spatialetl/coverage/io/serafin/SerafinReader/index.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.read_var_in_frame_as_3d">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_var_in_frame_as_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_index</span><span class="p">,</span> <span class="n">var_ID</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;!</span>
+<span class="sd">        @brief Read a single variable in a 3D frame</span>
+<span class="sd">        @param time_index &lt;int&gt;: the index of the frame (0-based)</span>
+<span class="sd">        @param var_ID &lt;str&gt;: variable ID</span>
+<span class="sd">        @return &lt;numpy 2D-array&gt;: values of the variables with shape (planes number, number of 2D nodes)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">is_2d</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Reading values as 3D is only possible in 3D!&#39;</span><span class="p">)</span>
+        <span class="n">new_shape</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">nb_planes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">nb_nodes_2d</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_var_in_frame</span><span class="p">(</span><span class="n">time_index</span><span class="p">,</span> <span class="n">var_ID</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">new_shape</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SerafinReader.read_var_in_frame_at_layer">
+<a class="viewcode-back" href="../../../../../../../../api_reference/spatialetl/providers/telemac/spatialetl/coverage/io/serafin/SerafinReader/index.html#spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.read_var_in_frame_at_layer">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_var_in_frame_at_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_index</span><span class="p">,</span> <span class="n">var_ID</span><span class="p">,</span> <span class="n">iplan</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;!</span>
+<span class="sd">        @brief Read a single variable in a frame at specific layer</span>
+<span class="sd">        @param time_index &lt;int&gt;: the index of the frame (0-based)</span>
+<span class="sd">        @param var_ID &lt;str&gt;: variable ID</span>
+<span class="sd">        @param iplan &lt;int&gt;: 1-based index of layer</span>
+<span class="sd">        @return &lt;numpy 1D-array&gt;: values of the variables, of length equal to the number of nodes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">is_2d</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Extracting values at a specific layer is only possible in 3D!&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">iplan</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">iplan</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">nb_planes</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SerafinRequestError</span><span class="p">(</span><span class="s1">&#39;Layer </span><span class="si">%i</span><span class="s1"> is not inside [1, </span><span class="si">%i</span><span class="s1">]&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">iplan</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">nb_planes</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_var_in_frame_as_3d</span><span class="p">(</span><span class="n">time_index</span><span class="p">,</span> <span class="n">var_ID</span><span class="p">)[</span><span class="n">iplan</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, SNALE.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

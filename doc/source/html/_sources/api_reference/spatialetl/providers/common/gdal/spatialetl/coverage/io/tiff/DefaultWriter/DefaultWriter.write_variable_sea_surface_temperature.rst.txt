@@ -1,0 +1,4 @@
+write_variable_sea_surface_temperature
+======================================
+
+.. py:method:: spatialetl.providers.common.gdal.spatialetl.coverage.io.tiff.DefaultWriter.DefaultWriter.write_variable_sea_surface_temperature()

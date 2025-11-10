@@ -1,0 +1,8 @@
+get_z_size
+==========
+
+.. py:method:: spatialetl.coverage.LevelCoverage.LevelCoverage.get_z_size(type='target')
+
+   Retourne la taille de l'axe z.
+   @return:  un entier correspondant à la taille de l'axe z.
+

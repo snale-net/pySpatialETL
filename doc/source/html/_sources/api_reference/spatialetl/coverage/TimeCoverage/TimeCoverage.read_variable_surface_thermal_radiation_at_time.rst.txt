@@ -1,0 +1,10 @@
+read_variable_surface_thermal_radiation_at_time
+===============================================
+
+.. py:method:: spatialetl.coverage.TimeCoverage.TimeCoverage.read_variable_surface_thermal_radiation_at_time(t)
+
+   Retourne les composantes u,v de surface thermal radiation à la date souhaitée
+   @type t: datetime ou l'index
+   @param t: date souhaitée
+   @return: un tableau en deux dimensions [u_comp,v_comp] contenant chacun deux dimensions [y,x].
+

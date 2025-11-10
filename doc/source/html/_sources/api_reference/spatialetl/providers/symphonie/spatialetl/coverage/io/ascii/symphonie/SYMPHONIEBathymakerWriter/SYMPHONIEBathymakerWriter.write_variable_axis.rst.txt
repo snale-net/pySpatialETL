@@ -1,0 +1,4 @@
+write_variable_axis
+===================
+
+.. py:method:: spatialetl.providers.symphonie.spatialetl.coverage.io.ascii.symphonie.SYMPHONIEBathymakerWriter.SYMPHONIEBathymakerWriter.write_variable_axis()

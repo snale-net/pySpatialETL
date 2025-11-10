@@ -1,0 +1,4 @@
+read_variable_sea_water_temperature_at_ground_level_at_time
+===========================================================
+
+.. py:method:: spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.read_variable_sea_water_temperature_at_ground_level_at_time(index_t)

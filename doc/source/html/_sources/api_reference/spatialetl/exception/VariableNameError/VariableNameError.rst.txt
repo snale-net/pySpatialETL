@@ -1,0 +1,34 @@
+VariableNameError
+=================
+
+.. py:module:: spatialetl.exception.VariableNameError.VariableNameError
+
+.. autoapi-nested-parse::
+
+   Base class for exceptions in this module.
+
+
+Constructor
+-----------
+
+.. autoapimethod:: spatialetl.exception.VariableNameError.VariableNameError.__init__
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.exception.VariableNameError.VariableNameError.code_error
+   spatialetl.exception.VariableNameError.VariableNameError.message_error
+
+Methods
+-------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.exception.VariableNameError.VariableNameError.__str__
+

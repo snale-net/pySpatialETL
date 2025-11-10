@@ -1,0 +1,4 @@
+read_variable_dew_point_temperature_at_time
+===========================================
+
+.. py:method:: spatialetl.point.TimeMultiPoint.TimeMultiPoint.read_variable_dew_point_temperature_at_time(date)

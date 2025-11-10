@@ -1,0 +1,4 @@
+read_axis_x
+===========
+
+.. py:method:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.read_axis_x(xmin, xmax, ymin, ymax)

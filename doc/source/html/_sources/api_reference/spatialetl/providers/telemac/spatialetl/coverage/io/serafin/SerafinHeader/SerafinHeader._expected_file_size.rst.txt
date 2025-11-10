@@ -1,0 +1,7 @@
+_expected_file_size
+===================
+
+.. py:method:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._expected_file_size()
+
+   Returns expected file size
+

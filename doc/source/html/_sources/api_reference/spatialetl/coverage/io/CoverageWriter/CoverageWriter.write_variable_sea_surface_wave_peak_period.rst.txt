@@ -1,0 +1,6 @@
+write_variable_sea_surface_wave_peak_period
+===========================================
+
+.. py:method:: spatialetl.coverage.io.CoverageWriter.CoverageWriter.write_variable_sea_surface_wave_peak_period()
+   :abstractmethod:
+

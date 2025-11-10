@@ -1,0 +1,6 @@
+write_variable_waves_momentum_flux_to_ocean
+===========================================
+
+.. py:method:: spatialetl.coverage.io.CoverageWriter.CoverageWriter.write_variable_waves_momentum_flux_to_ocean()
+   :abstractmethod:
+

@@ -1,0 +1,13 @@
+read_swanspc
+============
+
+.. py:method:: spatialetl.providers.swan.spatialetl.coverage.io.ascii.swan.SWANUnstructuredReader.SWANUnstructuredReader.read_swanspc(fname)
+
+   Function to read data generated with the SPECOUT command.
+   The sixtase MUST be :
+   'SPECOUT 'Location' SPEC2D ABS 'name.spc'
+   Read the documentation in http://swanmodel.sourceforge.net to more details on spectral output.
+   Inputs:
+       fname:    the name of the file
+   returns a xray DataArray
+

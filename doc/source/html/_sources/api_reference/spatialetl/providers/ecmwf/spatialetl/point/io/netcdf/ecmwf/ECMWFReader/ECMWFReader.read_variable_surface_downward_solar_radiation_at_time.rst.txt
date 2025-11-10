@@ -1,0 +1,4 @@
+read_variable_surface_downward_solar_radiation_at_time
+======================================================
+
+.. py:method:: spatialetl.providers.ecmwf.spatialetl.point.io.netcdf.ecmwf.ECMWFReader.ECMWFReader.read_variable_surface_downward_solar_radiation_at_time(index_t)

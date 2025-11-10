@@ -1,0 +1,4 @@
+is_regular_grid
+===============
+
+.. py:method:: spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.is_regular_grid()

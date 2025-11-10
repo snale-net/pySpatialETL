@@ -1,0 +1,21 @@
+datetime_to_jd
+==============
+
+.. py:function:: spatialetl.coverage.utils.jdutil.datetime_to_jd(date)
+
+   Convert a `datetime.datetime` object to Julian Day.
+
+   :param date:
+   :type date: `datetime.datetime` instance
+
+   :returns: **jd** -- Julian day.
+   :rtype: float
+
+   .. rubric:: Examples
+
+   >>> d = datetime.datetime(1985,2,17,6)
+   >>> d
+   datetime.datetime(1985, 2, 17, 6, 0)
+   >>> jdutil.datetime_to_jd(d)
+   2446113.75
+

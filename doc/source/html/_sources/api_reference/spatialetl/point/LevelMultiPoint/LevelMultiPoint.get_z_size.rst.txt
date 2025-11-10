@@ -1,0 +1,4 @@
+get_z_size
+==========
+
+.. py:method:: spatialetl.point.LevelMultiPoint.LevelMultiPoint.get_z_size(type='target')

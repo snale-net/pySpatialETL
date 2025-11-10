@@ -1,0 +1,36 @@
+GMTReader
+=========
+
+.. py:module:: spatialetl.providers.gmt.spatialetl.coverage.io.netcdf.gmt.GMTReader.GMTReader
+Constructor
+-----------
+
+.. autoapimethod:: spatialetl.providers.gmt.spatialetl.coverage.io.netcdf.gmt.GMTReader.GMTReader.__init__
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.providers.gmt.spatialetl.coverage.io.netcdf.gmt.GMTReader.GMTReader.ncfile
+
+Methods
+-------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.providers.gmt.spatialetl.coverage.io.netcdf.gmt.GMTReader.GMTReader.close
+   spatialetl.providers.gmt.spatialetl.coverage.io.netcdf.gmt.GMTReader.GMTReader.is_regular_grid
+   spatialetl.providers.gmt.spatialetl.coverage.io.netcdf.gmt.GMTReader.GMTReader.get_x_size
+   spatialetl.providers.gmt.spatialetl.coverage.io.netcdf.gmt.GMTReader.GMTReader.get_y_size
+   spatialetl.providers.gmt.spatialetl.coverage.io.netcdf.gmt.GMTReader.GMTReader.read_axis_x
+   spatialetl.providers.gmt.spatialetl.coverage.io.netcdf.gmt.GMTReader.GMTReader.read_axis_y
+   spatialetl.providers.gmt.spatialetl.coverage.io.netcdf.gmt.GMTReader.GMTReader.read_variable_longitude
+   spatialetl.providers.gmt.spatialetl.coverage.io.netcdf.gmt.GMTReader.GMTReader.read_variable_latitude
+   spatialetl.providers.gmt.spatialetl.coverage.io.netcdf.gmt.GMTReader.GMTReader.read_variable_2D_sea_binary_mask
+   spatialetl.providers.gmt.spatialetl.coverage.io.netcdf.gmt.GMTReader.GMTReader.read_variable_bathymetry
+

@@ -1,0 +1,6 @@
+read_variable_sea_water_density_at_time_and_depth
+=================================================
+
+.. py:method:: spatialetl.point.io.MultiPointReader.MultiPointReader.read_variable_sea_water_density_at_time_and_depth(index_t, index_z)
+   :abstractmethod:
+

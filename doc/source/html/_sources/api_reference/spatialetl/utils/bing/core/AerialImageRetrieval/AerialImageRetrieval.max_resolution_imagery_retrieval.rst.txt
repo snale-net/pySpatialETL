@@ -1,0 +1,18 @@
+max_resolution_imagery_retrieval
+================================
+
+.. py:method:: spatialetl.utils.bing.core.AerialImageRetrieval.AerialImageRetrieval.max_resolution_imagery_retrieval()
+
+   The main aerial retrieval method
+
+   It will firstly determine the appropriate level used to retrieve the image.
+   The appropriate level should satisfy:
+       1. All the tile image within the given bounding box at that level should all exist
+       2. The retrieved image cannot exceed the maximum supported image size, which is 8192*8192 (Otherwise the image size will be too large if the bounding box is very large)
+
+   Then for the given level, we can download each aerial tile image, and stitch them together.
+
+   Lastly, we have to crop the image based on the given bounding box
+
+   :returns: [boolean] -- [indicate whether the aerial image retrieval is successful]
+

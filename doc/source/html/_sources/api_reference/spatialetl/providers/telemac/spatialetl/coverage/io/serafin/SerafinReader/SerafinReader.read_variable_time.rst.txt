@@ -1,0 +1,4 @@
+read_variable_time
+==================
+
+.. py:method:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.read_variable_time(tmin, tmax)

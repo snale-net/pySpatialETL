@@ -1,0 +1,4 @@
+read_axis_t
+===========
+
+.. py:method:: spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.OASISReader.OASISReader.read_axis_t(timestamp=0)

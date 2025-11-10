@@ -1,0 +1,4 @@
+read_axis_x
+===========
+
+.. py:method:: spatialetl.providers.mercator.spatialetl.coverage.io.netcdf.mercator.v2015.MERCATORReader.MERCATORReader.read_axis_x(xmin, xmax, ymin, ymax)

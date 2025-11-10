@@ -1,0 +1,67 @@
+AbstractCoverageReader
+======================
+
+.. py:module:: spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader
+Constructor
+-----------
+
+.. autoapimethod:: spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.__init__
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.reader
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.source_xy_coords
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.names
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.xy_coords
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.xy_values
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.meta_data
+
+Methods
+-------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.find_points_coordinates
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.close
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.find_point_index
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.get_z_size
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.get_t_size
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.read_axis_x
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.read_axis_y
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.read_axis_z
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.read_axis_t
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.read_metadata
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.read_variable_longitude
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.read_variable_latitude
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.read_variable_depth
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.read_variable_time
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.read_variable_point_names
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.read_variable_sea_surface_height_above_mean_sea_level_at_time
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.read_variable_sea_water_column_thickness_at_time
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.read_variable_sea_surface_temperature_at_time
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.read_variable_sea_surface_salinity_at_time
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.read_variable_sea_water_velocity_at_sea_water_surface_at_time
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.read_variable_sea_water_temperature_at_ground_level_at_time
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.read_variable_sea_water_salinity_at_ground_level_at_time
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.read_variable_sea_water_velocity_at_ground_level_at_time
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.read_variable_bathymetry
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.read_variable_barotropic_sea_water_velocity_at_time
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.read_variable_sea_water_temperature_at_time_and_depth
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.read_variable_sea_water_salinity_at_time_and_depth
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.read_variable_baroclinic_sea_water_velocity_at_time_and_depth
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.read_variable_sea_surface_wave_significant_height_at_time
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.read_variable_sea_surface_wave_mean_period_at_time
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.read_variable_sea_surface_wave_to_direction_at_time
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.read_variable_sea_surface_wave_stokes_drift_velocity_at_time
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.read_variable_atmosphere_momentum_flux_to_waves_at_time
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.read_variable_waves_momentum_flux_to_ocean_at_time
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.read_variable_wind_stress_at_time
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.read_variable_wind_10m_at_time
+

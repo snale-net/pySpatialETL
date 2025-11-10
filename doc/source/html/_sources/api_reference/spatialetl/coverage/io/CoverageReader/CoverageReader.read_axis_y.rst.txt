@@ -1,0 +1,6 @@
+read_axis_y
+===========
+
+.. py:method:: spatialetl.coverage.io.CoverageReader.CoverageReader.read_axis_y(xmin, xmax, ymin, ymax)
+   :abstractmethod:
+

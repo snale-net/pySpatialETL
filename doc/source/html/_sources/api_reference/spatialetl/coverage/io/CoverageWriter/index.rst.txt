@@ -1,0 +1,19 @@
+spatialetl.coverage.io.CoverageWriter
+=====================================
+
+.. py:module:: spatialetl.coverage.io.CoverageWriter
+
+
+Classes
+-------
+
+.. toctree::
+   :hidden:
+
+   /api_reference/spatialetl/coverage/io/CoverageWriter/CoverageWriter
+
+.. autoapisummary::
+
+   spatialetl.coverage.io.CoverageWriter.CoverageWriter
+
+

@@ -1,0 +1,9 @@
+iter_on_all_variables
+=====================
+
+.. py:method:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.iter_on_all_variables()
+
+   !
+   Iterate on variables
+   @return <str, bytes, bytes>: variable ID, name and unit
+

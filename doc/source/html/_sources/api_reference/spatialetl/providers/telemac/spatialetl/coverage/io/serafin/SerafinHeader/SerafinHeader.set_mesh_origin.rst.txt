@@ -1,0 +1,10 @@
+set_mesh_origin
+===============
+
+.. py:method:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.set_mesh_origin(x, y)
+
+   !
+   @brief: Set mesh origin coordinates
+   @param x <float>: X-coordinate of the origin
+   @param y <float>: Y-coordinate of the origin
+

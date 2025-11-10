@@ -1,0 +1,4 @@
+read_variable_sea_surface_air_pressure_at_time
+==============================================
+
+.. py:method:: spatialetl.point.io.ascii.DefaultTimePointReader.DefaultTimePointReader.read_variable_sea_surface_air_pressure_at_time(index_t)

@@ -1,0 +1,13 @@
+read_variable_baroclinic_sea_water_velocity_at_time_and_depth
+=============================================================
+
+.. py:method:: spatialetl.coverage.TimeLevelCoverage.TimeLevelCoverage.read_variable_baroclinic_sea_water_velocity_at_time_and_depth(time, depth)
+
+   Retourne les composantes u,v du courant à la date souhaitée et au niveau souhaité sur toute la couverture horizontale.
+   @type time: datetime ou l'index
+   @param time: date souhaitée
+   @type depth: profondeur en mètre (float) ou index (integer)
+   @param depth: profondeur souhaitée. Si le z est un entier, on considère qu'il s'agit de l'index,
+   si c'est un flottant on considère qu'il s'agit d'une profondeur
+   @return: un tableau en deux dimensions [u_comp,v_comp] contenant chacun deux dimensions [y,x].
+

@@ -1,0 +1,15 @@
+horizontal_retrieval_and_stitch_image
+=====================================
+
+.. py:method:: spatialetl.utils.bing.core.AerialImageRetrieval.AerialImageRetrieval.horizontal_retrieval_and_stitch_image(tileX_start, tileX_end, tileY, level)
+
+   Horizontally retrieve tile images and then stitch them together,
+   start from tileX_start and end at tileX_end, tileY will remain the same
+
+   :param tileX_start {[int]} -- [the starting tileX index]:
+   :param tileX_end {[int]} -- [the ending tileX index]:
+   :param tileY {[int]} -- [the tileY index]:
+   :param level {[int]} -- [level used to retrieve image]:
+
+   :returns: [boolean, Image] -- [whether such retrieval is successful; If successful, returning the stitched image, otherwise None]
+

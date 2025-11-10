@@ -1,0 +1,16 @@
+spatialetl.providers.telemac.spatialetl
+=======================================
+
+.. py:module:: spatialetl.providers.telemac.spatialetl
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /api_reference/spatialetl/providers/telemac/spatialetl/coverage/index
+   /api_reference/spatialetl/providers/telemac/spatialetl/point/index
+
+

@@ -1,0 +1,4 @@
+get_t_size
+==========
+
+.. py:method:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.get_t_size()

@@ -1,0 +1,4 @@
+read_axis_y
+===========
+
+.. py:method:: spatialetl.providers.common.netcdf.spatialetl.point.io.netcdf.DefaultTimeLevelMultiPointReader.DefaultTimeLevelMultiPointReader.read_axis_y()

@@ -1,0 +1,19 @@
+spatialetl.point.io.ascii.DefaultTimePointReader
+================================================
+
+.. py:module:: spatialetl.point.io.ascii.DefaultTimePointReader
+
+
+Classes
+-------
+
+.. toctree::
+   :hidden:
+
+   /api_reference/spatialetl/point/io/ascii/DefaultTimePointReader/DefaultTimePointReader
+
+.. autoapisummary::
+
+   spatialetl.point.io.ascii.DefaultTimePointReader.DefaultTimePointReader
+
+

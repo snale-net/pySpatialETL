@@ -1,0 +1,48 @@
+DefaultTimePointReader
+======================
+
+.. py:module:: spatialetl.point.io.ascii.DefaultTimePointReader.DefaultTimePointReader
+Constructor
+-----------
+
+.. autoapimethod:: spatialetl.point.io.ascii.DefaultTimePointReader.DefaultTimePointReader.__init__
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.point.io.ascii.DefaultTimePointReader.DefaultTimePointReader.header
+   spatialetl.point.io.ascii.DefaultTimePointReader.DefaultTimePointReader.x
+   spatialetl.point.io.ascii.DefaultTimePointReader.DefaultTimePointReader.y
+   spatialetl.point.io.ascii.DefaultTimePointReader.DefaultTimePointReader.names
+
+Methods
+-------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.point.io.ascii.DefaultTimePointReader.DefaultTimePointReader.get_x_size
+   spatialetl.point.io.ascii.DefaultTimePointReader.DefaultTimePointReader.get_y_size
+   spatialetl.point.io.ascii.DefaultTimePointReader.DefaultTimePointReader.get_t_size
+   spatialetl.point.io.ascii.DefaultTimePointReader.DefaultTimePointReader.read_axis_x
+   spatialetl.point.io.ascii.DefaultTimePointReader.DefaultTimePointReader.read_axis_y
+   spatialetl.point.io.ascii.DefaultTimePointReader.DefaultTimePointReader.read_axis_t
+   spatialetl.point.io.ascii.DefaultTimePointReader.DefaultTimePointReader.read_metadata
+   spatialetl.point.io.ascii.DefaultTimePointReader.DefaultTimePointReader.read_variable_point_names
+   spatialetl.point.io.ascii.DefaultTimePointReader.DefaultTimePointReader.read_variable_sea_surface_height_above_mean_sea_level_at_time
+   spatialetl.point.io.ascii.DefaultTimePointReader.DefaultTimePointReader.read_variable_sea_water_column_thickness_at_time
+   spatialetl.point.io.ascii.DefaultTimePointReader.DefaultTimePointReader.read_variable_sea_water_pressure_at_sea_water_surface_at_time
+   spatialetl.point.io.ascii.DefaultTimePointReader.DefaultTimePointReader.read_variable_water_volume_transport_into_sea_water_from_rivers_at_time
+   spatialetl.point.io.ascii.DefaultTimePointReader.DefaultTimePointReader.read_variable_sea_surface_wave_significant_height_at_time
+   spatialetl.point.io.ascii.DefaultTimePointReader.DefaultTimePointReader.read_variable_wave_collision_at_time
+   spatialetl.point.io.ascii.DefaultTimePointReader.DefaultTimePointReader.read_variable_wave_overtopping_at_time
+   spatialetl.point.io.ascii.DefaultTimePointReader.DefaultTimePointReader.read_variable_surface_air_pressure_at_time
+   spatialetl.point.io.ascii.DefaultTimePointReader.DefaultTimePointReader.read_variable_sea_surface_air_pressure_at_time
+   spatialetl.point.io.ascii.DefaultTimePointReader.DefaultTimePointReader.read_variable_rainfall_amount_at_time
+   spatialetl.point.io.ascii.DefaultTimePointReader.DefaultTimePointReader.read_variable_wind_10m_at_time
+

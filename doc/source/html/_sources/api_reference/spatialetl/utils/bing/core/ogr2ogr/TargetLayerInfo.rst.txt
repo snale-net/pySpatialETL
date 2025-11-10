@@ -1,0 +1,22 @@
+TargetLayerInfo
+===============
+
+.. py:module:: spatialetl.utils.bing.core.ogr2ogr.TargetLayerInfo
+Constructor
+-----------
+
+.. autoapimethod:: spatialetl.utils.bing.core.ogr2ogr.TargetLayerInfo.__init__
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.utils.bing.core.ogr2ogr.TargetLayerInfo.poDstLayer
+   spatialetl.utils.bing.core.ogr2ogr.TargetLayerInfo.poCT
+   spatialetl.utils.bing.core.ogr2ogr.TargetLayerInfo.panMap
+   spatialetl.utils.bing.core.ogr2ogr.TargetLayerInfo.iSrcZField
+

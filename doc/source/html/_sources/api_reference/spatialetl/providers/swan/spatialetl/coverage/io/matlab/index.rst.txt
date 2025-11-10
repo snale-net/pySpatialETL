@@ -1,0 +1,15 @@
+spatialetl.providers.swan.spatialetl.coverage.io.matlab
+=======================================================
+
+.. py:module:: spatialetl.providers.swan.spatialetl.coverage.io.matlab
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /api_reference/spatialetl/providers/swan/spatialetl/coverage/io/matlab/swan/index
+
+

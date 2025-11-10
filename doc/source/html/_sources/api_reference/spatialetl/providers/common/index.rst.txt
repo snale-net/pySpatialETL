@@ -1,0 +1,18 @@
+spatialetl.providers.common
+===========================
+
+.. py:module:: spatialetl.providers.common
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /api_reference/spatialetl/providers/common/gdal/index
+   /api_reference/spatialetl/providers/common/grib/index
+   /api_reference/spatialetl/providers/common/mpi/index
+   /api_reference/spatialetl/providers/common/netcdf/index
+
+

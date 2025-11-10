@@ -1,0 +1,281 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../../../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ERA5Reader &mdash; SpatialETL documentation 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../../../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../../../../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../../../../../_static/custom.css?v=30bed479" />
+
+  
+      <script src="../../../../../../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../../../../../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../../../../../../../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../../../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../../../../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../../../../../../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../../../../../search.html" />
+    <link rel="next" title="spatialetl.providers.ecmwf.spatialetl.coverage.io.netcdf" href="../../../netcdf/index.html" />
+    <link rel="prev" title="ECMWFReader" href="../ECMWFReader/ECMWFReader.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../../../../../../index.html" class="icon icon-home">
+            SpatialETL documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../../../../docs/user_guide.html">User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../../../../docs/advanced_guide.html">Advanced guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../../../../docs/example.html">Examples Gallery</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../../../../../../../docs/reference/providers.html">Providers</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../common/index.html">spatialetl.providers.common</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../../../../../index.html">spatialetl.providers.ecmwf</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../../../../../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="../../../../../index.html">spatialetl.providers.ecmwf.spatialetl</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../gmt/index.html">spatialetl.providers.gmt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../hycom/index.html">spatialetl.providers.hycom</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../mercator/index.html">spatialetl.providers.mercator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../meteofrance/index.html">spatialetl.providers.meteofrance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../snale/index.html">spatialetl.providers.snale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../swan/index.html">spatialetl.providers.swan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../symphonie/index.html">spatialetl.providers.symphonie</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../telemac/index.html">spatialetl.providers.telemac</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../ww3/index.html">spatialetl.providers.ww3</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../../../../docs/reference.html">API reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../../../../../../index.html">SpatialETL documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../../../../../../../docs/reference/providers.html">Providers</a></li>
+          <li class="breadcrumb-item"><a href="../../../../../../index.html">spatialetl.providers.ecmwf</a></li>
+          <li class="breadcrumb-item"><a href="../../../../../index.html">spatialetl.providers.ecmwf.spatialetl</a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">spatialetl.providers.ecmwf.spatialetl.coverage</a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">spatialetl.providers.ecmwf.spatialetl.coverage.io</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">spatialetl.providers.ecmwf.spatialetl.coverage.io.grib</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf</a></li>
+      <li class="breadcrumb-item active">ERA5Reader</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../../../../../../../_sources/api_reference/spatialetl/providers/ecmwf/spatialetl/coverage/io/grib/ecmwf/ERA5Reader/ERA5Reader.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader">
+<span id="era5reader"></span><h1>ERA5Reader<a class="headerlink" href="#module-spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader" title="Link to this heading"></a></h1>
+<section id="constructor">
+<h2>Constructor<a class="headerlink" href="#constructor" title="Link to this heading"></a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.__init__">
+<span class="sig-prename descclassname"><span class="pre">ERA5Reader.</span></span><span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">myFile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">academic_flux</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surface_downward_sensible_heat_flux</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surface_downward_latent_heat_flux</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surface_downward_solar_radiation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surface_downward_thermal_radiation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surface_solar_radiation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surface_thermal_radiation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">academic_flux</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">surface_downward_sensible_heat_flux</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">surface_downward_latent_heat_flux</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">surface_downward_solar_radiation</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">surface_solar_radiation</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">surface_thermal_radiation</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">surface_downward_thermal_radiation</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ds_accum</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">new_lon</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">new_indexes</span></code></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="methods">
+<h2>Methods<a class="headerlink" href="#methods" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="ERA5Reader.find_time_and_step.html#spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.find_time_and_step" title="spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.find_time_and_step"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_time_and_step</span></code></a>(index_t)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="ERA5Reader.close.html#spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.close" title="spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.close"><code class="xref py py-obj docutils literal notranslate"><span class="pre">close</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="ERA5Reader.is_regular_grid.html#spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.is_regular_grid" title="spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.is_regular_grid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_regular_grid</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="ERA5Reader.get_x_size.html#spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.get_x_size" title="spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.get_x_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_x_size</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="ERA5Reader.get_y_size.html#spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.get_y_size" title="spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.get_y_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_y_size</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="ERA5Reader.get_t_size.html#spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.get_t_size" title="spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.get_t_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_t_size</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="ERA5Reader.read_axis_x.html#spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_axis_x" title="spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_axis_x"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_axis_x</span></code></a>(xmin, xmax, ymin, ymax)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="ERA5Reader.read_axis_y.html#spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_axis_y" title="spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_axis_y"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_axis_y</span></code></a>(xmin, xmax, ymin, ymax)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="ERA5Reader.read_axis_t.html#spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_axis_t" title="spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_axis_t"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_axis_t</span></code></a>(tmin, tmax, timestamp)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="ERA5Reader.read_variable_longitude.html#spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_variable_longitude" title="spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_variable_longitude"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_variable_longitude</span></code></a>(xmin, xmax, ymin, ymax)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="ERA5Reader.read_variable_latitude.html#spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_variable_latitude" title="spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_variable_latitude"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_variable_latitude</span></code></a>(xmin, xmax, ymin, ymax)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="ERA5Reader.read_variable_time.html#spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_variable_time" title="spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_variable_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_variable_time</span></code></a>(tmin, tmax)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="ERA5Reader.read_variable_2D_land_binary_mask.html#spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_variable_2D_land_binary_mask" title="spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_variable_2D_land_binary_mask"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_variable_2D_land_binary_mask</span></code></a>(xmin, xmax, ymin, ymax)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="ERA5Reader.read_variable_2D_land_binary_mask_at_time.html#spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_variable_2D_land_binary_mask_at_time" title="spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_variable_2D_land_binary_mask_at_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_variable_2D_land_binary_mask_at_time</span></code></a>(index_t, ...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="ERA5Reader.read_variable_2D_sea_binary_mask.html#spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_variable_2D_sea_binary_mask" title="spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_variable_2D_sea_binary_mask"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_variable_2D_sea_binary_mask</span></code></a>(xmin, xmax, ymin, ymax)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="ERA5Reader.read_variable_3D_sea_binary_mask_at_time.html#spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_variable_3D_sea_binary_mask_at_time" title="spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_variable_3D_sea_binary_mask_at_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_variable_3D_sea_binary_mask_at_time</span></code></a>(index_t, ...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="ERA5Reader.read_variable_3D_land_binary_mask_at_time.html#spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_variable_3D_land_binary_mask_at_time" title="spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_variable_3D_land_binary_mask_at_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_variable_3D_land_binary_mask_at_time</span></code></a>(index_t, ...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="ERA5Reader.read_variable_rainfall_amount_at_time.html#spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_variable_rainfall_amount_at_time" title="spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_variable_rainfall_amount_at_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_variable_rainfall_amount_at_time</span></code></a>(index_t, xmin, ...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="ERA5Reader.read_variable_surface_air_pressure_at_time.html#spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_variable_surface_air_pressure_at_time" title="spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_variable_surface_air_pressure_at_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_variable_surface_air_pressure_at_time</span></code></a>(index_t, ...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="ERA5Reader.read_variable_sea_surface_air_pressure_at_time.html#spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_variable_sea_surface_air_pressure_at_time" title="spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_variable_sea_surface_air_pressure_at_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_variable_sea_surface_air_pressure_at_time</span></code></a>(...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="ERA5Reader.read_variable_surface_downward_sensible_heat_flux_at_time.html#spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_variable_surface_downward_sensible_heat_flux_at_time" title="spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_variable_surface_downward_sensible_heat_flux_at_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_variable_surface_downward_sensible_heat_flux_at_time</span></code></a>(...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="ERA5Reader.read_variable_surface_downward_latent_heat_flux_at_time.html#spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_variable_surface_downward_latent_heat_flux_at_time" title="spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_variable_surface_downward_latent_heat_flux_at_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_variable_surface_downward_latent_heat_flux_at_time</span></code></a>(...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="ERA5Reader.read_variable_surface_air_temperature_at_time.html#spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_variable_surface_air_temperature_at_time" title="spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_variable_surface_air_temperature_at_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_variable_surface_air_temperature_at_time</span></code></a>(index_t, ...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="ERA5Reader.read_variable_dew_point_temperature_at_time.html#spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_variable_dew_point_temperature_at_time" title="spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_variable_dew_point_temperature_at_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_variable_dew_point_temperature_at_time</span></code></a>(index_t, ...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="ERA5Reader.read_variable_surface_downward_solar_radiation_at_time.html#spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_variable_surface_downward_solar_radiation_at_time" title="spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_variable_surface_downward_solar_radiation_at_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_variable_surface_downward_solar_radiation_at_time</span></code></a>(...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="ERA5Reader.read_variable_surface_downward_thermal_radiation_at_time.html#spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_variable_surface_downward_thermal_radiation_at_time" title="spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_variable_surface_downward_thermal_radiation_at_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_variable_surface_downward_thermal_radiation_at_time</span></code></a>(...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="ERA5Reader.read_variable_surface_solar_radiation_at_time.html#spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_variable_surface_solar_radiation_at_time" title="spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_variable_surface_solar_radiation_at_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_variable_surface_solar_radiation_at_time</span></code></a>(index_t, ...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="ERA5Reader.read_variable_surface_thermal_radiation_at_time.html#spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_variable_surface_thermal_radiation_at_time" title="spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_variable_surface_thermal_radiation_at_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_variable_surface_thermal_radiation_at_time</span></code></a>(...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="ERA5Reader.read_variable_wind_10m_at_time.html#spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_variable_wind_10m_at_time" title="spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_variable_wind_10m_at_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_variable_wind_10m_at_time</span></code></a>(index_t, xmin, xmax, ...)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../ECMWFReader/ECMWFReader.html" class="btn btn-neutral float-left" title="ECMWFReader" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../../../netcdf/index.html" class="btn btn-neutral float-right" title="spatialetl.providers.ecmwf.spatialetl.coverage.io.netcdf" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, SNALE.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

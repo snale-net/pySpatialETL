@@ -1,0 +1,4 @@
+write_variable_baroclinic_sea_water_velocity
+============================================
+
+.. py:method:: spatialetl.providers.mercator.spatialetl.coverage.io.netcdf.mercator.v2020.MERCATORWriter.DefaultWriter.write_variable_baroclinic_sea_water_velocity()

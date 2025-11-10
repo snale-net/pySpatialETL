@@ -1,0 +1,4 @@
+read_axis_x
+===========
+
+.. py:method:: spatialetl.point.io.ascii.DefaultTimePointReader.DefaultTimePointReader.read_axis_x()

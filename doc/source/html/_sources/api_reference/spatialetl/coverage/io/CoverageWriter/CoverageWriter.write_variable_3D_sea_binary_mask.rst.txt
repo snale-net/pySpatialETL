@@ -1,0 +1,6 @@
+write_variable_3D_sea_binary_mask
+=================================
+
+.. py:method:: spatialetl.coverage.io.CoverageWriter.CoverageWriter.write_variable_3D_sea_binary_mask()
+   :abstractmethod:
+

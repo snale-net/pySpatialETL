@@ -1,0 +1,15 @@
+spatialetl.providers.swan
+=========================
+
+.. py:module:: spatialetl.providers.swan
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /api_reference/spatialetl/providers/swan/spatialetl/index
+
+

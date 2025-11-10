@@ -1,0 +1,8 @@
+build_ipobo
+===========
+
+.. py:method:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.build_ipobo()
+
+   Build IPOBO array containing 0 values for inner nodes and 1-indexed node number for boundary nodes
+   /!\ This method will probably crash if some nodes are duplicated!
+

@@ -1,0 +1,19 @@
+spatialetl.point.io.AbstractCoverageReader
+==========================================
+
+.. py:module:: spatialetl.point.io.AbstractCoverageReader
+
+
+Classes
+-------
+
+.. toctree::
+   :hidden:
+
+   /api_reference/spatialetl/point/io/AbstractCoverageReader/AbstractCoverageReader
+
+.. autoapisummary::
+
+   spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader
+
+

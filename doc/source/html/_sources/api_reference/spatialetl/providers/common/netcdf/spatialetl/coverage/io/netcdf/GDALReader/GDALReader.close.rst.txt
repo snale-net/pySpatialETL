@@ -1,0 +1,4 @@
+close
+=====
+
+.. py:method:: spatialetl.providers.common.netcdf.spatialetl.coverage.io.netcdf.GDALReader.GDALReader.close()

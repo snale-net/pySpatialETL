@@ -1,0 +1,18 @@
+Class TestMultiPoint
+====================
+
+.. currentmodule:: spatialetl.coverage
+
+
+Overview
+--------
+.. autoclass:: TestMultiPoint
+   :noindex:
+   :show-inheritance:
+
+Constructor
+-----------
+.. automethod:: TestMultiPoint.__init__
+   :noindex:
+
+

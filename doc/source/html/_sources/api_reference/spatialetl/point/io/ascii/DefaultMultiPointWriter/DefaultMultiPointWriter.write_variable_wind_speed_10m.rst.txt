@@ -1,0 +1,4 @@
+write_variable_wind_speed_10m
+=============================
+
+.. py:method:: spatialetl.point.io.ascii.DefaultMultiPointWriter.DefaultMultiPointWriter.write_variable_wind_speed_10m()

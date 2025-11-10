@@ -1,0 +1,14 @@
+is_valid_image
+==============
+
+.. py:method:: spatialetl.utils.bing.core.AerialImageRetrieval.AerialImageRetrieval.is_valid_image(image)
+
+   Check whether the downloaded image is valid,
+   by comparing the downloaded image with a NULL image returned by any unsuccessfully retrieval
+
+   Bing tile system will return the same NULL image if the query quadkey is not existed in the Bing map database.
+
+   :param image {[Image]} -- [a Image type image to be valided]:
+
+   :returns: [boolean] -- [whether the image is valid]
+

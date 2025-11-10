@@ -1,0 +1,4 @@
+get_t_size
+==========
+
+.. py:method:: spatialetl.providers.ww3.spatialetl.coverage.io.netcdf.ww3.WW3UnstructuredReader.WW3UnstructuredReader.get_t_size()

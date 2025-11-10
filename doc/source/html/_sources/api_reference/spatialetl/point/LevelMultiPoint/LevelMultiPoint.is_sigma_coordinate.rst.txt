@@ -1,0 +1,4 @@
+is_sigma_coordinate
+===================
+
+.. py:method:: spatialetl.point.LevelMultiPoint.LevelMultiPoint.is_sigma_coordinate(type='target')

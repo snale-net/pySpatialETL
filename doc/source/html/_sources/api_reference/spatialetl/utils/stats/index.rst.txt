@@ -1,0 +1,27 @@
+spatialetl.utils.stats
+======================
+
+.. py:module:: spatialetl.utils.stats
+
+
+Functions
+---------
+
+.. toctree::
+   :hidden:
+
+   /api_reference/spatialetl/utils/stats/correlation
+   /api_reference/spatialetl/utils/stats/bias
+   /api_reference/spatialetl/utils/stats/rmse
+   /api_reference/spatialetl/utils/stats/si
+   /api_reference/spatialetl/utils/stats/maxerr
+
+.. autoapisummary::
+
+   spatialetl.utils.stats.correlation
+   spatialetl.utils.stats.bias
+   spatialetl.utils.stats.rmse
+   spatialetl.utils.stats.si
+   spatialetl.utils.stats.maxerr
+
+

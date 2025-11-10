@@ -1,0 +1,15 @@
+spatialetl.providers.symphonie.spatialetl.point.io.ascii.symphonie
+==================================================================
+
+.. py:module:: spatialetl.providers.symphonie.spatialetl.point.io.ascii.symphonie
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /api_reference/spatialetl/providers/symphonie/spatialetl/point/io/ascii/symphonie/SYMPHONIEBathymakerWriter/SYMPHONIEBathymakerWriter
+
+

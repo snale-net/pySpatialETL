@@ -1,0 +1,19 @@
+spatialetl.point.LevelMultiPoint
+================================
+
+.. py:module:: spatialetl.point.LevelMultiPoint
+
+
+Classes
+-------
+
+.. toctree::
+   :hidden:
+
+   /api_reference/spatialetl/point/LevelMultiPoint/LevelMultiPoint
+
+.. autoapisummary::
+
+   spatialetl.point.LevelMultiPoint.LevelMultiPoint
+
+

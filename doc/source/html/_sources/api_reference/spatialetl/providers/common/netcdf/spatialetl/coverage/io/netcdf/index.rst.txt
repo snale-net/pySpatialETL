@@ -1,0 +1,16 @@
+spatialetl.providers.common.netcdf.spatialetl.coverage.io.netcdf
+================================================================
+
+.. py:module:: spatialetl.providers.common.netcdf.spatialetl.coverage.io.netcdf
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /api_reference/spatialetl/providers/common/netcdf/spatialetl/coverage/io/netcdf/DefaultWriter/DefaultWriter
+   /api_reference/spatialetl/providers/common/netcdf/spatialetl/coverage/io/netcdf/GDALReader/GDALReader
+
+

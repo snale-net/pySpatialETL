@@ -1,0 +1,48 @@
+SerafinReader
+=============
+
+.. py:module:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader
+Constructor
+-----------
+
+.. autoapimethod:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.__init__
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.language
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.file
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.file_size
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.header
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.x_size
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.y_size
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.time_ref
+
+Methods
+-------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.close
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.is_regular_grid
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.get_x_size
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.get_y_size
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.get_t_size
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.read_axis_x
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.read_axis_y
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.read_axis_t
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.read_variable_longitude
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.read_variable_latitude
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.read_variable_time
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader._get_var_index
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.read_variable_bathymetry
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.read_var_in_frame
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.read_var_in_frame_as_3d
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.read_var_in_frame_at_layer
+

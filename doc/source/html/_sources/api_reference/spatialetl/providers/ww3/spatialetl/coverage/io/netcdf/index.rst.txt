@@ -1,0 +1,15 @@
+spatialetl.providers.ww3.spatialetl.coverage.io.netcdf
+======================================================
+
+.. py:module:: spatialetl.providers.ww3.spatialetl.coverage.io.netcdf
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /api_reference/spatialetl/providers/ww3/spatialetl/coverage/io/netcdf/ww3/index
+
+

@@ -1,0 +1,4 @@
+read_variable_bathymetry
+========================
+
+.. py:method:: spatialetl.providers.common.gdal.spatialetl.coverage.io.img.ImageReader.ImageReader.read_variable_bathymetry(xmin, xmax, ymin, ymax)

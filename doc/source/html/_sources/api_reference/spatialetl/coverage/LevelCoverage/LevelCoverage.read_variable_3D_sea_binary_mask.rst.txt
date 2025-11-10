@@ -1,0 +1,10 @@
+read_variable_3D_sea_binary_mask
+================================
+
+.. py:method:: spatialetl.coverage.LevelCoverage.LevelCoverage.read_variable_3D_sea_binary_mask()
+
+   Retourne le masque terre/mer sur toute la couverture selon la profondeur z
+   @return: un tableau en deux dimensions [z,y,x].
+           0 = Terre
+           1 = Mer
+

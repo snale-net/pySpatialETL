@@ -1,0 +1,4 @@
+read_variable_barotropic_sea_water_velocity_at_time
+===================================================
+
+.. py:method:: spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.read_variable_barotropic_sea_water_velocity_at_time(index_t)

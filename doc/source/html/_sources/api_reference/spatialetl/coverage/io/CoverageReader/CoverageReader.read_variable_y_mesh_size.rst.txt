@@ -1,0 +1,6 @@
+read_variable_y_mesh_size
+=========================
+
+.. py:method:: spatialetl.coverage.io.CoverageReader.CoverageReader.read_variable_y_mesh_size(xmin, xmax, ymin, ymax)
+   :abstractmethod:
+
