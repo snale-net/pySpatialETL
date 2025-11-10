@@ -33,21 +33,15 @@ description = "Provider package spatialetl-providers-common-netcdf for SpatialET
 readme = "README.md"
 
 dependencies = [
-  "spatialetl~=0.2.0rc1",
-  "netCDF4~=1.6.4",
-  "cftime~=1.0.4.2"
+  "spatialetl>=0.2.0",
+  "netCDF4>=1.6.4",
+  "cftime>=1.0.4.2"
 ]
 
 [project.urls]
 Homepage = "https://lab.snale.net/produits/pyspatialetl"
 Documentation = "https://readthedocs.org"
 Repository = "https://github.com/snale-net/pySpatialETL.git"
-
-[dependency-groups]
-dev = [
-    "spatialetl",
-    # Additional devel dependencies (do not remove this line and add extra development dependencies)
-]
 
 [tool.uv.sources]
 # These names must match the names as defined in the pyproject.toml of the workspace items,

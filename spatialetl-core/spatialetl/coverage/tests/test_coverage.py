@@ -18,10 +18,62 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from unittest import TestCase
+import concurrent
+from concurrent.futures import ProcessPoolExecutor
+import concurrent.futures
 
+import numpy as np
+import pytest
+import multiprocessing
+from multiprocessing import Pool
+from spatialetl.coverage.coverage import Coverage
+from spatialetl.coverage.io.memory_reader import MemoryReader
+from spatialetl.utils.logger import logging
 
-class TestCoverage(TestCase):
+def test_coverage():
+    data =np.zeros([10, 10])
+    np.fill_diagonal(data, 5)
+    reader = MemoryReader(
+        x=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+        y=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+        bathy=data
+    )
 
-    def test_coverage(self):
-        raise NotImplementedError("Test not implemented yet")
+    logging.setLevel(logging.DEBUG)
+
+    global_data =np.zeros([10, 10])
+    global_data[:] = np.nan
+
+    def gathering_data(coverage):
+        print(f" worker id {coverage.rank}")
+        global_data[coverage.map_mpi[coverage.rank]["dst_global_y"],
+        coverage.map_mpi[coverage.rank]["dst_global_x"]] = coverage.read_variable_bathymetry()
+
+    NUM_WORKERS = 2
+    futures = []
+    with ProcessPoolExecutor(max_workers=NUM_WORKERS) as executor:
+        for i in range(0, NUM_WORKERS):
+            coverage = Coverage(reader=reader, pool=executor)
+            futures.append(executor.submit(gathering_data(coverage)))
+
+    futures, _ = concurrent.futures.wait(futures)
+   # np.testing.assert_array_equal(global_data,data)
+
+    # Version process
+    # nb_process = 2
+    # for i in range(nb_process):
+    #     coverage = Coverage(reader=reader, size=nb_process, rank=i)
+    #
+    #     p = multiprocessing.Process()
+    #     p.start()
+    #
+    #     if coverage.rank == 0:
+    #         assert coverage.read_axis_x() == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    #         assert coverage.read_axis_y() == [0, 1, 2, 3, 4]
+    #         np.testing.assert_array_equal(coverage.read_variable_bathymetry(),[[5.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 5.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0, 0.0]])
+    #     elif coverage.rank == 1:
+    #         assert coverage.read_axis_x() == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    #         assert coverage.read_axis_y() == [5, 6, 7, 8, 9]
+    #         np.testing.assert_array_equal(coverage.read_variable_bathymetry(),[[0.0, 0.0, 0.0, 0.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 5.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 5.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 5.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 5.0]])
+    #
+

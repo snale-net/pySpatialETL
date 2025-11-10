@@ -26,7 +26,7 @@ import multiprocessing
 
 import numpy as np
 from array_split import shape_split
-
+import re
 from spatialetl.exception.not_found_in_rank_error import NotFoundInRankError
 from spatialetl.operator.interpolator.interpolator_core import resample_2d_to_grid
 from spatialetl.utils.distance import distance_on_unit_sphere
@@ -53,14 +53,14 @@ class Coverage(object):
     HORIZONTAL_INTERPOLATION_METHOD = "linear"
     HORIZONTAL_OVERLAPING_SIZE = 2
 
-    def __init__(self, myReader, bbox=None, resolution_x=None, resolution_y=None, pool=None):
+    def __init__(self, reader, bbox=None, resolution_x=None, resolution_y=None,pool=None):
         """
         Initialize the Coverage object with a file reader and optional bounding box and resolution.
         
         Parameters
         ----------
         
-        myReader : object
+        reader : object
             File reader instance.
         bbox : list, optional
             Bounding box coordinates [xmin, xmax, ymin, ymax].
@@ -71,15 +71,18 @@ class Coverage(object):
 
         Examples
         --------
-        >>> coverage = Coverage(myReader, bbox=[0, 10, 0, 10], resolution_x=1.0, resolution_y=1.0)
+        >>> coverage = Coverage(reader, bbox=[0, 10, 0, 10], resolution_x=1.0, resolution_y=1.0)
         """
 
-        self.reader = myReader;
+        self.reader = reader;
 
         # Parallel
         self.map_mpi = None
-        self.size = 1 if pool is None else pool._processes
-        self.rank = multiprocessing.current_process()._identify[0]
+        self.size = 1 if pool is None else pool._max_workers
+        print( multiprocessing.current_process().name)
+        self.rank = 0 if multiprocessing.current_process().name == 'MainProcess' else re.find(r'\d+', multiprocessing.current_process().name)
+        #self.size = size
+        #self.rank = rank
 
         self.source_regular_grid = self.reader.is_regular_grid()
         self.target_regular_grid = self.source_regular_grid
@@ -684,7 +687,6 @@ class Coverage(object):
         if self.check_point_is_inside(target_lon, target_lat, lon, lat, tolerance=decimal_tolerance):
             try:
                 mask = self.read_variable_2D_sea_binary_mask(type="source", with_overlap=False)
-                print(np.shape(mask))
             except NotImplementedError:
                 logging.warning("No 2D sea binary mask found")
                 # mask = np.ones([self.source_global_y_size, self.source_global_x_size])

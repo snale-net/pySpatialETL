@@ -1,0 +1,19 @@
+spatialetl.point.io.ascii.symphonie.SYMPHONIEBathymakerWriter
+=============================================================
+
+.. py:module:: spatialetl.point.io.ascii.symphonie.SYMPHONIEBathymakerWriter
+
+
+Classes
+-------
+
+.. toctree::
+   :hidden:
+
+   /api_reference/spatialetl/point/io/ascii/symphonie/SYMPHONIEBathymakerWriter/SYMPHONIEBathymakerWriter
+
+.. autoapisummary::
+
+   spatialetl.point.io.ascii.symphonie.SYMPHONIEBathymakerWriter.SYMPHONIEBathymakerWriter
+
+

@@ -1,0 +1,15 @@
+spatialetl.coverage.io.netcdf
+=============================
+
+.. py:module:: spatialetl.coverage.io.netcdf
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /api_reference/spatialetl/coverage/io/netcdf/symphonie/index
+
+

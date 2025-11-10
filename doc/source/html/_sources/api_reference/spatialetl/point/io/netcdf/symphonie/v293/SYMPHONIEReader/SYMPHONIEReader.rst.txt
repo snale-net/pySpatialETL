@@ -1,0 +1,10 @@
+spatialetl.point.io.netcdf.symphonie.v293.SYMPHONIEReader.SYMPHONIEReader
+=========================================================================
+
+.. py:class:: spatialetl.point.io.netcdf.symphonie.v293.SYMPHONIEReader.SYMPHONIEReader(myGrid, myFile, xy, names=None)
+
+   Bases: :py:obj:`spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader`
+
+
+   .. py:attribute:: reader
+

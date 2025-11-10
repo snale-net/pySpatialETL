@@ -46,10 +46,10 @@ class TimeCoverage(Coverage):
     TIME_DELTA = timedelta(minutes=15)
     TIME_OVERLAPING_SIZE = 0
 
-    def __init__(self, myReader, bbox=None, resolution_x=None, resolution_y=None, start_time=None, end_time=None,
+    def __init__(self, reader, bbox=None, resolution_x=None, resolution_y=None, start_time=None, end_time=None,
                  freq=None):
 
-        Coverage.__init__(self, myReader, bbox=bbox, resolution_x=resolution_x, resolution_y=resolution_y);
+        Coverage.__init__(self, reader, bbox=bbox, resolution_x=resolution_x, resolution_y=resolution_y);
 
         self.source_global_t_size = self.reader.get_t_size()
         self.source_global_axis_t = self.reader.read_axis_t(0, self.source_global_t_size, 0);

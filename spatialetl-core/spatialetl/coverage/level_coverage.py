@@ -44,8 +44,8 @@ class LevelCoverage(Coverage):
     DEPTH_DELTA = 1.0; #meters
     VERTICAL_INTERPOLATION_METHOD = "linear"
     
-    def __init__(self, myReader,bbox=None,resolution_x=None,resolution_y=None,zbox=None,resolution_z=None):
-        Coverage.__init__(self,myReader,bbox=bbox, resolution_x=resolution_x, resolution_y=resolution_y);
+    def __init__(self, reader, bbox=None, resolution_x=None, resolution_y=None, zbox=None, resolution_z=None):
+        Coverage.__init__(self, reader, bbox=bbox, resolution_x=resolution_x, resolution_y=resolution_y);
 
         self.vertical_resampling = False
         self.source_sigma_coordinate = False

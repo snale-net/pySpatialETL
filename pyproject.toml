@@ -24,7 +24,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "spatialetl"
-version = "0.2.0rc1"
+version = "0.2.0"
 requires-python = ">=3.9"
 authors = [
   {name = "Fabien RÉTIF", email = "fabien.retif@snale.net"},
@@ -51,80 +51,105 @@ exclude = ["spatialetl.providers","spatialetl.providers.*","*.tests", "*.tests.*
 "gdal" = [
     "spatialetl-providers-common-gdal"
 ]
-#"grib" = [
-#    "spatialetl-providers-common-grib"
-#]
-#"mpi" = [
-#    "spatialetl-providers-common-mpi"
-#]
+"grib" = [
+    "spatialetl-providers-common-grib"
+]
+"mpi" = [
+    "spatialetl-providers-common-mpi"
+]
 "netcdf" = [
     "spatialetl-providers-common-netcdf"
 ]
-#"ecmwf" = [
-#    "spatialetl-providers-ecmwf"
-#]
-#"gmt" = [
-#    "spatialetl-providers-gmt"
-#]
-#"hycom" = [
-#    "spatialetl-providers-hycom"
-#]
-#"mercator" = [
-#    "spatialetl-providers-mercator"
-#]
-#"meteofrance" = [
-#    "spatialetl-providers-meteofrance"
-#]
-#"snale" = [
-#    "spatialetl-providers-snale"
-#]
-#"swan" = [
-#    "spatialetl-providers-swan"
-#]
+"ecmwf" = [
+    "spatialetl-providers-ecmwf"
+]
+"gmt" = [
+    "spatialetl-providers-gmt"
+]
+"hycom" = [
+    "spatialetl-providers-hycom"
+]
+"mercator" = [
+    "spatialetl-providers-mercator"
+]
+"meteofrance" = [
+    "spatialetl-providers-meteofrance"
+]
+"swan" = [
+    "spatialetl-providers-swan"
+]
 "symphonie" = [
     "spatialetl-providers-symphonie"
 ]
-#"telemac" = [
-#    "spatialetl-providers-telemac"
-#]
-#"ww3" = [
-#    "spatialetl-providers-ww3"
-#]
-#"all" = [
-#    "spatialetl-providers-common-gdal",
-#    "spatialetl-providers-common-grib",
-#    "spatialetl-providers-common-mpi",
-#    "spatialetl-providers-common-netcdf",
-#    "spatialetl-providers-ecmwf",
-#    "spatialetl-providers-gmt",
-#    "spatialetl-providers-hycom",
-#    "spatialetl-providers-mercator",
-#    "spatialetl-providers-meteofrance",
-#    "spatialetl-providers-snale",
-#    "spatialetl-providers-swan",
-#    "spatialetl-providers-symphonie",
-#    "spatialetl-providers-telemac",
-#    "spatialetl-providers-ww3",
-#]
+"telemac" = [
+    "spatialetl-providers-telemac"
+]
+"ww3" = [
+    "spatialetl-providers-ww3"
+]
+"all" = [
+    "spatialetl-providers-common-gdal",
+    "spatialetl-providers-common-grib",
+    "spatialetl-providers-common-mpi",
+    "spatialetl-providers-common-netcdf",
+    "spatialetl-providers-ecmwf",
+    "spatialetl-providers-gmt",
+    "spatialetl-providers-hycom",
+    "spatialetl-providers-mercator",
+    "spatialetl-providers-meteofrance",
+    "spatialetl-providers-swan",
+    "spatialetl-providers-symphonie",
+    "spatialetl-providers-telemac",
+    "spatialetl-providers-ww3",
+]
+
+## pytest settings ##
+[tool.pytest.ini_options]
+# We need to make sure airflow-core sources are first in the pythonpath, because uv sync adds sources to
+# pythonpath in basically random order and pytest does not understand legacy namespace packages and cannot
+# use namespace packages effectively when collecting tests.
+pythonpath = [
+    "spatialetl-core"
+]
+testpaths = [
+    "tests",
+]
+asyncio_default_fixture_loop_scope = "function"
 
 [tool.uv.sources]
 # These names must match the names as defined in the pyproject.toml of the workspace items,
 # *not* the workspace folder paths
 spatialetl = {workspace = true}
 spatialetl-core = {workspace = true}
+spatialetl-providers-common-gdal = {workspace = true}
+spatialetl-providers-common-grib = {workspace = true}
+spatialetl-providers-common-mpi = {workspace = true}
+spatialetl-providers-common-netcdf = {workspace = true}
+spatialetl-providers-ecmwf = {workspace = true}
+spatialetl-providers-gmt = {workspace = true}
+spatialetl-providers-hycom = {workspace = true}
+spatialetl-providers-mercator = {workspace = true}
+spatialetl-providers-meteofrance = {workspace = true}
+spatialetl-providers-swan = {workspace = true}
 spatialetl-providers-symphonie = {workspace = true}
-spatialetl-providers-common-gdal = { workspace = true }
-spatialetl-providers-common-netcdf = { workspace = true }
-#spatialetl-providers-common-grib = { workspace = true }
-#spatialetl-providers-ecmwf = { workspace = true }
+spatialetl-providers-telemac = {workspace = true}
+spatialetl-providers-ww3 = {workspace = true}
 
 [tool.uv.workspace]
 members = [
     ".",
     "spatialetl-core",
-    "providers/symphonie",
     "providers/common/gdal",
+    "providers/common/grib",
+    "providers/common/mpi",
     "providers/common/netcdf",
- #   "providers/common/grid",
- #   "providers/ecmwf"
+    "providers/ecmwf",
+    "providers/gmt",
+    "providers/hycom",
+    "providers/mercator",
+    "providers/meteofrance",
+    "providers/swan",
+    "providers/symphonie",
+    "providers/telemac",
+    "providers/ww3",
 ]

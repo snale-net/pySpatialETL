@@ -1,0 +1,37 @@
+spatialetl.coverage.io.netcdf.symphonie.v293.SYMPHONIEReader.SYMPHONIEReader
+============================================================================
+
+.. py:class:: spatialetl.coverage.io.netcdf.symphonie.v293.SYMPHONIEReader.SYMPHONIEReader(myGrid, myFile)
+
+   Bases: :py:obj:`spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader`
+
+
+   La classe SymphonieReader permet de lire les données du format Symphonie
+
+   @param  myGrid : lien vers le fichier de grille (que l'on trouve dans le RDIR/tmp/grid.nc)
+   @param myFile : lien vers le fichier de données (que l'on trouve dans GRAPHIQUES)
+
+
+   .. py:method:: read_variable_2D_sea_binary_mask(xmin, xmax, ymin, ymax)
+
+
+   .. py:method:: read_variable_3D_sea_binary_mask(xmin, xmax, ymin, ymax)
+
+
+   .. py:method:: read_variable_baroclinic_sea_water_velocity_at_time_and_depth(index_t, index_z, xmin, xmax, ymin, ymax)
+
+
+   .. py:method:: read_variable_barotropic_sea_water_velocity_at_time(index_t, xmin, xmax, ymin, ymax)
+
+
+   .. py:method:: read_variable_sea_water_velocity_at_ground_level_at_time(index_t, xmin, xmax, ymin, ymax)
+
+
+   .. py:method:: read_variable_sea_water_velocity_at_sea_water_surface_at_time(index_t, xmin, xmax, ymin, ymax)
+
+
+   .. py:method:: read_variable_wind_10m_at_time(index_t, xmin, xmax, ymin, ymax)
+
+
+   .. py:method:: read_variable_wind_stress_at_time(index_t, xmin, xmax, ymin, ymax)
+

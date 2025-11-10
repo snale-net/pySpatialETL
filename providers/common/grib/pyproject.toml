@@ -32,11 +32,9 @@ authors = [
 description = "Provider package spatialetl-providers-common-grib for SpatialETL"
 readme = "README.md"
 
-
-[tool.setuptools.dynamic]
 dependencies = [
-  "spatialetl~=0.2.0",
-  "cfgrib~=0.9.7.7"
+  "spatialetl>=0.2.0",
+  "cfgrib>=0.9.7.7"
 ]
 
 [project.urls]

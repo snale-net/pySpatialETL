@@ -1,0 +1,16 @@
+spatialetl.point.io.ascii.symphonie.SYMPHONIEBathymakerWriter.SYMPHONIEBathymakerWriter
+=======================================================================================
+
+.. py:class:: spatialetl.point.io.ascii.symphonie.SYMPHONIEBathymakerWriter.SYMPHONIEBathymakerWriter(s, myFile)
+
+   Bases: :py:obj:`spatialetl.point.io.MultiPointWriter.MultiPointWriter`
+
+
+   .. py:method:: close()
+
+
+   .. py:method:: write_variable_bathymetry()
+
+
+   .. py:attribute:: data
+

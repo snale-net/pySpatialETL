@@ -39,12 +39,12 @@ class TimeLevelCoverage(LevelCoverage, TimeCoverage):
     Elle rajoute les dimensions temporelle et verticale à la couverture horizontale classique.
     """
 
-    def __init__(self, myReader, bbox=None, resolution_x=None, resolution_y=None, zbox=None, resolution_z=None,
+    def __init__(self, reader, bbox=None, resolution_x=None, resolution_y=None, zbox=None, resolution_z=None,
                  start_time=None, end_time=None, freq=None):
 
-        LevelCoverage.__init__(self, myReader, bbox=bbox, resolution_x=resolution_x, resolution_y=resolution_y,
+        LevelCoverage.__init__(self, reader, bbox=bbox, resolution_x=resolution_x, resolution_y=resolution_y,
                                zbox=zbox, resolution_z=resolution_z);
-        TimeCoverage.__init__(self, myReader, bbox=bbox, resolution_x=resolution_x, resolution_y=resolution_y,
+        TimeCoverage.__init__(self, reader, bbox=bbox, resolution_x=resolution_x, resolution_y=resolution_y,
                               start_time=start_time, end_time=end_time, freq=freq);
 
         self.data_temp = np.zeros(

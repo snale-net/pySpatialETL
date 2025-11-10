@@ -33,10 +33,10 @@ description = "Provider package spatialetl-providers-common-gdal for SpatialETL"
 readme = "README.md"
 
 dependencies = [
-  "spatialetl~=0.2.0rc1",
-  "gdal~=3.4.1",
-  "rasterio~=1.4.3",
-  "geopandas~=0.14.4"
+  "spatialetl>=0.2.0",
+  "gdal>=3.4.1",
+  "rasterio>=1.4.3",
+  "geopandas>=0.14.4"
 ]
 
 [project.urls]

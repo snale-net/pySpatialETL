@@ -42,3 +42,9 @@ doc/source/api_reference/*
 doc/_build/
 doc/_doctrees/*/
 doc/_inventory_cache/
+
+# Ignore uv.lock
+/uv.lock
+
+# UV cache
+.uv-cache/
