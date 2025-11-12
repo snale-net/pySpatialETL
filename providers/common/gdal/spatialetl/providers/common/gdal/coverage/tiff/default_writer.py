@@ -22,9 +22,13 @@
 # SOFTWARE.
 from __future__ import division, print_function, absolute_import
 
+import concurrent
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
+
 import os
 
 import numpy as np
+from array_split import shape_split
 from osgeo import gdal
 from osgeo import osr
 
@@ -36,7 +40,7 @@ from spatialetl.utils.variable_definition import VariableDefinition
 from spatialetl.utils.logger import logging
 
 
-class DefaultWriter (CoverageWriter):
+class DefaultWriter(CoverageWriter):
 
     def __init__(self,cov,myFile):
         CoverageWriter.__init__(self,cov,myFile);
@@ -355,7 +359,24 @@ class DefaultWriter (CoverageWriter):
                  self.coverage.get_x_size(type="target_global")])
             global_data[:] = np.nan
 
-        local_data = self.coverage.read_variable_bathymetry()
+        NUM_WORKERS = os.cpu_count()
+        local_data = np.empty(
+                [self.coverage.get_y_size(type="target_local"),
+                 self.coverage.get_x_size(type="target_local")])
+        local_data[:] = np.nan
+
+        def gathering_data(coverage, current_thread):
+            local_data[coverage.threading_map[coverage.rank][current_thread]["dst_global_y"],
+            coverage.threading_map[coverage.rank][current_thread]["dst_global_x"]] = coverage.read_variable_bathymetry(
+                current_thread)
+
+        NUM_WORKERS = os.cpu_count()
+        futures = []
+        with ProcessPoolExecutor(max_workers=NUM_WORKERS) as executor:
+            for i in range(0, NUM_WORKERS):
+                futures.append(executor.submit(gathering_data(self.coverage, i)))
+
+        futures, _ = concurrent.futures.wait(futures)
 
         if self.coverage.rank != 0:
             self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)

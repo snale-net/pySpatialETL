@@ -115,6 +115,8 @@ testpaths = [
     "tests",
 ]
 asyncio_default_fixture_loop_scope = "function"
+log_cli = true
+log_cli_level = "DEBUG"
 
 [tool.uv.sources]
 # These names must match the names as defined in the pyproject.toml of the workspace items,

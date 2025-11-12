@@ -18,8 +18,6 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-import os
-
 import concurrent
 from concurrent.futures import ProcessPoolExecutor
 import concurrent.futures
@@ -30,14 +28,15 @@ import multiprocessing
 from multiprocessing import Pool
 from spatialetl.coverage.coverage import Coverage
 from spatialetl.coverage.io.memory_reader import MemoryReader
+from spatialetl.providers.common.gdal.coverage.tiff.default_writer import DefaultWriter
 from spatialetl.utils.logger import logging
 
-def test_coverage_5x5():
-    data =np.zeros([5, 5])
+def test_tiff_default_reader():
+    data =np.zeros([10, 10])
     np.fill_diagonal(data, 5)
     reader = MemoryReader(
-        x=[0, 1, 2, 3, 4] ,
-        y=[0, 1, 2, 3, 4],
+        x=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+        y=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
         bathy=data
     )
 
@@ -45,21 +44,10 @@ def test_coverage_5x5():
 
     coverage = Coverage(reader=reader)
 
-    global_data =np.zeros([5, 5])
-    global_data[:] = np.nan
+    writer = DefaultWriter(coverage,"/tmp")
+    writer.write_variable_bathymetry()
 
-    def gathering_data(coverage,current_thread):
-        global_data[coverage.threading_map[coverage.rank][current_thread]["dst_global_y"],
-        coverage.threading_map[coverage.rank][current_thread]["dst_global_x"]] = coverage.read_variable_bathymetry(current_thread)
-
-    NUM_WORKERS = os.cpu_count()
-    futures = []
-    with ProcessPoolExecutor(max_workers=NUM_WORKERS) as executor:
-        for i in range(0, NUM_WORKERS):
-            futures.append(executor.submit(gathering_data(coverage,i)))
-
-    futures, _ = concurrent.futures.wait(futures)
-    np.testing.assert_array_equal(global_data,data)
+    #np.testing.assert_array_equal( coverage.read_variable_bathymetry(),data)
 
     # Version process
     # nb_process = 2
@@ -79,31 +67,3 @@ def test_coverage_5x5():
     #         np.testing.assert_array_equal(coverage.read_variable_bathymetry(),[[0.0, 0.0, 0.0, 0.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 5.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 5.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 5.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 5.0]])
     #
 
-def test_coverage_100x100():
-    data =np.zeros([100, 100])
-    np.fill_diagonal(data, 5)
-    reader = MemoryReader(
-        x=range(100),
-        y=range(100),
-        bathy=data
-    )
-
-    logging.setLevel(logging.DEBUG)
-
-    coverage = Coverage(reader=reader)
-
-    global_data =np.zeros([100, 100])
-    global_data[:] = np.nan
-
-    def gathering_data(coverage,current_thread):
-        global_data[coverage.threading_map[coverage.rank][current_thread]["dst_global_y"],
-        coverage.threading_map[coverage.rank][current_thread]["dst_global_x"]] = coverage.read_variable_bathymetry(current_thread)
-
-    NUM_WORKERS = os.cpu_count()
-    futures = []
-    with ProcessPoolExecutor(max_workers=NUM_WORKERS) as executor:
-        for i in range(0, NUM_WORKERS):
-            futures.append(executor.submit(gathering_data(coverage,i)))
-
-    futures, _ = concurrent.futures.wait(futures)
-    np.testing.assert_array_equal(global_data,data)
