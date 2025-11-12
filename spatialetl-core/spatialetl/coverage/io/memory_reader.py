@@ -26,7 +26,7 @@ from spatialetl.coverage.io.coverage_reader import CoverageReader
 
 class MemoryReader (CoverageReader):
 
-    def __init__(self, x,y,bathy):
+    def __init__(self,x,y,bathy=None):
         self.x = x
         self.y = y
         self.bathy = bathy
@@ -40,11 +40,17 @@ class MemoryReader (CoverageReader):
     def get_y_size(self):
         return np.shape(self.y)[0];
 
-    def read_axis_x(self,xmin,xmax,ymin,ymax):
-        return self.x[xmin:xmax]
+    def read_axis_x(self,xmin,xmax,ymin=None,ymax=None):
+        if self.is_regular_grid():
+            return self.x[xmin:xmax]
+        else:
+            return self.x[ymin:ymax,xmin:xmax]
 
-    def read_axis_y(self,xmin,xmax,ymin,ymax):
-        return self.y[ymin:ymax]
+    def read_axis_y(self,xmin,xmax,ymin=None,ymax=None):
+        if self.is_regular_grid():
+            return self.y[xmin:xmax]
+        else:
+            return self.y[ymin:ymax, xmin:xmax]
 
     # Variables
     def read_variable_longitude(self,xmin,xmax,ymin,ymax):
