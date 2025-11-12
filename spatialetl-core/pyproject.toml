@@ -31,7 +31,6 @@ authors = [
 ]
 description = "Provider package spatialetl-providers-symphonie for SpatialETL"
 
-
 dependencies = [
   "setuptools>=70.1.1",
   "cython>=0.29.35",

@@ -20,19 +20,20 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from __future__ import division, print_function, absolute_import
 
 import os
-
-import multiprocessing
+from importlib.util import find_spec
 
 import numpy as np
 from array_split import shape_split
-import re
+
 from spatialetl.exception.not_found_in_rank_error import NotFoundInRankError
 from spatialetl.operator.interpolator.interpolator_core import resample_2d_to_grid
 from spatialetl.utils.distance import distance_on_unit_sphere
 from spatialetl.utils.logger import logging
+
+mpi_lib = find_spec("mpi4py")
+MPI_FOUND = mpi_lib is not None
 
 
 class Coverage(object):
@@ -55,7 +56,7 @@ class Coverage(object):
     HORIZONTAL_INTERPOLATION_METHOD = "linear"
     HORIZONTAL_OVERLAPING_SIZE = 2
 
-    def __init__(self, reader, bbox=None, resolution_x=None, resolution_y=None):
+    def __init__(self, reader, bbox=None, resolution_x=None, resolution_y=None,parallel=True,nb_thread:int=os.cpu_count()):
         """
         Initialize the Coverage object with a file reader and optional bounding box and resolution.
         
@@ -78,15 +79,30 @@ class Coverage(object):
 
         self.reader = reader;
 
-        # Parallel MPI
-        self.map_mpi = None
-        self.size = 1
-        self.rank = 0
+        if parallel:
+            if MPI_FOUND:
+                # Parallel MPI
+                self.comm = mpi_lib.MPI.COMM_WORLD
+                self.size = self.comm.Get_size()
+                self.rank = self.comm.Get_rank()
+            else:
+                # No parallel MPI
+                self.map_mpi = None
+                self.size = 1
+                self.rank = 0
 
-        # Parallel OpenMP
-        self.threading_map = None
-        #self.size = size
-        #self.rank = rank
+            # Parallel multithreading
+            self.threads_number = nb_thread
+            self.threading_map = None
+        else:
+            # No parallel MPI
+            self.map_mpi = None
+            self.size = 1
+            self.rank = 0
+
+            # No parallel multithreading
+            self.threads_number = 1
+            self.threading_map = None
 
         self.source_regular_grid = self.reader.is_regular_grid()
         self.target_regular_grid = self.source_regular_grid
@@ -184,21 +200,32 @@ class Coverage(object):
         if type(self) == Coverage:
             self.create_mpi_map()
             self.update_mpi_map()
-            if self.rank == 0:
-                logging.debug("MPI map:")
-            for key in self.map_mpi[self.rank]:
-                logging.debug("Proc n°" + str(self.rank) + " " + str(key) + "=" + str(self.map_mpi[self.rank][key]))
-            logging.debug("---------")
 
             self.create_threading_map()
-            #self.update_threading_map()
-            if self.rank == 0:
-                logging.debug("Multi-threading map:")
+            self.update_threading_map()
 
-            for thread in range(0, os.cpu_count()):
-                for key in self.threading_map[self.rank][thread]:
-                    logging.debug(f"Proc n° {self.rank} - thread n° {thread} {key} = {self.threading_map[self.rank][thread][key]}")
-            logging.debug("---------")
+            if self.rank == 0 and MPI_FOUND:
+                logging.debug("MPI map:")
+            else:
+                logging.debug("Multithreading map:")
+                logging.debug(f"{"-" * 10} Target grid {"-" * 10}")
+                for key in ['dst_global_x','dst_global_y','dst_local_x_size','dst_local_y_size']:
+                    logging.debug(f"{key} = {self.map_mpi[self.rank][key]}")
+
+            if MPI_FOUND:
+                logging.debug(f"{"-" * 10} Proc n° {self.rank} {"-" * 10}")
+                for key in self.map_mpi[self.rank]:
+                    logging.debug(f"    {key} = {self.map_mpi[self.rank][key]}")
+
+            logging.debug(self.threads_number)
+
+            for thread in range(0, self.threads_number):
+                logging.debug(f"   {"-" * 10} Thread n° {thread} {"-" * 10}")
+                for key in self.map_mpi[self.rank]:
+                    logging.debug(f"    {key} = {self.threading_map[self.rank][thread][key]}")
+
+            if self.rank == 0:
+                logging.debug("-"* 20)
 
         # try to fill metadata
         self.read_metadata()
@@ -301,7 +328,8 @@ class Coverage(object):
             slice = tuple(slyce)
 
             map = {}
-            # Source grid
+
+            ### Destination grid ###
             map["dst_global_x"] = slice[1]
             map["dst_global_y"] = slice[0]
 
@@ -453,58 +481,53 @@ class Coverage(object):
         --------
         >>> coverage.create_threading_map()
         """
-        self.threading_map = np.empty([self.size, os.cpu_count()], dtype=object)
+        self.threading_map = np.empty([self.size, self.threads_number], dtype=object)
         target_sample = (self.map_mpi[self.rank]["dst_local_y_size"], self.map_mpi[self.rank]["dst_local_x_size"])
 
         # Split the axes
-        target_slices = shape_split(target_sample, os.cpu_count(), axis=[0, 0])
+        target_slices = shape_split(target_sample, self.threads_number, axis=[0, 0])
+
+        # If we can divide the grid dimensions with the number of threads,
+        # we set the threads number by the number of slice
+        self.threads_number =len(target_slices.flatten())
 
         slice_index = 0
         for slyce in target_slices.flatten():
             slice = tuple(slyce)
 
             map = {}
-            # Source grid
+
+            #### Destination grid ###
             map["dst_global_x"] = slice[1]
             map["dst_global_y"] = slice[0]
 
             map["dst_local_x_size"] = map["dst_global_x"].stop - map["dst_global_x"].start
             map["dst_local_y_size"] = map["dst_global_y"].stop - map["dst_global_y"].start
 
+            # Compute overlap
             dst_global_x_min_overlap = max(0, map["dst_global_x"].start - Coverage.HORIZONTAL_OVERLAPING_SIZE)
-            dst_global_x_max_overlap = min(self.target_global_x_size,
+            dst_global_x_max_overlap = min(self.map_mpi[self.rank]["dst_local_x_size"],
                                            map["dst_global_x"].stop + Coverage.HORIZONTAL_OVERLAPING_SIZE)
             map["dst_global_x_overlap"] = np.s_[dst_global_x_min_overlap:dst_global_x_max_overlap]
 
             dst_global_y_min_overlap = max(0, map["dst_global_y"].start - Coverage.HORIZONTAL_OVERLAPING_SIZE)
-            dst_global_y_max_overlap = min(self.target_global_y_size,
+            dst_global_y_max_overlap = min(self.map_mpi[self.rank]["dst_local_y_size"],
                                            map["dst_global_y"].stop + Coverage.HORIZONTAL_OVERLAPING_SIZE)
             map["dst_global_y_overlap"] = np.s_[dst_global_y_min_overlap:dst_global_y_max_overlap]
 
             map["dst_global_x_size_overlap"] = map["dst_global_x_overlap"].stop - map["dst_global_x_overlap"].start
             map["dst_global_y_size_overlap"] = map["dst_global_y_overlap"].stop - map["dst_global_y_overlap"].start
 
-            dst_x_min = Coverage.HORIZONTAL_OVERLAPING_SIZE
-            dst_x_max = map["dst_global_x_size_overlap"] - Coverage.HORIZONTAL_OVERLAPING_SIZE
-            dst_y_min = Coverage.HORIZONTAL_OVERLAPING_SIZE
-            dst_y_max = map["dst_global_y_size_overlap"] - Coverage.HORIZONTAL_OVERLAPING_SIZE
+            # Compute dest local grid
+            dst_local_x_min = map["dst_global_x"].start
+            dst_local_x_max = map["dst_global_x"].stop
+            dst_local_y_min = map["dst_global_y"].start
+            dst_local_y_max = map["dst_global_y"].stop
 
-            if map["dst_global_x"].start == 0:
-                dst_x_min = 0
+            map["dst_local_x"] = np.s_[dst_local_x_min:dst_local_x_max]
+            map["dst_local_y"] = np.s_[dst_local_y_min:dst_local_y_max]
 
-            if map["dst_global_x"].stop == self.target_global_x_size:
-                dst_x_max = map["dst_global_x_size_overlap"]
-
-            if map["dst_global_y"].start == 0:
-                dst_y_min = 0
-
-            if map["dst_global_y"].stop == self.target_global_y_size:
-                dst_y_max = map["dst_global_y_size_overlap"]
-
-            map["dst_local_x"] = np.s_[dst_x_min:dst_x_max]
-            map["dst_local_y"] = np.s_[dst_y_min:dst_y_max]
-
-            # Source grille
+            ### Source grille ###
             map["src_global_x"] = map["dst_global_x"]
             map["src_global_y"] = map["dst_global_y"]
 
@@ -526,8 +549,7 @@ class Coverage(object):
 
     def update_threading_map(self):
         """
-        Update the MPI map for parallel processing.
-        This method recalculates the source and overlap slices for each process based on the current grid.
+        Update source grid for threading map
 
         Examples
         --------
@@ -560,53 +582,54 @@ class Coverage(object):
             xmin = np.min(idx[1])
             xmax = np.max(idx[1]) + 1
 
-        # Version 2
-        # SRC GLOBAL
-        self.threading_map[self.rank][self.current_thread]["src_global_x"] = np.s_[xmin:xmax]
-        self.threading_map[self.rank][self.current_thread]["src_global_x_size"] = xmax - xmin
-        self.threading_map[self.rank][self.current_thread]["src_global_y"] = np.s_[ymin:ymax]
-        self.threading_map[self.rank][self.current_thread]["src_global_y_size"] = ymax - ymin
+        for thread in range(0,self.threads_number):
+            # Version 2
+            # SRC GLOBAL
+            self.threading_map[self.rank][thread]["src_global_x"] = np.s_[xmin:xmax]
+            self.threading_map[self.rank][thread]["src_global_x_size"] = xmax - xmin
+            self.threading_map[self.rank][thread]["src_global_y"] = np.s_[ymin:ymax]
+            self.threading_map[self.rank][thread]["src_global_y_size"] = ymax - ymin
 
-        dst_global_x_min_overlap = max(0, self.threading_map[self.rank][self.current_thread][
-            "src_global_x"].start - Coverage.HORIZONTAL_OVERLAPING_SIZE)
-        dst_global_x_max_overlap = min(self.source_global_x_size,
-                                       self.threading_map[self.rank][self.current_thread][
-                                           "src_global_x"].stop + Coverage.HORIZONTAL_OVERLAPING_SIZE)
-        self.threading_map[self.rank][self.current_thread]["src_global_x_overlap"] = np.s_[
-                                                          dst_global_x_min_overlap:dst_global_x_max_overlap]
+            dst_global_x_min_overlap = max(0, self.threading_map[self.rank][thread][
+                "src_global_x"].start - Coverage.HORIZONTAL_OVERLAPING_SIZE)
+            dst_global_x_max_overlap = min(self.map_mpi[self.rank]["dst_local_x_size"],
+                                           self.threading_map[self.rank][thread][
+                                               "src_global_x"].stop + Coverage.HORIZONTAL_OVERLAPING_SIZE)
+            self.threading_map[self.rank][thread]["src_global_x_overlap"] = np.s_[
+                                                              dst_global_x_min_overlap:dst_global_x_max_overlap]
 
-        dst_global_y_min_overlap = max(0, self.threading_map[self.rank][self.current_thread][
-            "src_global_y"].start - Coverage.HORIZONTAL_OVERLAPING_SIZE)
-        dst_global_y_max_overlap = min(self.source_global_y_size,
-                                       self.threading_map[self.rank][self.current_thread][
-                                           "src_global_y"].stop + Coverage.HORIZONTAL_OVERLAPING_SIZE)
-        self.threading_map[self.rank][self.current_thread]["src_global_y_overlap"] = np.s_[
-                                                          dst_global_y_min_overlap:dst_global_y_max_overlap]
+            dst_global_y_min_overlap = max(0, self.threading_map[self.rank][thread][
+                "src_global_y"].start - Coverage.HORIZONTAL_OVERLAPING_SIZE)
+            dst_global_y_max_overlap = min(self.map_mpi[self.rank]["dst_local_y_size"],
+                                           self.threading_map[self.rank][thread][
+                                               "src_global_y"].stop + Coverage.HORIZONTAL_OVERLAPING_SIZE)
+            self.threading_map[self.rank][thread]["src_global_y_overlap"] = np.s_[
+                                                              dst_global_y_min_overlap:dst_global_y_max_overlap]
 
-        self.threading_map[self.rank][self.current_thread]["src_global_x_size_overlap"] = self.threading_map[self.rank][self.current_thread][
-                                                                   "src_global_x_overlap"].stop - \
-                                                               self.threading_map[self.rank][self.current_thread][
-                                                                   "src_global_x_overlap"].start
-        self.threading_map[self.rank][self.current_thread]["src_global_y_size_overlap"] = self.threading_map[self.rank][self.current_thread][
-                                                                   "src_global_y_overlap"].stop - \
-                                                               self.threading_map[self.rank][self.current_thread][
-                                                                   "src_global_y_overlap"].start
+            self.threading_map[self.rank][thread]["src_global_x_size_overlap"] = self.threading_map[self.rank][thread][
+                                                                       "src_global_x_overlap"].stop - \
+                                                                   self.threading_map[self.rank][thread][
+                                                                       "src_global_x_overlap"].start
+            self.threading_map[self.rank][thread]["src_global_y_size_overlap"] = self.threading_map[self.rank][thread][
+                                                                       "src_global_y_overlap"].stop - \
+                                                                   self.threading_map[self.rank][thread][
+                                                                       "src_global_y_overlap"].start
 
-        self.threading_map[self.rank][self.current_thread]["src_local_x_size"] = xmax - xmin
-        self.threading_map[self.rank][self.current_thread]["src_local_y_size"] = ymax - ymin
-        self.threading_map[self.rank][self.current_thread]["src_local_x"] = np.s_[0:self.threading_map[self.rank][self.current_thread]["src_local_x_size"]]
-        self.threading_map[self.rank][self.current_thread]["src_local_y"] = np.s_[0:self.threading_map[self.rank][self.current_thread]["src_local_y_size"]]
+            self.threading_map[self.rank][thread]["src_local_x_size"] = xmax - xmin
+            self.threading_map[self.rank][thread]["src_local_y_size"] = ymax - ymin
+            self.threading_map[self.rank][thread]["src_local_x"] = np.s_[0:self.threading_map[self.rank][thread]["src_local_x_size"]]
+            self.threading_map[self.rank][thread]["src_local_y"] = np.s_[0:self.threading_map[self.rank][thread]["src_local_y_size"]]
 
-        # OVERLAP
-        self.threading_map[self.rank][self.current_thread]["src_local_x_size_overlap"] = self.threading_map[self.rank][self.current_thread][
-            "src_global_x_size_overlap"]
-        self.threading_map[self.rank][self.current_thread]["src_local_y_size_overlap"] = self.threading_map[self.rank][self.current_thread][
-            "src_global_y_size_overlap"]
+            # OVERLAP
+            self.threading_map[self.rank][thread]["src_local_x_size_overlap"] = self.threading_map[self.rank][thread][
+                "src_global_x_size_overlap"]
+            self.threading_map[self.rank][thread]["src_local_y_size_overlap"] = self.threading_map[self.rank][thread][
+                "src_global_y_size_overlap"]
 
-        self.threading_map[self.rank][self.current_thread]["src_local_x_overlap"] = np.s_[
-                                                         0:self.threading_map[self.rank][self.current_thread]["src_local_x_size_overlap"]]
-        self.threading_map[self.rank][self.current_thread]["src_local_y_overlap"] = np.s_[
-                                                         0:self.threading_map[self.rank][self.current_thread]["src_local_y_size_overlap"]]
+            self.threading_map[self.rank][thread]["src_local_x_overlap"] = np.s_[
+                                                             0:self.threading_map[self.rank][thread]["src_local_x_size_overlap"]]
+            self.threading_map[self.rank][thread]["src_local_y_overlap"] = np.s_[
+                                                             0:self.threading_map[self.rank][thread]["src_local_y_size_overlap"]]
 
     # Read metadata
     def read_metadata(self):
@@ -955,7 +978,7 @@ class Coverage(object):
     # HYDRO
     # 2D
     #################
-    def read_variable_bathymetry(self,current_thread:int):
+    def read_variable_bathymetry(self,current_thread:int=0):
         """
         Read the bathymetry over the entire coverage.
 
