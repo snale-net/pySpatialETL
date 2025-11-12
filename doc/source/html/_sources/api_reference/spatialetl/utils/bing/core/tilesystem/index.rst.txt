@@ -1,0 +1,30 @@
+spatialetl.utils.bing.core.tilesystem
+=====================================
+
+.. py:module:: spatialetl.utils.bing.core.tilesystem
+
+.. autoapi-nested-parse::
+
+   __author__ = Linlin Chen
+   __email__ = lchen96@hawk.iit.edu
+
+   @Description:
+   This module implements a set of static methods used for Bing maps tile system.
+
+   reference: https://msdn.microsoft.com/en-us/library/bb259689.aspx
+
+
+
+Classes
+-------
+
+.. toctree::
+   :hidden:
+
+   /api_reference/spatialetl/utils/bing/core/tilesystem/TileSystem
+
+.. autoapisummary::
+
+   spatialetl.utils.bing.core.tilesystem.TileSystem
+
+

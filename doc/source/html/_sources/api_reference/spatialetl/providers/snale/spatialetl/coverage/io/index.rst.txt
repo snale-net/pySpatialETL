@@ -1,0 +1,15 @@
+spatialetl.providers.snale.spatialetl.coverage.io
+=================================================
+
+.. py:module:: spatialetl.providers.snale.spatialetl.coverage.io
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /api_reference/spatialetl/providers/snale/spatialetl/coverage/io/shape/index
+
+

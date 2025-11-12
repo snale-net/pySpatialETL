@@ -1,0 +1,4 @@
+get_t_size
+==========
+
+.. py:method:: spatialetl.coverage.TimeCoverage.TimeCoverage.get_t_size(type='target', with_overlap=False)

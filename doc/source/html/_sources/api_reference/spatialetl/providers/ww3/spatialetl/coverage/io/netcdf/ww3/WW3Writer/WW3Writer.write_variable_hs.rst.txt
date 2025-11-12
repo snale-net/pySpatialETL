@@ -1,0 +1,4 @@
+write_variable_hs
+=================
+
+.. py:method:: spatialetl.providers.ww3.spatialetl.coverage.io.netcdf.ww3.WW3Writer.WW3Writer.write_variable_hs()

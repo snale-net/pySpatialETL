@@ -1,0 +1,4 @@
+is_regular_grid
+===============
+
+.. py:method:: spatialetl.providers.ecmwf.spatialetl.coverage.io.netcdf.ecmwf.ECMWFReader.ECMWFReader.is_regular_grid()

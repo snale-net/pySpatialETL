@@ -1,0 +1,6 @@
+close
+=====
+
+.. py:method:: spatialetl.point.io.MultiPointReader.MultiPointReader.close()
+   :abstractmethod:
+

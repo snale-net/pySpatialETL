@@ -1,0 +1,16 @@
+map_size
+========
+
+.. py:method:: spatialetl.utils.bing.core.tilesystem.TileSystem.map_size(level)
+   :staticmethod:
+
+
+   Determines the map width and height (in pixels) at a specified level
+
+   :param level {[int]} -- [level of detail:
+   :type level {[int]} -- [level of detail: lowest detail) to 23 (highest detail
+   :param from 1:
+   :type from 1: lowest detail) to 23 (highest detail
+
+   :returns: [int] -- [The map width and height in pixels (width == height)]
+

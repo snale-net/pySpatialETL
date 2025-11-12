@@ -1,0 +1,6 @@
+read_metadata
+=============
+
+.. py:method:: spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.read_metadata()
+
+   Lit la metadonnée du fichier si le lecteur contient une fonction read_metadata()

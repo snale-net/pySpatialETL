@@ -1,0 +1,4 @@
+summary
+=======
+
+.. py:method:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.summary()

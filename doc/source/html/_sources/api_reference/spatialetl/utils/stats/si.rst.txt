@@ -1,0 +1,4 @@
+si
+==
+
+.. py:function:: spatialetl.utils.stats.si(obs, model)

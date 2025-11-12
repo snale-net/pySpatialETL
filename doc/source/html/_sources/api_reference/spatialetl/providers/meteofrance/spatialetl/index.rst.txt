@@ -1,0 +1,16 @@
+spatialetl.providers.meteofrance.spatialetl
+===========================================
+
+.. py:module:: spatialetl.providers.meteofrance.spatialetl
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /api_reference/spatialetl/providers/meteofrance/spatialetl/coverage/index
+   /api_reference/spatialetl/providers/meteofrance/spatialetl/point/index
+
+

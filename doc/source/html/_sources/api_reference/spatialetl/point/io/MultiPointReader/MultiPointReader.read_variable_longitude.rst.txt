@@ -1,0 +1,6 @@
+read_variable_longitude
+=======================
+
+.. py:method:: spatialetl.point.io.MultiPointReader.MultiPointReader.read_variable_longitude()
+   :abstractmethod:
+

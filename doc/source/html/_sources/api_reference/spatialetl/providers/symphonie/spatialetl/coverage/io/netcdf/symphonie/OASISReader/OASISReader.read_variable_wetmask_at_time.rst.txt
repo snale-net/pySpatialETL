@@ -1,0 +1,4 @@
+read_variable_wetmask_at_time
+=============================
+
+.. py:method:: spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.OASISReader.OASISReader.read_variable_wetmask_at_time(t)

@@ -1,0 +1,290 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Coverage &mdash; SpatialETL documentation 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=30bed479" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="spatialetl.coverage.io" href="../io/index.html" />
+    <link rel="prev" title="TimeLevelCoverage" href="../TimeLevelCoverage/TimeLevelCoverage.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            SpatialETL documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../docs/user_guide.html">User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../docs/advanced_guide.html">Advanced guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../docs/example.html">Examples Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../docs/reference/providers.html">Providers</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../docs/reference.html">API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">spatialetl.coverage</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../LevelCoverage/LevelCoverage.html">LevelCoverage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../TimeCoverage/TimeCoverage.html">TimeCoverage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../TimeLevelCoverage/TimeLevelCoverage.html">TimeLevelCoverage</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Coverage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../io/index.html">spatialetl.coverage.io</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../utils/index.html">spatialetl.coverage.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../point/index.html">spatialetl.point</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../operator/index.html">spatialetl.operator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../exception/index.html">spatialetl.exception</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../utils/index.html">spatialetl.utils</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">SpatialETL documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../docs/reference.html">API reference</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">spatialetl.coverage</a></li>
+      <li class="breadcrumb-item active">Coverage</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/api_reference/spatialetl/coverage/coverage/Coverage.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-spatialetl.coverage.coverage.Coverage">
+<span id="coverage"></span><h1>Coverage<a class="headerlink" href="#module-spatialetl.coverage.coverage.Coverage" title="Link to this heading"></a></h1>
+<p>The Coverage class represents a spatial coverage on the horizontal plane.</p>
+<p>The points representing this coverage can be aligned on a regular grid (x,y) or on an irregular grid ((x1,y1),(x2,y2)).
+Depending on the grid type, the axis reading functions will return one or two-dimensional arrays.
+To avoid loading the entire file into memory, the coverage contains a pointer to a reader.
+Layers are therefore read on demand from the file.</p>
+<p>Note: The axes are always reversed in the arrays because of NetCDF.
+So the y-axis first, then the x-axis. Example: [y,x]</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">coverage</span> <span class="o">=</span> <span class="n">Coverage</span><span class="p">(</span><span class="n">myReader</span><span class="p">,</span> <span class="n">bbox</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="n">resolution_x</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">resolution_y</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+</pre></div>
+</div>
+<section id="constructor">
+<h2>Constructor<a class="headerlink" href="#constructor" title="Link to this heading"></a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="spatialetl.coverage.coverage.Coverage.__init__">
+<span class="sig-prename descclassname"><span class="pre">Coverage.</span></span><span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">myReader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bbox</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution_x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution_y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatialetl.coverage.coverage.Coverage.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize the Coverage object with a file reader and optional bounding box and resolution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>myReader</strong> (<em>object</em>) – File reader instance.</p></li>
+<li><p><strong>bbox</strong> (<em>list</em><em>, </em><em>optional</em>) – Bounding box coordinates [xmin, xmax, ymin, ymax].</p></li>
+<li><p><strong>resolution_x</strong> (<em>float</em><em>, </em><em>optional</em>) – Resolution along the x-axis.</p></li>
+<li><p><strong>resolution_y</strong> (<em>float</em><em>, </em><em>optional</em>) – Resolution along the y-axis.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">coverage</span> <span class="o">=</span> <span class="n">Coverage</span><span class="p">(</span><span class="n">myReader</span><span class="p">,</span> <span class="n">bbox</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="n">resolution_x</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">resolution_y</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="static-attributes">
+<h2>Static attributes<a class="headerlink" href="#static-attributes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">HORIZONTAL_INTERPOLATION_METHOD</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">HORIZONTAL_OVERLAPING_SIZE</span></code></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reader</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_mpi</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">size</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rank</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">source_regular_grid</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">target_regular_grid</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">horizontal_resampling</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">source_global_x_size</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">source_global_y_size</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">source_global_axis_x</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">source_global_axis_y</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">target_global_res_x</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">target_global_res_y</span></code></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="methods">
+<h2>Methods<a class="headerlink" href="#methods" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="Coverage.check_bbox_validity.html#spatialetl.coverage.coverage.Coverage.check_bbox_validity" title="spatialetl.coverage.coverage.Coverage.check_bbox_validity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_bbox_validity</span></code></a>(candidate)</p></td>
+<td><p>Check the validity of the bounding box.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="Coverage.check_point_is_inside.html#spatialetl.coverage.coverage.Coverage.check_point_is_inside" title="spatialetl.coverage.coverage.Coverage.check_point_is_inside"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_point_is_inside</span></code></a>(target_lon, target_lat, lon, lat)</p></td>
+<td><p>Check if a point is inside the coverage.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="Coverage.create_mpi_map.html#spatialetl.coverage.coverage.Coverage.create_mpi_map" title="spatialetl.coverage.coverage.Coverage.create_mpi_map"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_mpi_map</span></code></a>()</p></td>
+<td><p>Create the MPI map for parallel processing.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="Coverage.update_mpi_map.html#spatialetl.coverage.coverage.Coverage.update_mpi_map" title="spatialetl.coverage.coverage.Coverage.update_mpi_map"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_mpi_map</span></code></a>()</p></td>
+<td><p>Update the MPI map for parallel processing.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="Coverage.read_metadata.html#spatialetl.coverage.coverage.Coverage.read_metadata" title="spatialetl.coverage.coverage.Coverage.read_metadata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_metadata</span></code></a>()</p></td>
+<td><p>Read the metadata from the file if the reader contains a read_metadata() function.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="Coverage.get_x_size.html#spatialetl.coverage.coverage.Coverage.get_x_size" title="spatialetl.coverage.coverage.Coverage.get_x_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_x_size</span></code></a>([type, with_overlap])</p></td>
+<td><p>Get the x size.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="Coverage.get_y_size.html#spatialetl.coverage.coverage.Coverage.get_y_size" title="spatialetl.coverage.coverage.Coverage.get_y_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_y_size</span></code></a>([type, with_overlap])</p></td>
+<td><p>Get the y size.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="Coverage.is_regular_grid.html#spatialetl.coverage.coverage.Coverage.is_regular_grid" title="spatialetl.coverage.coverage.Coverage.is_regular_grid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_regular_grid</span></code></a>([type])</p></td>
+<td><p>Check if the grid is regular.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="Coverage.read_axis_x.html#spatialetl.coverage.coverage.Coverage.read_axis_x" title="spatialetl.coverage.coverage.Coverage.read_axis_x"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_axis_x</span></code></a>([type, with_overlap])</p></td>
+<td><p>Return the values (often longitude) of the x axis.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="Coverage.read_axis_y.html#spatialetl.coverage.coverage.Coverage.read_axis_y" title="spatialetl.coverage.coverage.Coverage.read_axis_y"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_axis_y</span></code></a>([type, with_overlap])</p></td>
+<td><p>Return the values (often latitude) of the y axis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="Coverage.find_point_index.html#spatialetl.coverage.coverage.Coverage.find_point_index" title="spatialetl.coverage.coverage.Coverage.find_point_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_point_index</span></code></a>(target_lon, target_lat[, ...])</p></td>
+<td><p>Find the index of the closest point to the given point.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="Coverage.read_variable_bathymetry.html#spatialetl.coverage.coverage.Coverage.read_variable_bathymetry" title="spatialetl.coverage.coverage.Coverage.read_variable_bathymetry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_variable_bathymetry</span></code></a>()</p></td>
+<td><p>Read the bathymetry over the entire coverage.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="Coverage.read_variable_topography.html#spatialetl.coverage.coverage.Coverage.read_variable_topography" title="spatialetl.coverage.coverage.Coverage.read_variable_topography"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_variable_topography</span></code></a>()</p></td>
+<td><p>Read the topography over the entire coverage.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="Coverage.read_variable_mesh_size.html#spatialetl.coverage.coverage.Coverage.read_variable_mesh_size" title="spatialetl.coverage.coverage.Coverage.read_variable_mesh_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_variable_mesh_size</span></code></a>()</p></td>
+<td><p>Read the mesh size over the entire coverage.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="Coverage.read_variable_x_mesh_size.html#spatialetl.coverage.coverage.Coverage.read_variable_x_mesh_size" title="spatialetl.coverage.coverage.Coverage.read_variable_x_mesh_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_variable_x_mesh_size</span></code></a>()</p></td>
+<td><p>Read the mesh size on the x axis.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="Coverage.read_variable_y_mesh_size.html#spatialetl.coverage.coverage.Coverage.read_variable_y_mesh_size" title="spatialetl.coverage.coverage.Coverage.read_variable_y_mesh_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_variable_y_mesh_size</span></code></a>()</p></td>
+<td><p>Read the mesh size on the y axis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="Coverage.read_variable_2D_sea_binary_mask.html#spatialetl.coverage.coverage.Coverage.read_variable_2D_sea_binary_mask" title="spatialetl.coverage.coverage.Coverage.read_variable_2D_sea_binary_mask"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_variable_2D_sea_binary_mask</span></code></a>([type, with_overlap])</p></td>
+<td><p>Read the land/sea mask over the entire coverage.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="Coverage.read_variable_Ha.html#spatialetl.coverage.coverage.Coverage.read_variable_Ha" title="spatialetl.coverage.coverage.Coverage.read_variable_Ha"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_variable_Ha</span></code></a>()</p></td>
+<td><p>Read the amplitude of the reanalysis.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../TimeLevelCoverage/TimeLevelCoverage.html" class="btn btn-neutral float-left" title="TimeLevelCoverage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../io/index.html" class="btn btn-neutral float-right" title="spatialetl.coverage.io" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, SNALE.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

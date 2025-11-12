@@ -1,0 +1,19 @@
+spatialetl.providers.common.gdal.spatialetl.coverage.io.img.ImageReader
+=======================================================================
+
+.. py:module:: spatialetl.providers.common.gdal.spatialetl.coverage.io.img.ImageReader
+
+
+Classes
+-------
+
+.. toctree::
+   :hidden:
+
+   /api_reference/spatialetl/providers/common/gdal/spatialetl/coverage/io/img/ImageReader/ImageReader
+
+.. autoapisummary::
+
+   spatialetl.providers.common.gdal.spatialetl.coverage.io.img.ImageReader.ImageReader
+
+

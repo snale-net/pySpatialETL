@@ -1,0 +1,4 @@
+write_variable_sea_water_salinity
+=================================
+
+.. py:method:: spatialetl.providers.mercator.spatialetl.coverage.io.netcdf.mercator.v2020.MERCATORWriter.DefaultWriter.write_variable_sea_water_salinity()

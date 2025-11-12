@@ -1,6 +1,0 @@
-spatialetl~=0.2.0
-gdal~=3.4.1
-rasterio~=1.4.3
-shapely~=1.8.2
-geopandas~=0.14.4
-pygeos

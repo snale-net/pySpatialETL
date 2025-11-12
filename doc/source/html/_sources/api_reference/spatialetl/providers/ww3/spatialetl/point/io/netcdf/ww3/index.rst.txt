@@ -1,0 +1,15 @@
+spatialetl.providers.ww3.spatialetl.point.io.netcdf.ww3
+=======================================================
+
+.. py:module:: spatialetl.providers.ww3.spatialetl.point.io.netcdf.ww3
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /api_reference/spatialetl/providers/ww3/spatialetl/point/io/netcdf/ww3/WW3Reader/WW3Reader
+
+

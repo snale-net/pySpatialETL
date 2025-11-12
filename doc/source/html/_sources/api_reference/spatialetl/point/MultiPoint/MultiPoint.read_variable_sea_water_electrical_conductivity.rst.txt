@@ -1,0 +1,4 @@
+read_variable_sea_water_electrical_conductivity
+===============================================
+
+.. py:method:: spatialetl.point.MultiPoint.MultiPoint.read_variable_sea_water_electrical_conductivity()

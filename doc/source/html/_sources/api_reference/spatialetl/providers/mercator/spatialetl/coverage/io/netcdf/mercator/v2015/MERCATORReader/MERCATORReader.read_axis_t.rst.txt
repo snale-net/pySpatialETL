@@ -1,0 +1,7 @@
+read_axis_t
+===========
+
+.. py:method:: spatialetl.providers.mercator.spatialetl.coverage.io.netcdf.mercator.v2015.MERCATORReader.MERCATORReader.read_axis_t(tmin, tmax, timestamp)
+
+   Attention si gridT, U,V,2D ont un time_counter different
+

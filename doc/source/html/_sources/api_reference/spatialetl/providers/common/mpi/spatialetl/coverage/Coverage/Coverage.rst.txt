@@ -1,0 +1,80 @@
+Coverage
+========
+
+.. py:module:: spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage
+
+.. autoapi-nested-parse::
+
+   La classe Coverage représente une couverture spatiale sur l'horizontale. Les point qui représentent cette couverture
+   peuvent être alignés sur une maille régulière (x,y) ou sur une maille non-régulière ((x1,y1),(x2,y2)). En fonction du
+   type de maille, les fonctions de lecture des axes retourneront des tableaux à une ou deux dimensions. Pour éviter
+   un chargement en mémoire de la totalité du fichier, la coverage contient un pointeur vers un lecteur. Les couches
+   sont donc lues à la demande dans le fichier.
+
+   Attention, les axes sont toujours inversés dans les tableaux à cause de NetCDF.
+   Soit l'axe y en premier puis l'axe x. Exemple : [y,x]
+
+   @param  myReader: lecteur de fichier
+
+
+Constructor
+-----------
+
+.. autoapimethod:: spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.__init__
+
+
+Static attributes
+-----------------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.HORIZONTAL_INTERPOLATION_METHOD
+   spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.HORIZONTAL_OVERLAPING_SIZE
+
+Attributes
+----------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.reader
+   spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.map_mpi
+   spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.comm
+   spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.size
+   spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.rank
+   spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.source_regular_grid
+   spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.target_regular_grid
+   spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.horizontal_resampling
+   spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.source_global_x_size
+   spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.source_global_y_size
+   spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.source_global_axis_x
+   spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.source_global_axis_y
+   spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.target_global_res_x
+   spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.target_global_res_y
+
+Methods
+-------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.check_bbox_validity
+   spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.check_point_is_inside
+   spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.create_mpi_map
+   spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.update_mpi_map
+   spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.read_metadata
+   spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.get_x_size
+   spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.get_y_size
+   spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.is_regular_grid
+   spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.read_axis_x
+   spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.read_axis_y
+   spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.find_point_index
+   spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.read_variable_bathymetry
+   spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.read_variable_topography
+   spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.read_variable_mesh_size
+   spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.read_variable_x_mesh_size
+   spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.read_variable_y_mesh_size
+   spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.read_variable_2D_sea_binary_mask
+   spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.read_variable_Ha
+

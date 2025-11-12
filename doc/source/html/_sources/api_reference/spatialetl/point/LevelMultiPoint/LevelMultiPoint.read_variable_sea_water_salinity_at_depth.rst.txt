@@ -1,0 +1,4 @@
+read_variable_sea_water_salinity_at_depth
+=========================================
+
+.. py:method:: spatialetl.point.LevelMultiPoint.LevelMultiPoint.read_variable_sea_water_salinity_at_depth(depth)

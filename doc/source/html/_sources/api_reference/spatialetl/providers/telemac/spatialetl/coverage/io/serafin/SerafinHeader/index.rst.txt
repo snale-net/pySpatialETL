@@ -1,0 +1,34 @@
+spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader
+=========================================================================
+
+.. py:module:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SLF_EIT
+
+
+Classes
+-------
+
+.. toctree::
+   :hidden:
+
+   /api_reference/spatialetl/providers/telemac/spatialetl/coverage/io/serafin/SerafinHeader/SerafinHeader
+
+.. autoapisummary::
+
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader
+
+
+Module Contents
+---------------
+
+.. py:data:: SLF_EIT
+   :value: 'iso-8859-1'
+
+

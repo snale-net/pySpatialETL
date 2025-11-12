@@ -1,0 +1,94 @@
+SYMPHONIEReader
+===============
+
+.. py:module:: spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader
+
+.. autoapi-nested-parse::
+
+   La classe SymphonieReader permet de lire les données du format Symphonie
+
+   @param  myGrid : lien vers le fichier de grille (que l'on trouve dans le RDIR/tmp/grid.nc)
+   @param myFile : lien vers le fichier de données (que l'on trouve dans GRAPHIQUES)
+
+
+Constructor
+-----------
+
+.. autoapimethod:: spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.__init__
+
+
+Static attributes
+-----------------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.HORIZONTAL_OVERLAPING_SIZE
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.APPLY_WET_MASK
+
+Attributes
+----------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.grid
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.gridrotcos_t
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.gridrotsin_t
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.t_size
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.times
+
+Methods
+-------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.open_file
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.close
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.compute_rot
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.compute_to_tracer
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.compute_vector_rotation
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.compute_overlap_indexes
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.is_regular_grid
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.get_x_size
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.get_y_size
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.get_z_size
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.get_t_size
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.read_axis_x
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.read_axis_y
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.read_axis_z
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.read_axis_t
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.read_variable_time
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.read_variable_longitude
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.read_variable_latitude
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.read_variable_2D_sea_binary_mask
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.read_variable_3D_sea_binary_mask
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.read_variable_2D_wet_binary_mask_at_time
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.read_variable_mesh_size
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.read_variable_x_mesh_size
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.read_variable_y_mesh_size
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.read_variable_sea_surface_height_above_mean_sea_level_at_time
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.read_variable_sea_water_column_thickness_at_time
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.read_variable_sea_surface_temperature_at_time
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.read_variable_sea_surface_salinity_at_time
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.read_variable_sea_water_velocity_at_sea_water_surface_at_time
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.read_variable_sea_water_temperature_at_ground_level_at_time
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.read_variable_sea_water_salinity_at_ground_level_at_time
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.read_variable_sea_water_velocity_at_ground_level_at_time
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.read_variable_bathymetry
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.read_variable_barotropic_sea_water_velocity_at_time
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.read_variable_depth_at_depth
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.read_variable_sea_water_temperature_at_time_and_depth
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.read_variable_sea_water_salinity_at_time_and_depth
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.read_variable_baroclinic_sea_water_velocity_at_time_and_depth
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.read_variable_sea_surface_wave_significant_height_at_time
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.read_variable_sea_surface_wave_mean_period_at_time
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.read_variable_sea_surface_wave_to_direction_at_time
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.read_variable_sea_surface_wave_stokes_drift_velocity_at_time
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.read_variable_atmosphere_momentum_flux_to_waves_at_time
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.read_variable_waves_momentum_flux_to_ocean_at_time
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.read_variable_wind_stress_at_time
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.read_variable_wind_10m_at_time
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.read_variable_Ha
+

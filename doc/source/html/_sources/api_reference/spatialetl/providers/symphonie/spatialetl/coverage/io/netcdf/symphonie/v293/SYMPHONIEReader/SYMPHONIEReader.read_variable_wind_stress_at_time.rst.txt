@@ -1,0 +1,4 @@
+read_variable_wind_stress_at_time
+=================================
+
+.. py:method:: spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.v293.SYMPHONIEReader.SYMPHONIEReader.read_variable_wind_stress_at_time(index_t, xmin, xmax, ymin, ymax)

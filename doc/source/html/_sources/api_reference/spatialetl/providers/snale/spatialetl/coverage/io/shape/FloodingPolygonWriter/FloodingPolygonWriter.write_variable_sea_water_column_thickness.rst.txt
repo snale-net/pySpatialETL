@@ -1,0 +1,4 @@
+write_variable_sea_water_column_thickness
+=========================================
+
+.. py:method:: spatialetl.providers.snale.spatialetl.coverage.io.shape.FloodingPolygonWriter.FloodingPolygonWriter.write_variable_sea_water_column_thickness()

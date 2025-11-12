@@ -1,0 +1,4 @@
+read_variable_2D_sea_binary_mask
+================================
+
+.. py:method:: spatialetl.providers.meteofrance.spatialetl.coverage.io.tiff.mf.INSPIREReader.INSPIREReader.read_variable_2D_sea_binary_mask(xmin, xmax, ymin, ymax)

@@ -1,0 +1,8 @@
+to_mjd
+======
+
+.. py:method:: spatialetl.point.utils.jdutil.datetime.to_mjd()
+
+   Return the date converted to Modified Julian Day.
+
+

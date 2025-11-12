@@ -1,0 +1,28 @@
+MultiPointWriter
+================
+
+.. py:module:: spatialetl.point.io.MultiPointWriter.MultiPointWriter
+Constructor
+-----------
+
+.. autoapimethod:: spatialetl.point.io.MultiPointWriter.MultiPointWriter.__init__
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.point.io.MultiPointWriter.MultiPointWriter.points
+   spatialetl.point.io.MultiPointWriter.MultiPointWriter.filename
+
+Methods
+-------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.point.io.MultiPointWriter.MultiPointWriter.close
+

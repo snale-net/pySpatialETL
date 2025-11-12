@@ -1,0 +1,4 @@
+is_regular_grid
+===============
+
+.. py:method:: spatialetl.providers.common.netcdf.spatialetl.coverage.io.netcdf.GDALReader.GDALReader.is_regular_grid()

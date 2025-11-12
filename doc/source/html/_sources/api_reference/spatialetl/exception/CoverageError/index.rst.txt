@@ -1,0 +1,19 @@
+spatialetl.exception.CoverageError
+==================================
+
+.. py:module:: spatialetl.exception.CoverageError
+
+
+Exceptions
+----------
+
+.. toctree::
+   :hidden:
+
+   /api_reference/spatialetl/exception/CoverageError/CoverageError
+
+.. autoapisummary::
+
+   spatialetl.exception.CoverageError.CoverageError
+
+

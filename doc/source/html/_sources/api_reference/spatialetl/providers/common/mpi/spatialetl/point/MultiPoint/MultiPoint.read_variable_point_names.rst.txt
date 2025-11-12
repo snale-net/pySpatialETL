@@ -1,0 +1,4 @@
+read_variable_point_names
+=========================
+
+.. py:method:: spatialetl.providers.common.mpi.spatialetl.point.MultiPoint.MultiPoint.read_variable_point_names()

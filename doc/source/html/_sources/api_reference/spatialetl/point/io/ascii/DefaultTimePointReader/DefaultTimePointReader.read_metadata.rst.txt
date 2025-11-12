@@ -1,0 +1,4 @@
+read_metadata
+=============
+
+.. py:method:: spatialetl.point.io.ascii.DefaultTimePointReader.DefaultTimePointReader.read_metadata()

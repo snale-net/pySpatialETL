@@ -1,0 +1,9 @@
+write_tpar
+==========
+
+.. py:method:: spatialetl.providers.swan.spatialetl.coverage.io.ascii.swan.SWANUnstructuredReader.SWANUnstructuredReader.write_tpar(data, fname='tpar')
+
+   Given an array Nx5, where N is the number of timestamps and
+   the columns are respecvely, TIME, HS, TP, DP, SP, this function
+   will write TPAR formated  file named *fname*.
+

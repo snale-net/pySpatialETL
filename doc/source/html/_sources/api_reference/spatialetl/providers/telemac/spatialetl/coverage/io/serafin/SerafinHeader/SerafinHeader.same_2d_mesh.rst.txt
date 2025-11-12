@@ -1,0 +1,10 @@
+same_2d_mesh
+============
+
+.. py:method:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.same_2d_mesh(other)
+
+   !
+   @brief: Check if the other mesh is strictly identical (same order of nodes and elements) on the horizontal
+   @param other <SerafinHeader>: header to compare
+   @return: bool
+

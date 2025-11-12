@@ -1,0 +1,4 @@
+read_variable_atmosphere_momentum_flux_to_waves_at_time
+=======================================================
+
+.. py:method:: spatialetl.providers.ww3.spatialetl.coverage.io.netcdf.ww3.WW3Reader.WW3Reader.read_variable_atmosphere_momentum_flux_to_waves_at_time(t, xmin, xmax, ymin, ymax)

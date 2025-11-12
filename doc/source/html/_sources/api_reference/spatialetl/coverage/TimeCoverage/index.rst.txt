@@ -1,0 +1,19 @@
+spatialetl.coverage.TimeCoverage
+================================
+
+.. py:module:: spatialetl.coverage.TimeCoverage
+
+
+Classes
+-------
+
+.. toctree::
+   :hidden:
+
+   /api_reference/spatialetl/coverage/TimeCoverage/TimeCoverage
+
+.. autoapisummary::
+
+   spatialetl.coverage.TimeCoverage.TimeCoverage
+
+

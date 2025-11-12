@@ -1,0 +1,4 @@
+close
+=====
+
+.. py:method:: spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.close()

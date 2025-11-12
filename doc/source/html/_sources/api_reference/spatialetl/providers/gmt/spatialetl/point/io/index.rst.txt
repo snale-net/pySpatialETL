@@ -1,0 +1,6 @@
+spatialetl.providers.gmt.spatialetl.point.io
+============================================
+
+.. py:module:: spatialetl.providers.gmt.spatialetl.point.io
+
+

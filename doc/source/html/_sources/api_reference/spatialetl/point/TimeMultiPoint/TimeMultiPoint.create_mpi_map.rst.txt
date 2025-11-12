@@ -1,0 +1,4 @@
+create_mpi_map
+==============
+
+.. py:method:: spatialetl.point.TimeMultiPoint.TimeMultiPoint.create_mpi_map()

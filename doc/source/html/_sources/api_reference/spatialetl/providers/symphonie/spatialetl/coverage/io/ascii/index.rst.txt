@@ -1,0 +1,15 @@
+spatialetl.providers.symphonie.spatialetl.coverage.io.ascii
+===========================================================
+
+.. py:module:: spatialetl.providers.symphonie.spatialetl.coverage.io.ascii
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /api_reference/spatialetl/providers/symphonie/spatialetl/coverage/io/ascii/symphonie/index
+
+

@@ -1,0 +1,16 @@
+spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf
+============================================================
+
+.. py:module:: spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /api_reference/spatialetl/providers/ecmwf/spatialetl/coverage/io/grib/ecmwf/ECMWFReader/ECMWFReader
+   /api_reference/spatialetl/providers/ecmwf/spatialetl/coverage/io/grib/ecmwf/ERA5Reader/ERA5Reader
+
+

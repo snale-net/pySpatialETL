@@ -1,0 +1,4 @@
+read_variable_atmosphere_momentum_flux_to_waves_at_time
+=======================================================
+
+.. py:method:: spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.read_variable_atmosphere_momentum_flux_to_waves_at_time(index_t, xmin, xmax, ymin, ymax)

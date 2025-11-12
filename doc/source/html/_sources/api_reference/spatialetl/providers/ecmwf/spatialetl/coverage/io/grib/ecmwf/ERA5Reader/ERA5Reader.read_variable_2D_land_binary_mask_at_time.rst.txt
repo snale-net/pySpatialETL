@@ -1,0 +1,4 @@
+read_variable_2D_land_binary_mask_at_time
+=========================================
+
+.. py:method:: spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_variable_2D_land_binary_mask_at_time(index_t, xmin, xmax, ymin, ymax)

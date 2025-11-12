@@ -1,0 +1,4 @@
+close
+=====
+
+.. py:method:: spatialetl.providers.common.netcdf.spatialetl.coverage.io.netcdf.DefaultWriter.DefaultWriter.close()

@@ -1,0 +1,4 @@
+get_z_size
+==========
+
+.. py:method:: spatialetl.providers.common.netcdf.spatialetl.point.io.netcdf.DefaultTimeLevelMultiPointReader.DefaultTimeLevelMultiPointReader.get_z_size()

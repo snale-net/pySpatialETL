@@ -1,0 +1,9 @@
+copy_as_2d
+==========
+
+.. py:method:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.copy_as_2d()
+
+   !
+   Returns a 2D equivalent copy of the current instance
+   @return <slf.Serafin.SerafinHeader>: output Serafin header
+

@@ -1,0 +1,4 @@
+_check_dim
+==========
+
+.. py:method:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._check_dim()

@@ -1,0 +1,8 @@
+_set_as_2d
+==========
+
+.. py:method:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._set_as_2d()
+
+   !
+   Beware: nb_nodes_2d has to be consistant
+

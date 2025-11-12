@@ -1,0 +1,16 @@
+spatialetl.providers.common.mpi.spatialetl
+==========================================
+
+.. py:module:: spatialetl.providers.common.mpi.spatialetl
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /api_reference/spatialetl/providers/common/mpi/spatialetl/coverage/index
+   /api_reference/spatialetl/providers/common/mpi/spatialetl/point/index
+
+

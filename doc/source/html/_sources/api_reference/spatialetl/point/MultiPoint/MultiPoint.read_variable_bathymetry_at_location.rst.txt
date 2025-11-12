@@ -1,0 +1,7 @@
+read_variable_bathymetry_at_location
+====================================
+
+.. py:method:: spatialetl.point.MultiPoint.MultiPoint.read_variable_bathymetry_at_location(x, y)
+
+   Read bathymetry for a specific point
+

@@ -1,0 +1,4 @@
+close
+=====
+
+.. py:method:: spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.close()

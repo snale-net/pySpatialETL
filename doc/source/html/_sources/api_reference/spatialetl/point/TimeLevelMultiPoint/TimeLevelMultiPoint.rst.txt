@@ -1,0 +1,22 @@
+TimeLevelMultiPoint
+===================
+
+.. py:module:: spatialetl.point.TimeLevelMultiPoint.TimeLevelMultiPoint
+Constructor
+-----------
+
+.. autoapimethod:: spatialetl.point.TimeLevelMultiPoint.TimeLevelMultiPoint.__init__
+
+
+
+
+Methods
+-------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.point.TimeLevelMultiPoint.TimeLevelMultiPoint.read_variable_baroclinic_sea_water_velocity_at_time_and_depth
+   spatialetl.point.TimeLevelMultiPoint.TimeLevelMultiPoint.read_variable_sea_water_temperature_at_time_and_depth
+   spatialetl.point.TimeLevelMultiPoint.TimeLevelMultiPoint.read_variable_sea_water_salinity_at_time_and_depth
+

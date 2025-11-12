@@ -1,0 +1,15 @@
+spatialetl.providers.swan.spatialetl.point.io.netcdf.ecmwf
+==========================================================
+
+.. py:module:: spatialetl.providers.swan.spatialetl.point.io.netcdf.ecmwf
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /api_reference/spatialetl/providers/swan/spatialetl/point/io/netcdf/ecmwf/ECMWFReader/ECMWFReader
+
+

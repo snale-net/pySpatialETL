@@ -1,0 +1,7 @@
+_set_as_double_precision
+========================
+
+.. py:method:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._set_as_double_precision()
+
+   Set Serafin as double precision
+

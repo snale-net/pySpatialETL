@@ -1,0 +1,4 @@
+get_t_size
+==========
+
+.. py:method:: spatialetl.providers.meteofrance.spatialetl.coverage.io.tiff.mf.INSPIREReader.INSPIREReader.get_t_size()

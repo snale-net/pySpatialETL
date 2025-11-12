@@ -1,0 +1,11 @@
+download_image
+==============
+
+.. py:method:: spatialetl.utils.bing.core.AerialImageRetrieval.AerialImageRetrieval.download_image(quadkey)
+
+   This method is used to download a tile image given the quadkey from Bing tile system
+
+   :param quadkey {[string]} -- [The quadkey for a tile image]:
+
+   :returns: [Image] -- [A PIL Image]
+

@@ -1,0 +1,26 @@
+spatialetl.operator.interpolator
+================================
+
+.. py:module:: spatialetl.operator.interpolator
+
+.. autoapi-nested-parse::
+
+   ==================================
+   Interpolator (:mod:`coverage.operator.interpolator`)
+   ==================================
+
+   .. currentmodule:: coverage.operator.interpolator
+
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /api_reference/spatialetl/operator/interpolator/InterpolatorCore/resample_2d_to_grid
+   /api_reference/spatialetl/operator/interpolator/InterpolatorCore/vertical_interpolation
+   /api_reference/spatialetl/operator/interpolator/InterpolatorCore/time_1d_interpolation
+
+

@@ -1,0 +1,19 @@
+spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader
+======================================================================================
+
+.. py:module:: spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader
+
+
+Classes
+-------
+
+.. toctree::
+   :hidden:
+
+   /api_reference/spatialetl/providers/symphonie/spatialetl/coverage/io/netcdf/symphonie/SYMPHONIEReader/SYMPHONIEReader
+
+.. autoapisummary::
+
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader
+
+

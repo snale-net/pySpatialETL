@@ -1,0 +1,8 @@
+is_regular_grid
+===============
+
+.. py:method:: spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.is_regular_grid(type='target')
+
+   Retourne vrai si la maille est régulière, sinon faux.
+   @return:  vrai si la maille est régulière sinon faux.
+

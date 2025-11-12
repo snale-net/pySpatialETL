@@ -1,0 +1,4 @@
+read_axis_y
+===========
+
+.. py:method:: spatialetl.providers.common.gdal.spatialetl.coverage.io.tiff.srtm.SRTMReader.SRTMReader.read_axis_y()

@@ -1,0 +1,6 @@
+read_variable_sea_water_salinity_at_time_and_depth
+==================================================
+
+.. py:method:: spatialetl.coverage.io.CoverageReader.CoverageReader.read_variable_sea_water_salinity_at_time_and_depth(index_t, index_z, xmin, xmax, ymin, ymax)
+   :abstractmethod:
+

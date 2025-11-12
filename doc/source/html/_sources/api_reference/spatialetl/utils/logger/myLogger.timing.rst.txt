@@ -1,0 +1,4 @@
+timing
+======
+
+.. py:method:: spatialetl.utils.logger.myLogger.timing(msg, *args, **kwargs)

@@ -1,0 +1,19 @@
+spatialetl.providers.meteofrance.spatialetl.coverage.io.grib.mf.MFWAMReader
+===========================================================================
+
+.. py:module:: spatialetl.providers.meteofrance.spatialetl.coverage.io.grib.mf.MFWAMReader
+
+
+Classes
+-------
+
+.. toctree::
+   :hidden:
+
+   /api_reference/spatialetl/providers/meteofrance/spatialetl/coverage/io/grib/mf/MFWAMReader/MFWAMReader
+
+.. autoapisummary::
+
+   spatialetl.providers.meteofrance.spatialetl.coverage.io.grib.mf.MFWAMReader.MFWAMReader
+
+

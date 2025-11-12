@@ -1,0 +1,4 @@
+spc2nc
+======
+
+.. py:method:: spatialetl.providers.swan.spatialetl.coverage.io.ascii.swan.SWANUnstructuredReader.Converters.spc2nc(fname, lat, lon, freq, dirr, time, facs, spc)

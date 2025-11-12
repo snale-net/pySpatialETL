@@ -1,0 +1,6 @@
+read_variable_water_volume_transport_into_sea_water_from_rivers_at_time
+=======================================================================
+
+.. py:method:: spatialetl.point.io.MultiPointReader.MultiPointReader.read_variable_water_volume_transport_into_sea_water_from_rivers_at_time(index_t)
+   :abstractmethod:
+

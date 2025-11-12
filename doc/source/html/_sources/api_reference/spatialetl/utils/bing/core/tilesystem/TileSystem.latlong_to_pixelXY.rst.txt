@@ -1,0 +1,21 @@
+latlong_to_pixelXY
+==================
+
+.. py:method:: spatialetl.utils.bing.core.tilesystem.TileSystem.latlong_to_pixelXY(lat, long, level)
+   :staticmethod:
+
+
+   Converts a point from latitude/longitude WGS-84 coordinates (in degrees)
+   into pixel XY coordinates a specified level of detail
+
+   :param lat {[double]} -- [Latitude of the point:
+   :param in degrees]:
+   :param long {[double]} -- [Longitude of the point:
+   :param in degrees]:
+   :param level {[int]} -- [Level of detail:
+   :type level {[int]} -- [Level of detail: lowest detail) to 23 (highest detail
+   :param from 1:
+   :type from 1: lowest detail) to 23 (highest detail
+
+   :returns: [int, int] -- [X coordinates in pixels; Y coordinates in pixels]
+

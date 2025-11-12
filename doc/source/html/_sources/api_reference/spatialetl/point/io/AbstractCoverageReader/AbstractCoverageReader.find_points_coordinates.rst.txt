@@ -1,0 +1,4 @@
+find_points_coordinates
+=======================
+
+.. py:method:: spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.find_points_coordinates()

@@ -1,0 +1,19 @@
+spatialetl.exception.VariableNameError
+======================================
+
+.. py:module:: spatialetl.exception.VariableNameError
+
+
+Exceptions
+----------
+
+.. toctree::
+   :hidden:
+
+   /api_reference/spatialetl/exception/VariableNameError/VariableNameError
+
+.. autoapisummary::
+
+   spatialetl.exception.VariableNameError.VariableNameError
+
+

@@ -1,0 +1,4 @@
+read_variable_point_names
+=========================
+
+.. py:method:: spatialetl.providers.swan.spatialetl.point.io.netcdf.ecmwf.ECMWFReader.ECMWFReader.read_variable_point_names()

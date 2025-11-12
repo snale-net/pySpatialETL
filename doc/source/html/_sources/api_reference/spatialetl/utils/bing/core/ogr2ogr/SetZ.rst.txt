@@ -1,0 +1,4 @@
+SetZ
+====
+
+.. py:function:: spatialetl.utils.bing.core.ogr2ogr.SetZ(poGeom, dfZ)

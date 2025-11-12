@@ -1,0 +1,4 @@
+write_variable_3D_land_binary_mask
+==================================
+
+.. py:method:: spatialetl.providers.ecmwf.spatialetl.coverage.io.netcdf.ecmwf.ECMWFWriter.ECMWFWriter.write_variable_3D_land_binary_mask()

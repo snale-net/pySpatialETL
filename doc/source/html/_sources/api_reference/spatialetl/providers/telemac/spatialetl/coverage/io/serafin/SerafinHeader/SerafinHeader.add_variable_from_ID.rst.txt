@@ -1,0 +1,9 @@
+add_variable_from_ID
+====================
+
+.. py:method:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.add_variable_from_ID(var_ID)
+
+   !
+   @brief: Add new variable from its ID
+   @param var_ID <str>: variable ID
+

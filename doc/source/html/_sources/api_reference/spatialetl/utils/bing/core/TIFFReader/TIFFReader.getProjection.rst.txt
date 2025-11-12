@@ -1,0 +1,4 @@
+getProjection
+=============
+
+.. py:method:: spatialetl.utils.bing.core.TIFFReader.TIFFReader.getProjection()

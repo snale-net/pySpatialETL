@@ -1,0 +1,23 @@
+days_to_hmsm
+============
+
+.. py:function:: spatialetl.point.utils.jdutil.days_to_hmsm(days)
+
+   Convert fractional days to hours, minutes, seconds, and microseconds.
+   Precision beyond microseconds is rounded to the nearest microsecond.
+
+   :param days: A fractional number of days. Must be less than 1.
+   :type days: float
+
+   :returns: * **hour** (*int*) -- Hour number.
+             * **min** (*int*) -- Minute number.
+             * **sec** (*int*) -- Second number.
+             * **micro** (*int*) -- Microsecond number.
+
+   :raises ValueError: If `days` is >= 1.
+
+   .. rubric:: Examples
+
+   >>> days_to_hmsm(0.1)
+   (2, 24, 0, 0)
+

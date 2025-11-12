@@ -1,0 +1,4 @@
+read_variable_longitude
+=======================
+
+.. py:method:: spatialetl.providers.ecmwf.spatialetl.coverage.io.netcdf.ecmwf.ECMWFReader.ECMWFReader.read_variable_longitude(xmin, xmax, ymin, ymax)

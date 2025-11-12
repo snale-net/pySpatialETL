@@ -1,0 +1,4 @@
+read_axis_y
+===========
+
+.. py:method:: spatialetl.providers.common.gdal.spatialetl.coverage.io.img.ImageReader.ImageReader.read_axis_y(xmin, xmax, ymin, ymax)

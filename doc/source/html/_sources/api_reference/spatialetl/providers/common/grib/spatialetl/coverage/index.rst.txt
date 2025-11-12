@@ -1,0 +1,15 @@
+spatialetl.providers.common.grib.spatialetl.coverage
+====================================================
+
+.. py:module:: spatialetl.providers.common.grib.spatialetl.coverage
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /api_reference/spatialetl/providers/common/grib/spatialetl/coverage/io/index
+
+

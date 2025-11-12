@@ -1,0 +1,19 @@
+spatialetl.utils.timing
+=======================
+
+.. py:module:: spatialetl.utils.timing
+
+
+Functions
+---------
+
+.. toctree::
+   :hidden:
+
+   /api_reference/spatialetl/utils/timing/timing
+
+.. autoapisummary::
+
+   spatialetl.utils.timing.timing
+
+

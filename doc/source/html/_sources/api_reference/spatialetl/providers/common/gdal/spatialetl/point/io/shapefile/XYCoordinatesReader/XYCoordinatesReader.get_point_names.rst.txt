@@ -1,0 +1,4 @@
+get_point_names
+===============
+
+.. py:method:: spatialetl.providers.common.gdal.spatialetl.point.io.shapefile.XYCoordinatesReader.XYCoordinatesReader.get_point_names()

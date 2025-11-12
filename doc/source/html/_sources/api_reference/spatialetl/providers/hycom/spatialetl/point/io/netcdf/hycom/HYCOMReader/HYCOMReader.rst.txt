@@ -1,0 +1,19 @@
+HYCOMReader
+===========
+
+.. py:module:: spatialetl.providers.hycom.spatialetl.point.io.netcdf.hycom.HYCOMReader.HYCOMReader
+Constructor
+-----------
+
+.. autoapimethod:: spatialetl.providers.hycom.spatialetl.point.io.netcdf.hycom.HYCOMReader.HYCOMReader.__init__
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.providers.hycom.spatialetl.point.io.netcdf.hycom.HYCOMReader.HYCOMReader.reader
+

@@ -1,0 +1,4 @@
+read_variable_sea_water_salinity_at_time_and_depth
+==================================================
+
+.. py:method:: spatialetl.providers.mercator.spatialetl.coverage.io.netcdf.mercator.v2020.MERCATORReader.MERCATORReader.read_variable_sea_water_salinity_at_time_and_depth(index_t, index_z, xmin, xmax, ymin, ymax)

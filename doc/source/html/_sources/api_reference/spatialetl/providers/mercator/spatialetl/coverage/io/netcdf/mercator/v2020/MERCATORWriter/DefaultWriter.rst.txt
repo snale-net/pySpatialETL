@@ -1,0 +1,32 @@
+DefaultWriter
+=============
+
+.. py:module:: spatialetl.providers.mercator.spatialetl.coverage.io.netcdf.mercator.v2020.MERCATORWriter.DefaultWriter
+Constructor
+-----------
+
+.. autoapimethod:: spatialetl.providers.mercator.spatialetl.coverage.io.netcdf.mercator.v2020.MERCATORWriter.DefaultWriter.__init__
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.providers.mercator.spatialetl.coverage.io.netcdf.mercator.v2020.MERCATORWriter.DefaultWriter.mode
+
+Methods
+-------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.providers.mercator.spatialetl.coverage.io.netcdf.mercator.v2020.MERCATORWriter.DefaultWriter.close
+   spatialetl.providers.mercator.spatialetl.coverage.io.netcdf.mercator.v2020.MERCATORWriter.DefaultWriter.write_variable_2D_sea_binary_mask
+   spatialetl.providers.mercator.spatialetl.coverage.io.netcdf.mercator.v2020.MERCATORWriter.DefaultWriter.write_variable_sea_surface_height_above_geoid
+   spatialetl.providers.mercator.spatialetl.coverage.io.netcdf.mercator.v2020.MERCATORWriter.DefaultWriter.write_variable_sea_water_temperature
+   spatialetl.providers.mercator.spatialetl.coverage.io.netcdf.mercator.v2020.MERCATORWriter.DefaultWriter.write_variable_sea_water_salinity
+   spatialetl.providers.mercator.spatialetl.coverage.io.netcdf.mercator.v2020.MERCATORWriter.DefaultWriter.write_variable_baroclinic_sea_water_velocity
+

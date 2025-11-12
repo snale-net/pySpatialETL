@@ -1,0 +1,19 @@
+spatialetl.providers.common.mpi.spatialetl.coverage.Coverage
+============================================================
+
+.. py:module:: spatialetl.providers.common.mpi.spatialetl.coverage.Coverage
+
+
+Classes
+-------
+
+.. toctree::
+   :hidden:
+
+   /api_reference/spatialetl/providers/common/mpi/spatialetl/coverage/Coverage/Coverage
+
+.. autoapisummary::
+
+   spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage
+
+

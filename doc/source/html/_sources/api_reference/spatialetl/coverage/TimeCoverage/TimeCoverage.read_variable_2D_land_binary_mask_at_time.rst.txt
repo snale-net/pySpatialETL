@@ -1,0 +1,4 @@
+read_variable_2D_land_binary_mask_at_time
+=========================================
+
+.. py:method:: spatialetl.coverage.TimeCoverage.TimeCoverage.read_variable_2D_land_binary_mask_at_time(t)

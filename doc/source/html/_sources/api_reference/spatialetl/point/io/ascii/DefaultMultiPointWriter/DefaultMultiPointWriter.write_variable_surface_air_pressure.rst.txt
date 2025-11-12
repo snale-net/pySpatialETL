@@ -1,0 +1,4 @@
+write_variable_surface_air_pressure
+===================================
+
+.. py:method:: spatialetl.point.io.ascii.DefaultMultiPointWriter.DefaultMultiPointWriter.write_variable_surface_air_pressure()

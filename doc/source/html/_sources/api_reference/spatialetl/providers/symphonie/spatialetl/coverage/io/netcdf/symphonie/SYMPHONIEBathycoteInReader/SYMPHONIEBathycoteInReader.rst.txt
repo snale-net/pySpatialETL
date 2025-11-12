@@ -1,0 +1,27 @@
+SYMPHONIEBathycoteInReader
+==========================
+
+.. py:module:: spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEBathycoteInReader.SYMPHONIEBathycoteInReader
+
+.. autoapi-nested-parse::
+
+   
+
+
+Constructor
+-----------
+
+.. autoapimethod:: spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEBathycoteInReader.SYMPHONIEBathycoteInReader.__init__
+
+
+
+
+Methods
+-------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEBathycoteInReader.SYMPHONIEBathycoteInReader.read_variable_2D_sea_binary_mask
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEBathycoteInReader.SYMPHONIEBathycoteInReader.read_variable_mesh_size
+

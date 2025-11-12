@@ -1,0 +1,29 @@
+OASISWriter
+===========
+
+.. py:module:: spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.OASISWriter.OASISWriter
+Constructor
+-----------
+
+.. autoapimethod:: spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.OASISWriter.OASISWriter.__init__
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.OASISWriter.OASISWriter.symphonieCoverage
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.OASISWriter.OASISWriter.ww3Coverage
+
+Methods
+-------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.OASISWriter.OASISWriter.write_grids
+   spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.OASISWriter.OASISWriter.write_masks
+

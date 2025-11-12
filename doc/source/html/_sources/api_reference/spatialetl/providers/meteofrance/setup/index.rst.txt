@@ -1,0 +1,6 @@
+spatialetl.providers.meteofrance.setup
+======================================
+
+.. py:module:: spatialetl.providers.meteofrance.setup
+
+

@@ -1,0 +1,19 @@
+spatialetl.providers.common.gdal.spatialetl.coverage.io.tiff.srtm.SRTMReader
+============================================================================
+
+.. py:module:: spatialetl.providers.common.gdal.spatialetl.coverage.io.tiff.srtm.SRTMReader
+
+
+Classes
+-------
+
+.. toctree::
+   :hidden:
+
+   /api_reference/spatialetl/providers/common/gdal/spatialetl/coverage/io/tiff/srtm/SRTMReader/SRTMReader
+
+.. autoapisummary::
+
+   spatialetl.providers.common.gdal.spatialetl.coverage.io.tiff.srtm.SRTMReader.SRTMReader
+
+

@@ -1,0 +1,4 @@
+ScaledProgressFunc
+==================
+
+.. py:function:: spatialetl.utils.bing.core.ogr2ogr.ScaledProgressFunc(pct, msg, data)

@@ -1,0 +1,13 @@
+jd_to_mjd
+=========
+
+.. py:function:: spatialetl.point.utils.jdutil.jd_to_mjd(jd)
+
+   Convert Julian Day to Modified Julian Day
+
+   :param jd: Julian Day
+   :type jd: float
+
+   :returns: **mjd** -- Modified Julian Day
+   :rtype: float
+

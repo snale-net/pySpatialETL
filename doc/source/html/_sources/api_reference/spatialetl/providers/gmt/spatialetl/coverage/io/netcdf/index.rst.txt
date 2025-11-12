@@ -1,0 +1,15 @@
+spatialetl.providers.gmt.spatialetl.coverage.io.netcdf
+======================================================
+
+.. py:module:: spatialetl.providers.gmt.spatialetl.coverage.io.netcdf
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /api_reference/spatialetl/providers/gmt/spatialetl/coverage/io/netcdf/gmt/index
+
+

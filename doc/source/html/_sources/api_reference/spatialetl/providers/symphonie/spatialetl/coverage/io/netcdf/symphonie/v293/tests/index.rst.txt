@@ -1,0 +1,16 @@
+
+spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.v293.tests
+=================================================================================
+
+.. py:module:: spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.v293.tests
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /api_reference/spatialetl/providers/symphonie/spatialetl/coverage/io/netcdf/symphonie/v293/tests/TestSYMPHONIEReader/index
+
+

@@ -1,0 +1,19 @@
+spatialetl.providers.ww3.spatialetl.coverage.io.netcdf.ww3.WW3UnstructuredReader
+================================================================================
+
+.. py:module:: spatialetl.providers.ww3.spatialetl.coverage.io.netcdf.ww3.WW3UnstructuredReader
+
+
+Classes
+-------
+
+.. toctree::
+   :hidden:
+
+   /api_reference/spatialetl/providers/ww3/spatialetl/coverage/io/netcdf/ww3/WW3UnstructuredReader/WW3UnstructuredReader
+
+.. autoapisummary::
+
+   spatialetl.providers.ww3.spatialetl.coverage.io.netcdf.ww3.WW3UnstructuredReader.WW3UnstructuredReader
+
+

@@ -1,0 +1,19 @@
+spatialetl.point.io.MultiPointWriter
+====================================
+
+.. py:module:: spatialetl.point.io.MultiPointWriter
+
+
+Classes
+-------
+
+.. toctree::
+   :hidden:
+
+   /api_reference/spatialetl/point/io/MultiPointWriter/MultiPointWriter
+
+.. autoapisummary::
+
+   spatialetl.point.io.MultiPointWriter.MultiPointWriter
+
+

@@ -1,0 +1,25 @@
+
+spatialetl.coverage.tests.TestTimeCoverage
+==========================================
+
+.. py:module:: spatialetl.coverage.tests.TestTimeCoverage
+
+
+Classes
+-------
+
+.. toctree::
+   :hidden:
+
+   /api_reference/spatialetl/coverage/tests/TestTimeCoverage/TestTimeCoverage
+
+.. list-table:: Classes
+   :widths: auto
+   :header-rows: 0
+
+   * - TestTimeCoverage
+     - A class whose instances are single test cases.
+
+
+
+

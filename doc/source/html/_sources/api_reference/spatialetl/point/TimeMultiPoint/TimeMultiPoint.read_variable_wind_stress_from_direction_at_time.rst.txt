@@ -1,0 +1,4 @@
+read_variable_wind_stress_from_direction_at_time
+================================================
+
+.. py:method:: spatialetl.point.TimeMultiPoint.TimeMultiPoint.read_variable_wind_stress_from_direction_at_time(date)

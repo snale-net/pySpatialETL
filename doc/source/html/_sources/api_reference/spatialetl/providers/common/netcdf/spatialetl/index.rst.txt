@@ -1,0 +1,16 @@
+spatialetl.providers.common.netcdf.spatialetl
+=============================================
+
+.. py:module:: spatialetl.providers.common.netcdf.spatialetl
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /api_reference/spatialetl/providers/common/netcdf/spatialetl/coverage/index
+   /api_reference/spatialetl/providers/common/netcdf/spatialetl/point/index
+
+

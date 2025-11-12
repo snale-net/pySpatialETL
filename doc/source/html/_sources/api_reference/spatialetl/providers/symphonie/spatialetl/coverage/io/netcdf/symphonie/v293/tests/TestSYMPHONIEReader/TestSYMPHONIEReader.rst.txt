@@ -1,0 +1,18 @@
+Class TestSYMPHONIEReader
+=========================
+
+.. currentmodule:: spatialetl.coverage
+
+
+Overview
+--------
+.. autoclass:: TestSYMPHONIEReader
+   :noindex:
+   :show-inheritance:
+
+Constructor
+-----------
+.. automethod:: TestSYMPHONIEReader.__init__
+   :noindex:
+
+

@@ -1,0 +1,19 @@
+BingImageRetrieval
+==================
+
+.. py:module:: spatialetl.utils.bing.BingImageRetrieval.BingImageRetrieval
+Constructor
+-----------
+
+.. autoapimethod:: spatialetl.utils.bing.BingImageRetrieval.BingImageRetrieval.__init__
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.utils.bing.BingImageRetrieval.BingImageRetrieval.filename
+

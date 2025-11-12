@@ -1,0 +1,6 @@
+spatialetl.providers.swan.setup
+===============================
+
+.. py:module:: spatialetl.providers.swan.setup
+
+

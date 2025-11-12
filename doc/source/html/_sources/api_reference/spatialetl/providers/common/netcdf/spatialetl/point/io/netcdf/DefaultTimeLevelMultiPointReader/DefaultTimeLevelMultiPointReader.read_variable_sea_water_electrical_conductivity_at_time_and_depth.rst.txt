@@ -1,0 +1,4 @@
+read_variable_sea_water_electrical_conductivity_at_time_and_depth
+=================================================================
+
+.. py:method:: spatialetl.providers.common.netcdf.spatialetl.point.io.netcdf.DefaultTimeLevelMultiPointReader.DefaultTimeLevelMultiPointReader.read_variable_sea_water_electrical_conductivity_at_time_and_depth(index_t, index_z)

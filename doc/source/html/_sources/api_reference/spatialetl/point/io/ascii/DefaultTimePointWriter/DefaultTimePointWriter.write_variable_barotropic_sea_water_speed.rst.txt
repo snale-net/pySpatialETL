@@ -1,0 +1,4 @@
+write_variable_barotropic_sea_water_speed
+=========================================
+
+.. py:method:: spatialetl.point.io.ascii.DefaultTimePointWriter.DefaultTimePointWriter.write_variable_barotropic_sea_water_speed()

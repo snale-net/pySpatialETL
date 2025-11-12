@@ -1,0 +1,15 @@
+iter_on_boundaries
+==================
+
+.. py:method:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.iter_on_boundaries()
+
+   Iterate over all boundaries to get the nodes describing them
+   Each element is an ordered list of nodes (1-indexed numbering)
+
+   How boundaries are defined:
+   - the first boundary is the external boundary and then the islands (internal boundaries) are described
+       in an arbitrary order
+   - the external boundary is described counter-clockwise
+   - the islands are described clockwise
+   - the first boundary node should be the node with the minimum value of x+y (corresponds to the bottom left corner)
+

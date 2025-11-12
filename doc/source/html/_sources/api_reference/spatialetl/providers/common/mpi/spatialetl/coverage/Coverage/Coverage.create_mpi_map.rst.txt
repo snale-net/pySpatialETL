@@ -1,0 +1,4 @@
+create_mpi_map
+==============
+
+.. py:method:: spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.create_mpi_map()

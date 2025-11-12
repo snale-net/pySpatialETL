@@ -1,0 +1,4 @@
+read_variable_2D_sea_binary_mask
+================================
+
+.. py:method:: spatialetl.providers.ecmwf.spatialetl.coverage.io.netcdf.ecmwf.ECMWFReader.ECMWFReader.read_variable_2D_sea_binary_mask(xmin, xmax, ymin, ymax)

@@ -1,0 +1,19 @@
+spatialetl.coverage.io.ascii.symphonie.SYMPHONIEBathymakerWriter.SYMPHONIEBathymakerWriter
+==========================================================================================
+
+.. py:class:: spatialetl.coverage.io.ascii.symphonie.SYMPHONIEBathymakerWriter.SYMPHONIEBathymakerWriter(cov, myFile)
+
+   Bases: :py:obj:`spatialetl.coverage.io.CoverageWriter.CoverageWriter`
+
+
+   .. py:method:: close()
+
+
+   .. py:method:: write_variable_axis()
+
+
+   .. py:method:: write_variable_bathymetry()
+
+
+   .. py:attribute:: file
+

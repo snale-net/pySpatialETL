@@ -1,0 +1,19 @@
+SYMPHONIEReader
+===============
+
+.. py:module:: spatialetl.providers.symphonie.spatialetl.point.io.netcdf.symphonie.v293.SYMPHONIEReader.SYMPHONIEReader
+Constructor
+-----------
+
+.. autoapimethod:: spatialetl.providers.symphonie.spatialetl.point.io.netcdf.symphonie.v293.SYMPHONIEReader.SYMPHONIEReader.__init__
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.providers.symphonie.spatialetl.point.io.netcdf.symphonie.v293.SYMPHONIEReader.SYMPHONIEReader.reader
+

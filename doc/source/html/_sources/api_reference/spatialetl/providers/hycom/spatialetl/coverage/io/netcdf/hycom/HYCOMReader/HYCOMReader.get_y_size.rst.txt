@@ -1,0 +1,4 @@
+get_y_size
+==========
+
+.. py:method:: spatialetl.providers.hycom.spatialetl.coverage.io.netcdf.hycom.HYCOMReader.HYCOMReader.get_y_size()

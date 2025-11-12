@@ -1,0 +1,4 @@
+read_variable_band_1
+====================
+
+.. py:method:: spatialetl.utils.bing.core.TIFFReader.TIFFReader.read_variable_band_1()

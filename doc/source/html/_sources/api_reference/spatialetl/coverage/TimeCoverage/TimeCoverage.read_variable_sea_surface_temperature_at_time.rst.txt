@@ -1,0 +1,10 @@
+read_variable_sea_surface_temperature_at_time
+=============================================
+
+.. py:method:: spatialetl.coverage.TimeCoverage.TimeCoverage.read_variable_sea_surface_temperature_at_time(t)
+
+   Retourne la temperature de surface à la date souhaitée
+   @type t: datetime ou l'index
+   @param t: date souhaitée
+   @return: un tableau en deux dimensions [y,x].
+

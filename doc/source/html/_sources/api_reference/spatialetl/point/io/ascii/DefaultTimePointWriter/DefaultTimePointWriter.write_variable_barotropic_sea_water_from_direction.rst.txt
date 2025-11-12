@@ -1,0 +1,4 @@
+write_variable_barotropic_sea_water_from_direction
+==================================================
+
+.. py:method:: spatialetl.point.io.ascii.DefaultTimePointWriter.DefaultTimePointWriter.write_variable_barotropic_sea_water_from_direction()

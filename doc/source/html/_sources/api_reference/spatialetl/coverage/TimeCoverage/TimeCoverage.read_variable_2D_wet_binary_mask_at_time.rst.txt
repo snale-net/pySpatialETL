@@ -1,0 +1,10 @@
+read_variable_2D_wet_binary_mask_at_time
+========================================
+
+.. py:method:: spatialetl.coverage.TimeCoverage.TimeCoverage.read_variable_2D_wet_binary_mask_at_time(t)
+
+   Retourne le masque à la date souhaitée sur toute la couverture horizontale.
+   @type t: datetime ou l'index
+   @param t: date souhaitée
+   @return: un tableau en deux dimensions [y,x].
+

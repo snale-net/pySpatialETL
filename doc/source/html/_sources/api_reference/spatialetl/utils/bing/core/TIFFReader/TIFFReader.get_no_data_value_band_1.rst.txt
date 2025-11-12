@@ -1,0 +1,4 @@
+get_no_data_value_band_1
+========================
+
+.. py:method:: spatialetl.utils.bing.core.TIFFReader.TIFFReader.get_no_data_value_band_1()

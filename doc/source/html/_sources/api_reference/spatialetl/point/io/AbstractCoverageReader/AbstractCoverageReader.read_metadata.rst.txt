@@ -1,0 +1,4 @@
+read_metadata
+=============
+
+.. py:method:: spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.read_metadata()

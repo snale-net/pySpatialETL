@@ -1,0 +1,26 @@
+check_point_is_inside
+=====================
+
+.. py:method:: spatialetl.coverage.coverage.Coverage.check_point_is_inside(target_lon, target_lat, lon, lat, tolerance=5)
+
+   Check if a point is inside the coverage.
+
+   :param target_lon: Longitude of the target point.
+   :type target_lon: float
+   :param target_lat: Latitude of the target point.
+   :type target_lat: float
+   :param lon: Longitude array.
+   :type lon: array
+   :param lat: Latitude array.
+   :type lat: array
+   :param tolerance: Tolerance for rounding.
+   :type tolerance: int, optional
+
+   :returns: True if the point is inside the coverage, False otherwise.
+   :rtype: bool
+
+   .. rubric:: Examples
+
+   >>> coverage.check_point_is_inside(5.0, 45.0, lon_array, lat_array)
+   True
+

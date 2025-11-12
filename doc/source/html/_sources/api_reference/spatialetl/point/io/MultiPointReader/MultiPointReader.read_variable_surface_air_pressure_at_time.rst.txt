@@ -1,0 +1,6 @@
+read_variable_surface_air_pressure_at_time
+==========================================
+
+.. py:method:: spatialetl.point.io.MultiPointReader.MultiPointReader.read_variable_surface_air_pressure_at_time(index_t)
+   :abstractmethod:
+

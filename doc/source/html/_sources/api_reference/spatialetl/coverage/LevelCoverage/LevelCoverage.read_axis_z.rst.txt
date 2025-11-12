@@ -1,0 +1,9 @@
+read_axis_z
+===========
+
+.. py:method:: spatialetl.coverage.LevelCoverage.LevelCoverage.read_axis_z(type='target', with_horizontal_overlap=False)
+
+   Retourne les valeurs (souvent en mètre) de l'axe z.
+   @return:  si la grille est en coordonnée sigma alors un tableau à trois dimensions [z,y,x] est retourné sinon
+   un tableau une dimension [z].
+

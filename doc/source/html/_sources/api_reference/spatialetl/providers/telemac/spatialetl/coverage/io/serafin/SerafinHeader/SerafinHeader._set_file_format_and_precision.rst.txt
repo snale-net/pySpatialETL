@@ -1,0 +1,10 @@
+_set_file_format_and_precision
+==============================
+
+.. py:method:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._set_file_format_and_precision(file_format)
+
+   !
+   @brief: Set some attributes to read/write single or double precision Serafin depending on file format
+   @file_format <str>: Serafin file format (max length is 8)
+   If file format is not recognized, the file is expected to be simple precision
+

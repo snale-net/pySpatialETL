@@ -1,0 +1,6 @@
+get_x_size
+==========
+
+.. py:method:: spatialetl.coverage.io.CoverageReader.CoverageReader.get_x_size()
+   :abstractmethod:
+

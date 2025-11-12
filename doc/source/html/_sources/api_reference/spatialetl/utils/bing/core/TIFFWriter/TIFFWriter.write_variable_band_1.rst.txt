@@ -1,0 +1,4 @@
+write_variable_band_1
+=====================
+
+.. py:method:: spatialetl.utils.bing.core.TIFFWriter.TIFFWriter.write_variable_band_1(data)

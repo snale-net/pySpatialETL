@@ -1,0 +1,7 @@
+__add__
+=======
+
+.. py:method:: spatialetl.point.utils.jdutil.datetime.__add__(other)
+
+   Add a datetime and a timedelta.
+

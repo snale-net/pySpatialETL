@@ -1,0 +1,19 @@
+spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinWriter
+=========================================================================
+
+.. py:module:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinWriter
+
+
+Classes
+-------
+
+.. toctree::
+   :hidden:
+
+   /api_reference/spatialetl/providers/telemac/spatialetl/coverage/io/serafin/SerafinWriter/SerafinWriter
+
+.. autoapisummary::
+
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinWriter.SerafinWriter
+
+

@@ -1,0 +1,6 @@
+read_variable_topography
+========================
+
+.. py:method:: spatialetl.point.io.MultiPointReader.MultiPointReader.read_variable_topography()
+   :abstractmethod:
+

@@ -1,0 +1,4 @@
+read_variable_point_names
+=========================
+
+.. py:method:: spatialetl.point.io.ascii.DefaultTimePointReader.DefaultTimePointReader.read_variable_point_names()

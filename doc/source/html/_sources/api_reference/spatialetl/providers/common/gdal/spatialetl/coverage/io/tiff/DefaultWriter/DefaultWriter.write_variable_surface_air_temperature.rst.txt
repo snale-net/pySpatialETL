@@ -1,0 +1,4 @@
+write_variable_surface_air_temperature
+======================================
+
+.. py:method:: spatialetl.providers.common.gdal.spatialetl.coverage.io.tiff.DefaultWriter.DefaultWriter.write_variable_surface_air_temperature()

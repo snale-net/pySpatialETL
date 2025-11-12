@@ -1,0 +1,10 @@
+pack_int
+========
+
+.. py:method:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.pack_int(*args, nb=1)
+
+   Pack integers
+   @param args <(int)>: integers to pack
+   @param nb <int>: number of integer values
+   @return <bytes>
+

@@ -1,0 +1,4 @@
+read_axis_y
+===========
+
+.. py:method:: spatialetl.providers.hycom.spatialetl.coverage.io.netcdf.hycom.HYCOMReader.HYCOMReader.read_axis_y(xmin, xmax, ymin, ymax)

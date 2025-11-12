@@ -1,0 +1,19 @@
+spatialetl.point.io.ascii.XYCoordinatesReader
+=============================================
+
+.. py:module:: spatialetl.point.io.ascii.XYCoordinatesReader
+
+
+Classes
+-------
+
+.. toctree::
+   :hidden:
+
+   /api_reference/spatialetl/point/io/ascii/XYCoordinatesReader/XYCoordinatesReader
+
+.. autoapisummary::
+
+   spatialetl.point.io.ascii.XYCoordinatesReader.XYCoordinatesReader
+
+

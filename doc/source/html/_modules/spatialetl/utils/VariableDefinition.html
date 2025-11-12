@@ -1,0 +1,649 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>spatialetl.utils.VariableDefinition &mdash; pySpatialETL documentation 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=1abc5f28" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            pySpatialETL documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../docs/user_guide.html">User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../docs/advanced_guide.html">Advanced guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../docs/example.html">Examples Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../docs/reference/providers.html">Providers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../docs/reference.html">API reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">pySpatialETL documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">spatialetl.utils.VariableDefinition</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for spatialetl.utils.VariableDefinition</h1><div class="highlight"><pre>
+<span></span><span class="c1"># MIT License</span>
+<span class="c1"># Copyright (c) 2024 [SNALE - French SAS Company - RCS 951 724 616]</span>
+<span class="c1">#</span>
+<span class="c1"># Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c1"># of this software and associated documentation files (the &quot;Software&quot;), to deal</span>
+<span class="c1"># in the Software without restriction, including without limitation the rights</span>
+<span class="c1"># to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c1"># copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c1"># furnished to do so, subject to the following conditions:</span>
+<span class="c1">#</span>
+<span class="c1"># The above copyright notice and this permission notice shall be included in all</span>
+<span class="c1"># copies or substantial portions of the Software.</span>
+<span class="c1">#</span>
+<span class="c1"># THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c1"># IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c1"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c1"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c1"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c1"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="c1"># SOFTWARE.</span>
+<div class="viewcode-block" id="VariableDefinition">
+<a class="viewcode-back" href="../../../api_reference/spatialetl/utils/VariableDefinition/index.html#spatialetl.utils.VariableDefinition.VariableDefinition">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">VariableDefinition</span><span class="p">:</span>
+
+    <span class="n">STANDARD_NAME</span> <span class="o">=</span> <span class="p">{};</span>
+    <span class="n">LONG_NAME</span> <span class="o">=</span> <span class="p">{};</span>
+    <span class="n">VARIABLE_NAME</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">CANONICAL_UNITS</span> <span class="o">=</span> <span class="p">{};</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;longitude&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;longitude&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;longitude&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Longitude&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;longitude&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;longitude&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;longitude&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;degree_east&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;latitude&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;latitude&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;latitude&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Latitude&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;latitude&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;latitude&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;latitude&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;degree_north&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;depth&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;depth&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;depth&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Positive depth&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;depth&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;depth&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;depth&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;m&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;depth_sigma&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;depth&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;depth_sigma&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Sigma depth&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;depth_sigma&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;depth_sigma&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;depth_sigma&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;m&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;time&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Time UTC&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;time&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;year-month-day hour:minute:second UTC&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;point&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;point&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;point&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Geographical Point&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;point&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;point&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;point&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;identifier&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;sea_binary_mask&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_binary_mask&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;sea_binary_mask&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Sea Binary Mask&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;sea_binary_mask&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_mask&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;sea_binary_mask&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;land_binary_mask&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;land_binary_mask&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;land_binary_mask&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Land Binary Mask&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;land_binary_mask&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;land_mask&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;land_binary_mask&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;2d_sea_binary_mask&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_binary_mask&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;2d_sea_binary_mask&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Sea Binary Mask&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;2d_sea_binary_mask&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_mask&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;2d_sea_binary_mask&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;2d_land_binary_mask&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;land_binary_mask&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;2d_land_binary_mask&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Land Binary Mask&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;2d_land_binary_mask&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;land_mask&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;2d_land_binary_mask&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;wet_binary_mask&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;wet_binary_mask&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;wet_binary_mask&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Wet Binary Mask&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;wet_binary_mask&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;wet_mask&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;wet_binary_mask&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;mesh_size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;mesh_size&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;mesh_size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Mesh Size&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;mesh_size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;mesh_size&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;mesh_size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;m&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;x_mesh_size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;x_mesh_size&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;x_mesh_size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;X Axis Mesh Size&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;x_mesh_size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;x_mesh_size&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;x_mesh_size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;m&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;y_mesh_size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;y_mesh_size&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;y_mesh_size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Y Axis Mesh Size&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;y_mesh_size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;y_mesh_size&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;y_mesh_size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;m&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;mesh_size_factor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;mesh_size_factor&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;mesh_size_factor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Mesh Size Factor&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;mesh_size_factor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;mesh_size_factor&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;mesh_size_factor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;x/y&quot;</span>
+
+    <span class="c1">#################</span>
+    <span class="c1"># HYDRO</span>
+    <span class="c1"># Sea Surface</span>
+    <span class="c1">#################</span>
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;sea_surface_height_above_mean_sea_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_surface_height_above_mean_sea_level&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;sea_surface_height_above_mean_sea_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Sea Surface Height Above Mean Sea Level&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;sea_surface_height_above_mean_sea_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;ssh_msl&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;sea_surface_height_above_mean_sea_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;m&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;sea_surface_height_above_geoid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_surface_height_above_geoid&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;sea_surface_height_above_geoid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Sea Surface Height Above Geoid&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;sea_surface_height_above_geoid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;ssh_geoid&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;sea_surface_height_above_geoid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;m&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_column_thickness&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_water_column_thickness&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_column_thickness&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Sea Water Column Thickness&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_column_thickness&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;water_thickness&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;sea_water_column_thickness&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;m&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;sea_surface_temperature&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_surface_temperature&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;sea_surface_temperature&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Sea Surface Temperature&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;sea_surface_temperature&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_surface_temperature&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;sea_surface_temperature&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;sea_surface_salinity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_surface_salinity&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;sea_surface_salinity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Sea Surface Salinity&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;sea_surface_salinity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_surface_salinity&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;sea_surface_salinity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;psu&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_pressure_at_sea_water_surface&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_water_pressure_at_sea_water_surface&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_pressure_at_sea_water_surface&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Sea Water Pressure At Sea Water Surface&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_pressure_at_sea_water_surface&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_surface_water_pressure&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;sea_water_pressure_at_sea_water_surface&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;dbar&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;sea_surface_density&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_surface_density&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;sea_surface_density&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Sea Surface Density&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;sea_surface_density&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_surface_density&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;sea_surface_density&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;kg m-3&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;eastward_sea_water_velocity_at_sea_water_surface&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;eastward_sea_water_velocity_at_sea_water_surface&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;eastward_sea_water_velocity_at_sea_water_surface&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Eastward Sea Water Velocity At Sea Water Surface&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;eastward_sea_water_velocity_at_sea_water_surface&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;u_sea_surface_vel&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;eastward_sea_water_velocity_at_sea_water_surface&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;m s-1&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;northward_sea_water_velocity_at_sea_water_surface&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;northward_sea_water_velocity_at_sea_water_surface&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;northward_sea_water_velocity_at_sea_water_surface&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Northward Sea Water Velocity At Sea Water Surface&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;northward_sea_water_velocity_at_sea_water_surface&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;v_sea_surface_vel&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;northward_sea_water_velocity_at_sea_water_surface&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;m s-1&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_speed_at_sea_water_surface&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_water_speed_at_sea_water_surface&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_speed_at_sea_water_surface&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Sea Water Speed At Sea Water Surface&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_speed_at_sea_water_surface&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_surface_speed&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;sea_water_speed_at_sea_water_surface&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;m s-1&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_from_direction_at_sea_water_surface&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_water_from_direction_at_sea_water_surface&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_from_direction_at_sea_water_surface&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Sea Water From Direction At Sea Water Surface&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_from_direction_at_sea_water_surface&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_surface_from_dir&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;sea_water_from_direction_at_sea_water_surface&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;degree&quot;</span>  <span class="c1"># from North=0&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_to_direction_at_sea_water_surface&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_water_to_direction_at_sea_water_surface&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_to_direction_at_sea_water_surface&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Sea Water To Direction At Sea Water Surface&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_to_direction_at_sea_water_surface&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_surface_to_dir&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;sea_water_to_direction_at_sea_water_surface&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;degree&quot;</span>  <span class="c1"># from North=0&quot;</span>
+
+    <span class="c1">#################</span>
+    <span class="c1"># HYDRO</span>
+    <span class="c1"># Ground level</span>
+    <span class="c1">#################</span>
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_temperature_at_ground_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_water_temperature_at_ground_level&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_temperature_at_ground_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Sea Water Temperature At Ground Level&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_temperature_at_ground_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_bottom_temperature&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;sea_water_temperature_at_ground_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;degree&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_salinity_at_ground_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_water_salinity_at_ground_level&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_salinity_at_ground_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Sea Water Salinity At Ground Level&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_salinity_at_ground_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_bottom_salinity&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;sea_water_salinity_at_ground_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;psu&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_pressure_at_ground_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_water_pressure_at_ground_level&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_pressure_at_ground_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Sea Water Pressure At Sea Water Surface&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_pressure_at_ground_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_bottom_pressure&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;sea_water_pressure_at_ground_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;dbar&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_density_at_ground_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_water_density_at_ground_level&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_density_at_ground_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Sea Water Density At Ground Level&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_density_at_ground_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_water_density_at_ground_level&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;sea_water_density_at_ground_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;kg m-3&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;eastward_sea_water_velocity_at_ground_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;eastward_sea_water_velocity_at_ground_level&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;eastward_sea_water_velocity_at_ground_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Eastward Sea Water Velocity At Ground Level&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;eastward_sea_water_velocity_at_ground_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;u_sea_bottom_vel&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;eastward_sea_water_velocity_at_ground_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;m s-1&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;northward_sea_water_velocity_at_ground_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;northward_sea_water_velocity_at_ground_level&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;northward_sea_water_velocity_at_ground_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Northward Sea Water Velocity At Ground Level&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;northward_sea_water_velocity_at_ground_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;v_sea_bottom_vel&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;northward_sea_water_velocity_at_ground_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;m s-1&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_speed_at_ground_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_water_speed_at_ground_level&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_speed_at_ground_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Sea Water Speed At Ground Level&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_speed_at_ground_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_bottom_speed&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;sea_water_speed_at_ground_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;m s-1&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_from_direction_at_ground_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_water_from_direction_at_ground_level&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_from_direction_at_ground_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Sea Water From Direction At Ground Level&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_from_direction_at_ground_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_bottom_from_dir&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;sea_water_from_direction_at_ground_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;degree&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_to_direction_at_ground_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_water_to_direction_at_ground_level&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_to_direction_at_ground_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Sea Water To Direction At Ground Level&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_to_direction_at_ground_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_bottom_to_dir&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;sea_water_to_direction_at_ground_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;degree&quot;</span>
+
+    <span class="c1">#################</span>
+    <span class="c1"># HYDRO</span>
+    <span class="c1"># 2D</span>
+    <span class="c1">#################</span>
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;bathymetry&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;bathymetry&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;bathymetry&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Bathymetry&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;bathymetry&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;bathymetry&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;bathymetry&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;m&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;barotropic_eastward_sea_water_velocity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;barotropic_eastward_sea_water_velocity&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;barotropic_eastward_sea_water_velocity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Barotropic Eastward Sea Water Velocity&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;barotropic_eastward_sea_water_velocity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;u_sea_water_bar_vel&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;barotropic_eastward_sea_water_velocity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;m s-1&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;barotropic_northward_sea_water_velocity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;barotropic_northward_sea_water_velocity&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;barotropic_northward_sea_water_velocity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Barotropic Northward Sea Water Velocity&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;barotropic_northward_sea_water_velocity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;v_sea_water_bar_vel&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;barotropic_northward_sea_water_velocity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;m s-1&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;barotropic_sea_water_speed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;barotropic_sea_water_speed&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;barotropic_sea_water_speed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Barotropic Sea Water Speed&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;barotropic_sea_water_speed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_water_bar_speed&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;barotropic_sea_water_speed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;m s-1&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;barotropic_sea_water_from_direction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;barotropic_sea_water_from_direction&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;barotropic_sea_water_from_direction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Barotropic Sea Water From Direction&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;barotropic_sea_water_from_direction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_water_bar_from_dir&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;barotropic_sea_water_from_direction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;degree&quot;</span>  <span class="c1"># from North=0&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;barotropic_sea_water_to_direction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;barotropic_sea_water_to_direction&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;barotropic_sea_water_to_direction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Barotropic Sea Water To Direction&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;barotropic_sea_water_to_direction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_water_bar_to_dir&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;barotropic_sea_water_to_direction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;degree&quot;</span>  <span class="c1"># from North=0&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;water_volume_transport_into_sea_water_from_rivers&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;water_volume_transport_into_sea_water_from_rivers&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;water_volume_transport_into_sea_water_from_rivers&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Water Volume Transport Into Sea Water From Rivers&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;water_volume_transport_into_sea_water_from_rivers&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;rivers_flux&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;water_volume_transport_into_sea_water_from_rivers&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;m3 s-1&quot;</span>
+
+    <span class="c1">#################</span>
+    <span class="c1"># HYDRO</span>
+    <span class="c1"># 3D</span>
+    <span class="c1">#################</span>
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_turbidity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_water_turbidity&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_turbidity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Sea Water Turbidity&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_turbidity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_water_turbidity&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;sea_water_turbidity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;FTU&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_electrical_conductivity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_water_electrical_conductivity&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_electrical_conductivity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Sea Water Electrical Conductivity&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_electrical_conductivity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_water_electrical_conductivity&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;sea_water_electrical_conductivity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;S m-1&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_temperature&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_water_temperature&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_temperature&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Sea Water Temperature&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_temperature&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_water_temperature&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;sea_water_temperature&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;degree&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_salinity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_water_salinity&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_salinity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Sea Water Salinity&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_salinity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_water_salinity&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;sea_water_salinity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;psu&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_density&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_water_density&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_density&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Sea Water Density&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;sea_water_density&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_water_density&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;sea_water_density&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;kg m-3&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;baroclinic_eastward_sea_water_velocity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;baroclinic_eastward_sea_water_velocity&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;baroclinic_eastward_sea_water_velocity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Baroclinic Eastward Sea Water Velocity&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;baroclinic_eastward_sea_water_velocity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;u_sea_water_vel&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;baroclinic_eastward_sea_water_velocity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;m s-1&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;baroclinic_northward_sea_water_velocity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;baroclinic_northward_sea_water_velocity&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;baroclinic_northward_sea_water_velocity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Baroclinic Northward Sea Water Velocity&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;baroclinic_northward_sea_water_velocity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;v_sea_water_vel&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;baroclinic_northward_sea_water_velocity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;m s-1&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;baroclinic_sea_water_speed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;baroclinic_sea_water_speed&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;baroclinic_sea_water_speed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Baroclinic Sea Water Speed&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;baroclinic_sea_water_speed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_water_speed&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;baroclinic_sea_water_speed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;m s-1&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;baroclinic_sea_water_from_direction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;baroclinic_sea_water_from_direction&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;baroclinic_sea_water_from_direction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Baroclinic Sea Water From Direction&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;baroclinic_sea_water_from_direction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_water_from_dir&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;baroclinic_sea_water_from_direction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;degree&quot;</span>  <span class="c1"># from North=0&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;baroclinic_sea_water_to_direction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;baroclinic_sea_water_to_direction&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;baroclinic_sea_water_to_direction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Baroclinic Sea Water To Direction&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;baroclinic_sea_water_to_direction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_water_to_dir&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;baroclinic_sea_water_to_direction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;degree&quot;</span>  <span class="c1"># from North=0&quot;</span>
+
+    <span class="c1">#################</span>
+    <span class="c1"># WAVES</span>
+    <span class="c1"># Sea Surface</span>
+    <span class="c1">#################</span>
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;sea_surface_wave_significant_height&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_surface_wave_significant_height&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;sea_surface_wave_significant_height&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Sea Surface Wave Significant Height&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;sea_surface_wave_significant_height&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;hs&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;sea_surface_wave_significant_height&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;m&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;sea_surface_wave_breaking_height&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_surface_wave_breaking_height&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;sea_surface_wave_breaking_height&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Sea Surface Wave Breaking Height&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;sea_surface_wave_breaking_height&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;wch&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;sea_surface_wave_breaking_height&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;m&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;sea_surface_wave_mean_period&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_surface_wave_mean_period&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;sea_surface_wave_mean_period&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Sea Surface Wave Mean Period&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;sea_surface_wave_mean_period&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;wave_mean_period&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;sea_surface_wave_mean_period&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;s&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;sea_surface_wave_peak_period&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_surface_wave_peak_period&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;sea_surface_wave_peak_period&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Sea Surface Wave Peak Period&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;sea_surface_wave_peak_period&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;wave_peak_period&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;sea_surface_wave_peak_period&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;s&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;sea_surface_wave_from_direction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_surface_wave_from_direction&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;sea_surface_wave_from_direction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Sea Surface Wave From Direction&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;sea_surface_wave_from_direction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;wave_from_dir&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;sea_surface_wave_from_direction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;degree&quot;</span> <span class="c1"># from North=0 / East=90&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;sea_surface_wave_to_direction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_surface_wave_to_direction&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;sea_surface_wave_to_direction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Sea Surface Wave To Direction&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;sea_surface_wave_to_direction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;wave_to_dir&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;sea_surface_wave_to_direction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;degree&quot;</span> <span class="c1"># from North=0 / East=90&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;eastward_sea_surface_wave_stokes_drift_velocity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;eastward_sea_surface_wave_stokes_drift_velocity&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;eastward_sea_surface_wave_stokes_drift_velocity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Eastward Sea Surface Wave Stokes Drift Velocity&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;eastward_sea_surface_wave_stokes_drift_velocity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;u_stokes_drift_vel&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;eastward_sea_surface_wave_stokes_drift_velocity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;m s-1&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;northward_sea_surface_wave_stokes_drift_velocity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;northward_sea_surface_wave_stokes_drift_velocity&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;northward_sea_surface_wave_stokes_drift_velocity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Northward Sea Surface Wave Stokes Drift Velocity&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;northward_sea_surface_wave_stokes_drift_velocity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;v_stokes_drift_vel&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;northward_sea_surface_wave_stokes_drift_velocity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;m s-1&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;radiation_pressure_bernouilli_head&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;radiation_pressure_bernouilli_head&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;radiation_pressure_bernouilli_head&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Radiation Pressure Bernouilli_Head&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;radiation_pressure_bernouilli_head&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;pres_bernouilli_head&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;radiation_pressure_bernouilli_head&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;m2 s-2&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;sea_surface_wave_energy_flux_to_ocean&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_surface_wave_energy_flux_to_ocean&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;sea_surface_wave_energy_flux_to_ocean&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Sea Surface Wave Energy Flux To Ocean&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;sea_surface_wave_energy_flux_to_ocean&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;wave_energy_flux_to_ocean&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;sea_surface_wave_energy_flux_to_ocean&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;W m-2&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;sea_surface_wave_energy_dissipation_at_ground_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_surface_wave_energy_dissipation_at_ground_level&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;sea_surface_wave_energy_dissipation_at_ground_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Sea Surface Wave Energy Dissipation At Ground Level&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;sea_surface_wave_energy_dissipation_at_ground_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;wave_energy_dissip_bottom&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;sea_surface_wave_energy_dissipation_at_ground_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;W m-2&quot;</span>
+
+    <span class="c1">#################</span>
+    <span class="c1"># WAVES</span>
+    <span class="c1"># Momentum flux</span>
+    <span class="c1">#################</span>
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;eastward_atmosphere_momentum_flux_to_waves&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;eastward_atmosphere_momentum_flux_to_waves&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;eastward_atmosphere_momentum_flux_to_waves&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Eastward Atmosphere Momentum Flux To Waves&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;eastward_atmosphere_momentum_flux_to_waves&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;u_taw&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;eastward_atmosphere_momentum_flux_to_waves&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;m2 s-1&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;northward_atmosphere_momentum_flux_to_waves&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;northward_atmosphere_momentum_flux_to_waves&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;northward_atmosphere_momentum_flux_to_waves&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Northward Atmosphere Momentum Flux To Waves&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;northward_atmosphere_momentum_flux_to_waves&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;v_taw&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;northward_atmosphere_momentum_flux_to_waves&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;m2 s-1&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;eastward_waves_momentum_flux_to_ocean&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;eastward_waves_momentum_flux_to_ocean&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;eastward_waves_momentum_flux_to_ocean&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Eastward Waves Momentum Flux To Ocean&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;eastward_waves_momentum_flux_to_ocean&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;u_two&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;eastward_waves_momentum_flux_to_ocean&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;m2 s-1&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;northward_waves_momentum_flux_to_ocean&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;northward_waves_momentum_flux_to_ocean&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;northward_waves_momentum_flux_to_ocean&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Northward Waves Momentum Flux To Ocean&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;northward_waves_momentum_flux_to_ocean&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;v_two&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;northward_waves_momentum_flux_to_ocean&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;m2 s-1&quot;</span>
+
+    <span class="c1">#################</span>
+    <span class="c1"># WAVES</span>
+    <span class="c1"># Interaction with coastal structures</span>
+    <span class="c1">#################</span>
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;wave_collision&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;wave_collision&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;wave_collision&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Wave collision&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;wave_collision&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;wave_collision&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;wave_collision&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;num h-1&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;wave_overtopping&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;wave_overtopping&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;wave_overtopping&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Wave overtopping&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;wave_overtopping&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;wave_overtopping&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;wave_overtopping&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;num h-1&quot;</span>
+
+    <span class="c1">#################</span>
+    <span class="c1"># METEO</span>
+    <span class="c1"># 2D</span>
+    <span class="c1">#################</span>
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;topography&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;topography&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;topography&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Topography&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;topography&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;topography&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;topography&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;m&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;rainfall_amount&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;rainfall_amount&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;rainfall_amount&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Rainfall Amount&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;rainfall_amount&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;rainfall&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;rainfall_amount&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;kg m-1&quot;</span>
+
+    <span class="c1">#################</span>
+    <span class="c1"># METEO</span>
+    <span class="c1"># Surface air</span>
+    <span class="c1">#################</span>
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;surface_air_pressure&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;surface_air_pressure&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;surface_air_pressure&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Surface Air Pressure&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;surface_air_pressure&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;surface_air_pressure&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;surface_air_pressure&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;hPa&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;sea_surface_air_pressure&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_surface_air_pressure&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;sea_surface_air_pressure&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Sea Surface Air Pressure&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;sea_surface_air_pressure&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sea_surface_air_pressure&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;sea_surface_air_pressure&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;hPa&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;eastward_wind_stress&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;eastward_wind_stress&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;eastward_wind_stress&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Eastward Wind Stress&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;eastward_wind_stress&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;u_wind_stress&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;eastward_wind_stress&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;N m2&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;northward_wind_stress&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;northward_wind_stress&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;northward_wind_stress&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Northward Wind Stress&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;northward_wind_stress&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;v_wind_stress&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;northward_wind_stress&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;N m2&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;wind_stress_stress&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;wind_stress_stress&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;wind_stress_stress&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Wind Stress&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;wind_stress_stress&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;wind_stress_stress&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;wind_stress_stress&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;N m2&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;wind_stress_to_direction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;wind_stress_to_direction&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;wind_stress_to_direction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Wind Stress to Direction&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;wind_stress_to_direction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;wind_stress_to_dir&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;wind_stress_to_direction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;degree&quot;</span>  <span class="c1"># to North=0 / East=90&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;wind_stress_from_direction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;wind_stress_from_direction&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;wind_stress_from_direction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Wind Stress From Direction&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;wind_stress_from_direction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;wind_stress_from_dir&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;wind_stress_from_direction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;degree&quot;</span>  <span class="c1"># from North=0 / East=90&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;surface_downward_sensible_heat_flux&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;surface_downward_sensible_heat_flux&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;surface_downward_sensible_heat_flux&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Surface Downward Sensible Heat Flux&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;surface_downward_sensible_heat_flux&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;surface_downward_sensible_heat_flux&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;surface_downward_sensible_heat_flux&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;W m2&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;surface_downward_latent_heat_flux&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;surface_downward_latent_heat_flux&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;surface_downward_latent_heat_flux&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Surface Downward Latent Heat Flux&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;surface_downward_latent_heat_flux&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;surface_downward_latent_heat_flux&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;surface_downward_latent_heat_flux&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;W m2&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;surface_air_temperature&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;surface_air_temperature&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;surface_air_temperature&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Surface Air Temperature&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;surface_air_temperature&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;surface_air_temperature&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;surface_air_temperature&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;dew_point_temperature&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;dew_point_temperature&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;dew_point_temperature&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Dew Point Temperature&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;dew_point_temperature&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;dew_point_temperature&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;dew_point_temperature&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;surface_downward_solar_radiation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;surface_downward_solar_radiation&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;surface_downward_solar_radiation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Surface Downward Solar Radiation&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;surface_downward_solar_radiation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;surface_downward_solar_radiation&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;surface_downward_solar_radiation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;W m2&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;surface_downward_thermal_radiation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;surface_downward_thermal_radiation&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;surface_downward_thermal_radiation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Surface Downward Thermal Radiation&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;surface_downward_thermal_radiation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;surface_downward_thermal_radiation&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;surface_downward_thermal_radiation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;W m2&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;surface_solar_radiation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;surface_solar_radiation&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;surface_solar_radiation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Surface Solar Radiation&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;surface_solar_radiation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;surface_solar_radiation&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;surface_solar_radiation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;W m2&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;surface_thermal_radiation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;surface_thermal_radiation&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;surface_thermal_radiation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Surface Thermal Radiation&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;surface_thermal_radiation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;surface_thermal_radiation&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;surface_thermal_radiation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;W m2&quot;</span>
+
+    <span class="c1">#################</span>
+    <span class="c1"># METEO</span>
+    <span class="c1"># At 10 m</span>
+    <span class="c1">#################</span>
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;eastward_wind_10m&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;eastward_wind_10m&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;eastward_wind_10m&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Eastward Wind 10m&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;eastward_wind_10m&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;u_wind_10m&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;eastward_wind_10m&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;m s-1&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;northward_wind_10m&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;northward_wind_10m&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;northward_wind_10m&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Northward Wind 10m&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;northward_wind_10m&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;v_wind_10m&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;northward_wind_10m&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;m s-1&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;wind_speed_10m&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;wind_speed_10m&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;wind_speed_10m&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Wind Speed 10m&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;wind_speed_10m&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;wind_speed_10m&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;wind_speed_10m&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;m s-1&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;wind_to_direction_10m&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;wind_to_direction_10m&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;wind_to_direction_10m&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Wind to Direction 10m&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;wind_to_direction_10m&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;wind_to_dir_10m&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;wind_to_direction_10m&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;degree&quot;</span> <span class="c1"># to North=0 / East=90&quot;</span>
+
+    <span class="n">STANDARD_NAME</span><span class="p">[</span><span class="s1">&#39;wind_from_direction_10m&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;wind_from_direction_10m&quot;</span>
+    <span class="n">LONG_NAME</span><span class="p">[</span><span class="s1">&#39;wind_from_direction_10m&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Wind From Direction 10m&quot;</span>
+    <span class="n">VARIABLE_NAME</span><span class="p">[</span><span class="s1">&#39;wind_from_direction_10m&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;wind_from_dir_10m&quot;</span>
+    <span class="n">CANONICAL_UNITS</span><span class="p">[</span><span class="s1">&#39;wind_from_direction_10m&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;degree&quot;</span> <span class="c1"># from North=0 / East=90&quot;</span></div>
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, SNALE.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

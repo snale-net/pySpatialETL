@@ -1,0 +1,4 @@
+time_1d_interpolation
+=====================
+
+.. py:function:: spatialetl.operator.interpolator.InterpolatorCore.time_1d_interpolation(sourceAxis, targetAxis, data, method, extrapolate=False)

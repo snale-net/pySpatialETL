@@ -1,0 +1,6 @@
+spatialetl.providers.common.gdal.setup
+======================================
+
+.. py:module:: spatialetl.providers.common.gdal.setup
+
+

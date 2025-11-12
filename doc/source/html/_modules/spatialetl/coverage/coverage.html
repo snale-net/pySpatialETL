@@ -1,0 +1,1169 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>spatialetl.coverage.coverage &mdash; pySpatialETL documentation 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=1abc5f28" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            pySpatialETL documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../docs/user_guide.html">User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../docs/advanced_guide.html">Advanced guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../docs/example.html">Examples Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../docs/reference/providers.html">Providers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../docs/reference.html">API reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">pySpatialETL documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">spatialetl.coverage.coverage</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for spatialetl.coverage.coverage</h1><div class="highlight"><pre>
+<span></span><span class="ch">#! /usr/bin/env python2.7</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># MIT License</span>
+<span class="c1"># Copyright (c) 2024 [SNALE - French SAS Company - RCS 951 724 616]</span>
+<span class="c1">#</span>
+<span class="c1"># Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c1"># of this software and associated documentation files (the &quot;Software&quot;), to deal</span>
+<span class="c1"># in the Software without restriction, including without limitation the rights</span>
+<span class="c1"># to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c1"># copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c1"># furnished to do so, subject to the following conditions:</span>
+<span class="c1">#</span>
+<span class="c1"># The above copyright notice and this permission notice shall be included in all</span>
+<span class="c1"># copies or substantial portions of the Software.</span>
+<span class="c1">#</span>
+<span class="c1"># THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c1"># IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c1"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c1"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c1"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c1"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="c1"># SOFTWARE.</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">absolute_import</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">array_split</span><span class="w"> </span><span class="kn">import</span> <span class="n">shape_split</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">spatialetl.exception.NotFoundInRankError</span><span class="w"> </span><span class="kn">import</span> <span class="n">NotFoundInRankError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">spatialetl.operator.interpolator.InterpolatorCore</span><span class="w"> </span><span class="kn">import</span> <span class="n">resample_2d_to_grid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">spatialetl.utils.distance</span><span class="w"> </span><span class="kn">import</span> <span class="n">distance_on_unit_sphere</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">spatialetl.utils.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging</span>
+
+
+<div class="viewcode-block" id="Coverage">
+<a class="viewcode-back" href="../../../docs/reference/coverage/coverage.html#spatialetl.coverage.coverage.Coverage">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Coverage</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The Coverage class represents a spatial coverage on the horizontal plane.</span>
+
+<span class="sd">    The points representing this coverage can be aligned on a regular grid (x,y) or on an irregular grid ((x1,y1),(x2,y2)).</span>
+<span class="sd">    Depending on the grid type, the axis reading functions will return one or two-dimensional arrays.</span>
+<span class="sd">    To avoid loading the entire file into memory, the coverage contains a pointer to a reader.</span>
+<span class="sd">    Layers are therefore read on demand from the file.</span>
+
+<span class="sd">    Note: The axes are always reversed in the arrays because of NetCDF.</span>
+<span class="sd">    So the y-axis first, then the x-axis. Example: [y,x]</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    HORIZONTAL_INTERPOLATION_METHOD : str</span>
+<span class="sd">        Interpolation method used for horizontal resampling. Default is &#39;linear&#39;.</span>
+<span class="sd">    HORIZONTAL_OVERLAPING_SIZE : int</span>
+<span class="sd">        Overlap size for parallel computations. Default is 2.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    myReader : object</span>
+<span class="sd">        File reader.</span>
+<span class="sd">    bbox : list, optional</span>
+<span class="sd">        Bounding box coordinates [xmin, xmax, ymin, ymax].</span>
+<span class="sd">    resolution_x : float, optional</span>
+<span class="sd">        Resolution in the x direction.</span>
+<span class="sd">    resolution_y : float, optional</span>
+<span class="sd">        Resolution in the y direction.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; coverage = Coverage(myReader, bbox=[-5, 5, -5, 5], resolution_x=0.1, resolution_y=0.1)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">HORIZONTAL_INTERPOLATION_METHOD</span> <span class="o">=</span> <span class="s2">&quot;linear&quot;</span>
+    <span class="n">HORIZONTAL_OVERLAPING_SIZE</span> <span class="o">=</span> <span class="mi">2</span>
+
+<div class="viewcode-block" id="Coverage.__init__">
+<a class="viewcode-back" href="../../../docs/reference/coverage/coverage.html#spatialetl.coverage.coverage.Coverage.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">myReader</span><span class="p">,</span><span class="n">bbox</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">resolution_x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">resolution_y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reader</span> <span class="o">=</span> <span class="n">myReader</span><span class="p">;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the Coverage object with a file reader and optional bounding box and resolution.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        </span>
+<span class="sd">        myReader : object</span>
+<span class="sd">            File reader instance.</span>
+<span class="sd">        bbox : list, optional</span>
+<span class="sd">            Bounding box coordinates [xmin, xmax, ymin, ymax].</span>
+<span class="sd">        resolution_x : float, optional</span>
+<span class="sd">            Resolution along the x-axis.</span>
+<span class="sd">        resolution_y : float, optional</span>
+<span class="sd">            Resolution along the y-axis.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; coverage = Coverage(myReader, bbox=[0, 10, 0, 10], resolution_x=1.0, resolution_y=1.0)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Parallel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rank</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">source_regular_grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">is_regular_grid</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_regular_grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_regular_grid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">horizontal_resampling</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">source_global_x_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">get_x_size</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">source_global_y_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">get_y_size</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">source_global_axis_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">read_axis_x</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_global_x_size</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>
+                                                            <span class="bp">self</span><span class="o">.</span><span class="n">source_global_y_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">source_global_axis_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">read_axis_y</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_global_x_size</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>
+                                                            <span class="bp">self</span><span class="o">.</span><span class="n">source_global_y_size</span><span class="p">)</span>
+
+        <span class="c1"># We adjust the computation based on the bbox</span>
+        <span class="k">if</span> <span class="n">bbox</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># we compute the destination grid</span>
+            <span class="n">Ymin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source_global_axis_y</span><span class="p">)</span>
+            <span class="n">Ymax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source_global_axis_y</span><span class="p">)</span>
+            <span class="n">Xmin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source_global_axis_x</span><span class="p">)</span>
+            <span class="n">Xmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source_global_axis_x</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_bbox_validity</span><span class="p">(</span><span class="n">bbox</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Your Bbox is not valid or is outside the coverage&quot;</span><span class="p">)</span>
+            <span class="n">Ymin</span> <span class="o">=</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">Ymax</span> <span class="o">=</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+            <span class="n">Xmin</span> <span class="o">=</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">Xmax</span> <span class="o">=</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_regular_grid</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">):</span>
+
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">source_global_axis_x</span> <span class="o">&gt;=</span> <span class="n">Xmin</span><span class="p">)</span> <span class="o">&amp;</span>
+                           <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source_global_axis_x</span> <span class="o">&lt;=</span> <span class="n">Xmax</span><span class="p">))</span>
+
+            <span class="n">xmin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">xmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span>
+
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">source_global_axis_y</span> <span class="o">&gt;=</span> <span class="n">Ymin</span><span class="p">)</span> <span class="o">&amp;</span>
+                           <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source_global_axis_y</span> <span class="o">&lt;=</span> <span class="n">Ymax</span><span class="p">))</span>
+
+            <span class="n">ymin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">ymax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">target_global_axis_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_global_axis_x</span><span class="p">[</span><span class="n">xmin</span><span class="p">:</span><span class="n">xmax</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">target_global_x_size</span> <span class="o">=</span> <span class="n">xmax</span> <span class="o">-</span> <span class="n">xmin</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">target_global_axis_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_global_axis_y</span><span class="p">[</span><span class="n">ymin</span><span class="p">:</span><span class="n">ymax</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">target_global_y_size</span> <span class="o">=</span> <span class="n">ymax</span> <span class="o">-</span> <span class="n">ymin</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">source_global_axis_x</span> <span class="o">&gt;=</span> <span class="n">Xmin</span><span class="p">)</span> <span class="o">&amp;</span>
+                           <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source_global_axis_x</span> <span class="o">&lt;=</span> <span class="n">Xmax</span><span class="p">)</span> <span class="o">&amp;</span>
+                           <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source_global_axis_y</span> <span class="o">&gt;=</span> <span class="n">Ymin</span><span class="p">)</span> <span class="o">&amp;</span>
+                           <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source_global_axis_y</span> <span class="o">&lt;=</span> <span class="n">Ymax</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No values found&quot;</span><span class="p">)</span>
+
+            <span class="n">ymin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">ymax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">+</span><span class="mi">1</span>
+            <span class="n">xmin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">xmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">+</span><span class="mi">1</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">target_global_axis_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_global_axis_x</span><span class="p">[</span><span class="n">ymin</span><span class="p">:</span><span class="n">ymax</span><span class="p">,</span> <span class="n">xmin</span><span class="p">:</span><span class="n">xmax</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">target_global_x_size</span> <span class="o">=</span> <span class="n">xmax</span> <span class="o">-</span> <span class="n">xmin</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">target_global_axis_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_global_axis_y</span><span class="p">[</span><span class="n">ymin</span><span class="p">:</span><span class="n">ymax</span><span class="p">,</span> <span class="n">xmin</span><span class="p">:</span><span class="n">xmax</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">target_global_y_size</span> <span class="o">=</span> <span class="n">ymax</span> <span class="o">-</span> <span class="n">ymin</span>
+
+        <span class="c1"># Compute the destination grid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_global_res_x</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_global_res_y</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">resolution_x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">resolution_y</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">horizontal_resampling</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">target_regular_grid</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="n">resolution_x</span><span class="p">,</span> <span class="n">resolution_y</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">target_global_res_x</span> <span class="o">=</span> <span class="n">res</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">target_global_res_y</span> <span class="o">=</span> <span class="n">res</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">target_global_axis_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">Xmin</span><span class="p">,</span> <span class="n">Xmax</span><span class="p">,</span> <span class="n">res</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">target_global_axis_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">Ymin</span><span class="p">,</span> <span class="n">Ymax</span><span class="p">,</span> <span class="n">res</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">target_global_x_size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_global_axis_x</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">target_global_y_size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_global_axis_y</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">==</span> <span class="n">Coverage</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;[horizontal_interpolation] Source grid size : (&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source_global_x_size</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">source_global_y_size</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span><span class="p">)</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;[horizontal_interpolation] Target grid size : (&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_global_x_size</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">target_global_y_size</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">==</span> <span class="n">Coverage</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">create_mpi_map</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_mpi_map</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;MPI map:&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">]:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Proc n°&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;=&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="n">key</span><span class="p">]))</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;---------&quot;</span><span class="p">)</span>
+
+        <span class="c1"># try to fill metadata</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">read_metadata</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Coverage.check_bbox_validity">
+<a class="viewcode-back" href="../../../docs/reference/coverage/_generated/spatialetl.coverage.Coverage.check_bbox_validity.html#spatialetl.coverage.coverage.Coverage.check_bbox_validity">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_bbox_validity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">candidate</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check the validity of the bounding box.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        candidate : list</span>
+<span class="sd">            Bounding box coordinates [xmin, xmax, ymin, ymax].</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">            True if the bounding box is valid, False otherwise.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; coverage = Coverage(myReader, bbox=[0, 10, 0, 10], resolution_x=1.0, resolution_y=1.0)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Ymin</span> <span class="o">=</span> <span class="n">candidate</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">Ymax</span> <span class="o">=</span> <span class="n">candidate</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+        <span class="n">Xmin</span> <span class="o">=</span> <span class="n">candidate</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">Xmax</span> <span class="o">=</span> <span class="n">candidate</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">Xmax</span> <span class="o">&lt;=</span> <span class="n">Xmin</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">Ymax</span> <span class="o">&lt;=</span> <span class="n">Ymin</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="n">Ymin</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source_global_axis_y</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">Ymax</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source_global_axis_y</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">Xmin</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source_global_axis_x</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">Xmax</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source_global_axis_x</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="Coverage.check_point_is_inside">
+<a class="viewcode-back" href="../../../docs/reference/coverage/_generated/spatialetl.coverage.Coverage.check_point_is_inside.html#spatialetl.coverage.coverage.Coverage.check_point_is_inside">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_point_is_inside</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_lon</span><span class="p">,</span> <span class="n">target_lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span><span class="n">tolerance</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if a point is inside the coverage.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        target_lon : float</span>
+<span class="sd">            Longitude of the target point.</span>
+<span class="sd">        target_lat : float</span>
+<span class="sd">            Latitude of the target point.</span>
+<span class="sd">        lon : array</span>
+<span class="sd">            Longitude array.</span>
+<span class="sd">        lat : array</span>
+<span class="sd">            Latitude array.</span>
+<span class="sd">        tolerance : int, optional</span>
+<span class="sd">            Tolerance for rounding.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">            True if the point is inside the coverage, False otherwise.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; coverage.check_point_is_inside(5.0, 45.0, lon_array, lat_array)</span>
+<span class="sd">        True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">target_lat</span><span class="p">,</span><span class="n">decimals</span><span class="o">=</span><span class="n">tolerance</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">lat</span><span class="p">,</span><span class="n">decimals</span><span class="o">=</span><span class="n">tolerance</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">target_lat</span><span class="p">,</span><span class="n">decimals</span><span class="o">=</span><span class="n">tolerance</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">lat</span><span class="p">,</span><span class="n">decimals</span><span class="o">=</span><span class="n">tolerance</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">target_lon</span><span class="p">,</span><span class="n">decimals</span><span class="o">=</span><span class="n">tolerance</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">lon</span><span class="p">,</span><span class="n">decimals</span><span class="o">=</span><span class="n">tolerance</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">target_lon</span><span class="p">,</span><span class="n">decimals</span><span class="o">=</span><span class="n">tolerance</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">lon</span><span class="p">,</span><span class="n">decimals</span><span class="o">=</span><span class="n">tolerance</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="Coverage.create_mpi_map">
+<a class="viewcode-back" href="../../../docs/reference/coverage/_generated/spatialetl.coverage.Coverage.create_mpi_map.html#spatialetl.coverage.coverage.Coverage.create_mpi_map">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_mpi_map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create the MPI map for parallel processing.</span>
+<span class="sd">        The MPI map is a dictionary that contains the mapping of the source and destination grids for each MPI rank.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; coverage.create_mpi_map()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
+        <span class="n">target_sample</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_global_y_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_global_x_size</span><span class="p">)</span>
+
+        <span class="c1"># Split the axes</span>
+        <span class="n">target_slices</span> <span class="o">=</span> <span class="n">shape_split</span><span class="p">(</span><span class="n">target_sample</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+
+        <span class="n">slice_index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">slyce</span> <span class="ow">in</span> <span class="n">target_slices</span><span class="o">.</span><span class="n">flatten</span><span class="p">():</span>
+            <span class="nb">slice</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">slyce</span><span class="p">)</span>
+
+            <span class="nb">map</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="c1"># Source grid</span>
+            <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;dst_global_x&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;dst_global_y&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;dst_local_x_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;dst_global_x&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span> <span class="o">-</span> <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;dst_global_x&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span>
+            <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;dst_local_y_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;dst_global_y&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span> <span class="o">-</span> <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;dst_global_y&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span>
+
+            <span class="n">dst_global_x_min_overlap</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;dst_global_x&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span> <span class="o">-</span> <span class="n">Coverage</span><span class="o">.</span><span class="n">HORIZONTAL_OVERLAPING_SIZE</span><span class="p">)</span>
+            <span class="n">dst_global_x_max_overlap</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_global_x_size</span><span class="p">,</span>
+                                           <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;dst_global_x&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span> <span class="o">+</span> <span class="n">Coverage</span><span class="o">.</span><span class="n">HORIZONTAL_OVERLAPING_SIZE</span><span class="p">)</span>
+            <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;dst_global_x_overlap&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">s_</span><span class="p">[</span><span class="n">dst_global_x_min_overlap</span><span class="p">:</span><span class="n">dst_global_x_max_overlap</span><span class="p">]</span>
+
+            <span class="n">dst_global_y_min_overlap</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;dst_global_y&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span> <span class="o">-</span> <span class="n">Coverage</span><span class="o">.</span><span class="n">HORIZONTAL_OVERLAPING_SIZE</span><span class="p">)</span>
+            <span class="n">dst_global_y_max_overlap</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_global_y_size</span><span class="p">,</span>
+                                           <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;dst_global_y&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span> <span class="o">+</span> <span class="n">Coverage</span><span class="o">.</span><span class="n">HORIZONTAL_OVERLAPING_SIZE</span><span class="p">)</span>
+            <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;dst_global_y_overlap&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">s_</span><span class="p">[</span><span class="n">dst_global_y_min_overlap</span><span class="p">:</span><span class="n">dst_global_y_max_overlap</span><span class="p">]</span>
+
+            <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;dst_global_x_size_overlap&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;dst_global_x_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span> <span class="o">-</span> <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;dst_global_x_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span>
+            <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;dst_global_y_size_overlap&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;dst_global_y_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span> <span class="o">-</span> <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;dst_global_y_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span>
+
+            <span class="n">dst_x_min</span> <span class="o">=</span> <span class="n">Coverage</span><span class="o">.</span><span class="n">HORIZONTAL_OVERLAPING_SIZE</span>
+            <span class="n">dst_x_max</span> <span class="o">=</span> <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;dst_global_x_size_overlap&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">Coverage</span><span class="o">.</span><span class="n">HORIZONTAL_OVERLAPING_SIZE</span>
+            <span class="n">dst_y_min</span> <span class="o">=</span> <span class="n">Coverage</span><span class="o">.</span><span class="n">HORIZONTAL_OVERLAPING_SIZE</span>
+            <span class="n">dst_y_max</span> <span class="o">=</span> <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;dst_global_y_size_overlap&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">Coverage</span><span class="o">.</span><span class="n">HORIZONTAL_OVERLAPING_SIZE</span>
+
+            <span class="k">if</span> <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;dst_global_x&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">dst_x_min</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="k">if</span> <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;dst_global_x&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_global_x_size</span><span class="p">:</span>
+                <span class="n">dst_x_max</span> <span class="o">=</span> <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;dst_global_x_size_overlap&quot;</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;dst_global_y&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">dst_y_min</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="k">if</span> <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;dst_global_y&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_global_y_size</span><span class="p">:</span>
+                <span class="n">dst_y_max</span> <span class="o">=</span> <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;dst_global_y_size_overlap&quot;</span><span class="p">]</span>
+
+            <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;dst_local_x&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">s_</span><span class="p">[</span><span class="n">dst_x_min</span><span class="p">:</span><span class="n">dst_x_max</span><span class="p">]</span>
+            <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;dst_local_y&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">s_</span><span class="p">[</span><span class="n">dst_y_min</span><span class="p">:</span><span class="n">dst_y_max</span><span class="p">]</span>
+
+            <span class="c1"># Source grille</span>
+            <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;src_global_x&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;dst_global_x&quot;</span><span class="p">]</span>
+            <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;src_global_y&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;dst_global_y&quot;</span><span class="p">]</span>
+
+            <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;src_global_x_overlap&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;dst_global_x_overlap&quot;</span><span class="p">]</span>
+            <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;src_global_y_overlap&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;dst_global_y_overlap&quot;</span><span class="p">]</span>
+
+            <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;src_local_x&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;dst_local_x&quot;</span><span class="p">]</span>
+            <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;src_local_y&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;dst_local_y&quot;</span><span class="p">]</span>
+
+            <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;src_local_x_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;dst_local_x_size&quot;</span><span class="p">]</span>
+            <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;src_local_y_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;dst_local_y_size&quot;</span><span class="p">]</span>
+
+            <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;src_local_x_size_overlap&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;dst_global_x_size_overlap&quot;</span><span class="p">]</span>
+            <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;src_local_y_size_overlap&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">map</span><span class="p">[</span><span class="s2">&quot;dst_global_y_size_overlap&quot;</span><span class="p">]</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="n">slice_index</span><span class="p">]</span> <span class="o">=</span> <span class="nb">map</span>
+
+            <span class="n">slice_index</span> <span class="o">=</span> <span class="n">slice_index</span> <span class="o">+</span> <span class="mi">1</span></div>
+
+
+<div class="viewcode-block" id="Coverage.update_mpi_map">
+<a class="viewcode-back" href="../../../docs/reference/coverage/_generated/spatialetl.coverage.Coverage.update_mpi_map.html#spatialetl.coverage.coverage.Coverage.update_mpi_map">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_mpi_map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the MPI map for parallel processing.</span>
+<span class="sd">            This method recalculates the source and overlap slices for each process based on the current grid.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; coverage.update_mpi_map()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_regular_grid</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">):</span>
+
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">source_global_axis_x</span> <span class="o">&gt;=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">read_axis_x</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="n">with_overlap</span><span class="o">=</span><span class="kc">False</span><span class="p">)))</span> <span class="o">&amp;</span>
+                           <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source_global_axis_x</span> <span class="o">&lt;=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">read_axis_x</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="n">with_overlap</span><span class="o">=</span><span class="kc">False</span><span class="p">))))</span>
+
+            <span class="n">xmin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">xmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span>
+
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">source_global_axis_y</span> <span class="o">&gt;=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">read_axis_y</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="n">with_overlap</span><span class="o">=</span><span class="kc">False</span><span class="p">)))</span> <span class="o">&amp;</span>
+                           <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source_global_axis_y</span> <span class="o">&lt;=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">read_axis_y</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="n">with_overlap</span><span class="o">=</span><span class="kc">False</span><span class="p">))))</span>
+
+            <span class="n">ymin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">ymax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source_global_axis_x</span> <span class="o">&gt;=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">read_axis_x</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="n">with_overlap</span><span class="o">=</span><span class="kc">False</span><span class="p">)))</span> <span class="o">&amp;</span>
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source_global_axis_x</span> <span class="o">&lt;=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">read_axis_x</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="n">with_overlap</span><span class="o">=</span><span class="kc">False</span><span class="p">)))</span> <span class="o">&amp;</span>
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source_global_axis_y</span> <span class="o">&gt;=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">read_axis_y</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="n">with_overlap</span><span class="o">=</span><span class="kc">False</span><span class="p">)))</span> <span class="o">&amp;</span>
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source_global_axis_y</span> <span class="o">&lt;=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">read_axis_y</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="n">with_overlap</span><span class="o">=</span><span class="kc">False</span><span class="p">))))</span>
+
+            <span class="n">ymin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">ymax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">xmin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">xmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="c1"># Version 2</span>
+        <span class="c1"># SRC GLOBAL</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_x&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">s_</span><span class="p">[</span><span class="n">xmin</span><span class="p">:</span><span class="n">xmax</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_x_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">xmax</span> <span class="o">-</span> <span class="n">xmin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_y&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">s_</span><span class="p">[</span><span class="n">ymin</span><span class="p">:</span><span class="n">ymax</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_y_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ymax</span> <span class="o">-</span> <span class="n">ymin</span>
+
+        <span class="n">dst_global_x_min_overlap</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span>
+            <span class="s2">&quot;src_global_x&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span> <span class="o">-</span> <span class="n">Coverage</span><span class="o">.</span><span class="n">HORIZONTAL_OVERLAPING_SIZE</span><span class="p">)</span>
+        <span class="n">dst_global_x_max_overlap</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source_global_x_size</span><span class="p">,</span>
+                                       <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span>
+                                           <span class="s2">&quot;src_global_x&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span> <span class="o">+</span> <span class="n">Coverage</span><span class="o">.</span><span class="n">HORIZONTAL_OVERLAPING_SIZE</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_x_overlap&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">s_</span><span class="p">[</span>
+                                                          <span class="n">dst_global_x_min_overlap</span><span class="p">:</span><span class="n">dst_global_x_max_overlap</span><span class="p">]</span>
+
+        <span class="n">dst_global_y_min_overlap</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span>
+            <span class="s2">&quot;src_global_y&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span> <span class="o">-</span> <span class="n">Coverage</span><span class="o">.</span><span class="n">HORIZONTAL_OVERLAPING_SIZE</span><span class="p">)</span>
+        <span class="n">dst_global_y_max_overlap</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source_global_y_size</span><span class="p">,</span>
+                                       <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span>
+                                           <span class="s2">&quot;src_global_y&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span> <span class="o">+</span> <span class="n">Coverage</span><span class="o">.</span><span class="n">HORIZONTAL_OVERLAPING_SIZE</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_y_overlap&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">s_</span><span class="p">[</span>
+                                                          <span class="n">dst_global_y_min_overlap</span><span class="p">:</span><span class="n">dst_global_y_max_overlap</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_x_size_overlap&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span>
+                                                                   <span class="s2">&quot;src_global_x_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span> <span class="o">-</span> \
+                                                               <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span>
+                                                                   <span class="s2">&quot;src_global_x_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_y_size_overlap&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span>
+                                                                   <span class="s2">&quot;src_global_y_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span> <span class="o">-</span> \
+                                                               <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span>
+                                                                   <span class="s2">&quot;src_global_y_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_local_x_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">xmax</span> <span class="o">-</span> <span class="n">xmin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_local_y_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ymax</span> <span class="o">-</span> <span class="n">ymin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_local_x&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">s_</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_local_x_size&quot;</span><span class="p">]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_local_y&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">s_</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_local_y_size&quot;</span><span class="p">]]</span>
+
+        <span class="c1"># OVERLAP</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_local_x_size_overlap&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span>
+            <span class="s2">&quot;src_global_x_size_overlap&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_local_y_size_overlap&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span>
+            <span class="s2">&quot;src_global_y_size_overlap&quot;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_local_x_overlap&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">s_</span><span class="p">[</span>
+                                                         <span class="mi">0</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_local_x_size_overlap&quot;</span><span class="p">]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_local_y_overlap&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">s_</span><span class="p">[</span>
+                                                         <span class="mi">0</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_local_y_size_overlap&quot;</span><span class="p">]]</span></div>
+
+
+    <span class="c1"># Read metadata</span>
+<div class="viewcode-block" id="Coverage.read_metadata">
+<a class="viewcode-back" href="../../../docs/reference/coverage/_generated/spatialetl.coverage.Coverage.read_metadata.html#spatialetl.coverage.coverage.Coverage.read_metadata">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read the metadata from the file if the reader contains a read_metadata() function.</span>
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; coverage.read_metadata()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span>  <span class="s2">&quot;read_metadata&quot;</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="p">):</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">read_metadata</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Coverage.get_x_size">
+<a class="viewcode-back" href="../../../docs/reference/coverage/_generated/spatialetl.coverage.Coverage.get_x_size.html#spatialetl.coverage.coverage.Coverage.get_x_size">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_x_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span><span class="n">with_overlap</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the x size.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        type : str, optional</span>
+<span class="sd">            Type of the grid (&quot;target&quot;, &quot;source&quot;, &quot;target_global&quot;, &quot;source_global&quot;).</span>
+<span class="sd">        with_overlap : bool, optional</span>
+<span class="sd">            Whether to include overlap.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        int</span>
+<span class="sd">            The x size.</span>
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; coverage.get_x_size()</span>
+<span class="sd">        120</span>
+<span class="sd">        &gt;&gt;&gt; coverage.get_x_size(type=&quot;source&quot;, with_overlap=True)</span>
+<span class="sd">        124</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;target_global&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_global_x_size</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;source_global&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_global_x_size</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;source&quot;</span> <span class="ow">and</span> <span class="n">with_overlap</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_local_x_size_overlap&quot;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;source&quot;</span> <span class="ow">and</span> <span class="n">with_overlap</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_local_x_size&quot;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;target&quot;</span> <span class="ow">and</span> <span class="n">with_overlap</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;dst_local_x_size_overlap&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;dst_local_x_size&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="Coverage.get_y_size">
+<a class="viewcode-back" href="../../../docs/reference/coverage/_generated/spatialetl.coverage.Coverage.get_y_size.html#spatialetl.coverage.coverage.Coverage.get_y_size">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_y_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span><span class="n">with_overlap</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the y size.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        type : str, optional</span>
+<span class="sd">            Type of the grid (&quot;target&quot;, &quot;source&quot;, &quot;target_global&quot;, &quot;source_global&quot;).</span>
+<span class="sd">        with_overlap : bool, optional</span>
+<span class="sd">            Whether to include overlap.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        int</span>
+<span class="sd">            The y size.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; coverage.get_y_size()</span>
+<span class="sd">        80</span>
+<span class="sd">        &gt;&gt;&gt; coverage.get_y_size(type=&quot;source&quot;, with_overlap=True)</span>
+<span class="sd">        84</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;target_global&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_global_y_size</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;source_global&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_global_y_size</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;source&quot;</span> <span class="ow">and</span> <span class="n">with_overlap</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_local_y_size_overlap&quot;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;source&quot;</span> <span class="ow">and</span> <span class="n">with_overlap</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_local_y_size&quot;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;target&quot;</span> <span class="ow">and</span> <span class="n">with_overlap</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;dst_local_y_size_overlap&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;dst_local_y_size&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="Coverage.is_regular_grid">
+<a class="viewcode-back" href="../../../docs/reference/coverage/_generated/spatialetl.coverage.Coverage.is_regular_grid.html#spatialetl.coverage.coverage.Coverage.is_regular_grid">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_regular_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if the grid is regular.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        type : str, optional</span>
+<span class="sd">            Type of the grid (&quot;target&quot;, &quot;source&quot;).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">            True if the grid is regular, False otherwise.</span>
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; coverage.is_regular_grid()</span>
+<span class="sd">        True</span>
+<span class="sd">        &gt;&gt;&gt; coverage.is_regular_grid(type=&quot;source&quot;)</span>
+<span class="sd">        False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;target&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_regular_grid</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_regular_grid</span></div>
+
+
+    <span class="c1"># Axis        </span>
+<div class="viewcode-block" id="Coverage.read_axis_x">
+<a class="viewcode-back" href="../../../docs/reference/coverage/_generated/spatialetl.coverage.Coverage.read_axis_x.html#spatialetl.coverage.coverage.Coverage.read_axis_x">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_axis_x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span><span class="n">with_overlap</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the values (often longitude) of the x axis.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        type : str, optional</span>
+<span class="sd">            Type of the grid (&quot;target&quot;, &quot;source&quot;, &quot;target_global&quot;, &quot;source_global&quot;).</span>
+<span class="sd">        with_overlap : bool, optional</span>
+<span class="sd">            Whether to include overlap.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array</span>
+<span class="sd">            A one- or two-dimensional array of x axis values (often longitude): [x] or [y, x], depending on the grid type.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; x_axis = coverage.read_axis_x()</span>
+<span class="sd">        &gt;&gt;&gt; x_axis = coverage.read_axis_x(type=&quot;source&quot;, with_overlap=True)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;target_global&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_global_axis_x</span>
+
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;source_global&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_global_axis_x</span>
+
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;source&quot;</span> <span class="ow">and</span> <span class="n">with_overlap</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">read_axis_x</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_x_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
+                                           <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_x_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span><span class="p">,</span>
+                                           <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_y_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
+                                           <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_y_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;source&quot;</span> <span class="ow">and</span> <span class="n">with_overlap</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">read_axis_x</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_x&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_x&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span><span class="p">,</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_y&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_y&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;target&quot;</span> <span class="ow">and</span> <span class="n">with_overlap</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_regular_grid</span><span class="p">():</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_global_axis_x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;dst_global_x_overlap&quot;</span><span class="p">]]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_global_axis_x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;dst_global_y_overlap&quot;</span><span class="p">],</span>
+                                                 <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;dst_global_x_overlap&quot;</span><span class="p">]]</span>
+        <span class="k">else</span> <span class="p">:</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_regular_grid</span><span class="p">():</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_global_axis_x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;dst_global_x&quot;</span><span class="p">]]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_global_axis_x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;dst_global_y&quot;</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;dst_global_x&quot;</span><span class="p">]]</span></div>
+
+        
+<div class="viewcode-block" id="Coverage.read_axis_y">
+<a class="viewcode-back" href="../../../docs/reference/coverage/_generated/spatialetl.coverage.Coverage.read_axis_y.html#spatialetl.coverage.coverage.Coverage.read_axis_y">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_axis_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span><span class="n">with_overlap</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the values (often latitude) of the y axis.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        type : str, optional</span>
+<span class="sd">            Type of the grid (&quot;target&quot;, &quot;source&quot;, &quot;target_global&quot;, &quot;source_global&quot;).</span>
+<span class="sd">        with_overlap : bool, optional</span>
+<span class="sd">            Whether to include overlap.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array</span>
+<span class="sd">            A one- or two-dimensional array of y axis values (often latitude): [x] or [y, x], depending on the grid type.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; y_axis = coverage.read_axis_y()</span>
+<span class="sd">        &gt;&gt;&gt; y_axis = coverage.read_axis_y(type=&quot;source&quot;, with_overlap=True)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="o">==</span><span class="s2">&quot;target_global&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_global_axis_y</span>
+
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;source_global&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_global_axis_y</span>
+
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;source&quot;</span> <span class="ow">and</span> <span class="n">with_overlap</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">read_axis_y</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_x_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
+                                           <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_x_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span><span class="p">,</span>
+                                           <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_y_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
+                                           <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_y_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;source&quot;</span> <span class="ow">and</span> <span class="n">with_overlap</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">read_axis_y</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_x&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
+                                           <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_x&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span><span class="p">,</span>
+                                           <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_y&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
+                                           <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_y&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;target&quot;</span> <span class="ow">and</span> <span class="n">with_overlap</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_regular_grid</span><span class="p">():</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_global_axis_y</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;dst_global_y_overlap&quot;</span><span class="p">]]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_global_axis_y</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;dst_global_y_overlap&quot;</span><span class="p">],</span>
+                                                 <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;dst_global_x_overlap&quot;</span><span class="p">]]</span>
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_regular_grid</span><span class="p">():</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_global_axis_y</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;dst_global_y&quot;</span><span class="p">]]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_global_axis_y</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;dst_global_y&quot;</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;dst_global_x&quot;</span><span class="p">]]</span></div>
+
+        
+<div class="viewcode-block" id="Coverage.find_point_index">
+<a class="viewcode-back" href="../../../docs/reference/coverage/_generated/spatialetl.coverage.Coverage.find_point_index.html#spatialetl.coverage.coverage.Coverage.find_point_index">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">find_point_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">target_lon</span><span class="p">,</span> <span class="n">target_lat</span><span class="p">,</span> <span class="n">decimal_tolerance</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;classic&quot;</span><span class="p">,</span> <span class="n">only_mask_value</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Find the index of the closest point to the given point.</span>
+
+<span class="sd">                Parameters</span>
+<span class="sd">                ----------</span>
+<span class="sd">                target_lon : float</span>
+<span class="sd">                    Longitude of the target point.</span>
+<span class="sd">                target_lat : float</span>
+<span class="sd">                    Latitude of the target point.</span>
+<span class="sd">                decimal_tolerance : int, optional</span>
+<span class="sd">                    Tolerance for rounding coordinates.</span>
+<span class="sd">                method : str, optional</span>
+<span class="sd">                    Method for calculation (&quot;classic&quot;, &quot;quick&quot;).</span>
+<span class="sd">                only_mask_value : bool, optional</span>
+<span class="sd">                    Whether to consider only mask values.</span>
+<span class="sd">                type : str, optional</span>
+<span class="sd">                    Type of the grid (&quot;source&quot;, &quot;source_global&quot;).</span>
+
+<span class="sd">                Returns</span>
+<span class="sd">                -------</span>
+<span class="sd">                list</span>
+<span class="sd">                    A list containing:</span>
+<span class="sd">                    [0] : the x index of the closest point</span>
+<span class="sd">                    [1] : the y index of the closest point</span>
+<span class="sd">                    [2] : the longitude of the closest point</span>
+<span class="sd">                    [3] : the latitude of the closest point</span>
+<span class="sd">                    [4] : the distance of the closest point in kilometers.</span>
+
+<span class="sd">                Examples</span>
+<span class="sd">                --------</span>
+<span class="sd">                &gt;&gt;&gt; idx = coverage.find_point_index(5.0, 45.0)</span>
+<span class="sd">                &gt;&gt;&gt; idx = coverage.find_point_index(5.0, 45.0, method=&quot;quick&quot;, type=&quot;source_global&quot;)</span>
+<span class="sd">                &quot;&quot;&quot;</span>
+        <span class="n">lon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_axis_x</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">,</span><span class="n">with_overlap</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">lat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_axis_y</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">,</span><span class="n">with_overlap</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_point_is_inside</span><span class="p">(</span><span class="n">target_lon</span><span class="p">,</span> <span class="n">target_lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="n">decimal_tolerance</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_variable_2D_sea_binary_mask</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">,</span><span class="n">with_overlap</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">mask</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">NotImplementedError</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No 2D sea binary mask found&quot;</span><span class="p">)</span>
+                <span class="c1">#mask = np.ones([self.source_global_y_size, self.source_global_x_size])</span>
+                <span class="n">only_mask_value</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">get_y_size</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">,</span><span class="n">with_overlap</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_x_size</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">,</span><span class="n">with_overlap</span><span class="o">=</span><span class="kc">False</span><span class="p">)])</span>
+            <span class="n">dist</span><span class="p">[:]</span> <span class="o">=</span> <span class="mi">10000000</span>
+
+            <span class="k">if</span> <span class="n">method</span><span class="o">==</span><span class="s2">&quot;classic&quot;</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_x_size</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">,</span><span class="n">with_overlap</span><span class="o">=</span><span class="kc">False</span><span class="p">)):</span>
+                    <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_y_size</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">,</span><span class="n">with_overlap</span><span class="o">=</span><span class="kc">False</span><span class="p">)):</span>
+
+                        <span class="k">if</span> <span class="n">only_mask_value</span><span class="p">:</span>
+                            <span class="k">if</span><span class="p">(</span><span class="n">mask</span><span class="p">[</span><span class="n">y</span><span class="p">,</span><span class="n">x</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">):</span> <span class="c1">#=Terre</span>
+                                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">is_regular_grid</span><span class="p">():</span>
+                                    <span class="n">dist</span><span class="p">[</span><span class="n">y</span><span class="p">,</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="n">distance_on_unit_sphere</span><span class="p">(</span><span class="n">target_lon</span><span class="p">,</span><span class="n">target_lat</span><span class="p">,</span><span class="n">lon</span><span class="p">[</span><span class="n">x</span><span class="p">],</span><span class="n">lat</span><span class="p">[</span><span class="n">y</span><span class="p">])</span>
+                                <span class="k">else</span><span class="p">:</span>
+                                    <span class="n">dist</span><span class="p">[</span><span class="n">y</span><span class="p">,</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="n">distance_on_unit_sphere</span><span class="p">(</span><span class="n">target_lon</span><span class="p">,</span><span class="n">target_lat</span><span class="p">,</span><span class="n">lon</span><span class="p">[</span><span class="n">y</span><span class="p">,</span><span class="n">x</span><span class="p">],</span><span class="n">lat</span><span class="p">[</span><span class="n">y</span><span class="p">,</span><span class="n">x</span><span class="p">])</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">is_regular_grid</span><span class="p">():</span>
+                                <span class="n">dist</span><span class="p">[</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="n">distance_on_unit_sphere</span><span class="p">(</span><span class="n">target_lon</span><span class="p">,</span> <span class="n">target_lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">[</span><span class="n">x</span><span class="p">],</span> <span class="n">lat</span><span class="p">[</span><span class="n">y</span><span class="p">])</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">dist</span><span class="p">[</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="n">distance_on_unit_sphere</span><span class="p">(</span><span class="n">target_lon</span><span class="p">,</span> <span class="n">target_lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">[</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">],</span> <span class="n">lat</span><span class="p">[</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">])</span>
+
+                <span class="n">nearest_y_index</span><span class="p">,</span><span class="n">nearest_x_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">dist</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">dist</span><span class="p">))</span>
+
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nearest_y_index</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">nearest_x_index</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;no neaarest point found&quot;</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No nearest point found&quot;</span><span class="p">)</span>
+
+                <span class="n">nearest_x_index</span> <span class="o">=</span> <span class="n">nearest_x_index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">nearest_y_index</span> <span class="o">=</span> <span class="n">nearest_y_index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">min_dist</span> <span class="o">=</span> <span class="n">dist</span><span class="p">[</span><span class="n">nearest_y_index</span><span class="p">,</span><span class="n">nearest_x_index</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_regular_grid</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">):</span>
+                    <span class="n">nearest_lon</span> <span class="o">=</span> <span class="n">lon</span><span class="p">[</span><span class="n">nearest_x_index</span><span class="p">]</span>
+                    <span class="n">nearest_lat</span> <span class="o">=</span> <span class="n">lat</span><span class="p">[</span><span class="n">nearest_y_index</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">nearest_lon</span> <span class="o">=</span> <span class="n">lon</span><span class="p">[</span><span class="n">nearest_y_index</span><span class="p">,</span> <span class="n">nearest_x_index</span><span class="p">]</span>
+                    <span class="n">nearest_lat</span> <span class="o">=</span> <span class="n">lat</span><span class="p">[</span><span class="n">nearest_y_index</span><span class="p">,</span> <span class="n">nearest_x_index</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;source&quot;</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="p">[</span><span class="n">nearest_x_index</span><span class="p">,</span> <span class="n">nearest_y_index</span><span class="p">,</span> <span class="n">nearest_lon</span><span class="p">,</span> <span class="n">nearest_lat</span><span class="p">,</span> <span class="n">min_dist</span><span class="p">]</span>
+                <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;source_global&quot;</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_x&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="o">+</span><span class="n">nearest_x_index</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_y&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="o">+</span><span class="n">nearest_y_index</span><span class="p">,</span> <span class="n">nearest_lon</span><span class="p">,</span> <span class="n">nearest_lat</span><span class="p">,</span> <span class="n">min_dist</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Type doesn&#39;t match [source, source_global]&quot;</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;quick&quot;</span><span class="p">:</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_regular_grid</span><span class="p">():</span>
+
+                    <span class="c1"># Longitude : on cherche l&#39;index le plus proche</span>
+                    <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">lon</span><span class="p">)</span>
+                    <span class="n">nearest_x_index</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">array</span> <span class="o">-</span> <span class="n">target_lon</span><span class="p">))</span><span class="o">.</span><span class="n">argmin</span><span class="p">()</span>
+
+                    <span class="c1"># Latitude : on cherche l&#39;index le plus proche</span>
+                    <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">lat</span><span class="p">)</span>
+                    <span class="n">nearest_y_index</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">array</span> <span class="o">-</span> <span class="n">target_lat</span><span class="p">))</span><span class="o">.</span><span class="n">argmin</span><span class="p">()</span>
+
+                    <span class="n">nearest_lon</span> <span class="o">=</span> <span class="n">lon</span><span class="p">[</span><span class="n">nearest_x_index</span><span class="p">]</span>
+                    <span class="n">nearest_lat</span> <span class="o">=</span> <span class="n">lat</span><span class="p">[</span><span class="n">nearest_y_index</span><span class="p">]</span>
+
+                    <span class="n">min_dist</span> <span class="o">=</span> <span class="n">distance_on_unit_sphere</span><span class="p">(</span><span class="n">target_lon</span><span class="p">,</span> <span class="n">target_lat</span><span class="p">,</span><span class="n">nearest_lon</span><span class="p">,</span><span class="n">nearest_lat</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;source&quot;</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="p">[</span><span class="n">nearest_x_index</span><span class="p">,</span> <span class="n">nearest_y_index</span><span class="p">,</span> <span class="n">nearest_lon</span><span class="p">,</span> <span class="n">nearest_lat</span><span class="p">,</span> <span class="n">min_dist</span><span class="p">]</span>
+                    <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;source_global&quot;</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_x&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span> <span class="o">+</span> <span class="n">nearest_x_index</span><span class="p">,</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_y&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span> <span class="o">+</span> <span class="n">nearest_y_index</span><span class="p">,</span> <span class="n">nearest_lon</span><span class="p">,</span>
+                                <span class="n">nearest_lat</span><span class="p">,</span> <span class="n">min_dist</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Type doesn&#39;t match [source, source_global]&quot;</span><span class="p">)</span>
+
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Method &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">method</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; is not implemented for regular grid.&quot;</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Method &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">method</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; is not implemented yet.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Point is outside the rank n°&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="n">NotFoundInRankError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">,</span><span class="s2">&quot;Point is outside the rank&quot;</span><span class="p">)</span></div>
+
+    
+    <span class="c1"># Variables</span>
+    <span class="c1">#################</span>
+    <span class="c1"># HYDRO</span>
+    <span class="c1"># 2D</span>
+    <span class="c1">#################</span>
+<div class="viewcode-block" id="Coverage.read_variable_bathymetry">
+<a class="viewcode-back" href="../../../docs/reference/coverage/_generated/spatialetl.coverage.Coverage.read_variable_bathymetry.html#spatialetl.coverage.coverage.Coverage.read_variable_bathymetry">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_variable_bathymetry</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>     
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read the bathymetry over the entire coverage.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array</span>
+<span class="sd">            A two-dimensional array [y, x].</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; bathymetry = coverage.read_variable_bathymetry()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">read_variable_bathymetry</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_x_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_x_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_y_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_y_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">horizontal_resampling</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">resample_2d_to_grid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">read_axis_x</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">,</span> <span class="n">with_overlap</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                                       <span class="bp">self</span><span class="o">.</span><span class="n">read_axis_y</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">,</span> <span class="n">with_overlap</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                                       <span class="bp">self</span><span class="o">.</span><span class="n">read_axis_x</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="n">with_overlap</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                                       <span class="bp">self</span><span class="o">.</span><span class="n">read_axis_y</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="n">with_overlap</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                                       <span class="n">data</span><span class="p">,</span>
+                                       <span class="n">Coverage</span><span class="o">.</span><span class="n">HORIZONTAL_INTERPOLATION_METHOD</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;dst_local_y&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;dst_local_x&quot;</span><span class="p">]]</span></div>
+
+
+<div class="viewcode-block" id="Coverage.read_variable_topography">
+<a class="viewcode-back" href="../../../docs/reference/coverage/_generated/spatialetl.coverage.Coverage.read_variable_topography.html#spatialetl.coverage.coverage.Coverage.read_variable_topography">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_variable_topography</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read the topography over the entire coverage.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array</span>
+<span class="sd">            A two-dimensional array [y, x].</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; topography = coverage.read_variable_topography()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">read_variable_topography</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_x_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_x_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_y_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_y_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">horizontal_resampling</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">resample_2d_to_grid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">read_axis_x</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">,</span> <span class="n">with_overlap</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                                       <span class="bp">self</span><span class="o">.</span><span class="n">read_axis_y</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">,</span> <span class="n">with_overlap</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                                       <span class="bp">self</span><span class="o">.</span><span class="n">read_axis_x</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="n">with_overlap</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                                       <span class="bp">self</span><span class="o">.</span><span class="n">read_axis_y</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="n">with_overlap</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                                       <span class="n">data</span><span class="p">,</span>
+                                       <span class="n">Coverage</span><span class="o">.</span><span class="n">HORIZONTAL_INTERPOLATION_METHOD</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;dst_local_y&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;dst_local_x&quot;</span><span class="p">]]</span></div>
+
+    
+<div class="viewcode-block" id="Coverage.read_variable_mesh_size">
+<a class="viewcode-back" href="../../../docs/reference/coverage/_generated/spatialetl.coverage.Coverage.read_variable_mesh_size.html#spatialetl.coverage.coverage.Coverage.read_variable_mesh_size">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_variable_mesh_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>     
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read the mesh size over the entire coverage.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array</span>
+<span class="sd">            A two-dimensional array [y, x].</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; mesh_size = coverage.read_variable_mesh_size()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">read_variable_mesh_size</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_x_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_x_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_y_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_y_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">horizontal_resampling</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">resample_2d_to_grid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">read_axis_x</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">,</span> <span class="n">with_overlap</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                                       <span class="bp">self</span><span class="o">.</span><span class="n">read_axis_y</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">,</span> <span class="n">with_overlap</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                                       <span class="bp">self</span><span class="o">.</span><span class="n">read_axis_x</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="n">with_overlap</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                                       <span class="bp">self</span><span class="o">.</span><span class="n">read_axis_y</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="n">with_overlap</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                                       <span class="n">data</span><span class="p">,</span>
+                                       <span class="n">Coverage</span><span class="o">.</span><span class="n">HORIZONTAL_INTERPOLATION_METHOD</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;dst_local_y&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;dst_local_x&quot;</span><span class="p">]]</span></div>
+
+
+<div class="viewcode-block" id="Coverage.read_variable_x_mesh_size">
+<a class="viewcode-back" href="../../../docs/reference/coverage/_generated/spatialetl.coverage.Coverage.read_variable_x_mesh_size.html#spatialetl.coverage.coverage.Coverage.read_variable_x_mesh_size">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_variable_x_mesh_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read the mesh size on the x axis.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array</span>
+<span class="sd">            A two-dimensional array [y, x].</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; x_mesh_size = coverage.read_variable_x_mesh_size()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">read_variable_x_mesh_size</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_x_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_x_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_y_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_y_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">horizontal_resampling</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">resample_2d_to_grid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">read_axis_x</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">,</span> <span class="n">with_overlap</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                                       <span class="bp">self</span><span class="o">.</span><span class="n">read_axis_y</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">,</span> <span class="n">with_overlap</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                                       <span class="bp">self</span><span class="o">.</span><span class="n">read_axis_x</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="n">with_overlap</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                                       <span class="bp">self</span><span class="o">.</span><span class="n">read_axis_y</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="n">with_overlap</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                                       <span class="n">data</span><span class="p">,</span>
+                                       <span class="n">Coverage</span><span class="o">.</span><span class="n">HORIZONTAL_INTERPOLATION_METHOD</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;dst_local_y&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;dst_local_x&quot;</span><span class="p">]]</span></div>
+
+
+<div class="viewcode-block" id="Coverage.read_variable_y_mesh_size">
+<a class="viewcode-back" href="../../../docs/reference/coverage/_generated/spatialetl.coverage.Coverage.read_variable_y_mesh_size.html#spatialetl.coverage.coverage.Coverage.read_variable_y_mesh_size">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_variable_y_mesh_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read the mesh size on the y axis.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array</span>
+<span class="sd">            A two-dimensional array [y, x].</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; y_mesh_size = coverage.read_variable_y_mesh_size()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">read_variable_y_mesh_size</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_x_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_x_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_y_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_y_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">horizontal_resampling</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">resample_2d_to_grid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">read_axis_x</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">,</span> <span class="n">with_overlap</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                                       <span class="bp">self</span><span class="o">.</span><span class="n">read_axis_y</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">,</span> <span class="n">with_overlap</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                                       <span class="bp">self</span><span class="o">.</span><span class="n">read_axis_x</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="n">with_overlap</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                                       <span class="bp">self</span><span class="o">.</span><span class="n">read_axis_y</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="n">with_overlap</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                                       <span class="n">data</span><span class="p">,</span>
+                                       <span class="n">Coverage</span><span class="o">.</span><span class="n">HORIZONTAL_INTERPOLATION_METHOD</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;dst_local_y&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;dst_local_x&quot;</span><span class="p">]]</span></div>
+
+    
+<div class="viewcode-block" id="Coverage.read_variable_2D_sea_binary_mask">
+<a class="viewcode-back" href="../../../docs/reference/coverage/_generated/spatialetl.coverage.Coverage.read_variable_2D_sea_binary_mask.html#spatialetl.coverage.coverage.Coverage.read_variable_2D_sea_binary_mask">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_variable_2D_sea_binary_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span><span class="n">with_overlap</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read the land/sea mask over the entire coverage.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        type : str, optional</span>
+<span class="sd">            Type of the grid (&quot;target&quot;, &quot;source&quot;).</span>
+<span class="sd">        with_overlap : bool, optional</span>
+<span class="sd">            Whether to include overlap.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array</span>
+<span class="sd">            A two-dimensional array [y, x].</span>
+<span class="sd">            0 = Land</span>
+<span class="sd">            1 = Sea</span>
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; mask = coverage.read_variable_2D_sea_binary_mask()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">read_variable_2D_sea_binary_mask</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_x_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_x_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_y_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_y_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;source&quot;</span> <span class="ow">and</span> <span class="n">with_overlap</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_local_y_overlap&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_local_x_overlap&quot;</span><span class="p">]]</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;source&quot;</span> <span class="ow">and</span> <span class="n">with_overlap</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_local_y&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_local_x&quot;</span><span class="p">]]</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;target&quot;</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">horizontal_resampling</span><span class="p">:</span>
+
+                <span class="n">data</span> <span class="o">=</span> <span class="n">resample_2d_to_grid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">read_axis_x</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">,</span> <span class="n">with_overlap</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                                           <span class="bp">self</span><span class="o">.</span><span class="n">read_axis_y</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">,</span> <span class="n">with_overlap</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                                           <span class="bp">self</span><span class="o">.</span><span class="n">read_axis_x</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="n">with_overlap</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                                           <span class="bp">self</span><span class="o">.</span><span class="n">read_axis_y</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="n">with_overlap</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                                           <span class="n">data</span><span class="p">,</span>
+                                           <span class="n">Coverage</span><span class="o">.</span><span class="n">HORIZONTAL_INTERPOLATION_METHOD</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;dst_local_y&quot;</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;dst_local_x&quot;</span><span class="p">]]</span></div>
+
+
+<div class="viewcode-block" id="Coverage.read_variable_Ha">
+<a class="viewcode-back" href="../../../docs/reference/coverage/_generated/spatialetl.coverage.Coverage.read_variable_Ha.html#spatialetl.coverage.coverage.Coverage.read_variable_Ha">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_variable_Ha</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read the amplitude of the reanalysis.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array</span>
+<span class="sd">            A two-dimensional array [y, x].</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; Ha = coverage.read_variable_Ha()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">read_variable_Ha</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_x_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_x_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_y_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;src_global_y_overlap&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">horizontal_resampling</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">resample_2d_to_grid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">read_axis_x</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">,</span> <span class="n">with_overlap</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                                       <span class="bp">self</span><span class="o">.</span><span class="n">read_axis_y</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">,</span> <span class="n">with_overlap</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                                       <span class="bp">self</span><span class="o">.</span><span class="n">read_axis_x</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="n">with_overlap</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                                       <span class="bp">self</span><span class="o">.</span><span class="n">read_axis_y</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="n">with_overlap</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                                       <span class="n">data</span><span class="p">,</span>
+                                       <span class="n">Coverage</span><span class="o">.</span><span class="n">HORIZONTAL_INTERPOLATION_METHOD</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;dst_local_y&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_mpi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">][</span><span class="s2">&quot;dst_local_x&quot;</span><span class="p">]]</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, SNALE.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

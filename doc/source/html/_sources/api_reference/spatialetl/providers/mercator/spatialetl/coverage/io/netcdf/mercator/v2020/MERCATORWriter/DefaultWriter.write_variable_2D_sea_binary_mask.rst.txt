@@ -1,0 +1,4 @@
+write_variable_2D_sea_binary_mask
+=================================
+
+.. py:method:: spatialetl.providers.mercator.spatialetl.coverage.io.netcdf.mercator.v2020.MERCATORWriter.DefaultWriter.write_variable_2D_sea_binary_mask()

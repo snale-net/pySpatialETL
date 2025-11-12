@@ -1,0 +1,70 @@
+spatialetl.coverage.io.netcdf.symphonie.OASISReader.OASISReader
+===============================================================
+
+.. py:class:: spatialetl.coverage.io.netcdf.symphonie.OASISReader.OASISReader(myGrid, myFile)
+
+   Bases: :py:obj:`spatialetl.coverage.io.CoverageReader.CoverageReader`
+
+
+   La classe SymphonieReader permet de lire les données du format Symphonie
+
+   @param  myGrid : lien vers le fichier de grille (que l'on trouve dans le RDIR/tmp/grid.nc)
+   @param myFile : lien vers le fichier de données (d'après le namecouple)
+
+
+   .. py:method:: close()
+
+
+   .. py:method:: read_axis_t(timestamp=0)
+
+
+   .. py:method:: read_axis_x()
+
+
+   .. py:method:: read_axis_y()
+
+
+   .. py:method:: read_variable_2D_mask()
+
+
+   .. py:method:: read_variable_Ha()
+
+
+   .. py:method:: read_variable_bathy_ssh_at_time(t)
+
+
+   .. py:method:: read_variable_bathymetry()
+
+
+   .. py:method:: read_variable_hs_at_time(t)
+
+
+   .. py:method:: read_variable_salinity_at_time_and_depth(index_t, index_z, depth, method='nearest')
+
+
+   .. py:method:: read_variable_ssh_at_time(t)
+
+
+   .. py:method:: read_variable_surface_stokes_drift_at_time(index_t)
+
+
+   .. py:method:: read_variable_taw_at_time(index_t)
+
+
+   .. py:method:: read_variable_two_at_time(index_t)
+
+
+   .. py:method:: read_variable_waves_dir_at_time(index_t)
+
+
+   .. py:method:: read_variable_waves_mean_period_at_time(t)
+
+
+   .. py:method:: read_variable_wetmask_at_time(t)
+
+
+   .. py:attribute:: grid
+
+
+   .. py:attribute:: ncfile
+

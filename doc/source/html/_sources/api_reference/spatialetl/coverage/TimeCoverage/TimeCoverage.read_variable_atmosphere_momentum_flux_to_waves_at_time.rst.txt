@@ -1,0 +1,10 @@
+read_variable_atmosphere_momentum_flux_to_waves_at_time
+=======================================================
+
+.. py:method:: spatialetl.coverage.TimeCoverage.TimeCoverage.read_variable_atmosphere_momentum_flux_to_waves_at_time(t)
+
+   Retourne la composante u du tau atmosphere->vagues à la date souhaitée sur toute la couverture horizontale.
+   @type t: datetime ou l'index
+   @param t: date souhaitée
+   @return: un tableau en deux dimensions [y,x].
+

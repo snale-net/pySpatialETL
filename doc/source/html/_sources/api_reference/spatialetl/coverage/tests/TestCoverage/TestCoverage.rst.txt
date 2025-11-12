@@ -1,0 +1,18 @@
+Class TestCoverage
+==================
+
+.. currentmodule:: spatialetl.coverage
+
+
+Overview
+--------
+.. autoclass:: TestCoverage
+   :noindex:
+   :show-inheritance:
+
+Constructor
+-----------
+.. automethod:: TestCoverage.__init__
+   :noindex:
+
+

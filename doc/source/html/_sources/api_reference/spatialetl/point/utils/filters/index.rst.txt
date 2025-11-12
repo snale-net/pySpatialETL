@@ -1,0 +1,21 @@
+spatialetl.point.utils.filters
+==============================
+
+.. py:module:: spatialetl.point.utils.filters
+
+
+Functions
+---------
+
+.. toctree::
+   :hidden:
+
+   /api_reference/spatialetl/point/utils/filters/butter_lowpass
+   /api_reference/spatialetl/point/utils/filters/butter_lowpass_filter
+
+.. autoapisummary::
+
+   spatialetl.point.utils.filters.butter_lowpass
+   spatialetl.point.utils.filters.butter_lowpass_filter
+
+

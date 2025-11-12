@@ -1,0 +1,153 @@
+SerafinHeader
+=============
+
+.. py:module:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader
+
+.. autoapi-nested-parse::
+
+   !
+   @brief: Data type for reading and storing the Serafin file header
+
+   # Attributes:
+   ## Sizes
+   - file_size <int>: total file size
+   - header_size <int>: size taken by header only (set by `_set_header_size`)
+   - frame_size <int>: size taken by a single frame (set by `_set_frame_size`)
+
+   ## Float precision: simple or double precision
+       (attributes are set by `_set_as_single_precision` or `_set_as_double_precision`)
+   - float_type <str>: 'f' or 'd'
+   - float_size <int>: 4 or 8
+   - np_float_type: np.float32 or np.float64
+
+   - endian <str>: file endianness ('>' = big-endian, '<' = little-endian)
+
+   - title <bytes:72>: title of the simulation
+   - file_format <bytes:8>: file format type (e.g. b'SERAFIN ')
+   - language <str>: language for variables ('fr' or 'en')
+
+   - is_2d <bool>: True in 2D else False
+   - has_knolg <bool>: True if ipobo is replaced by KNOLG array
+   - date <[int]>: list with 6 integers (year, month, day, hour, minute and second) or None if not available
+   - nb_frames <int>: number of frames
+
+   - nb_var <int>: number of variables
+   - nb_var_quadratic <int>: ?
+   - nb_nodes_per_elem <int>: number of nodes per element
+   - nb_planes <int>: number of layers (should be 0 in 2D)
+
+   - var_IDs <[str]>: variable identifiers
+   - var_names <[str]>: variable names
+   - var_units <[str]>: variable units
+
+   - params <(int)>: tuple of 10 integer parameters
+   - nb_elements <int>: number of 3D elements
+   - nb_nodes <int>: number of 3D nodes
+   - nb_nodes_per_elem <int>: number of nodes per element (= 3 in 2D and 6 in 3D)
+   - nb_nodes_2d <int>: number of 2D nodes (equals to `nb_nodes` in 2D)
+
+   - mesh_origin <(float, float)>: x and y shift to apply to written coordinates (set by `set_mesh_origin`)
+   - x_stored <numpy.1D-array>: east written coordinates [shape = nb_nodes]
+   - y_stored <numpy.1D-array>: north written coordinates [shape = nb_nodes]
+   - x <numpy.1D-array>: east coordinates [shape = nb_nodes] (set by `_compute_mesh_coordinates`)
+   - y <numpy.1D-array>: north coordinates [shape = nb_nodes] (set by `_compute_mesh_coordinates`)
+   - ikle <numpy.1D-array>: connectivity table with 1-indexed nodes number [shape = nb_nodes_per_elem * nb_elements]
+   - ikle_2d <numpy.2D-array>: reshaped connectivity table
+       [shape = (nb_elements, nb_nodes_per_elem)] (set by `_build_ikle_2d`)
+   - ipobo <numpy.1D-array>: array with 0 values for inner nodes and 1-indexed node number for boundary nodes
+       [shape = nb_nodes]
+
+
+Constructor
+-----------
+
+.. autoapimethod:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.__init__
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.file_size
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.header_size
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.frame_size
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.float_type
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.float_size
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.np_float_type
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.endian
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.title
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.file_format
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.language
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.is_2d
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.has_knolg
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.date
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.nb_var
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.nb_var_quadratic
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.nb_planes
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.nb_frames
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.var_IDs
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.var_names
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.var_units
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.params
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.nb_elements
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.nb_nodes
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.nb_nodes_per_elem
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.nb_nodes_2d
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.mesh_origin
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.x_stored
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.y_stored
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.x
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.y
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.ikle
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.ikle_2d
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.ipobo
+
+Methods
+-------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._check_dim
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._set_file_format_and_precision
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._set_has_knolg
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._build_ikle_2d
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._set_as_single_precision
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._set_as_double_precision
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.unpack_int
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.unpack_float
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.pack_int
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.pack_float
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.toggle_endianness
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._compute_mesh_coordinates
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._set_header_size
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._set_frame_size
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._expected_file_size
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.summary
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.copy
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.copy_as_2d
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.copy_as_3d
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.nearest_node
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.same_2d_mesh
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.is_double_precision
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.to_single_precision
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.empty_variables
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.add_variable
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.add_variable_str
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.add_variable_from_ID
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.set_mesh_origin
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.set_variables
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.iter_on_all_variables
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.transform_mesh_copy
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.transform_mesh
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.get_all_edges
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.get_external_edges
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.iter_on_boundaries
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.build_ipobo
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._set_as_2d
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.from_triangulation
+   spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.from_file
+

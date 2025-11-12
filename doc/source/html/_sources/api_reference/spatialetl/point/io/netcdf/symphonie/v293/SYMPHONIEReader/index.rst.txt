@@ -1,0 +1,19 @@
+spatialetl.point.io.netcdf.symphonie.v293.SYMPHONIEReader
+=========================================================
+
+.. py:module:: spatialetl.point.io.netcdf.symphonie.v293.SYMPHONIEReader
+
+
+Classes
+-------
+
+.. toctree::
+   :hidden:
+
+   /api_reference/spatialetl/point/io/netcdf/symphonie/v293/SYMPHONIEReader/SYMPHONIEReader
+
+.. autoapisummary::
+
+   spatialetl.point.io.netcdf.symphonie.v293.SYMPHONIEReader.SYMPHONIEReader
+
+

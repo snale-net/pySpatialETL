@@ -1,0 +1,15 @@
+spatialetl.providers.snale
+==========================
+
+.. py:module:: spatialetl.providers.snale
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /api_reference/spatialetl/providers/snale/spatialetl/index
+
+

@@ -1,0 +1,4 @@
+__getattr__
+===========
+
+.. py:method:: spatialetl.utils.bing.core.ogr2ogr.Enum.__getattr__(name)

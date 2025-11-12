@@ -1,0 +1,15 @@
+spatialetl.providers.mercator.spatialetl.coverage.io
+====================================================
+
+.. py:module:: spatialetl.providers.mercator.spatialetl.coverage.io
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /api_reference/spatialetl/providers/mercator/spatialetl/coverage/io/netcdf/index
+
+

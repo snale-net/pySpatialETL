@@ -1,0 +1,4 @@
+read_axis_x
+===========
+
+.. py:method:: spatialetl.providers.ww3.spatialetl.point.io.netcdf.ww3.WW3Reader.WW3Reader.read_axis_x()

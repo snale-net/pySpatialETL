@@ -1,0 +1,4 @@
+Usage
+=====
+
+.. py:function:: spatialetl.utils.bing.core.ogr2ogr.Usage()

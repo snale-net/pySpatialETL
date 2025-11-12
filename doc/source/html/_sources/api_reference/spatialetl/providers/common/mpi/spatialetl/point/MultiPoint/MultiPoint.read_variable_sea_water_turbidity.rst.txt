@@ -1,0 +1,4 @@
+read_variable_sea_water_turbidity
+=================================
+
+.. py:method:: spatialetl.providers.common.mpi.spatialetl.point.MultiPoint.MultiPoint.read_variable_sea_water_turbidity()

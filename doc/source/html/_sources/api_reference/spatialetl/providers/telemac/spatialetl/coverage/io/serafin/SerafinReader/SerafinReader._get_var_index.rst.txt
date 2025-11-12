@@ -1,0 +1,10 @@
+_get_var_index
+==============
+
+.. py:method:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader._get_var_index(var_ID)
+
+   !
+   @brief Handle data request by variable ID
+   @param var_ID <str>: the ID of the requested variable
+   @return index <int> the index of the frame (0-based)
+

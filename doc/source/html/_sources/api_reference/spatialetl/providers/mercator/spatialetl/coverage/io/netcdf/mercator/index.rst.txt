@@ -1,0 +1,25 @@
+spatialetl.providers.mercator.spatialetl.coverage.io.netcdf.mercator
+====================================================================
+
+.. py:module:: spatialetl.providers.mercator.spatialetl.coverage.io.netcdf.mercator
+
+.. autoapi-nested-parse::
+
+   ==================================
+   NetCDF MERCATOR (:mod:`coverage.io.netcdf.mercator`)
+   ==================================
+
+   .. currentmodule:: coverage.io.netcdf.mercator
+
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /api_reference/spatialetl/providers/mercator/spatialetl/coverage/io/netcdf/mercator/v2015/index
+   /api_reference/spatialetl/providers/mercator/spatialetl/coverage/io/netcdf/mercator/v2020/index
+
+

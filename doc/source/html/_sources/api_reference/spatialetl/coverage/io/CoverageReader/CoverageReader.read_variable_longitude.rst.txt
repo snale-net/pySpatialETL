@@ -1,0 +1,6 @@
+read_variable_longitude
+=======================
+
+.. py:method:: spatialetl.coverage.io.CoverageReader.CoverageReader.read_variable_longitude(xmin, xmax, ymin, ymax)
+   :abstractmethod:
+

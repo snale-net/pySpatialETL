@@ -1,0 +1,4 @@
+path_leaf
+=========
+
+.. py:function:: spatialetl.utils.path.path_leaf(path)

@@ -1,0 +1,12 @@
+create_mpi_map
+==============
+
+.. py:method:: spatialetl.coverage.TimeCoverage.TimeCoverage.create_mpi_map()
+
+   Create the MPI map for parallel processing.
+   The MPI map is a dictionary that contains the mapping of the source and destination grids for each MPI rank.
+
+   .. rubric:: Examples
+
+   >>> coverage.create_mpi_map()
+

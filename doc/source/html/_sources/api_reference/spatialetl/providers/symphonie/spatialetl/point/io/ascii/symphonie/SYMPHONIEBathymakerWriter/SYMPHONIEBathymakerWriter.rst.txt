@@ -1,0 +1,28 @@
+SYMPHONIEBathymakerWriter
+=========================
+
+.. py:module:: spatialetl.providers.symphonie.spatialetl.point.io.ascii.symphonie.SYMPHONIEBathymakerWriter.SYMPHONIEBathymakerWriter
+Constructor
+-----------
+
+.. autoapimethod:: spatialetl.providers.symphonie.spatialetl.point.io.ascii.symphonie.SYMPHONIEBathymakerWriter.SYMPHONIEBathymakerWriter.__init__
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.providers.symphonie.spatialetl.point.io.ascii.symphonie.SYMPHONIEBathymakerWriter.SYMPHONIEBathymakerWriter.data
+
+Methods
+-------
+
+.. autoapisummary::
+    :nosignatures:
+
+   spatialetl.providers.symphonie.spatialetl.point.io.ascii.symphonie.SYMPHONIEBathymakerWriter.SYMPHONIEBathymakerWriter.close
+   spatialetl.providers.symphonie.spatialetl.point.io.ascii.symphonie.SYMPHONIEBathymakerWriter.SYMPHONIEBathymakerWriter.write_variable_bathymetry
+

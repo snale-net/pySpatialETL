@@ -1,0 +1,4 @@
+read_variable_sea_surface_height_above_sea_level_at_time
+========================================================
+
+.. py:method:: spatialetl.providers.mercator.spatialetl.coverage.io.netcdf.mercator.v2015.MERCATORReader.MERCATORReader.read_variable_sea_surface_height_above_sea_level_at_time(t, xmin, xmax, ymin, ymax)

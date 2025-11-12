@@ -1,0 +1,12 @@
+update_mpi_map
+==============
+
+.. py:method:: spatialetl.coverage.TimeCoverage.TimeCoverage.update_mpi_map()
+
+   Update the MPI map for parallel processing.
+       This method recalculates the source and overlap slices for each process based on the current grid.
+
+   .. rubric:: Examples
+
+   >>> coverage.update_mpi_map()
+

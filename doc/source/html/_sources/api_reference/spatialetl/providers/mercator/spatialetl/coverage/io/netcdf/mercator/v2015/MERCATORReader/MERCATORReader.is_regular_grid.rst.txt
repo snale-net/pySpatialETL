@@ -1,0 +1,4 @@
+is_regular_grid
+===============
+
+.. py:method:: spatialetl.providers.mercator.spatialetl.coverage.io.netcdf.mercator.v2015.MERCATORReader.MERCATORReader.is_regular_grid()

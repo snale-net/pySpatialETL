@@ -1,0 +1,7 @@
+_set_frame_size
+===============
+
+.. py:method:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._set_frame_size()
+
+   Set frame size (all variable values for one time step)
+

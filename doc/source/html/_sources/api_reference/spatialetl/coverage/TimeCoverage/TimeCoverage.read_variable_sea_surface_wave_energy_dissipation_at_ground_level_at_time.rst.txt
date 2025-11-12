@@ -1,0 +1,10 @@
+read_variable_sea_surface_wave_energy_dissipation_at_ground_level_at_time
+=========================================================================
+
+.. py:method:: spatialetl.coverage.TimeCoverage.TimeCoverage.read_variable_sea_surface_wave_energy_dissipation_at_ground_level_at_time(t)
+
+   Retourne la l'énergie des vagues dissipée par le fond à la date souhaitée sur toute la couverture horizontale.
+   @type t: datetime ou l'index
+   @param t: date souhaitée
+   @return: un tableau en deux dimensions [y,x].
+

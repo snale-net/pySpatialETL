@@ -1,0 +1,4 @@
+get_y_size
+==========
+
+.. py:method:: spatialetl.providers.gmt.spatialetl.coverage.io.netcdf.gmt.GMTReader.GMTReader.get_y_size()
