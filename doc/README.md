@@ -1,121 +1,213 @@
-Sphinx Installation and Documentation Deployment
-Requirements
-Python 3.9
-1️⃣ Create and Activate a Virtual Environment
-python -m venv .venv
-source .venv/bin/activate
-2️⃣ Navigate to the doc Folder 📂
+# Sphinx Documentation - pySpatialETL
+
+Technical guide for generating pySpatialETL documentation using Sphinx.
+
+## Prerequisites
+
+- **UV installed** (see [UV documentation](https://docs.astral.sh/uv/))
+- pySpatialETL project cloned with UV environment configured
+
+> **Note**: This guide uses UV commands (`uv run make html`). If you're not using UV,
+> replace `uv run make` with standard `make` commands.
+
+## Quick documentation generation
+
+### 1️⃣ From project root
+```bash
+cd pySpatialETL
+```
+
+### 2️⃣ Navigate to `doc` folder
+```bash
 cd doc
-3️⃣ Install Sphinx and Required Extensions
-pip install -r requirements.txt
-The following extensions are used:
+```
 
-sphinx==7.4
-sphinx-autoapi~=3.6 → Automatically generates documentation from source code.
-sphinx-rtd-theme~=3.0 → Applies the Read the Docs theme, widely used for Python documentation.
-4️⃣ Generate Documentation
-📌 Build the Documentation in HTML
-Inside the doc folder, run:
+### 3️⃣ Generate HTML documentation
+```bash
+uv run make html
+```
 
-make html
-🎯 Once the generation is complete, open doc/build/html/index.html in a browser to view the documentation.
-To regenerate it, use:
+### 4️⃣ View the result
 
-make clean && make html
-1️⃣PS: Initial Setup
-🛠️ Configuration Command (from doc folder)
-sphinx-quickstart
-Configuration Steps:
+Open `doc/build/html/index.html` in your browser.
 
-Separate source and build directories? → Y (Yes)
-Project name: → pySpatialETL
-Author name(s): → SNALE
-Project version: → 0.1
-Project language: → (leave empty, defaults to en)
-After this setup, Sphinx generates the following structure:
+### 🔄 Complete rebuild
 
-📂 doc/                # Root folder for documentation
-├── 📂 source/         # Contains documentation source files
-│   ├── 📄 conf.py        # Main configuration file (project settings, extensions, etc.)
-│   ├── 📄 index.rst      # Main index file (homepage of documentation)
-│   ├── 📂 _static/       # Folder for static files (CSS, images, etc.)
-│   └── 📂 _templates/    # Folder for custom templates
-├── 📂 build/          # Stores generated documentation (HTML, LaTeX, etc.)
-├── 📄 Makefile        # Build file for Linux/macOS
-└── 📄 make.bat        # Build file for Windows
-2️⃣ Define Project Information
-Inside conf.py, define project metadata:
+To force a full reconstruction:
+```bash
+uv run make clean && uv run make html
+```
 
-from datetime import datetime
-project = 'pySpatialETL'
-copyright = f'{datetime.now().year}, SNALE'
-author = 'SNALE'
-release = '0.1'
-3️⃣ Configure Project Path
-import os
-import sys
-sys.path.insert(0, os.path.abspath("../.."))
-This adds the project's root directory to sys.path, allowing Sphinx to locate the source code for documentation.
+---
 
-4️⃣ Enabled Extensions
-The project uses multiple extensions to enhance documentation:
+## Documentation project structure
+```
+doc/
+├── source/              # Documentation source files
+│   ├── conf.py         # Sphinx configuration (extensions, theme, paths)
+│   ├── index.rst       # Documentation homepage
+│   ├── docs/           # User and developer documentation
+│   ├── _static/        # Custom CSS files, images
+│   └── _templates/     # Custom templates (autoapi, etc.)
+├── build/              # Generated documentation (HTML, PDF, etc.)
+│   └── html/           # HTML version of documentation
+├── Makefile            # Build commands (Linux/macOS)
+├── make.bat            # Build commands (Windows)
+└── requirements.txt    # Sphinx dependencies (sphinx, autoapi, rtd-theme)
+```
 
+**Important**: The `build/` directory should **never** be committed to Git (see `.gitignore`).
+
+---
+
+## Sphinx Configuration (`conf.py`)
+
+### Enabled extensions
+```python
 extensions = [
-'autoapi.extension',
-'sphinx.ext.autodoc',
-'sphinx.ext.napoleon',
-'sphinx.ext.viewcode',
-'sphinx_rtd_theme',
-'sphinx.ext.autosummary',
+    'autoapi.extension',       # Automatically generate API documentation
+    'sphinx.ext.autodoc',      # Extract docstrings
+    'sphinx.ext.napoleon',     # Support Google/NumPy docstrings
+    'sphinx.ext.viewcode',     # Links to source code
+    'sphinx_rtd_theme',        # Read The Docs theme
+    'sphinx_design',           # Design elements (buttons, grids)
 ]
-autoapi.extension: Automatically generates API documentation.
-sphinx.ext.autodoc: Extracts docstrings from Python code.
-sphinx.ext.napoleon: Supports Google and NumPy docstring formats.
-sphinx.ext.viewcode: Adds links to the source code within the documentation.
-sphinx_rtd_theme: Applies the Read The Docs theme.
-sphinx.ext.autosummary: Generates automatic summaries of modules and classes.
-5️⃣ AutoAPI Configuration
-AutoAPI is used to automatically generate module documentation:
+```
 
+### AutoAPI Configuration
+
+AutoAPI automatically generates API documentation from source code.
+
+**Standard configuration**:
+```python
 autoapi_generate_api_docs = True
-autoapi_dirs = ["../../spatialetl"]
+autoapi_dirs = [
+    # Core package
+    "../../spatialetl-core/spatialetl",
+
+    # Common providers
+    "../../providers/common/gdal/spatialetl",
+    "../../providers/common/grib/spatialetl",
+    "../../providers/common/mpi/spatialetl",
+    "../../providers/common/netcdf/spatialetl",
+
+    # Data source providers
+    "../../providers/ecmwf/spatialetl",
+    "../../providers/gmt/spatialetl",
+    "../../providers/hycom/spatialetl",
+    "../../providers/mercator/spatialetl",
+    "../../providers/meteofrance/spatialetl",
+    "../../providers/swan/spatialetl",
+    "../../providers/symphonie/spatialetl",
+    "../../providers/telemac/spatialetl",
+    "../../providers/ww3/spatialetl",
+]
 autoapi_root = "api_reference"
 autoapi_keep_files = True
 autoapi_options = [
-"members",
-"undoc-members",
-"private-members",
-"show-inheritance",
-"show-module-summary",
-"special-members",
+    "members",
+    "undoc-members",
+    "private-members",
+    "show-inheritance",
+    "show-module-summary",
+    "special-members",
 ]
-autoapi_generate_api_docs: Enables automatic documentation generation.
-autoapi_dirs: Defines the directory containing source code to be documented.
-autoapi_root: Directory where the API documentation will be generated.
-autoapi_keep_files: Keeps generated files for review.
-autoapi_options: Customizes the documentation output.
-6️⃣ Theme and Static File Configuration
+```
+
+### File exclusion
+```python
+exclude_patterns = [
+    '_build',
+    'build',
+    '**/tests/*'
+]
+```
+
+These patterns prevent Sphinx from processing generated files or tests.
+
+---
+
+## AutoAPI Templates Customization
+
+The project uses custom AutoAPI templates located in `source/_templates/autoapi/`.
+
+### Template structure
+```
+_templates/autoapi/
+├── index.rst           # Main API reference index page
+├── macros.rst          # Reusable Jinja2 macros
+└── python/             # Python-specific templates
+    ├── attribute.rst   # Attribute documentation
+    ├── class.rst       # Class documentation
+    ├── data.rst        # Data/constants documentation
+    ├── exception.rst   # Exception documentation
+    ├── function.rst    # Function documentation
+    ├── method.rst      # Method documentation
+    ├── module.rst      # Module documentation
+    ├── package.rst     # Package documentation
+    └── property.rst    # Property documentation
+```
+
+### How it works
+
+AutoAPI uses these templates to generate documentation in `source/api_reference/`.
+The templates use Jinja2 syntax and can access object metadata (names, docstrings, signatures, etc.).
+
+### Modifying templates
+
+To customize the API documentation appearance:
+1. Edit the relevant `.rst` template in `source/_templates/autoapi/python/`
+2. Rebuild documentation: `uv run make clean && uv run make html`
+3. Check the result in `build/html/api_reference/`
+
+---
+
+## Project metadata
+
+In `conf.py`:
+```python
+from datetime import datetime
+
+project = 'SpatialETL documentation'
+copyright = f'{datetime.now().year}, SNALE'
+author = 'SNALE'
+release = '0.1'
+```
+
+---
+
+## Theme and customization
+
+### Read The Docs Theme
+```python
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
-html_theme: Applies the Read The Docs theme.
-html_static_path: Directory for static files.
-7️⃣ Index File Structure (index.rst)
-The index.rst file serves as the homepage and includes:
+html_css_files = ['custom.css']
+```
 
-Welcome to pySpatialETL documentation!
-======================================================
+The `source/_static/custom.css` file allows adding custom styles.
 
-.. toctree::
-:maxdepth: 2
-:caption: Contents:
+---
 
-Indices and tables
-==================
+## Homepage structure (`index.rst`)
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-  toctree: Defines the table of contents.
-  genindex: Adds a general index.
-  modindex: Adds a module index.
-  search: Enables a search function.
+The `source/index.rst` file defines the navigation structure.
+
+---
+
+## Useful commands
+
+| Command | Description |
+|---------|-------------|
+| `uv run make html` | Generate HTML documentation |
+| `uv run make clean` | Remove generated files |
+| `uv run make clean && uv run make html` | Clean and regenerate |
+| `uv run make linkcheck` | Check external links |
+
+## Resources
+
+- [Official Sphinx Documentation](https://www.sphinx-doc.org/)
+- [Sphinx AutoAPI](https://sphinx-autoapi.readthedocs.io/)
+- [reStructuredText Primer](https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html)
+- [Read The Docs Theme](https://sphinx-rtd-theme.readthedocs.io/)
+- [UV Documentation](https://docs.astral.sh/uv/)
