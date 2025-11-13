@@ -17,12 +17,6 @@ The SpatialETL documentation is organized into main sections:
 - :doc:`Examples <docs/example>`: real-world usage examples and tutorials
 - :doc:`API Reference <docs/reference>`: technical reference for modules, classes, and functions
 
-.. container:: button-grid
-
-   .. button-link:: docs/developer_setup.html
-      :color: primary
-
-      Developer Setup
 
    .. button-link:: docs/user_guide.html
       :color: primary

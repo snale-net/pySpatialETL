@@ -23,7 +23,7 @@ exclude_patterns = ["**/tests/*"]
 
 # -- AutoAPI configuration ---------------------------------------------------
 autoapi_generate_api_docs = True
-autoapi_dirs = ["../../spatialetl"]
+autoapi_dirs = ["../../spatialetl-core/spatialetl"]
 autoapi_root = "api_reference"
 autoapi_keep_files = True  # Keep generated .rst files
 autoapi_add_toctree_entry = False  # Do not auto-inject into the toctree (manual control)
