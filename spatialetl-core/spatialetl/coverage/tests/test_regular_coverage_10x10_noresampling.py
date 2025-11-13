@@ -29,8 +29,8 @@ from spatialetl.coverage.coverage import Coverage
 from spatialetl.coverage.io.memory_reader import MemoryReader
 from spatialetl.utils.logger import logging
 
-y_size=5
-x_size=5
+y_size=10
+x_size=10
 data =np.zeros([y_size, x_size])
 np.fill_diagonal(data, 2)
 x_axis = np.arange(0,x_size)

@@ -32,7 +32,7 @@ class MemoryReader (CoverageReader):
         self.bathy = bathy
 
     def is_regular_grid(self):
-        return True
+        return True if len(np.shape(self.x)) == 1 else False
 
     def get_x_size(self):
         return np.shape(self.x)[0];

@@ -26,6 +26,7 @@ import concurrent
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 
 import os
+from importlib.util import find_spec
 
 import numpy as np
 from array_split import shape_split
@@ -38,7 +39,8 @@ from spatialetl.coverage.io.coverage_writer import CoverageWriter
 from spatialetl.exception.coverage_error import CoverageError
 from spatialetl.utils.variable_definition import VariableDefinition
 from spatialetl.utils.logger import logging
-
+mpi_lib = find_spec("mpi4py")
+MPI_FOUND = mpi_lib is not None
 
 class DefaultWriter(CoverageWriter):
 
@@ -359,7 +361,6 @@ class DefaultWriter(CoverageWriter):
                  self.coverage.get_x_size(type="target_global")])
             global_data[:] = np.nan
 
-        NUM_WORKERS = os.cpu_count()
         local_data = np.empty(
                 [self.coverage.get_y_size(type="target_local"),
                  self.coverage.get_x_size(type="target_local")])
@@ -370,31 +371,32 @@ class DefaultWriter(CoverageWriter):
             coverage.threading_map[coverage.rank][current_thread]["dst_global_x"]] = coverage.read_variable_bathymetry(
                 current_thread)
 
-        NUM_WORKERS = os.cpu_count()
         futures = []
-        with ProcessPoolExecutor(max_workers=NUM_WORKERS) as executor:
-            for i in range(0, NUM_WORKERS):
+        with ProcessPoolExecutor(max_workers=self.coverage.nb_thread) as executor:
+            for i in range(0, self.coverage.nb_thread):
                 futures.append(executor.submit(gathering_data(self.coverage, i)))
 
         futures, _ = concurrent.futures.wait(futures)
 
-        if self.coverage.rank != 0:
+        if MPI_FOUND and self.coverage.rank != 0:
             self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
         else:
             # Pour le proc n°1
             global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
                         self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data
 
-            # Pour les autres
-            for source in range(1, self.coverage.size):
-                recvbuf = np.empty([self.coverage.map_mpi[source]["dst_local_y_size"],
-                                    self.coverage.map_mpi[source]["dst_local_x_size"]])
-                self.coverage.comm.Recv(recvbuf, source=source)
+            if MPI_FOUND:
+                # Pour les autres
+                for source in range(1, self.coverage.size):
+                    recvbuf = np.empty([self.coverage.map_mpi[source]["dst_local_y_size"],
+                                        self.coverage.map_mpi[source]["dst_local_x_size"]])
+                    self.coverage.comm.Recv(recvbuf, source=source)
 
-                global_data[self.coverage.map_mpi[source]["dst_global_y"],
-                            self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf
+                    global_data[self.coverage.map_mpi[source]["dst_global_y"],
+                                self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf
 
-        #self.coverage.comm.barrier()
+        if self.coverage.comm:
+            self.coverage.comm.barrier()
 
         if self.coverage.rank == 0:
 

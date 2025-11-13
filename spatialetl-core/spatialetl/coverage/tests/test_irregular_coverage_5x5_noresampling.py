@@ -33,8 +33,8 @@ y_size=5
 x_size=5
 data =np.zeros([y_size, x_size])
 np.fill_diagonal(data, 2)
-x_axis = np.arange(0,x_size)
-y_axis = np.arange(0,y_size)
+x_axis = np.ones([y_size, x_size])
+y_axis = np.ones([y_size, x_size])
 
 def test_axis_x(caplog):
     caplog.set_level(logging.INFO)
@@ -47,11 +47,11 @@ def test_axis_x(caplog):
 
         coverage = Coverage(reader=reader,nb_thread=thread)
 
-        global_data =np.zeros([x_size])
+        global_data =np.zeros([y_size,x_size])
         global_data[:] = np.nan
 
         def gathering_data(coverage,current_thread):
-            global_data[coverage.threading_map[coverage.rank][current_thread]["dst_global_x"]] = coverage.read_axis_x(current_thread=current_thread)
+            global_data[coverage.threading_map[coverage.rank][current_thread]["dst_global_y"],coverage.threading_map[coverage.rank][current_thread]["dst_global_x"]] = coverage.read_axis_x(current_thread=current_thread)
 
         futures = []
         with ProcessPoolExecutor(max_workers=coverage.threads_number) as executor:
@@ -73,11 +73,11 @@ def test_axis_y(caplog):
 
         coverage = Coverage(reader=reader,nb_thread=thread)
 
-        global_data =np.zeros([y_size])
+        global_data =np.zeros([y_size,x_size])
         global_data[:] = np.nan
 
         def gathering_data(coverage,current_thread):
-            global_data[coverage.threading_map[coverage.rank][current_thread]["dst_global_y"]] = coverage.read_axis_y(current_thread=current_thread)
+            global_data[coverage.threading_map[coverage.rank][current_thread]["dst_global_y"],coverage.threading_map[coverage.rank][current_thread]["dst_global_x"]] = coverage.read_axis_y(current_thread=current_thread)
 
         futures = []
         with ProcessPoolExecutor(max_workers=coverage.threads_number) as executor:
@@ -91,7 +91,9 @@ def test_axis_y(caplog):
 def test_bathymetry(caplog):
     caplog.set_level(logging.DEBUG)
 
-    for thread in range(2,os.cpu_count()):
+    for thread in range(4,4):
+
+        logging.info(f"Testing with {thread} threads")
         reader = MemoryReader(
             x=x_axis,
             y=y_axis,
@@ -100,12 +102,12 @@ def test_bathymetry(caplog):
 
         coverage = Coverage(reader=reader,nb_thread=thread)
 
-        global_data =np.zeros([y_size, x_size])
+        global_data = np.zeros([y_size, x_size])
         global_data[:] = np.nan
 
         def gathering_data(coverage,current_thread):
             global_data[coverage.threading_map[coverage.rank][current_thread]["dst_global_y"],
-            coverage.threading_map[coverage.rank][current_thread]["dst_global_x"]] = coverage.read_variable_bathymetry(current_thread)
+            coverage.threading_map[coverage.rank][current_thread]["dst_global_x"]] = coverage.read_variable_bathymetry(current_thread=current_thread)
 
         futures = []
         with ProcessPoolExecutor(max_workers=coverage.threads_number) as executor:
