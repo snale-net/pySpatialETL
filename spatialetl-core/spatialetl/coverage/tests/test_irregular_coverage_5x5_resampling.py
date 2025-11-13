@@ -33,10 +33,9 @@ y_size=5
 x_size=5
 data =np.zeros([y_size, x_size])
 np.fill_diagonal(data, 2)
-source_x_axis = np.arange(0,x_size)
-source_y_axis = np.arange(0,y_size)
-target_x_axis = [0.,1.,2.,3.]
-target_y_axis = [0.,1.,2.,3.]
+source_y_axis, source_x_axis = np.mgrid[0:y_size, 0:x_size]
+target_x_axis = [0., 1., 2., 3.]
+target_y_axis = [0., 1., 2., 3.]
 target_data =np.zeros([y_size-1, x_size-1])
 np.fill_diagonal(target_data, 2)
 

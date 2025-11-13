@@ -46,9 +46,9 @@ class MemoryReader (CoverageReader):
         else:
             return self.x[ymin:ymax,xmin:xmax]
 
-    def read_axis_y(self,xmin,xmax,ymin=None,ymax=None):
+    def read_axis_y(self,xmin=None,xmax=None,ymin=None,ymax=None):
         if self.is_regular_grid():
-            return self.y[xmin:xmax]
+            return self.y[ymin:ymax]
         else:
             return self.y[ymin:ymax, xmin:xmax]
 

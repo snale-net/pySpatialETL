@@ -86,6 +86,7 @@ class Coverage(object):
                 self.rank = self.comm.Get_rank()
             else:
                 # No parallel MPI
+                self.comm = None
                 self.map_mpi = None
                 self.size = 1
                 self.rank = 0
@@ -95,6 +96,7 @@ class Coverage(object):
             self.threading_map = None
         else:
             # No parallel MPI
+            self.comm = None
             self.map_mpi = None
             self.size = 1
             self.rank = 0
@@ -591,7 +593,6 @@ class Coverage(object):
                 ymax = np.max(idx[0]) + 1
 
             else:
-
                 idx = np.where(
                     (self.source_global_axis_x[self.map_mpi[self.rank]["src_global_x"]] >= np.min(self.read_axis_x(type="target", with_overlap=False,current_thread=thread))) &
                     (self.source_global_axis_x[self.map_mpi[self.rank]["src_global_x"]] <= np.max(self.read_axis_x(type="target", with_overlap=False,current_thread=thread))) &
@@ -666,6 +667,21 @@ class Coverage(object):
 
             self.threading_map[self.rank][thread]["src_local_x_overlap"] = np.s_[src_local_x_min_overlap,src_loca_x_max_overlap]
             self.threading_map[self.rank][thread]["src_local_y_overlap"] = np.s_[src_local_y_min_overlap,src_loca_y_max_overlap]
+
+            # # Compute dest local grid
+            if self.threading_map[self.rank][thread]["src_global_x_size_overlap"] != self.threading_map[self.rank][thread]["dst_global_x_size_overlap"]:
+                # Recompute x size
+                dst_local_x_min = self.threading_map[self.rank][thread]["dst_local_x"].start + (
+                            self.threading_map[self.rank][thread]["src_global_x_size_overlap"] -
+                            self.threading_map[self.rank][thread]["dst_global_x_size_overlap"])
+                dst_local_x_max = dst_local_x_min + self.threading_map[self.rank][thread]["dst_local_x_size"]
+                self.threading_map[self.rank][thread]["dst_local_x"] = np.s_[dst_local_x_min:dst_local_x_max]
+
+            if self.threading_map[self.rank][thread]["dst_global_y_size_overlap"] != self.threading_map[self.rank][thread]["src_global_y_size_overlap"]:
+                # Recompute y size
+                dst_local_y_min = self.threading_map[self.rank][thread]["dst_local_y"].start + self.threading_map[self.rank][thread]["dst_global_y_overlap"].start
+                dst_local_y_max = dst_local_y_min + self.threading_map[self.rank][thread]["dst_local_y_size"]
+                self.threading_map[self.rank][thread]["dst_local_y"] = np.s_[dst_local_y_min:dst_local_y_max]
 
     # Read metadata
     def read_metadata(self):

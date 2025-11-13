@@ -33,8 +33,7 @@ y_size=5
 x_size=5
 data =np.zeros([y_size, x_size])
 np.fill_diagonal(data, 2)
-x_axis = np.ones([y_size, x_size])
-y_axis = np.ones([y_size, x_size])
+y_axis, x_axis = np.mgrid[0:y_size, 0:x_size]
 
 def test_axis_x(caplog):
     caplog.set_level(logging.INFO)
@@ -89,9 +88,9 @@ def test_axis_y(caplog):
 
 
 def test_bathymetry(caplog):
-    caplog.set_level(logging.DEBUG)
+    caplog.set_level(logging.INFO)
 
-    for thread in range(4,4):
+    for thread in range(2,os.cpu_count()):
 
         logging.info(f"Testing with {thread} threads")
         reader = MemoryReader(
@@ -115,7 +114,6 @@ def test_bathymetry(caplog):
                 futures.append(executor.submit(gathering_data(coverage,i)))
 
         futures, _ = concurrent.futures.wait(futures)
-        logging.debug(global_data)
         np.testing.assert_array_equal(global_data,data)
 
 

@@ -89,7 +89,7 @@ def test_axis_y(caplog):
 
 
 def test_bathymetry(caplog):
-    caplog.set_level(logging.DEBUG)
+    caplog.set_level(logging.INFO)
 
     for thread in range(2,os.cpu_count()):
         reader = MemoryReader(
@@ -113,8 +113,5 @@ def test_bathymetry(caplog):
                 futures.append(executor.submit(gathering_data(coverage,i)))
 
         futures, _ = concurrent.futures.wait(futures)
-        logging.debug(global_data)
         np.testing.assert_array_equal(global_data,data)
-
-
 
