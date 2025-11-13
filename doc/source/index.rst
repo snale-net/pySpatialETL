@@ -9,13 +9,20 @@
 Welcome to the SpatialETL Documentation
 =========================================
 
-The SpatialETL documentation is organized into four main sections:
+The SpatialETL documentation is organized into main sections:
+
+- :doc:`Developer Setup <docs/developer_setup>`: set up pySpatialETL development environment with UV
 - :doc:`User Guide <docs/user_guide>`: a high-level overview of the core concepts and main features
 - :doc:`Advanced Guide <docs/advanced_guide>`: deeper dives into more complex functionality and use cases
 - :doc:`Examples <docs/example>`: real-world usage examples and tutorials
 - :doc:`API Reference <docs/reference>`: technical reference for modules, classes, and functions
 
 .. container:: button-grid
+
+   .. button-link:: docs/developer_setup.html
+      :color: primary
+
+      Developer Setup
 
    .. button-link:: docs/user_guide.html
       :color: primary
@@ -43,6 +50,7 @@ Documentation
 .. toctree::
    :maxdepth: 1
 
+   docs/developer_setup
    docs/user_guide
    docs/advanced_guide
    docs/example
@@ -51,6 +59,7 @@ Documentation
 
 Index
 -----
+
 * :ref:`genindex`
 * :ref:`modindex`
 
