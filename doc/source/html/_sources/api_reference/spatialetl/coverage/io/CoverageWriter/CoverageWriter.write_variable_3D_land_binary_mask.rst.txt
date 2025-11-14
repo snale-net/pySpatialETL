@@ -1,6 +1,0 @@
-write_variable_3D_land_binary_mask
-==================================
-
-.. py:method:: spatialetl.coverage.io.CoverageWriter.CoverageWriter.write_variable_3D_land_binary_mask()
-   :abstractmethod:
-

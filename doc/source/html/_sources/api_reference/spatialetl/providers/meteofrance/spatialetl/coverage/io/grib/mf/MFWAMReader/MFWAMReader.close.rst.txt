@@ -1,4 +1,0 @@
-close
-=====
-
-.. py:method:: spatialetl.providers.meteofrance.spatialetl.coverage.io.grib.mf.MFWAMReader.MFWAMReader.close()

@@ -1,4 +1,0 @@
-interpolate_time
-================
-
-.. py:method:: spatialetl.point.TimeMultiPoint.TimeMultiPoint.interpolate_time(date, indexes_t, layers)

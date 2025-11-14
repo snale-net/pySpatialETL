@@ -1,4 +1,0 @@
-open_file
-=========
-
-.. py:method:: spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.open_file(index_t)

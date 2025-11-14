@@ -1,4 +1,0 @@
-write_variable_barotropic_sea_water_speed
-=========================================
-
-.. py:method:: spatialetl.providers.common.netcdf.spatialetl.coverage.io.netcdf.DefaultWriter.DefaultWriter.write_variable_barotropic_sea_water_speed()

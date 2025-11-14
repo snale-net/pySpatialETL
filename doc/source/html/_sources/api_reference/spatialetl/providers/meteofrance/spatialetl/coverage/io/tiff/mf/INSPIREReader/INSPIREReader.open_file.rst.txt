@@ -1,4 +1,0 @@
-open_file
-=========
-
-.. py:method:: spatialetl.providers.meteofrance.spatialetl.coverage.io.tiff.mf.INSPIREReader.INSPIREReader.open_file(varname, index_t)

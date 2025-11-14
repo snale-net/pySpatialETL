@@ -1,4 +1,0 @@
-read_variable_depth_at_depth
-============================
-
-.. py:method:: spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.read_variable_depth_at_depth(index_z, xmin, xmax, ymin, ymax)

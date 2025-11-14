@@ -1,6 +1,0 @@
-spatialetl.providers.common.grib.spatialetl.point.io
-====================================================
-
-.. py:module:: spatialetl.providers.common.grib.spatialetl.point.io
-
-

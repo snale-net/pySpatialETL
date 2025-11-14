@@ -1,4 +1,0 @@
-read_variable_wind_10m_at_time
-==============================
-
-.. py:method:: spatialetl.providers.swan.spatialetl.coverage.io.matlab.swan.SWANUnstructuredReader.SWANUnstructuredReader.read_variable_wind_10m_at_time(t, xmin, xmax, ymin, ymax)

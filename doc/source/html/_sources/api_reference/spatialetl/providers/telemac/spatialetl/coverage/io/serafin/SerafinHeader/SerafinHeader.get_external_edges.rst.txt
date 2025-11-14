@@ -1,7 +1,0 @@
-get_external_edges
-==================
-
-.. py:method:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.get_external_edges()
-
-   Get external edges (pair of nodes)
-

@@ -1,4 +1,0 @@
-read_metadata
-=============
-
-.. py:method:: spatialetl.providers.ecmwf.spatialetl.point.io.netcdf.ecmwf.ECMWFReader.ECMWFReader.read_metadata()

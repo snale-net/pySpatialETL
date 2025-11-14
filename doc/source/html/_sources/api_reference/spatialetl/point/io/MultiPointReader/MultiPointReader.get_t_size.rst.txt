@@ -1,6 +1,0 @@
-get_t_size
-==========
-
-.. py:method:: spatialetl.point.io.MultiPointReader.MultiPointReader.get_t_size()
-   :abstractmethod:
-

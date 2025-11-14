@@ -1,4 +1,0 @@
-write_variable_wind_from_direction_10m
-======================================
-
-.. py:method:: spatialetl.point.io.ascii.DefaultTimePointWriter.DefaultTimePointWriter.write_variable_wind_from_direction_10m()

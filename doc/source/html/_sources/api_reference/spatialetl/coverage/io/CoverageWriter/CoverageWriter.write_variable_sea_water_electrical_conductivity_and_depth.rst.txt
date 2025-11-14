@@ -1,6 +1,0 @@
-write_variable_sea_water_electrical_conductivity_and_depth
-==========================================================
-
-.. py:method:: spatialetl.coverage.io.CoverageWriter.CoverageWriter.write_variable_sea_water_electrical_conductivity_and_depth(index_z)
-   :abstractmethod:
-

@@ -1,6 +1,0 @@
-write_variable_barotropic_sea_water_velocity
-============================================
-
-.. py:method:: spatialetl.coverage.io.CoverageWriter.CoverageWriter.write_variable_barotropic_sea_water_velocity()
-   :abstractmethod:
-

@@ -1,4 +1,0 @@
-read_variable_longitude
-=======================
-
-.. py:method:: spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.read_variable_longitude()

@@ -1,4 +1,0 @@
-main
-====
-
-.. py:function:: spatialetl.utils.bing.core.ogr2ogr.main(args=None, progress_func=TermProgress, progress_data=None)

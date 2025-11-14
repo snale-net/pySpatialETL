@@ -1,6 +1,0 @@
-read_variable_3D_land_binary_mask
-=================================
-
-.. py:method:: spatialetl.coverage.io.CoverageReader.CoverageReader.read_variable_3D_land_binary_mask(xmin, xmax, ymin, ymax)
-   :abstractmethod:
-

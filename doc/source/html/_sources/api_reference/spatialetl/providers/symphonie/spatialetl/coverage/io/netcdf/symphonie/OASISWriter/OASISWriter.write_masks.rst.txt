@@ -1,4 +1,0 @@
-write_masks
-===========
-
-.. py:method:: spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.OASISWriter.OASISWriter.write_masks(filename)

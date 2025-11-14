@@ -1,6 +1,0 @@
-get_t_size
-==========
-
-.. py:method:: spatialetl.coverage.io.CoverageReader.CoverageReader.get_t_size()
-   :abstractmethod:
-

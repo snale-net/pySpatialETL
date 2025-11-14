@@ -1,4 +1,0 @@
-read_axis_t
-===========
-
-.. py:method:: spatialetl.providers.mercator.spatialetl.coverage.io.netcdf.mercator.v2020.MERCATORReader.MERCATORReader.read_axis_t(tmin, tmax, timestamp)

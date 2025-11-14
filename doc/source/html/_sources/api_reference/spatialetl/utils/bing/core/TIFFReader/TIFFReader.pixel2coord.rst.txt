@@ -1,4 +1,0 @@
-pixel2coord
-===========
-
-.. py:method:: spatialetl.utils.bing.core.TIFFReader.TIFFReader.pixel2coord(y, x)

@@ -1,9 +1,0 @@
-read_axis_t
-===========
-
-.. py:method:: spatialetl.coverage.TimeCoverage.TimeCoverage.read_axis_t(type='target', with_overlap=False, timestamp=0)
-
-   Retourne les valeurs de l'axe t.
-   @param timestamp: égale 1 si le temps est souhaité en timestamp depuis TIME_DATUM.
-   @return:  un tableau à une dimensions [z] au format datetime ou timestamp si timestamp=1.
-

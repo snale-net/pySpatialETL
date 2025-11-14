@@ -1,9 +1,0 @@
-transform_mesh
-==============
-
-.. py:method:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.transform_mesh(transformations)
-
-   !
-   @brief Apply transformations on mesh nodes (only in 2D)
-   @param transformations <[geom.transformation.Transformation]>: list of successive transformations
-

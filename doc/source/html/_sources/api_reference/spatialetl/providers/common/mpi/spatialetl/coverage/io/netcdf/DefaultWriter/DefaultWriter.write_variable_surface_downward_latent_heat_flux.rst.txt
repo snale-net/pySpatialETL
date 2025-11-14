@@ -1,4 +1,0 @@
-write_variable_surface_downward_latent_heat_flux
-================================================
-
-.. py:method:: spatialetl.providers.common.mpi.spatialetl.coverage.io.netcdf.DefaultWriter.DefaultWriter.write_variable_surface_downward_latent_heat_flux()

@@ -1,4 +1,0 @@
-read_variable_surface_air_temperature_at_time
-=============================================
-
-.. py:method:: spatialetl.providers.meteofrance.spatialetl.coverage.io.tiff.mf.INSPIREReader.INSPIREReader.read_variable_surface_air_temperature_at_time(index_t, xmin, xmax, ymin, ymax)

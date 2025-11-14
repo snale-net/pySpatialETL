@@ -1,6 +1,0 @@
-write_variable_surface_downward_sensible_heat_flux
-==================================================
-
-.. py:method:: spatialetl.coverage.io.CoverageWriter.CoverageWriter.write_variable_surface_downward_sensible_heat_flux()
-   :abstractmethod:
-

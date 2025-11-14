@@ -1,4 +1,0 @@
-check_bbox_validity
-===================
-
-.. py:method:: spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.check_bbox_validity(candidate)
