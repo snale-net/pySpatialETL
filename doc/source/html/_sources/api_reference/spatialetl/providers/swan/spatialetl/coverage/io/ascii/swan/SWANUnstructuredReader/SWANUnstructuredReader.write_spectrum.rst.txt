@@ -1,4 +1,0 @@
-write_spectrum
-==============
-
-.. py:method:: spatialetl.providers.swan.spatialetl.coverage.io.ascii.swan.SWANUnstructuredReader.SWANUnstructuredReader.write_spectrum(fname, lat, lon, times, freqs, dirs, facs, spc)

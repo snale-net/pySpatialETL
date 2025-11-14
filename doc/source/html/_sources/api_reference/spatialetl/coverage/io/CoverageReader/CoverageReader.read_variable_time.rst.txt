@@ -1,6 +1,0 @@
-read_variable_time
-==================
-
-.. py:method:: spatialetl.coverage.io.CoverageReader.CoverageReader.read_variable_time(tmin, tmax, timestamp)
-   :abstractmethod:
-

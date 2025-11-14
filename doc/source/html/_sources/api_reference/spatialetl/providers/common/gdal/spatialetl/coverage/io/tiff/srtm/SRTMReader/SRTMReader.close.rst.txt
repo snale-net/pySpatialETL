@@ -1,4 +1,0 @@
-close
-=====
-
-.. py:method:: spatialetl.providers.common.gdal.spatialetl.coverage.io.tiff.srtm.SRTMReader.SRTMReader.close()

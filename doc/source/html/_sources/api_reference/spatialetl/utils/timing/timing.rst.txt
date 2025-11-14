@@ -1,4 +1,0 @@
-timing
-======
-
-.. py:function:: spatialetl.utils.timing.timing(f, **trigger)

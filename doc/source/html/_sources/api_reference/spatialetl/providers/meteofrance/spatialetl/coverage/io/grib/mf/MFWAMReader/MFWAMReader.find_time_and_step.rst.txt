@@ -1,4 +1,0 @@
-find_time_and_step
-==================
-
-.. py:method:: spatialetl.providers.meteofrance.spatialetl.coverage.io.grib.mf.MFWAMReader.MFWAMReader.find_time_and_step(index_t)

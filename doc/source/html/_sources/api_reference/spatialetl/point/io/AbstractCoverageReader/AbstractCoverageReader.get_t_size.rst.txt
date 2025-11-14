@@ -1,4 +1,0 @@
-get_t_size
-==========
-
-.. py:method:: spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.get_t_size()

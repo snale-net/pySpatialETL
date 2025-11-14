@@ -1,7 +1,0 @@
-__sub__
-=======
-
-.. py:method:: spatialetl.point.utils.jdutil.datetime.__sub__(other)
-
-   Subtract two datetimes, or a datetime and a timedelta.
-

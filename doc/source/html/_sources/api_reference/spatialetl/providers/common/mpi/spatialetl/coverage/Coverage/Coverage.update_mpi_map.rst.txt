@@ -1,4 +1,0 @@
-update_mpi_map
-==============
-
-.. py:method:: spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.update_mpi_map()

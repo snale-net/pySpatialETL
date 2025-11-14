@@ -1,6 +1,0 @@
-get_y_size
-==========
-
-.. py:method:: spatialetl.coverage.io.CoverageReader.CoverageReader.get_y_size()
-   :abstractmethod:
-

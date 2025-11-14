@@ -1,6 +1,0 @@
-write_variable_surface_downward_solar_radiation
-===============================================
-
-.. py:method:: spatialetl.coverage.io.CoverageWriter.CoverageWriter.write_variable_surface_downward_solar_radiation()
-   :abstractmethod:
-

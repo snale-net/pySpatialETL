@@ -1,4 +1,0 @@
-get_coordinates
-===============
-
-.. py:method:: spatialetl.point.io.ascii.XYCoordinatesReader.XYCoordinatesReader.get_coordinates()

@@ -1,4 +1,0 @@
-read_variable_3D_sea_binary_mask
-================================
-
-.. py:method:: spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.v293.SYMPHONIEReader.SYMPHONIEReader.read_variable_3D_sea_binary_mask(xmin, xmax, ymin, ymax)

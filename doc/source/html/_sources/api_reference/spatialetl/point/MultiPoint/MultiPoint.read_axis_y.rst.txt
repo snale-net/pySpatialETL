@@ -1,4 +1,0 @@
-read_axis_y
-===========
-
-.. py:method:: spatialetl.point.MultiPoint.MultiPoint.read_axis_y()

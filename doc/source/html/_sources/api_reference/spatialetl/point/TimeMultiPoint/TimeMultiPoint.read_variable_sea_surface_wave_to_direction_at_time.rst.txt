@@ -1,4 +1,0 @@
-read_variable_sea_surface_wave_to_direction_at_time
-===================================================
-
-.. py:method:: spatialetl.point.TimeMultiPoint.TimeMultiPoint.read_variable_sea_surface_wave_to_direction_at_time(date)

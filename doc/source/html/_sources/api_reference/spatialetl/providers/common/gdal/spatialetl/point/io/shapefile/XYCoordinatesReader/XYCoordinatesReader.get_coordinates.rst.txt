@@ -1,4 +1,0 @@
-get_coordinates
-===============
-
-.. py:method:: spatialetl.providers.common.gdal.spatialetl.point.io.shapefile.XYCoordinatesReader.XYCoordinatesReader.get_coordinates()

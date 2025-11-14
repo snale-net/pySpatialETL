@@ -1,4 +1,0 @@
-close
-=====
-
-.. py:method:: spatialetl.providers.gmt.spatialetl.coverage.io.ascii.gmt.GMTWriter.GMTWriter.close()

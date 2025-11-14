@@ -1,4 +1,0 @@
-LoadGeometry
-============
-
-.. py:function:: spatialetl.utils.bing.core.ogr2ogr.LoadGeometry(pszDS, pszSQL, pszLyr, pszWhere)

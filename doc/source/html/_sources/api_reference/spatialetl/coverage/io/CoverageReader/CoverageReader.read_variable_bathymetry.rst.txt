@@ -1,6 +1,0 @@
-read_variable_bathymetry
-========================
-
-.. py:method:: spatialetl.coverage.io.CoverageReader.CoverageReader.read_variable_bathymetry(xmin, xmax, ymin, ymax)
-   :abstractmethod:
-

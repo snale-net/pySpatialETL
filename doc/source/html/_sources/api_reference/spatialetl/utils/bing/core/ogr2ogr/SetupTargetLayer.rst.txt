@@ -1,4 +1,0 @@
-SetupTargetLayer
-================
-
-.. py:function:: spatialetl.utils.bing.core.ogr2ogr.SetupTargetLayer(poSrcDS, poSrcLayer, poDstDS, papszLCO, pszNewLayerName, bTransform, poOutputSRS, bNullifyOutputSRS, poSourceSRS, papszSelFields, bAppend, eGType, bPromoteToMulti, nCoordDim, bOverwrite, papszFieldTypesToString, bWrapDateline, bExplodeCollections, pszZField, pszWHERE)

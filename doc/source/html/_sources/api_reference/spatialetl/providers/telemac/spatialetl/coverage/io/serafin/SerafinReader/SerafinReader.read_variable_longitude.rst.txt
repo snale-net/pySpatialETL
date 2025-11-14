@@ -1,4 +1,0 @@
-read_variable_longitude
-=======================
-
-.. py:method:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.read_variable_longitude(xmin, xmax, ymin, ymax)

@@ -1,4 +1,0 @@
-read_variable_surface_thermal_radiation_at_time
-===============================================
-
-.. py:method:: spatialetl.providers.ecmwf.spatialetl.coverage.io.netcdf.ecmwf.ECMWFReader.ECMWFReader.read_variable_surface_thermal_radiation_at_time(index_t, xmin, xmax, ymin, ymax)

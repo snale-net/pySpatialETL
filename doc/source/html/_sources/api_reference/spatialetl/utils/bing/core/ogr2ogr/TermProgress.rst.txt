@@ -1,4 +1,0 @@
-TermProgress
-============
-
-.. py:function:: spatialetl.utils.bing.core.ogr2ogr.TermProgress(dfComplete, pszMessage, pProgressArg)

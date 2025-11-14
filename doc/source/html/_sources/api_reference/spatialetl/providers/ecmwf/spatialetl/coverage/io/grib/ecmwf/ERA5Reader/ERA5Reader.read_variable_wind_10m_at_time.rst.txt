@@ -1,4 +1,0 @@
-read_variable_wind_10m_at_time
-==============================
-
-.. py:method:: spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.read_variable_wind_10m_at_time(index_t, xmin, xmax, ymin, ymax)

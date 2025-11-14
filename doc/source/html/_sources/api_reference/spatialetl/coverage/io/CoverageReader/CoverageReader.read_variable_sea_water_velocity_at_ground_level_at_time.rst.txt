@@ -1,6 +1,0 @@
-read_variable_sea_water_velocity_at_ground_level_at_time
-========================================================
-
-.. py:method:: spatialetl.coverage.io.CoverageReader.CoverageReader.read_variable_sea_water_velocity_at_ground_level_at_time(index_t, xmin, xmax, ymin, ymax)
-   :abstractmethod:
-

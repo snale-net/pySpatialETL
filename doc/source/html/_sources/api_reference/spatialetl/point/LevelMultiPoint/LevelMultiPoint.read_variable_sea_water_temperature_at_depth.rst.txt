@@ -1,4 +1,0 @@
-read_variable_sea_water_temperature_at_depth
-============================================
-
-.. py:method:: spatialetl.point.LevelMultiPoint.LevelMultiPoint.read_variable_sea_water_temperature_at_depth(depth)

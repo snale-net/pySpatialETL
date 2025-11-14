@@ -1,4 +1,0 @@
-get_y_size
-==========
-
-.. py:method:: spatialetl.providers.swan.spatialetl.coverage.io.matlab.swan.SWANReader.SWANReader.get_y_size()

@@ -1,4 +1,0 @@
-read_variable_2D_sea_binary_mask
-================================
-
-.. py:method:: spatialetl.providers.common.gdal.spatialetl.coverage.io.img.ImageReader.ImageReader.read_variable_2D_sea_binary_mask(xmin, xmax, ymin, ymax)

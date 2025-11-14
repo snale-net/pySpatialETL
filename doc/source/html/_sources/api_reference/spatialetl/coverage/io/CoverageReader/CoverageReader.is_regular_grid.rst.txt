@@ -1,6 +1,0 @@
-is_regular_grid
-===============
-
-.. py:method:: spatialetl.coverage.io.CoverageReader.CoverageReader.is_regular_grid()
-   :abstractmethod:
-

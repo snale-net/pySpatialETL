@@ -1,6 +1,0 @@
-close
-=====
-
-.. py:method:: spatialetl.coverage.io.CoverageReader.CoverageReader.close()
-   :abstractmethod:
-

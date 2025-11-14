@@ -1,4 +1,0 @@
-read_variable_sea_surface_wave_significant_height_at_time
-=========================================================
-
-.. py:method:: spatialetl.providers.hycom.spatialetl.coverage.io.netcdf.hycom.HYCOMReader.HYCOMReader.read_variable_sea_surface_wave_significant_height_at_time(index_t, xmin, xmax, ymin, ymax)

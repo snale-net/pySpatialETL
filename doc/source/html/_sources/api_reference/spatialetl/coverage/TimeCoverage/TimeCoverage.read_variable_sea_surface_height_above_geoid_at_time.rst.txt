@@ -1,4 +1,0 @@
-read_variable_sea_surface_height_above_geoid_at_time
-====================================================
-
-.. py:method:: spatialetl.coverage.TimeCoverage.TimeCoverage.read_variable_sea_surface_height_above_geoid_at_time(t)

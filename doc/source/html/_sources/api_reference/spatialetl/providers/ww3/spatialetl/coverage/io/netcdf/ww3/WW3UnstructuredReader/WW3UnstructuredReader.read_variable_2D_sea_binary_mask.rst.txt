@@ -1,4 +1,0 @@
-read_variable_2D_sea_binary_mask
-================================
-
-.. py:method:: spatialetl.providers.ww3.spatialetl.coverage.io.netcdf.ww3.WW3UnstructuredReader.WW3UnstructuredReader.read_variable_2D_sea_binary_mask(xmin, xmax, ymin, ymax)

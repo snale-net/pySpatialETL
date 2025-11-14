@@ -1,4 +1,0 @@
-write_variable_2D_sea_binary_mask
-=================================
-
-.. py:method:: spatialetl.providers.common.mpi.spatialetl.coverage.io.netcdf.DefaultWriter.DefaultWriter.write_variable_2D_sea_binary_mask()
