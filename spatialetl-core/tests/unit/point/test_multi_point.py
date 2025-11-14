@@ -18,35 +18,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-[build-system]
-requires = ["flit_core==3.12.0"]
-build-backend = "flit_core.buildapi"
 
-[project]
-name = "spatialetl-providers-gmt"
-version = "0.0.1"
-requires-python = ">=3.9"
-authors = [
-  {name = "Fabien RÉTIF", email = "fabien.retif@snale.net"},
-]
-description = "Provider package spatialetl-providers-gmt for SpatialETL"
-readme = "README.md"
+def test_bathymetry():
+    assert 0==0, "test_read_axis_x()"
 
-dependencies = [
-  "spatialetl>=0.2.0",
-  "spatialetl-providers-common-netcdf>=0.0.1"
-]
-
-[project.urls]
-Homepage = "https://lab.snale.net/produits/pyspatialetl"
-Documentation = "https://readthedocs.org"
-Repository = "https://github.com/snale-net/pySpatialETL.git"
-
-[tool.uv.sources]
-# These names must match the names as defined in the pyproject.toml of the workspace items,
-# *not* the workspace folder paths
-spatialetl = {workspace = true}
-spatialetl-providers-common-netcdf = {workspace = true}
-
-[tool.flit.module]
-name = "spatialetl.providers.gmt"

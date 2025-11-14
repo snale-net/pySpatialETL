@@ -18,11 +18,4 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from unittest import TestCase
-
-
-class TestMultiPoint(TestCase):
-
-    def test_bathymetry(self):
-        self.assertEqual(0, 0, "test_read_axis_x()")
-
+__path__ = __import__("pkgutil").extend_path(__path__, __name__)

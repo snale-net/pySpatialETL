@@ -1,0 +1,121 @@
+# MIT License
+# Copyright (c) 2024 [SNALE - French SAS Company - RCS 951 724 616]
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+import concurrent
+import concurrent.futures
+import os
+from concurrent.futures import ProcessPoolExecutor
+
+import numpy as np
+import pytest
+
+from spatialetl.coverage.coverage import Coverage
+from spatialetl.coverage.io.memory_reader import MemoryReader
+from spatialetl.utils.logger import logging
+
+y_size=5
+x_size=5
+data =np.zeros([y_size, x_size])
+np.fill_diagonal(data, 2)
+x_axis = np.arange(0,x_size)
+y_axis = np.arange(0,y_size)
+
+@pytest.mark.mpi(ranks=2, timeout=10, unit="s")
+def test_axis_x(caplog,mpi_ranks):
+    caplog.set_level(logging.INFO)
+
+    for thread in range(1,1):
+        reader = MemoryReader(
+            x=x_axis,
+            y=y_axis
+        )
+
+        coverage = Coverage(reader=reader,nb_thread=thread)
+
+        global_data =np.zeros([x_size])
+        global_data[:] = np.nan
+
+        def gathering_data(coverage,current_thread):
+            global_data[coverage.threading_map[coverage.rank][current_thread]["dst_global_x"]] = coverage.read_axis_x(current_thread=current_thread)
+
+        futures = []
+        with ProcessPoolExecutor(max_workers=coverage.threads_number) as executor:
+            for i in range(0, coverage.threads_number):
+                futures.append(executor.submit(gathering_data(coverage,i)))
+
+        futures, _ = concurrent.futures.wait(futures)
+        np.testing.assert_array_equal(global_data,x_axis)
+
+@pytest.mark.mpi(ranks=2, timeout=10, unit="s")
+def test_axis_y(caplog,mpi_ranks):
+    caplog.set_level(logging.INFO)
+
+    for thread in range(1,1):
+        reader = MemoryReader(
+            x=x_axis,
+            y=y_axis
+        )
+
+        coverage = Coverage(reader=reader,nb_thread=thread)
+
+        global_data =np.zeros([y_size])
+        global_data[:] = np.nan
+
+        def gathering_data(coverage,current_thread):
+            global_data[coverage.threading_map[coverage.rank][current_thread]["dst_global_y"]] = coverage.read_axis_y(current_thread=current_thread)
+
+        futures = []
+        with ProcessPoolExecutor(max_workers=coverage.threads_number) as executor:
+            for i in range(0, coverage.threads_number):
+                futures.append(executor.submit(gathering_data(coverage,i)))
+
+        futures, _ = concurrent.futures.wait(futures)
+        np.testing.assert_array_equal(global_data,y_axis)
+
+@pytest.mark.mpi(ranks=2, timeout=10, unit="s")
+def test_bathymetry(caplog,mpi_ranks):
+    caplog.set_level(logging.INFO)
+
+    for thread in range(1,1):
+        reader = MemoryReader(
+            x=x_axis,
+            y=y_axis,
+            bathy=data
+        )
+
+        coverage = Coverage(reader=reader,nb_thread=thread)
+
+        global_data =np.zeros([y_size, x_size])
+        global_data[:] = np.nan
+
+        def gathering_data(coverage,current_thread):
+            global_data[coverage.threading_map[coverage.rank][current_thread]["dst_global_y"],
+            coverage.threading_map[coverage.rank][current_thread]["dst_global_x"]] = coverage.read_variable_bathymetry(current_thread)
+
+        futures = []
+        with ProcessPoolExecutor(max_workers=coverage.threads_number) as executor:
+            for i in range(0, coverage.threads_number):
+                futures.append(executor.submit(gathering_data(coverage,i)))
+
+        futures, _ = concurrent.futures.wait(futures)
+        np.testing.assert_array_equal(global_data,data)
+
+
+

@@ -38,6 +38,13 @@ dependencies = [
   "spatialetl-providers-common-netcdf>=0.0.1"
 ]
 
+[project.optional-dependencies]
+"pytest" = [
+    # General pytest devel tools
+    "pytest-isolate-mpi>=0.3",
+    "pytest",
+]
+
 [project.urls]
 Homepage = "https://lab.snale.net/produits/pyspatialetl"
 Documentation = "https://readthedocs.org"

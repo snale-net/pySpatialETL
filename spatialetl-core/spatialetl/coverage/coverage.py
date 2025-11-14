@@ -34,6 +34,8 @@ from spatialetl.utils.logger import logging
 
 mpi_lib = find_spec("mpi4py")
 MPI_FOUND = mpi_lib is not None
+if MPI_FOUND:
+    from mpi4py import MPI
 
 class Coverage(object):
     """
@@ -81,7 +83,7 @@ class Coverage(object):
         if parallel:
             if MPI_FOUND:
                 # Parallel MPI
-                self.comm = mpi_lib.MPI.COMM_WORLD
+                self.comm = MPI.COMM_WORLD
                 self.size = self.comm.Get_size()
                 self.rank = self.comm.Get_rank()
             else:

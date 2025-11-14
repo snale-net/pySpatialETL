@@ -27,7 +27,7 @@ from spatialetl.point.io.ascii.default_time_point_reader import DefaultTimePoint
 class TestTimeMultiPoint(TestCase):
 
     def test_timeseries(self):
-        reader = DefaultTimePointReader("../io/ascii/tests/ressources/Port-Sainte-Marie-la-Mer_03-2013_to_03-2013.dat",
+        reader = DefaultTimePointReader("ressources/Port-Sainte-Marie-la-Mer_03-2013_to_03-2013.dat",
                                         colsNumber=[0,1],
                                         varNames=["date","sea_water_column_thickness_at_time"])
         point = TimeMultiPoint(reader);
