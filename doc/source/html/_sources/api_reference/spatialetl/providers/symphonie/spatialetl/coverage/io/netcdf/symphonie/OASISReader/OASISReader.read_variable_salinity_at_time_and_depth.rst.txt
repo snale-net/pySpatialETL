@@ -1,4 +1,0 @@
-read_variable_salinity_at_time_and_depth
-========================================
-
-.. py:method:: spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.OASISReader.OASISReader.read_variable_salinity_at_time_and_depth(index_t, index_z, depth, method='nearest')

@@ -1,4 +1,0 @@
-read_variable_waves_momentum_flux_to_ocean_at_time
-==================================================
-
-.. py:method:: spatialetl.providers.ww3.spatialetl.coverage.io.netcdf.ww3.WW3UnstructuredReader.WW3UnstructuredReader.read_variable_waves_momentum_flux_to_ocean_at_time(t, xmin, xmax, ymin, ymax)

@@ -1,6 +1,0 @@
-spatialetl.providers.mercator.spatialetl.point.io.netcdf
-========================================================
-
-.. py:module:: spatialetl.providers.mercator.spatialetl.point.io.netcdf
-
-

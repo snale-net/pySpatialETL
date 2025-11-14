@@ -1,4 +1,0 @@
-is_regular_grid
-===============
-
-.. py:method:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.is_regular_grid()

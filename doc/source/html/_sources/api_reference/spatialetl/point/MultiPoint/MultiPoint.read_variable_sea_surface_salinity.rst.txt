@@ -1,4 +1,0 @@
-read_variable_sea_surface_salinity
-==================================
-
-.. py:method:: spatialetl.point.MultiPoint.MultiPoint.read_variable_sea_surface_salinity()

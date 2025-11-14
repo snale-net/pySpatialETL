@@ -1,4 +1,0 @@
-bias
-====
-
-.. py:function:: spatialetl.point.utils.stats.bias(obs, model)

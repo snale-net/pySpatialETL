@@ -1,4 +1,0 @@
-maxerr
-======
-
-.. py:function:: spatialetl.utils.stats.maxerr(obs, model)

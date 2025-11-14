@@ -1,4 +1,0 @@
-read_variable_wind_speed_10m_at_time
-====================================
-
-.. py:method:: spatialetl.point.TimeMultiPoint.TimeMultiPoint.read_variable_wind_speed_10m_at_time(date)

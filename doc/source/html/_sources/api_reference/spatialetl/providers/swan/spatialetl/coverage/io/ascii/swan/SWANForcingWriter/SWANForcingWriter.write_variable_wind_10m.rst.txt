@@ -1,4 +1,0 @@
-write_variable_wind_10m
-=======================
-
-.. py:method:: spatialetl.providers.swan.spatialetl.coverage.io.ascii.swan.SWANForcingWriter.SWANForcingWriter.write_variable_wind_10m()

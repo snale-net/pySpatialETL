@@ -1,4 +1,0 @@
-get_t_size
-==========
-
-.. py:method:: spatialetl.providers.mercator.spatialetl.coverage.io.netcdf.mercator.v2020.MERCATORReader.MERCATORReader.get_t_size()

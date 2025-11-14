@@ -1,4 +1,0 @@
-getGeoTransform
-===============
-
-.. py:method:: spatialetl.utils.bing.core.TIFFReader.TIFFReader.getGeoTransform()

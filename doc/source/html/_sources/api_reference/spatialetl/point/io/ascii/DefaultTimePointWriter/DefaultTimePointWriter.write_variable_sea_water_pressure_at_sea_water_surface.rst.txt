@@ -1,4 +1,0 @@
-write_variable_sea_water_pressure_at_sea_water_surface
-======================================================
-
-.. py:method:: spatialetl.point.io.ascii.DefaultTimePointWriter.DefaultTimePointWriter.write_variable_sea_water_pressure_at_sea_water_surface()

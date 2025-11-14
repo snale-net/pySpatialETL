@@ -1,6 +1,0 @@
-write_variable_surface_air_temperature
-======================================
-
-.. py:method:: spatialetl.coverage.io.CoverageWriter.CoverageWriter.write_variable_surface_air_temperature()
-   :abstractmethod:
-

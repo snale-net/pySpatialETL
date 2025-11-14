@@ -1,4 +1,0 @@
-get_x_size
-==========
-
-.. py:method:: spatialetl.providers.mercator.spatialetl.coverage.io.netcdf.mercator.v2015.MERCATORReader.MERCATORReader.get_x_size()

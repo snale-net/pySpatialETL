@@ -1,4 +1,0 @@
-is_regular_grid
-===============
-
-.. py:method:: spatialetl.providers.hycom.spatialetl.coverage.io.netcdf.hycom.HYCOMReader.HYCOMReader.is_regular_grid()

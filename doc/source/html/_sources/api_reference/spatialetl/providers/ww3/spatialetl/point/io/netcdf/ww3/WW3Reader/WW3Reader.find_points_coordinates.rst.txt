@@ -1,4 +1,0 @@
-find_points_coordinates
-=======================
-
-.. py:method:: spatialetl.providers.ww3.spatialetl.point.io.netcdf.ww3.WW3Reader.WW3Reader.find_points_coordinates(xy)

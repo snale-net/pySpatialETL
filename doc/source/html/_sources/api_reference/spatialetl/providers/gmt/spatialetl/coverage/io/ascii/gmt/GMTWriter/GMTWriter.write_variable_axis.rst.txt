@@ -1,4 +1,0 @@
-write_variable_axis
-===================
-
-.. py:method:: spatialetl.providers.gmt.spatialetl.coverage.io.ascii.gmt.GMTWriter.GMTWriter.write_variable_axis()

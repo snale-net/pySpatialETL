@@ -1,6 +1,0 @@
-spatialetl.providers.snale.setup
-================================
-
-.. py:module:: spatialetl.providers.snale.setup
-
-

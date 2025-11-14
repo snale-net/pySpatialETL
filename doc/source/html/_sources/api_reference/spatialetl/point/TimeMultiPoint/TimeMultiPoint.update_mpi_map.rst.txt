@@ -1,4 +1,0 @@
-update_mpi_map
-==============
-
-.. py:method:: spatialetl.point.TimeMultiPoint.TimeMultiPoint.update_mpi_map()

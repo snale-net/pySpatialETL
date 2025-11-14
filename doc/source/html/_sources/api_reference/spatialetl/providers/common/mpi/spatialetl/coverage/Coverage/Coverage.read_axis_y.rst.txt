@@ -1,8 +1,0 @@
-read_axis_y
-===========
-
-.. py:method:: spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.read_axis_y(type='target', with_overlap=False)
-
-   Retourne les valeurs (souvent la latitude) de l'axe y.
-   @return:  un tableau à une ou deux dimensions selon le type de maille des valeurs de l'axe y (souvent la latitude) : [x] ou [y,x].
-

@@ -1,4 +1,0 @@
-is_regular_grid
-===============
-
-.. py:method:: spatialetl.providers.gmt.spatialetl.coverage.io.netcdf.gmt.GMTReader.GMTReader.is_regular_grid()

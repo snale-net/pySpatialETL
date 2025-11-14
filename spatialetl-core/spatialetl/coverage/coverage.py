@@ -208,19 +208,19 @@ class Coverage(object):
                 logging.debug("MPI map:")
             else:
                 logging.debug("Multithreading map:")
-                logging.debug(f"{"-" * 10} Target grid {"-" * 10}")
+                logging.debug(f'{"-" * 10} Target grid {"-" * 10}')
                 for key in ['dst_global_x','dst_global_y','dst_local_x_size','dst_local_y_size']:
                     logging.debug(f"{key} = {self.map_mpi[self.rank][key]}")
 
             if MPI_FOUND:
-                logging.debug(f"{"-" * 10} Proc n° {self.rank} {"-" * 10}")
+                logging.debug(f'{"-" * 10} Proc n° {self.rank} {"-" * 10}')
                 for key in self.map_mpi[self.rank]:
                     logging.debug(f"    {key} = {self.map_mpi[self.rank][key]}")
 
             logging.debug(self.threads_number)
 
             for thread in range(0, self.threads_number):
-                logging.debug(f"   {"-" * 10} Thread n° {thread} {"-" * 10}")
+                logging.debug(f'   {"-" * 10} Thread n° {thread} {"-" * 10}')
                 for key in self.map_mpi[self.rank]:
                     logging.debug(f"    {key} = {self.threading_map[self.rank][thread][key]}")
 

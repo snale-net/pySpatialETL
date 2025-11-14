@@ -1,4 +1,0 @@
-read_variable_wind_to_direction_10m_at_time
-===========================================
-
-.. py:method:: spatialetl.coverage.TimeCoverage.TimeCoverage.read_variable_wind_to_direction_10m_at_time(date)

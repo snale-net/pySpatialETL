@@ -1,4 +1,0 @@
-interpolate_vertical
-====================
-
-.. py:method:: spatialetl.point.LevelMultiPoint.LevelMultiPoint.interpolate_vertical(depth, vert_coord, indexes_z, layers)

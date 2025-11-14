@@ -1,6 +1,0 @@
-read_variable_depth_at_depth
-============================
-
-.. py:method:: spatialetl.coverage.io.CoverageReader.CoverageReader.read_variable_depth_at_depth(index_z, xmin, xmax, ymin, ymax)
-   :abstractmethod:
-

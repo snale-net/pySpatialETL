@@ -1,4 +1,0 @@
-read_variable_sea_surface_wave_to_direction_at_time
-===================================================
-
-.. py:method:: spatialetl.providers.ww3.spatialetl.point.io.netcdf.ww3.WW3Reader.WW3Reader.read_variable_sea_surface_wave_to_direction_at_time(index_t)

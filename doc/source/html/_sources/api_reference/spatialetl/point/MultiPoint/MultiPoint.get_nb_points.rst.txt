@@ -1,4 +1,0 @@
-get_nb_points
-=============
-
-.. py:method:: spatialetl.point.MultiPoint.MultiPoint.get_nb_points()

@@ -1,4 +1,0 @@
-get_x_size
-==========
-
-.. py:method:: spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.get_x_size()

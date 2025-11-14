@@ -1,4 +1,0 @@
-_build_ikle_2d
-==============
-
-.. py:method:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._build_ikle_2d()

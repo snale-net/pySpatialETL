@@ -1,4 +1,0 @@
-read_axis_x
-===========
-
-.. py:method:: spatialetl.providers.ww3.spatialetl.coverage.io.netcdf.ww3.WW3Reader.WW3Reader.read_axis_x(xmin, xmax, ymin, ymax)

@@ -1,4 +1,0 @@
-read_variable_baroclinic_sea_water_velocity_at_time_and_depth
-=============================================================
-
-.. py:method:: spatialetl.point.TimeLevelMultiPoint.TimeLevelMultiPoint.read_variable_baroclinic_sea_water_velocity_at_time_and_depth(time, depth)

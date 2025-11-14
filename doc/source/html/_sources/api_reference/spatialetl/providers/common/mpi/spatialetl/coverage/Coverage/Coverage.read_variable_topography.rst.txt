@@ -1,8 +1,0 @@
-read_variable_topography
-========================
-
-.. py:method:: spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.read_variable_topography()
-
-   Retourne la topographie sur toute la couverture
-   @return: un tableau en deux dimensions [y,x].
-

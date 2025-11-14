@@ -1,4 +1,0 @@
-read_axis_x
-===========
-
-.. py:method:: spatialetl.providers.swan.spatialetl.coverage.io.ascii.swan.SWANUnstructuredReader.SWANUnstructuredReader.read_axis_x(xmin, xmax, ymin, ymax)

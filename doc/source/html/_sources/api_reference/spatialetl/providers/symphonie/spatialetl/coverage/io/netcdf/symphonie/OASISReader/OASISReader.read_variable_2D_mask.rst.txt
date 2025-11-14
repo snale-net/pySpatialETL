@@ -1,4 +1,0 @@
-read_variable_2D_mask
-=====================
-
-.. py:method:: spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.OASISReader.OASISReader.read_variable_2D_mask()

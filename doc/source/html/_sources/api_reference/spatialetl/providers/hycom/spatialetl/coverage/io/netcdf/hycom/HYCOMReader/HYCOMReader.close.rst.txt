@@ -1,4 +1,0 @@
-close
-=====
-
-.. py:method:: spatialetl.providers.hycom.spatialetl.coverage.io.netcdf.hycom.HYCOMReader.HYCOMReader.close()

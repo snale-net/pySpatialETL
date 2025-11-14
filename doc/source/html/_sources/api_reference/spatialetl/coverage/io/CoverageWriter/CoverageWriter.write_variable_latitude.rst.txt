@@ -1,6 +1,0 @@
-write_variable_latitude
-=======================
-
-.. py:method:: spatialetl.coverage.io.CoverageWriter.CoverageWriter.write_variable_latitude()
-   :abstractmethod:
-

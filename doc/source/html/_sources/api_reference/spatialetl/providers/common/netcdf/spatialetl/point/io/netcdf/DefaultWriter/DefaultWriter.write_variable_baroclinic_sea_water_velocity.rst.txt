@@ -1,4 +1,0 @@
-write_variable_baroclinic_sea_water_velocity
-============================================
-
-.. py:method:: spatialetl.providers.common.netcdf.spatialetl.point.io.netcdf.DefaultWriter.DefaultWriter.write_variable_baroclinic_sea_water_velocity()

@@ -1,4 +1,0 @@
-get_x_size
-==========
-
-.. py:method:: spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.get_x_size(type='target', with_overlap=False)

@@ -1,6 +1,0 @@
-read_variable_2D_sea_binary_mask
-================================
-
-.. py:method:: spatialetl.coverage.io.CoverageReader.CoverageReader.read_variable_2D_sea_binary_mask(xmin, xmax, ymin, ymax)
-   :abstractmethod:
-
