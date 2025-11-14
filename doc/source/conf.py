@@ -19,7 +19,11 @@ extensions = [
     'sphinx_design',  # Enhanced design elements (buttons, grids, etc.)
 ]
 
-exclude_patterns = ["**/tests/*"]
+exclude_patterns = [
+    '_build',
+    'build',
+    '**/tests/*'
+]
 
 # -- AutoAPI configuration ---------------------------------------------------
 autoapi_generate_api_docs = True
