@@ -117,8 +117,8 @@ class TimeCoverage(Coverage):
             self.target_global_axis_t = self.source_global_axis_t[tmin:tmax]
             self.target_global_t_size = tmax - tmin
 
-        self.create_mpi_map()
-        self.update_mpi_map()
+        self.__create_mpi_map()
+        self.__update_mpi_map()
 
         if type(self) == TimeCoverage and self.horizontal_resampling and self.rank == 0:
             logging.info(
@@ -138,7 +138,7 @@ class TimeCoverage(Coverage):
             logging.debug("Proc n°" + str(self.rank) + " " + str(key) + "=" + str(self.map_mpi[self.rank][key]))
         logging.debug("---------")
 
-    def create_mpi_map(self):
+    def __create_mpi_map(self):
 
         self.map_mpi = np.empty(self.size, dtype=object)
         target_sample = (self.target_global_t_size, self.target_global_y_size, self.target_global_x_size)
@@ -241,9 +241,9 @@ class TimeCoverage(Coverage):
 
             slice_index = slice_index + 1
 
-    def update_mpi_map(self):
+    def __update_mpi_map(self):
 
-        Coverage.update_mpi_map(self)
+        Coverage.__update_mpi_map(self)
 
         if self.get_t_size(type="target", with_overlap=False) == 1:
             tmin = (np.abs(np.asarray(self.read_axis_t(type="source_global", with_overlap=False, timestamp=1)) - np.min(

@@ -18,102 +18,59 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-import concurrent
-import concurrent.futures
-import os
-from concurrent.futures import ProcessPoolExecutor
-
 import numpy as np
+import os
 
 from spatialetl.coverage.coverage import Coverage
 from spatialetl.coverage.io.memory_reader import MemoryReader
 from spatialetl.utils.logger import logging
 
-y_size=5
-x_size=5
-data =np.zeros([y_size, x_size])
+y_size = 5
+x_size = 5
+data = np.zeros([y_size, x_size])
 np.fill_diagonal(data, 2)
-x_axis = np.arange(0,x_size)
-y_axis = np.arange(0,y_size)
+x_axis = np.arange(0, x_size)
+y_axis = np.arange(0, y_size)
+
 
 def test_axis_x(caplog):
     caplog.set_level(logging.INFO)
 
-    for thread in range(2,os.cpu_count()):
+    for thread in range(2, os.cpu_count()):
+        logging.info(f"Testing with {thread} threads")
         reader = MemoryReader(
             x=x_axis,
             y=y_axis
         )
-
-        coverage = Coverage(reader=reader,nb_thread=thread)
-
-        global_data =np.zeros([x_size])
-        global_data[:] = np.nan
-
-        def gathering_data(coverage,current_thread):
-            global_data[coverage.threading_map[coverage.rank][current_thread]["dst_global_x"]] = coverage.read_axis_x(current_thread=current_thread)
-
-        futures = []
-        with ProcessPoolExecutor(max_workers=coverage.threads_number) as executor:
-            for i in range(0, coverage.threads_number):
-                futures.append(executor.submit(gathering_data(coverage,i)))
-
-        futures, _ = concurrent.futures.wait(futures)
-        np.testing.assert_array_equal(global_data,x_axis)
+        coverage = Coverage(reader=reader, nb_thread=thread)
+        actual_data = coverage.read_axis_x()
+        np.testing.assert_array_equal(actual_data, x_axis)
 
 
 def test_axis_y(caplog):
     caplog.set_level(logging.INFO)
 
-    for thread in range(2,os.cpu_count()):
+    for thread in range(2, os.cpu_count()):
+        logging.info(f"Testing with {thread} threads")
         reader = MemoryReader(
             x=x_axis,
             y=y_axis
         )
-
-        coverage = Coverage(reader=reader,nb_thread=thread)
-
-        global_data =np.zeros([y_size])
-        global_data[:] = np.nan
-
-        def gathering_data(coverage,current_thread):
-            global_data[coverage.threading_map[coverage.rank][current_thread]["dst_global_y"]] = coverage.read_axis_y(current_thread=current_thread)
-
-        futures = []
-        with ProcessPoolExecutor(max_workers=coverage.threads_number) as executor:
-            for i in range(0, coverage.threads_number):
-                futures.append(executor.submit(gathering_data(coverage,i)))
-
-        futures, _ = concurrent.futures.wait(futures)
-        np.testing.assert_array_equal(global_data,y_axis)
+        coverage = Coverage(reader=reader, nb_thread=thread)
+        actual_data = coverage.read_axis_y()
+        np.testing.assert_array_equal(actual_data, y_axis)
 
 
 def test_bathymetry(caplog):
     caplog.set_level(logging.INFO)
 
-    for thread in range(2,os.cpu_count()):
+    for thread in range(2, os.cpu_count()):
+        logging.info(f"Testing with {thread} threads")
         reader = MemoryReader(
             x=x_axis,
             y=y_axis,
             bathy=data
         )
-
-        coverage = Coverage(reader=reader,nb_thread=thread)
-
-        global_data =np.zeros([y_size, x_size])
-        global_data[:] = np.nan
-
-        def gathering_data(coverage,current_thread):
-            global_data[coverage.threading_map[coverage.rank][current_thread]["dst_global_y"],
-            coverage.threading_map[coverage.rank][current_thread]["dst_global_x"]] = coverage.read_variable_bathymetry(current_thread)
-
-        futures = []
-        with ProcessPoolExecutor(max_workers=coverage.threads_number) as executor:
-            for i in range(0, coverage.threads_number):
-                futures.append(executor.submit(gathering_data(coverage,i)))
-
-        futures, _ = concurrent.futures.wait(futures)
-        np.testing.assert_array_equal(global_data,data)
-
-
-
+        coverage = Coverage(reader=reader, nb_thread=thread)
+        actual_data = coverage.read_variable_bathymetry()
+        np.testing.assert_array_equal(actual_data, data)
