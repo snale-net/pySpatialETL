@@ -51,7 +51,12 @@ La classe SymphonieReader permet de lire les données du format Symphonie
     def __init__(self,myGrid, myFile=None):
         CoverageReader.__init__(self,myGrid);
 
-        self.grid = Dataset(self.filename, 'r')
+        try:
+            self.grid = Dataset(self.filename, 'r')
+        except Exception as e:
+            logging.error(e)
+            logging.debug(e)
+
         self.gridrotcos_t = None
         self.gridrotsin_t = None
 

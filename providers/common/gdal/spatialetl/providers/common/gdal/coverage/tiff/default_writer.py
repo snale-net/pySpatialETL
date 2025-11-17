@@ -22,25 +22,18 @@
 # SOFTWARE.
 from __future__ import division, print_function, absolute_import
 
-import concurrent
-from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
-
-import os
-from importlib.util import find_spec
-
 import numpy as np
-from array_split import shape_split
+import os
 from osgeo import gdal
 from osgeo import osr
 
+from spatialetl.coverage.io.coverage_writer import CoverageWriter
 from spatialetl.coverage.time_coverage import TimeCoverage
 from spatialetl.coverage.time_level_coverage import TimeLevelCoverage
-from spatialetl.coverage.io.coverage_writer import CoverageWriter
 from spatialetl.exception.coverage_error import CoverageError
-from spatialetl.utils.variable_definition import VariableDefinition
 from spatialetl.utils.logger import logging
-mpi_lib = find_spec("mpi4py")
-MPI_FOUND = mpi_lib is not None
+from spatialetl.utils.variable_definition import VariableDefinition
+
 
 class DefaultWriter(CoverageWriter):
 
@@ -361,31 +354,16 @@ class DefaultWriter(CoverageWriter):
                  self.coverage.get_x_size(type="target_global")])
             global_data[:] = np.nan
 
-        local_data = np.empty(
-                [self.coverage.get_y_size(type="target_local"),
-                 self.coverage.get_x_size(type="target_local")])
-        local_data[:] = np.nan
+        local_data = self.coverage.read_variable_bathymetry()
 
-        def gathering_data(coverage, current_thread):
-            local_data[coverage.threading_map[coverage.rank][current_thread]["dst_global_y"],
-            coverage.threading_map[coverage.rank][current_thread]["dst_global_x"]] = coverage.read_variable_bathymetry(
-                current_thread)
-
-        futures = []
-        with ProcessPoolExecutor(max_workers=self.coverage.nb_thread) as executor:
-            for i in range(0, self.coverage.nb_thread):
-                futures.append(executor.submit(gathering_data(self.coverage, i)))
-
-        futures, _ = concurrent.futures.wait(futures)
-
-        if MPI_FOUND and self.coverage.rank != 0:
+        if self.coverage.comm and self.coverage.rank != 0:
             self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
         else:
             # Pour le proc n°1
             global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
                         self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data
 
-            if MPI_FOUND:
+            if self.coverage.comm:
                 # Pour les autres
                 for source in range(1, self.coverage.size):
                     recvbuf = np.empty([self.coverage.map_mpi[source]["dst_local_y_size"],

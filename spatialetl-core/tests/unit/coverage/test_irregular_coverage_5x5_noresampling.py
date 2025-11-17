@@ -63,9 +63,9 @@ def test_axis_y(caplog):
 
 
 def test_bathymetry(caplog):
-    caplog.set_level(logging.INFO)
+    caplog.set_level(logging.DEBUG)
 
-    for thread in range(2, os.cpu_count()):
+    for thread in range(2,os.cpu_count()):
         logging.info(f"Testing with {thread} threads")
         reader = MemoryReader(
             x=x_axis,
@@ -74,4 +74,5 @@ def test_bathymetry(caplog):
         )
         coverage = Coverage(reader=reader, nb_thread=thread)
         actual_data = coverage.read_variable_bathymetry()
+        logging.debug(actual_data)
         np.testing.assert_array_equal(actual_data, data)

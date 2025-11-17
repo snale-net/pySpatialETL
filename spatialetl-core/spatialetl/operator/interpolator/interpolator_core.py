@@ -22,6 +22,9 @@
 # SOFTWARE.
 from __future__ import division, print_function, absolute_import
 
+from scipy.spatial import qhull
+from threading import current_thread
+
 from datetime import datetime
 
 import numpy as np
@@ -32,12 +35,12 @@ from scipy.interpolate import interp1d
 from spatialetl.utils.logger import logging
 
 
-def resample_2d_to_grid(gridX,gridY,newX,newY,data,method):
+def resample_2d_to_grid(gridX,gridY,newX,newY,data,method,current_thread):
     """
     2D resampling function
     """
 
-    logging.debug("[InterpolatorCore][horizontal_interpolation()] starting interpolation with method '" + str(method) + "'")
+    logging.debug(f"[InterpolatorCore][horizontal_interpolation()] Thread {current_thread} is starting interpolation with method '{method}'")
 
     gridX = np.ma.filled(gridX,fill_value=-9999.)
     gridY = np.ma.filled(gridY,fill_value=-9999.)
@@ -53,7 +56,50 @@ def resample_2d_to_grid(gridX,gridY,newX,newY,data,method):
     else:
         fill_value = 9.96921e+36
 
-    return griddata(points, values, (xx, yy), method=method, rescale=True,fill_value=fill_value)
+    return current_thread, griddata(points, values, (xx, yy), method=method, rescale=True,fill_value=fill_value)
+
+def interp_weights(gridX,gridY,newX,newY,d=2):
+
+    logging.debug(f"[InterpolatorCore][horizontal_interpolation()] Compute weights")
+
+    gridX = np.ma.filled(gridX, fill_value=-9999.)
+    gridY = np.ma.filled(gridY, fill_value=-9999.)
+
+    if gridX.ndim == 1 and gridY.ndim == 1:
+        gridX, gridY = np.meshgrid(gridX, gridY)
+
+    xy = np.array([gridX.flatten(), gridY.flatten()]).T
+    xx, yy = np.meshgrid(newX, newY)
+
+    #xy = np.zeros([gridX.shape[0] * gridX.shape[1], 2])
+    #xy[:, 0] = gridY.flatten()
+    #xy[:, 1] = gridX.flatten()
+    uv = np.zeros([xx.shape[0] * xx.shape[1], 2])
+    uv[:, 0] = yy.flatten()
+    uv[:, 1] = xx.flatten()
+
+    tri = qhull.Delaunay(xy)
+    simplex = tri.find_simplex(uv)
+    vertices = np.take(tri.simplices, simplex, axis=0)
+    temp = np.take(tri.transform, simplex, axis=0)
+    delta = uv - temp[:, d]
+    bary = np.einsum('njk,nk->nj', temp[:, :d, :], delta)
+    return vertices, np.hstack((bary, 1 - bary.sum(axis=1, keepdims=True)))
+
+def resample_faster_2d_to_grid(vtx,wts,data,x_size,y_size,current_thread):
+    """
+    2D resampling function
+    """
+
+    logging.debug(f"[InterpolatorCore][horizontal_interpolation()] Thread {current_thread} is starting interpolation")
+
+    ret = np.einsum("nj,nj->n", np.take(data, vtx), wts)
+    if data.dtype == int8 or data.dtype == int16 or data.dtype == int32 or data.dtype == int64:
+        fill_value = -9999
+    else:
+        fill_value = 9.96921e+36
+    ret[np.any(wts < 0, axis=1)] = fill_value
+    return current_thread,ret.reshape(y_size,x_size)
 
 def vertical_interpolation(sourceAxis,targetAxis,data,method,extrapolate=False):
     #logging.debug("[InterpolatorCore][vertical_interpolation()] Looking for water depth : " + str(

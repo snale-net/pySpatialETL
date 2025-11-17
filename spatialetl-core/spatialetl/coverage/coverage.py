@@ -20,17 +20,21 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import inspect
+
 import concurrent
-from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 
 import os
 from importlib.util import find_spec
 
 import numpy as np
 from array_split import shape_split
+from scipy.spatial import qhull
 
 from spatialetl.exception.not_found_in_rank_error import NotFoundInRankError
-from spatialetl.operator.interpolator.interpolator_core import resample_2d_to_grid
+from spatialetl.operator.interpolator.interpolator_core import resample_2d_to_grid, resample_faster_2d_to_grid, \
+    interp_weights
 from spatialetl.utils.distance import distance_on_unit_sphere
 from spatialetl.utils.logger import logging
 
@@ -195,6 +199,9 @@ class Coverage(object):
             self.target_global_x_size = len(self.target_global_axis_x)
             self.target_global_y_size = len(self.target_global_axis_y)
 
+            # TODO Compute weights in parallel
+            #self.vtx, self.wts = interp_weights(self.source_global_axis_x,self.source_global_axis_y,self.target_global_axis_x,self.target_global_axis_y)
+
             if type(self) == Coverage:
                 if self.rank == 0:
                     logging.info(
@@ -234,6 +241,66 @@ class Coverage(object):
 
         # try to fill metadata
         self.read_metadata()
+
+    def __read_vtx(self, current_thread: int, with_overlap=False, ):
+        """
+        Return the values of the x axis.
+
+        Parameters
+        ----------
+        type : str, optional
+            Type of the grid ("target", "source", "target_global", "source_global").
+        with_overlap : bool, optional
+            Whether to include overlap.
+
+        Returns
+        -------
+        array
+            A one- or two-dimensional array of x axis values (often longitude): [x] or [y, x], depending on the grid type.
+
+        Examples
+        --------
+        >>> x_axis = coverage.read_axis_x()
+        >>> x_axis = coverage.read_axis_x(type="source", with_overlap=True)
+        """
+
+        if with_overlap is True:
+            return self.vtx[self.threading_map[self.rank][current_thread]["src_global_y_overlap"],
+                self.threading_map[self.rank][current_thread]["src_global_x_overlap"]]
+        else:
+            return self.vtx[
+                    self.threading_map[self.rank][current_thread]["src_global_y"],
+                    self.threading_map[self.rank][current_thread]["src_global_x"]]
+
+    def __read_wts(self, current_thread: int, with_overlap=False, ):
+        """
+        Return the values of the x axis.
+
+        Parameters
+        ----------
+        type : str, optional
+            Type of the grid ("target", "source", "target_global", "source_global").
+        with_overlap : bool, optional
+            Whether to include overlap.
+
+        Returns
+        -------
+        array
+            A one- or two-dimensional array of x axis values (often longitude): [x] or [y, x], depending on the grid type.
+
+        Examples
+        --------
+        >>> x_axis = coverage.read_axis_x()
+        >>> x_axis = coverage.read_axis_x(type="source", with_overlap=True)
+        """
+
+        if with_overlap is True:
+            return self.wts[self.threading_map[self.rank][current_thread]["src_global_y_overlap"],
+                self.threading_map[self.rank][current_thread]["src_global_x_overlap"]]
+        else:
+            return self.wts[
+                    self.threading_map[self.rank][current_thread]["src_global_y"],
+                    self.threading_map[self.rank][current_thread]["src_global_x"]]
 
     def check_bbox_validity(self, candidate):
         """
@@ -604,13 +671,17 @@ class Coverage(object):
 
             else:
                 idx = np.where(
-                    (self.source_global_axis_x[self.map_mpi[self.rank]["src_global_x"]] >= np.min(
+                    (self.source_global_axis_x[
+                         self.map_mpi[self.rank]["src_global_y"], self.map_mpi[self.rank]["src_global_x"]] >= np.min(
                         self.__read_thread_axis_x(type="target", with_overlap=False, current_thread=thread))) &
-                    (self.source_global_axis_x[self.map_mpi[self.rank]["src_global_x"]] <= np.max(
+                    (self.source_global_axis_x[
+                         self.map_mpi[self.rank]["src_global_y"], self.map_mpi[self.rank]["src_global_x"]] <= np.max(
                         self.__read_thread_axis_x(type="target", with_overlap=False, current_thread=thread))) &
-                    (self.source_global_axis_y[self.map_mpi[self.rank]["src_global_y"]] >= np.min(
+                    (self.source_global_axis_y[
+                         self.map_mpi[self.rank]["src_global_y"], self.map_mpi[self.rank]["src_global_x"]] >= np.min(
                         self.__read_thread_axis_y(type="target", with_overlap=False, current_thread=thread))) &
-                    (self.source_global_axis_y[self.map_mpi[self.rank]["src_global_y"]] <= np.max(
+                    (self.source_global_axis_y[
+                         self.map_mpi[self.rank]["src_global_y"], self.map_mpi[self.rank]["src_global_x"]] <= np.max(
                         self.__read_thread_axis_y(type="target", with_overlap=False, current_thread=thread))))
 
                 ymin = np.min(idx[0])
@@ -687,22 +758,22 @@ class Coverage(object):
                 src_local_y_min_overlap, src_loca_y_max_overlap]
 
             # # Compute dest local grid
-            if self.threading_map[self.rank][thread]["src_global_x_size_overlap"] != \
-                    self.threading_map[self.rank][thread]["dst_global_x_size_overlap"]:
-                # Recompute x size
-                dst_local_x_min = self.threading_map[self.rank][thread]["dst_local_x"].start + (
-                        self.threading_map[self.rank][thread]["src_global_x_size_overlap"] -
-                        self.threading_map[self.rank][thread]["dst_global_x_size_overlap"])
-                dst_local_x_max = dst_local_x_min + self.threading_map[self.rank][thread]["dst_local_x_size"]
-                self.threading_map[self.rank][thread]["dst_local_x"] = np.s_[dst_local_x_min:dst_local_x_max]
-
-            if self.threading_map[self.rank][thread]["dst_global_y_size_overlap"] != \
-                    self.threading_map[self.rank][thread]["src_global_y_size_overlap"]:
-                # Recompute y size
-                dst_local_y_min = self.threading_map[self.rank][thread]["dst_local_y"].start + \
-                                  self.threading_map[self.rank][thread]["dst_global_y_overlap"].start
-                dst_local_y_max = dst_local_y_min + self.threading_map[self.rank][thread]["dst_local_y_size"]
-                self.threading_map[self.rank][thread]["dst_local_y"] = np.s_[dst_local_y_min:dst_local_y_max]
+            # if self.threading_map[self.rank][thread]["src_global_x_size_overlap"] != \
+            #         self.threading_map[self.rank][thread]["dst_global_x_size_overlap"]:
+            #     # Recompute x size
+            #     dst_local_x_min = self.threading_map[self.rank][thread]["dst_local_x"].start + (
+            #             self.threading_map[self.rank][thread]["src_global_x_size_overlap"] -
+            #             self.threading_map[self.rank][thread]["dst_global_x_size_overlap"])
+            #     dst_local_x_max = dst_local_x_min + self.threading_map[self.rank][thread]["dst_local_x_size"]
+            #     self.threading_map[self.rank][thread]["dst_local_x"] = np.s_[dst_local_x_min:dst_local_x_max]
+            #
+            # if self.threading_map[self.rank][thread]["dst_global_y_size_overlap"] != \
+            #         self.threading_map[self.rank][thread]["src_global_y_size_overlap"]:
+            #     # Recompute y size
+            #     dst_local_y_min = self.threading_map[self.rank][thread]["dst_local_y"].start + \
+            #                       self.threading_map[self.rank][thread]["dst_global_y_overlap"].start
+            #     dst_local_y_max = dst_local_y_min + self.threading_map[self.rank][thread]["dst_local_y_size"]
+            #     self.threading_map[self.rank][thread]["dst_local_y"] = np.s_[dst_local_y_min:dst_local_y_max]
 
     # Read metadata
     def read_metadata(self):
@@ -1132,6 +1203,61 @@ class Coverage(object):
             logging.warning("Point is outside the rank n°" + str(self.rank))
             raise NotFoundInRankError(self.rank, "Point is outside the rank")
 
+    def __read_variable(self,function_name):
+        local_data = np.zeros([self.get_y_size(), self.get_x_size()])
+        local_data[:] = np.nan
+
+        # mp_arr = Array(c.c_double, self.get_y_size() * self.get_x_size())  # shared, can be used from multiple processes
+        # then in each new process create a new numpy array using:
+        # arr = np.frombuffer(mp_arr.get_obj())  # mp_arr and arr share the same memory
+        # make it two-dimensional
+        # local_data = arr.reshape((self.get_y_size(), self.get_x_size()))  # b and arr share the same memory
+        # local_data[:] = np.nan
+
+        fn = getattr(self.reader,function_name)
+        futures = []
+        with ProcessPoolExecutor(max_workers=self.threads_number) as executor:
+            for current_thread in range(0, executor._max_workers):
+                data = fn(
+                    self.threading_map[self.rank][current_thread]["src_global_x_overlap"].start,
+                    self.threading_map[self.rank][current_thread]["src_global_x_overlap"].stop,
+                    self.threading_map[self.rank][current_thread]["src_global_y_overlap"].start,
+                    self.threading_map[self.rank][current_thread]["src_global_y_overlap"].stop)
+
+                if self.horizontal_resampling:
+                    futures.append(executor.submit(resample_2d_to_grid,
+                                                   self.__read_thread_axis_x(type="source", with_overlap=True,
+                                                                             current_thread=current_thread),
+                                                   self.__read_thread_axis_y(type="source", with_overlap=True,
+                                                                             current_thread=current_thread),
+                                                   self.__read_thread_axis_x(type="target", with_overlap=True,
+                                                                             current_thread=current_thread),
+                                                   self.__read_thread_axis_y(type="target", with_overlap=True,
+                                                                             current_thread=current_thread),
+                                                   data,
+                                                   Coverage.HORIZONTAL_INTERPOLATION_METHOD,
+                                                   current_thread))
+                    # futures.append(executor.submit(resample_faster_2d_to_grid,
+                    #                                self.__read_vtx(with_overlap=True,
+                    #                                                          current_thread=current_thread),
+                    #                                self.__read_wts(with_overlap=True,
+                    #                                                          current_thread=current_thread),
+                    #                                data,
+                    #                                self.threading_map[self.rank][current_thread]["dst_global_x_size_overlap"],
+                    #                                self.threading_map[self.rank][current_thread]["dst_global_y_size_overlap"],
+                    #                                current_thread))
+
+            futures, _ = concurrent.futures.wait(futures)
+
+            for f in futures:
+                current_thread, data = f.result()
+                local_data[self.threading_map[self.rank][current_thread]["dst_global_y"],
+                self.threading_map[self.rank][current_thread]["dst_global_x"]] = data[
+                    self.threading_map[self.rank][current_thread]["dst_local_y"],
+                    self.threading_map[self.rank][current_thread]["dst_local_x"]]
+
+        return local_data
+
     # Variables
     #################
     # HYDRO
@@ -1150,41 +1276,9 @@ class Coverage(object):
         --------
         >>> bathymetry = coverage.read_variable_bathymetry()
         """
+        return self.__read_variable(inspect.stack()[0][3])
 
-        local_data = np.zeros([self.get_y_size(), self.get_x_size()])
-        local_data[:] = np.nan
-
-        def gathering_data(function_name, current_thread):
-            fn = getattr(self.reader, function_name)
-            data = fn(
-                self.threading_map[self.rank][current_thread]["src_global_x_overlap"].start,
-                self.threading_map[self.rank][current_thread]["src_global_x_overlap"].stop,
-                self.threading_map[self.rank][current_thread]["src_global_y_overlap"].start,
-                self.threading_map[self.rank][current_thread]["src_global_y_overlap"].stop)
-
-            if self.horizontal_resampling:
-                data = resample_2d_to_grid(
-                    self.__read_thread_axis_x(type="source", with_overlap=True, current_thread=current_thread),
-                    self.__read_thread_axis_y(type="source", with_overlap=True, current_thread=current_thread),
-                    self.__read_thread_axis_x(type="target", with_overlap=True, current_thread=current_thread),
-                    self.__read_thread_axis_y(type="target", with_overlap=True, current_thread=current_thread),
-                    data,
-                    Coverage.HORIZONTAL_INTERPOLATION_METHOD)
-
-            local_data[self.threading_map[self.rank][current_thread]["dst_global_y"],
-            self.threading_map[self.rank][current_thread]["dst_global_x"]] = data[
-                self.threading_map[self.rank][current_thread]["dst_local_y"],
-                self.threading_map[self.rank][current_thread]["dst_local_x"]]
-
-        futures = []
-        with ProcessPoolExecutor(max_workers=self.threads_number) as executor:
-            for i in range(0, executor._max_workers):
-                futures.append(executor.submit(gathering_data('read_variable_bathymetry', i)))
-        futures, _ = concurrent.futures.wait(futures)
-
-        return local_data
-
-    def read_variable_topography(self, current_thread: int = 0):
+    def read_variable_topography(self,):
         """
         Read the topography over the entire coverage.
 
@@ -1197,25 +1291,9 @@ class Coverage(object):
         --------
         >>> topography = coverage.read_variable_topography()
         """
-        data = self.reader.read_variable_topography(
-            self.threading_map[self.rank][current_thread]["src_global_x_overlap"].start,
-            self.threading_map[self.rank][current_thread]["src_global_x_overlap"].stop,
-            self.threading_map[self.rank][current_thread]["src_global_y_overlap"].start,
-            self.threading_map[self.rank][current_thread]["src_global_y_overlap"].stop)
+        return self.__read_variable(inspect.stack()[0][3])
 
-        if self.horizontal_resampling:
-            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data,
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
-
-        return data[
-            self.threading_map[self.rank][current_thread]["dst_local_y"], self.threading_map[self.rank][current_thread][
-                "dst_local_x"]]
-
-    def read_variable_mesh_size(self, current_thread: int = 0):
+    def read_variable_mesh_size(self):
         """
         Read the mesh size over the entire coverage.
 
@@ -1228,25 +1306,9 @@ class Coverage(object):
         --------
         >>> mesh_size = coverage.read_variable_mesh_size()
         """
-        data = self.reader.read_variable_mesh_size(
-            self.threading_map[self.rank][current_thread]["src_global_x_overlap"].start,
-            self.threading_map[self.rank][current_thread]["src_global_x_overlap"].stop,
-            self.threading_map[self.rank][current_thread]["src_global_y_overlap"].start,
-            self.threading_map[self.rank][current_thread]["src_global_y_overlap"].stop)
+        return self.__read_variable(inspect.stack()[0][3])
 
-        if self.horizontal_resampling:
-            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data,
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
-
-        return data[
-            self.threading_map[self.rank][current_thread]["dst_local_y"], self.threading_map[self.rank][current_thread][
-                "dst_local_x"]]
-
-    def read_variable_x_mesh_size(self, current_thread: int = 0):
+    def read_variable_x_mesh_size(self):
         """
         Read the mesh size on the x axis.
 
@@ -1259,25 +1321,9 @@ class Coverage(object):
         --------
         >>> x_mesh_size = coverage.read_variable_x_mesh_size()
         """
-        data = self.reader.read_variable_x_mesh_size(
-            self.threading_map[self.rank][current_thread]["src_global_x_overlap"].start,
-            self.threading_map[self.rank][current_thread]["src_global_x_overlap"].stop,
-            self.threading_map[self.rank][current_thread]["src_global_y_overlap"].start,
-            self.threading_map[self.rank][current_thread]["src_global_y_overlap"].stop)
+        return self.__read_variable(inspect.stack()[0][3])
 
-        if self.horizontal_resampling:
-            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data,
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
-
-        return data[
-            self.threading_map[self.rank][current_thread]["dst_local_y"], self.threading_map[self.rank][current_thread][
-                "dst_local_x"]]
-
-    def read_variable_y_mesh_size(self, current_thread: int = 0):
+    def read_variable_y_mesh_size(self):
         """
         Read the mesh size on the y axis.
 
@@ -1290,25 +1336,9 @@ class Coverage(object):
         --------
         >>> y_mesh_size = coverage.read_variable_y_mesh_size()
         """
-        data = self.reader.read_variable_y_mesh_size(
-            self.threading_map[self.rank][current_thread]["src_global_x_overlap"].start,
-            self.threading_map[self.rank][current_thread]["src_global_x_overlap"].stop,
-            self.threading_map[self.rank][current_thread]["src_global_y_overlap"].start,
-            self.threading_map[self.rank][current_thread]["src_global_y_overlap"].stop)
+        return self.__read_variable(inspect.stack()[0][3])
 
-        if self.horizontal_resampling:
-            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data,
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
-
-        return data[
-            self.threading_map[self.rank][current_thread]["dst_local_y"], self.threading_map[self.rank][current_thread][
-                "dst_local_x"]]
-
-    def read_variable_2D_sea_binary_mask(self, type="target", with_overlap=False, current_thread: int = 0):
+    def read_variable_2D_sea_binary_mask(self):
         """
         Read the land/sea mask over the entire coverage.
 
@@ -1329,34 +1359,11 @@ class Coverage(object):
         --------
         >>> mask = coverage.read_variable_2D_sea_binary_mask()
         """
-        data = self.reader.read_variable_2D_sea_binary_mask(
-            self.threading_map[self.rank][current_thread]["src_global_x_overlap"].start,
-            self.threading_map[self.rank][current_thread]["src_global_x_overlap"].stop,
-            self.threading_map[self.rank][current_thread]["src_global_y_overlap"].start,
-            self.threading_map[self.rank][current_thread]["src_global_y_overlap"].stop)
+        return self.__read_variable(inspect.stack()[0][3])
 
-        if type == "source" and with_overlap is True:
-            return data[self.threading_map[self.rank][current_thread]["src_local_y_overlap"],
-            self.threading_map[self.rank][current_thread]["src_local_x_overlap"]]
-        elif type == "source" and with_overlap is False:
-            return data[self.threading_map[self.rank][current_thread]["src_local_y"],
-            self.threading_map[self.rank][current_thread]["src_local_x"]]
-        elif type == "target":
-
-            if self.horizontal_resampling:
-                data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                           self.read_axis_y(type="source", with_overlap=True),
-                                           self.read_axis_x(type="target", with_overlap=True),
-                                           self.read_axis_y(type="target", with_overlap=True),
-                                           data,
-                                           Coverage.HORIZONTAL_INTERPOLATION_METHOD)
-
-            return data[self.threading_map[self.rank][current_thread]["dst_local_y"],
-            self.threading_map[self.rank][current_thread]["dst_local_x"]]
-
-    def read_variable_Ha(self, current_thread: int = 0):
+    def read_variable_Ha(self):
         """
-        Read the amplitude of the reanalysis.
+        Read tide amplitude
 
         Returns
         -------
@@ -1367,20 +1374,4 @@ class Coverage(object):
         --------
         >>> Ha = coverage.read_variable_Ha()
         """
-        data = self.reader.read_variable_Ha(
-            self.threading_map[self.rank][current_thread]["src_global_x_overlap"].start,
-            self.threading_map[self.rank][current_thread]["src_global_x_overlap"].stop,
-            self.threading_map[self.rank][current_thread]["src_global_y_overlap"].start,
-            self.threading_map[self.rank][current_thread]["src_global_y_overlap"].stop)
-
-        if self.horizontal_resampling:
-            data = resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data,
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)
-
-        return data[
-            self.threading_map[self.rank][current_thread]["dst_local_y"], self.threading_map[self.rank][current_thread][
-                "dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3])
