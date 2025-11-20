@@ -20,34 +20,36 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import time
+
 from spatialetl.coverage.time_level_coverage import TimeLevelCoverage
 from spatialetl.providers.symphonie.coverage.netcdf.v293.symphonie_reader import SYMPHONIEReader as CoverageReader
 from spatialetl.providers.common.netcdf.coverage.default_writer import DefaultWriter
 from spatialetl.utils.logger import logging
 
 if __name__ == "__main__":
+    start_time = time.time()
     logging.setLevel(logging.INFO)
 
     # Read file
-    reader = CoverageReader('resources/symphonie_grid.nc',
-                             'resources/symphonie_graphique.nc')
-
-    coverageOrig = TimeLevelCoverage(reader);
+    reader = CoverageReader('/work/sciences/projects/2022-Snale/simu-Aubenas/output/v2-1992/grid.nc',
+                             '/work/sciences/projects/2022-Snale/simu-Aubenas/output/v2-1992/GRAPHIQUES/')
 
     #depths = [0.0, 10.0]
-    coverage = TimeLevelCoverage(reader, resolution_x=0.001, resolution_y=0.001,freq="3h",resolution_z=0.0001);
+    coverage = TimeLevelCoverage(reader, resolution_x=0.001, resolution_y=0.001,resolution_z=0.0001,nb_thread=1,end_time="2022-06-07 17:45:36");
 
     writer = DefaultWriter(coverage, '/tmp/symphonie_regular.nc')
 
-    writer.write_variable_baroclinic_sea_water_velocity()
-    writer.write_variable_barotropic_sea_water_velocity()
-    writer.write_variable_sea_surface_height_above_mean_sea_level()
-    writer.write_variable_wind_stress()
-    writer.write_variable_sea_water_temperature()
-    writer.write_variable_sea_water_salinity()
+    #writer.write_variable_baroclinic_sea_water_velocity()
+    #writer.write_variable_barotropic_sea_water_velocity()
+    writer.write_variable_sea_water_column_thickness()
+    #writer.write_variable_sea_surface_height_above_mean_sea_level()
+    #writer.write_variable_wind_stress()
+    #writer.write_variable_sea_water_temperature()
+    #writer.write_variable_sea_water_salinity()
     # writer.write_variable_wet_binary_mask()
     writer.write_variable_2D_sea_binary_mask()
-    writer.write_variable_wind_10m()
+    #writer.write_variable_wind_10m()
     writer.write_variable_mesh_size()
     #writer.write_variable_sea_surface_wave_significant_height()
     #writer.write_variable_sea_surface_wave_mean_period()
@@ -55,7 +57,9 @@ if __name__ == "__main__":
     #writer.write_variable_sea_surface_wave_from_direction()
     #writer.write_variable_sea_surface_wave_to_direction()
     writer.close()
-    
+
+    stop_time = time.time()
+    print("----- Time ", (time.time() - start_time), " seconds -----")
     print('End of program')
      
     
