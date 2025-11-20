@@ -1,4 +1,0 @@
-to_single_precision
-===================
-
-.. py:method:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.to_single_precision()

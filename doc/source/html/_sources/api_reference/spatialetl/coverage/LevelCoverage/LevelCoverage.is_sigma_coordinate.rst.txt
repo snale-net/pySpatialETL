@@ -1,8 +1,0 @@
-is_sigma_coordinate
-===================
-
-.. py:method:: spatialetl.coverage.LevelCoverage.LevelCoverage.is_sigma_coordinate(type='target')
-
-   Retourne vrai si la grille verticale est en coordonnée sigma, sinon faux.
-   @return:  vrai si la grille verticale est en coordonnée sigma sinon faux.
-

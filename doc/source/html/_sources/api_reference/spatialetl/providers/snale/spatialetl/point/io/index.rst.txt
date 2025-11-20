@@ -1,6 +1,0 @@
-spatialetl.providers.snale.spatialetl.point.io
-==============================================
-
-.. py:module:: spatialetl.providers.snale.spatialetl.point.io
-
-

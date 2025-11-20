@@ -1,8 +1,0 @@
-swantime2datetime
-=================
-
-.. py:function:: spatialetl.providers.swan.spatialetl.coverage.io.ascii.swan.SWANUnstructuredReader.swantime2datetime(time, inverse=False)
-
-   Translating Swans's time strings to datetimes and vice-versa.
-   See datetime module more information.
-

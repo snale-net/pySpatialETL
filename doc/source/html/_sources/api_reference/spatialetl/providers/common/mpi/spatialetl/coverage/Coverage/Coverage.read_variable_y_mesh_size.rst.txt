@@ -1,8 +1,0 @@
-read_variable_y_mesh_size
-=========================
-
-.. py:method:: spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.read_variable_y_mesh_size()
-
-   Retourne la taille de la grille sur l'axe Y
-   @return: un tableau en deux dimensions [y,x].
-

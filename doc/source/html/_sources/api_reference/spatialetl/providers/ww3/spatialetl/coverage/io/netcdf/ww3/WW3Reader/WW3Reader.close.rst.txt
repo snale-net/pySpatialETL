@@ -1,4 +1,0 @@
-close
-=====
-
-.. py:method:: spatialetl.providers.ww3.spatialetl.coverage.io.netcdf.ww3.WW3Reader.WW3Reader.close()

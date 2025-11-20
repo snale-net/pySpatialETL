@@ -1,4 +1,0 @@
-vertical_interpolation
-======================
-
-.. py:function:: spatialetl.operator.interpolator.InterpolatorCore.vertical_interpolation(sourceAxis, targetAxis, data, method, extrapolate=False)

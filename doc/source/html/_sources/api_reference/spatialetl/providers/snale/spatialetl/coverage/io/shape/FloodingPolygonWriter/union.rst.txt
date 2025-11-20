@@ -1,4 +1,0 @@
-union
-=====
-
-.. py:function:: spatialetl.providers.snale.spatialetl.coverage.io.shape.FloodingPolygonWriter.union(x)

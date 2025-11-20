@@ -1,4 +1,0 @@
-read_axis_x
-===========
-
-.. py:method:: spatialetl.providers.common.mpi.spatialetl.point.MultiPoint.MultiPoint.read_axis_x()

@@ -1,4 +1,0 @@
-write_variable_wind_from_direction_10m
-======================================
-
-.. py:method:: spatialetl.providers.common.netcdf.spatialetl.point.io.netcdf.DefaultWriter.DefaultWriter.write_variable_wind_from_direction_10m()

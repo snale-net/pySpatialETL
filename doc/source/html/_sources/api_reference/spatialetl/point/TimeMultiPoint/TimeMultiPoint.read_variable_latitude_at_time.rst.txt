@@ -1,4 +1,0 @@
-read_variable_latitude_at_time
-==============================
-
-.. py:method:: spatialetl.point.TimeMultiPoint.TimeMultiPoint.read_variable_latitude_at_time(date)

@@ -1,4 +1,0 @@
-close
-=====
-
-.. py:method:: spatialetl.providers.mercator.spatialetl.coverage.io.netcdf.mercator.v2020.MERCATORReader.MERCATORReader.close()

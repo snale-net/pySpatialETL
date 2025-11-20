@@ -1,4 +1,0 @@
-read_variable_time
-==================
-
-.. py:method:: spatialetl.providers.ww3.spatialetl.point.io.netcdf.ww3.WW3Reader.WW3Reader.read_variable_time()

@@ -1,4 +1,0 @@
-read_variable_baroclinic_sea_water_velocity_at_time_and_depth
-=============================================================
-
-.. py:method:: spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.v293.SYMPHONIEReader.SYMPHONIEReader.read_variable_baroclinic_sea_water_velocity_at_time_and_depth(index_t, index_z, xmin, xmax, ymin, ymax)

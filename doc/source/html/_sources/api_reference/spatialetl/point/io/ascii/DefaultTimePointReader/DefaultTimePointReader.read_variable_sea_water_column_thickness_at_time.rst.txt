@@ -1,4 +1,0 @@
-read_variable_sea_water_column_thickness_at_time
-================================================
-
-.. py:method:: spatialetl.point.io.ascii.DefaultTimePointReader.DefaultTimePointReader.read_variable_sea_water_column_thickness_at_time(index_t)

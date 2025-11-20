@@ -1,4 +1,0 @@
-read_variable_time
-==================
-
-.. py:method:: spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ECMWFReader.ECMWFReader.read_variable_time(tmin, tmax)

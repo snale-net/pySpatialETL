@@ -1,6 +1,0 @@
-write_variable_dew_point_temperature
-====================================
-
-.. py:method:: spatialetl.coverage.io.CoverageWriter.CoverageWriter.write_variable_dew_point_temperature()
-   :abstractmethod:
-

@@ -1,4 +1,0 @@
-wkbFlatten
-==========
-
-.. py:function:: spatialetl.utils.bing.core.ogr2ogr.wkbFlatten(x)

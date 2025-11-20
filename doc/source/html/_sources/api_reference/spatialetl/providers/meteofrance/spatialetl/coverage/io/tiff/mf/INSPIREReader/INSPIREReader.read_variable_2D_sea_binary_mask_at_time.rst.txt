@@ -1,4 +1,0 @@
-read_variable_2D_sea_binary_mask_at_time
-========================================
-
-.. py:method:: spatialetl.providers.meteofrance.spatialetl.coverage.io.tiff.mf.INSPIREReader.INSPIREReader.read_variable_2D_sea_binary_mask_at_time(intex_t, xmin, xmax, ymin, ymax)

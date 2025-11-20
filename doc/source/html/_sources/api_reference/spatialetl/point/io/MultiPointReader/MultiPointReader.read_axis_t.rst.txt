@@ -1,6 +1,0 @@
-read_axis_t
-===========
-
-.. py:method:: spatialetl.point.io.MultiPointReader.MultiPointReader.read_axis_t(tmin, tmax, timestamp)
-   :abstractmethod:
-

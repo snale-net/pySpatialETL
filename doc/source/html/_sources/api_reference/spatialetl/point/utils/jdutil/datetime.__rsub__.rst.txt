@@ -1,4 +1,0 @@
-__rsub__
-========
-
-.. py:method:: spatialetl.point.utils.jdutil.datetime.__rsub__(other)

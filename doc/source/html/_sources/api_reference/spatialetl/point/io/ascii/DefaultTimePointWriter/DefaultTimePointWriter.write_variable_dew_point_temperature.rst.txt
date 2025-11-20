@@ -1,4 +1,0 @@
-write_variable_dew_point_temperature
-====================================
-
-.. py:method:: spatialetl.point.io.ascii.DefaultTimePointWriter.DefaultTimePointWriter.write_variable_dew_point_temperature()

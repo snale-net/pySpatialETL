@@ -1,6 +1,0 @@
-close
-=====
-
-.. py:method:: spatialetl.point.io.MultiPointWriter.MultiPointWriter.close()
-   :abstractmethod:
-

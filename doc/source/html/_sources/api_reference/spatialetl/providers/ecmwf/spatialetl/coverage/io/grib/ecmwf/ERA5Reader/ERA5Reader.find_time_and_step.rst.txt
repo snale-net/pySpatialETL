@@ -1,4 +1,0 @@
-find_time_and_step
-==================
-
-.. py:method:: spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ERA5Reader.ERA5Reader.find_time_and_step(index_t)

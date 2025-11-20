@@ -1,4 +1,0 @@
-__radd__
-========
-
-.. py:method:: spatialetl.coverage.utils.jdutil.datetime.__radd__(other)

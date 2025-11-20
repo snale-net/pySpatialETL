@@ -1,6 +1,0 @@
-write_variable_sea_water_velocity_at_sea_water_surface
-======================================================
-
-.. py:method:: spatialetl.coverage.io.CoverageWriter.CoverageWriter.write_variable_sea_water_velocity_at_sea_water_surface()
-   :abstractmethod:
-

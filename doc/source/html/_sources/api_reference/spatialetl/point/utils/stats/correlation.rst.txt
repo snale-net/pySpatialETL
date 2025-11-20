@@ -1,4 +1,0 @@
-correlation
-===========
-
-.. py:function:: spatialetl.point.utils.stats.correlation(obs, model)

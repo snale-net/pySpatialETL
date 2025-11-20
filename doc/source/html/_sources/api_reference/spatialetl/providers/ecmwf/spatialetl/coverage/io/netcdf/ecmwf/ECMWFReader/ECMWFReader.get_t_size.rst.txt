@@ -1,4 +1,0 @@
-get_t_size
-==========
-
-.. py:method:: spatialetl.providers.ecmwf.spatialetl.coverage.io.netcdf.ecmwf.ECMWFReader.ECMWFReader.get_t_size()

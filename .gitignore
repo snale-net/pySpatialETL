@@ -37,6 +37,9 @@ ENV/
 *.iml
 
 # Items generated when building the docs locally for release
+doc/source/html/
+doc/source/_build/
+doc/source/docs/reference/coverage/_generated
 doc/build/*
 doc/source/api_reference/*
 doc/_build/

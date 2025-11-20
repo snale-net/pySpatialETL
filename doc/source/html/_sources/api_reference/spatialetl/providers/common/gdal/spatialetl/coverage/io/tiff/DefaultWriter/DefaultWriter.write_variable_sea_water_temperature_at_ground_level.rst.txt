@@ -1,4 +1,0 @@
-write_variable_sea_water_temperature_at_ground_level
-====================================================
-
-.. py:method:: spatialetl.providers.common.gdal.spatialetl.coverage.io.tiff.DefaultWriter.DefaultWriter.write_variable_sea_water_temperature_at_ground_level()

@@ -1,6 +1,0 @@
-spatialetl.providers.telemac.setup
-==================================
-
-.. py:module:: spatialetl.providers.telemac.setup
-
-

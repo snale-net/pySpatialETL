@@ -1,6 +1,0 @@
-get_z_size
-==========
-
-.. py:method:: spatialetl.point.io.MultiPointReader.MultiPointReader.get_z_size()
-   :abstractmethod:
-

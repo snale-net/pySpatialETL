@@ -1,6 +1,0 @@
-write_variable_atmosphere_momentum_flux_to_waves
-================================================
-
-.. py:method:: spatialetl.coverage.io.CoverageWriter.CoverageWriter.write_variable_atmosphere_momentum_flux_to_waves()
-   :abstractmethod:
-

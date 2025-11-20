@@ -1,8 +1,0 @@
-deg2uv
-======
-
-.. py:function:: spatialetl.providers.swan.spatialetl.coverage.io.ascii.swan.SWANUnstructuredReader.deg2uv(direction, intensity=False)
-
-   Givean an array of directions will return the U and V
-   components. intensity is optional.
-

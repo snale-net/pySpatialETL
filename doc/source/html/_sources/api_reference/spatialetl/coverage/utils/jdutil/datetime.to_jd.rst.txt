@@ -1,8 +1,0 @@
-to_jd
-=====
-
-.. py:method:: spatialetl.coverage.utils.jdutil.datetime.to_jd()
-
-   Return the date converted to Julian Day.
-
-

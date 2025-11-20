@@ -1,4 +1,0 @@
-read_variable_waves_momentum_flux_to_ocean_at_time
-==================================================
-
-.. py:method:: spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.read_variable_waves_momentum_flux_to_ocean_at_time(index_t)

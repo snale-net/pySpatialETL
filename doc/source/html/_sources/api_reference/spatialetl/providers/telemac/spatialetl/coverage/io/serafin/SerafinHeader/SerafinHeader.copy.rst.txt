@@ -1,7 +1,0 @@
-copy
-====
-
-.. py:method:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.copy()
-
-   Returns a deep copy of the current instance
-

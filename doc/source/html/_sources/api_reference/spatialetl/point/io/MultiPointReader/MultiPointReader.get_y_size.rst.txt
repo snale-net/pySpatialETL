@@ -1,6 +1,0 @@
-get_y_size
-==========
-
-.. py:method:: spatialetl.point.io.MultiPointReader.MultiPointReader.get_y_size()
-   :abstractmethod:
-

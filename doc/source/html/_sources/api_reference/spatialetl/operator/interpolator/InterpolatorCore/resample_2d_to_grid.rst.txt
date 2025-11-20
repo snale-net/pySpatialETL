@@ -1,7 +1,0 @@
-resample_2d_to_grid
-===================
-
-.. py:function:: spatialetl.operator.interpolator.InterpolatorCore.resample_2d_to_grid(gridX, gridY, newX, newY, data, method)
-
-   2D resampling function
-

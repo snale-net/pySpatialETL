@@ -1,4 +1,0 @@
-is_regular_grid
-===============
-
-.. py:method:: spatialetl.providers.meteofrance.spatialetl.coverage.io.grib.mf.MFWAMReader.MFWAMReader.is_regular_grid()

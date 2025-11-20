@@ -1,6 +1,0 @@
-write_variable_water_volume_transport_into_sea_water_from_rivers
-================================================================
-
-.. py:method:: spatialetl.coverage.io.CoverageWriter.CoverageWriter.write_variable_water_volume_transport_into_sea_water_from_rivers()
-   :abstractmethod:
-

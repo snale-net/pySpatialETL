@@ -1,4 +1,0 @@
-interpolate_all_times
-=====================
-
-.. py:method:: spatialetl.point.TimeMultiPoint.TimeMultiPoint.interpolate_all_times(values)

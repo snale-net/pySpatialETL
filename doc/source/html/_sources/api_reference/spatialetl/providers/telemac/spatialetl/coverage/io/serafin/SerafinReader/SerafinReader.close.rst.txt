@@ -1,4 +1,0 @@
-close
-=====
-
-.. py:method:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinReader.SerafinReader.close()
