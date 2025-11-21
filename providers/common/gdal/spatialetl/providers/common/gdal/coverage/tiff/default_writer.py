@@ -80,17 +80,17 @@ class DefaultWriter(CoverageWriter):
             self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
         else:
             # Pour le proc n°1
-            global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                        self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data
+            global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                        self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
 
             # Pour les autres
             for source in range(1, self.coverage.size):
-                recvbuf = np.empty([self.coverage.map_mpi[source]["dst_local_y_size"],
-                                    self.coverage.map_mpi[source]["dst_local_x_size"]])
+                recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
+                                    self.coverage.parallel_map[source]["dst_local_x_size"]])
                 self.coverage.comm.Recv(recvbuf, source=source)
 
-                global_data[self.coverage.map_mpi[source]["dst_global_y"],
-                            self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf
+                global_data[self.coverage.parallel_map[source]["dst_global_y"],
+                            self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
 
         #self.coverage.comm.barrier()
 
@@ -124,17 +124,17 @@ class DefaultWriter(CoverageWriter):
             self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
         else:
             # Pour le proc n°1
-            global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                        self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data
+            global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                        self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
 
             # Pour les autres
             for source in range(1, self.coverage.size):
-                recvbuf = np.empty([self.coverage.map_mpi[source]["dst_local_y_size"],
-                                    self.coverage.map_mpi[source]["dst_local_x_size"]])
+                recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
+                                    self.coverage.parallel_map[source]["dst_local_x_size"]])
                 self.coverage.comm.Recv(recvbuf, source=source)
 
-                global_data[self.coverage.map_mpi[source]["dst_global_y"],
-                            self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf
+                global_data[self.coverage.parallel_map[source]["dst_global_y"],
+                            self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
 
         self.coverage.comm.barrier()
 
@@ -173,19 +173,19 @@ class DefaultWriter(CoverageWriter):
                     self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
                 else:
                     # Pour le proc n°1
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
 
                     # Pour les autres
                     for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.map_mpi[source]["dst_local_y_size"],
-                                            self.coverage.map_mpi[source]["dst_local_x_size"]])
+                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
+                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
                         self.coverage.comm.Recv(recvbuf, source=source)
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
 
             self.coverage.comm.barrier()
 
@@ -235,19 +235,19 @@ class DefaultWriter(CoverageWriter):
                     self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
                 else:
                     # Pour le proc n°1
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
 
                     # Pour les autres
                     for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.map_mpi[source]["dst_local_y_size"],
-                                            self.coverage.map_mpi[source]["dst_local_x_size"]])
+                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
+                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
                         self.coverage.comm.Recv(recvbuf, source=source)
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
 
             self.coverage.comm.barrier()
 
@@ -298,19 +298,19 @@ class DefaultWriter(CoverageWriter):
                     self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
                 else:
                     # Pour le proc n°1
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
 
                     # Pour les autres
                     for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.map_mpi[source]["dst_local_y_size"],
-                                            self.coverage.map_mpi[source]["dst_local_x_size"]])
+                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
+                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
                         self.coverage.comm.Recv(recvbuf, source=source)
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
 
             self.coverage.comm.barrier()
 
@@ -360,18 +360,18 @@ class DefaultWriter(CoverageWriter):
             self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
         else:
             # Pour le proc n°1
-            global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                        self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data
+            global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                        self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
 
             if self.coverage.comm:
                 # Pour les autres
                 for source in range(1, self.coverage.size):
-                    recvbuf = np.empty([self.coverage.map_mpi[source]["dst_local_y_size"],
-                                        self.coverage.map_mpi[source]["dst_local_x_size"]])
+                    recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
+                                        self.coverage.parallel_map[source]["dst_local_x_size"]])
                     self.coverage.comm.Recv(recvbuf, source=source)
 
-                    global_data[self.coverage.map_mpi[source]["dst_global_y"],
-                                self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf
+                    global_data[self.coverage.parallel_map[source]["dst_global_y"],
+                                self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
 
         if self.coverage.comm:
             self.coverage.comm.barrier()
@@ -412,31 +412,31 @@ class DefaultWriter(CoverageWriter):
                     self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
                 else:
                     # Pour le proc n°1
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
                                 0,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data[0]
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data[0]
 
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
                                 1,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data[1]
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data[1]
 
                     # Pour les autres
                     for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([2, self.coverage.map_mpi[source]["dst_local_y_size"],
-                                            self.coverage.map_mpi[source]["dst_local_x_size"]])
+                        recvbuf = np.empty([2, self.coverage.parallel_map[source]["dst_local_y_size"],
+                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
                         self.coverage.comm.Recv(recvbuf, source=source)
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
                                     0,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf[0]
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf[0]
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
                                     1,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf[1]
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf[1]
 
             #self.coverage.comm.barrier()
 
@@ -513,19 +513,19 @@ class DefaultWriter(CoverageWriter):
                     self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
                 else:
                     # Pour le proc n°1
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
 
                     # Pour les autres
                     for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.map_mpi[source]["dst_local_y_size"],
-                                            self.coverage.map_mpi[source]["dst_local_x_size"]])
+                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
+                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
                         self.coverage.comm.Recv(recvbuf, source=source)
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
 
             self.coverage.comm.barrier()
 
@@ -570,19 +570,19 @@ class DefaultWriter(CoverageWriter):
                     self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
                 else:
                     # Pour le proc n°1
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
 
                     # Pour les autres
                     for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.map_mpi[source]["dst_local_y_size"],
-                                            self.coverage.map_mpi[source]["dst_local_x_size"]])
+                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
+                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
                         self.coverage.comm.Recv(recvbuf, source=source)
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
 
             self.coverage.comm.barrier()
 
@@ -632,19 +632,19 @@ class DefaultWriter(CoverageWriter):
                     self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
                 else:
                     # Pour le proc n°1
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
 
                     # Pour les autres
                     for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.map_mpi[source]["dst_local_y_size"],
-                                            self.coverage.map_mpi[source]["dst_local_x_size"]])
+                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
+                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
                         self.coverage.comm.Recv(recvbuf, source=source)
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
 
             self.coverage.comm.barrier()
 
@@ -695,19 +695,19 @@ class DefaultWriter(CoverageWriter):
                     self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
                 else:
                     # Pour le proc n°1
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
 
                     # Pour les autres
                     for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.map_mpi[source]["dst_local_y_size"],
-                                            self.coverage.map_mpi[source]["dst_local_x_size"]])
+                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
+                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
                         self.coverage.comm.Recv(recvbuf, source=source)
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
 
             self.coverage.comm.barrier()
 
@@ -757,19 +757,19 @@ class DefaultWriter(CoverageWriter):
                     self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
                 else:
                     # Pour le proc n°1
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
 
                     # Pour les autres
                     for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.map_mpi[source]["dst_local_y_size"],
-                                            self.coverage.map_mpi[source]["dst_local_x_size"]])
+                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
+                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
                         self.coverage.comm.Recv(recvbuf, source=source)
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
 
             self.coverage.comm.barrier()
 
@@ -820,31 +820,31 @@ class DefaultWriter(CoverageWriter):
                     self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
                 else:
                     # Pour le proc n°1
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
                                 0,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data[0]
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data[0]
 
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
                                 1,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data[1]
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data[1]
 
                     # Pour les autres
                     for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([2, self.coverage.map_mpi[source]["dst_local_y_size"],
-                                            self.coverage.map_mpi[source]["dst_local_x_size"]])
+                        recvbuf = np.empty([2, self.coverage.parallel_map[source]["dst_local_y_size"],
+                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
                         self.coverage.comm.Recv(recvbuf, source=source)
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
                                     0,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf[0]
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf[0]
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
                                     1,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf[1]
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf[1]
 
             self.coverage.comm.barrier()
 
@@ -917,19 +917,19 @@ class DefaultWriter(CoverageWriter):
                     self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
                 else:
                     # Pour le proc n°1
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
 
                     # Pour les autres
                     for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.map_mpi[source]["dst_local_y_size"],
-                                            self.coverage.map_mpi[source]["dst_local_x_size"]])
+                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
+                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
                         self.coverage.comm.Recv(recvbuf, source=source)
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
 
             self.coverage.comm.barrier()
 
@@ -979,19 +979,19 @@ class DefaultWriter(CoverageWriter):
                     self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
                 else:
                     # Pour le proc n°1
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
 
                     # Pour les autres
                     for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.map_mpi[source]["dst_local_y_size"],
-                                            self.coverage.map_mpi[source]["dst_local_x_size"]])
+                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
+                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
                         self.coverage.comm.Recv(recvbuf, source=source)
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
 
             self.coverage.comm.barrier()
 
@@ -1042,31 +1042,31 @@ class DefaultWriter(CoverageWriter):
                     self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
                 else:
                     # Pour le proc n°1
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
                                 0,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data[0]
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data[0]
 
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
                                 1,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data[1]
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data[1]
 
                     # Pour les autres
                     for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([2, self.coverage.map_mpi[source]["dst_local_y_size"],
-                                            self.coverage.map_mpi[source]["dst_local_x_size"]])
+                        recvbuf = np.empty([2, self.coverage.parallel_map[source]["dst_local_y_size"],
+                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
                         self.coverage.comm.Recv(recvbuf, source=source)
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
                                     0,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf[0]
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf[0]
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
                                     1,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf[1]
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf[1]
 
             self.coverage.comm.barrier()
 
@@ -1138,10 +1138,10 @@ class DefaultWriter(CoverageWriter):
     #         for level in self.coverage.read_axis_z():
     #             # Pas d'interpolation temporelle donc on parcours les index du temps
     #             var[
-    #             self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index:self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index + 1,
+    #             self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index:self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index + 1,
     #             level_index:level_index + 1,
-    #             self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-    #             self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]
+    #             self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+    #             self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
     #             ] = self.coverage.read_variable_sea_water_temperature_at_time_and_depth(time, level)
     #
     #             level_index += 1
@@ -1158,10 +1158,10 @@ class DefaultWriter(CoverageWriter):
     #         for level in self.coverage.read_axis_z():
     #             # Pas d'interpolation temporelle donc on parcours les index du temps
     #             var[
-    #             self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index:self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index + 1,
+    #             self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index:self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index + 1,
     #             level_index:level_index + 1,
-    #             self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-    #             self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]
+    #             self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+    #             self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
     #             ] = self.coverage.read_variable_sea_water_salinity_at_time_and_depth(time, level)
     #
     #             level_index += 1
@@ -1204,19 +1204,19 @@ class DefaultWriter(CoverageWriter):
                     self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
                 else:
                     # Pour le proc n°1
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
 
                     # Pour les autres
                     for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.map_mpi[source]["dst_local_y_size"],
-                                            self.coverage.map_mpi[source]["dst_local_x_size"]])
+                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
+                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
                         self.coverage.comm.Recv(recvbuf, source=source)
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
 
             self.coverage.comm.barrier()
 
@@ -1266,19 +1266,19 @@ class DefaultWriter(CoverageWriter):
                     self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
                 else:
                     # Pour le proc n°1
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
 
                     # Pour les autres
                     for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.map_mpi[source]["dst_local_y_size"],
-                                            self.coverage.map_mpi[source]["dst_local_x_size"]])
+                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
+                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
                         self.coverage.comm.Recv(recvbuf, source=source)
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
 
             self.coverage.comm.barrier()
 
@@ -1328,19 +1328,19 @@ class DefaultWriter(CoverageWriter):
                     self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
                 else:
                     # Pour le proc n°1
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
 
                     # Pour les autres
                     for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.map_mpi[source]["dst_local_y_size"],
-                                            self.coverage.map_mpi[source]["dst_local_x_size"]])
+                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
+                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
                         self.coverage.comm.Recv(recvbuf, source=source)
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
 
             self.coverage.comm.barrier()
 
@@ -1390,19 +1390,19 @@ class DefaultWriter(CoverageWriter):
                     self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
                 else:
                     # Pour le proc n°1
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
 
                     # Pour les autres
                     for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.map_mpi[source]["dst_local_y_size"],
-                                            self.coverage.map_mpi[source]["dst_local_x_size"]])
+                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
+                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
                         self.coverage.comm.Recv(recvbuf, source=source)
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
 
             self.coverage.comm.barrier()
 
@@ -1452,19 +1452,19 @@ class DefaultWriter(CoverageWriter):
                     self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
                 else:
                     # Pour le proc n°1
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
 
                     # Pour les autres
                     for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.map_mpi[source]["dst_local_y_size"],
-                                            self.coverage.map_mpi[source]["dst_local_x_size"]])
+                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
+                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
                         self.coverage.comm.Recv(recvbuf, source=source)
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
 
             self.coverage.comm.barrier()
 
@@ -1514,19 +1514,19 @@ class DefaultWriter(CoverageWriter):
                     self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
                 else:
                     # Pour le proc n°1
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
 
                     # Pour les autres
                     for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.map_mpi[source]["dst_local_y_size"],
-                                            self.coverage.map_mpi[source]["dst_local_x_size"]])
+                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
+                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
                         self.coverage.comm.Recv(recvbuf, source=source)
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
 
             self.coverage.comm.barrier()
 
@@ -1577,31 +1577,31 @@ class DefaultWriter(CoverageWriter):
                     self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
                 else:
                     # Pour le proc n°1
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
                                 0,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data[0]
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data[0]
 
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
                                 1,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data[1]
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data[1]
 
                     # Pour les autres
                     for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([2, self.coverage.map_mpi[source]["dst_local_y_size"],
-                                            self.coverage.map_mpi[source]["dst_local_x_size"]])
+                        recvbuf = np.empty([2, self.coverage.parallel_map[source]["dst_local_y_size"],
+                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
                         self.coverage.comm.Recv(recvbuf, source=source)
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
                                     0,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf[0]
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf[0]
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
                                     1,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf[1]
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf[1]
 
             self.coverage.comm.barrier()
 
@@ -1669,19 +1669,19 @@ class DefaultWriter(CoverageWriter):
                     self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
                 else:
                     # Pour le proc n°1
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
 
                     # Pour les autres
                     for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.map_mpi[source]["dst_local_y_size"],
-                                            self.coverage.map_mpi[source]["dst_local_x_size"]])
+                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
+                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
                         self.coverage.comm.Recv(recvbuf, source=source)
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
 
             self.coverage.comm.barrier()
 
@@ -1731,19 +1731,19 @@ class DefaultWriter(CoverageWriter):
                     self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
                 else:
                     # Pour le proc n°1
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
 
                     # Pour les autres
                     for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.map_mpi[source]["dst_local_y_size"],
-                                            self.coverage.map_mpi[source]["dst_local_x_size"]])
+                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
+                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
                         self.coverage.comm.Recv(recvbuf, source=source)
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
 
             self.coverage.comm.barrier()
 
@@ -1797,19 +1797,19 @@ class DefaultWriter(CoverageWriter):
                     self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
                 else:
                     # Pour le proc n°1
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
 
                     # Pour les autres
                     for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.map_mpi[source]["dst_local_y_size"],
-                                            self.coverage.map_mpi[source]["dst_local_x_size"]])
+                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
+                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
                         self.coverage.comm.Recv(recvbuf, source=source)
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
 
             self.coverage.comm.barrier()
 
@@ -1864,31 +1864,31 @@ class DefaultWriter(CoverageWriter):
                     self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
                 else:
                     # Pour le proc n°1
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
                                 0,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data[0]
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data[0]
 
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
                                 1,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data[1]
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data[1]
 
                     # Pour les autres
                     for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([2, self.coverage.map_mpi[source]["dst_local_y_size"],
-                                            self.coverage.map_mpi[source]["dst_local_x_size"]])
+                        recvbuf = np.empty([2, self.coverage.parallel_map[source]["dst_local_y_size"],
+                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
                         self.coverage.comm.Recv(recvbuf, source=source)
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
                                     0,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf[0]
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf[0]
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
                                     1,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf[1]
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf[1]
 
             self.coverage.comm.barrier()
 
@@ -1958,31 +1958,31 @@ class DefaultWriter(CoverageWriter):
                     self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
                 else:
                     # Pour le proc n°1
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
                                 0,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data[0]
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data[0]
 
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
                                 1,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data[1]
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data[1]
 
                     # Pour les autres
                     for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([2, self.coverage.map_mpi[source]["dst_local_y_size"],
-                                            self.coverage.map_mpi[source]["dst_local_x_size"]])
+                        recvbuf = np.empty([2, self.coverage.parallel_map[source]["dst_local_y_size"],
+                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
                         self.coverage.comm.Recv(recvbuf, source=source)
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
                                     0,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf[0]
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf[0]
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
                                     1,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf[1]
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf[1]
 
             self.coverage.comm.barrier()
 
@@ -2059,19 +2059,19 @@ class DefaultWriter(CoverageWriter):
                     self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
                 else:
                     # Pour le proc n°1
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
 
                     # Pour les autres
                     for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.map_mpi[source]["dst_local_y_size"],
-                                            self.coverage.map_mpi[source]["dst_local_x_size"]])
+                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
+                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
                         self.coverage.comm.Recv(recvbuf, source=source)
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
 
             self.coverage.comm.barrier()
 
@@ -2123,19 +2123,19 @@ class DefaultWriter(CoverageWriter):
                     self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
                 else:
                     # Pour le proc n°1
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
 
                     # Pour les autres
                     for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.map_mpi[source]["dst_local_y_size"],
-                                            self.coverage.map_mpi[source]["dst_local_x_size"]])
+                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
+                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
                         self.coverage.comm.Recv(recvbuf, source=source)
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
 
             self.coverage.comm.barrier()
 
@@ -2187,19 +2187,19 @@ class DefaultWriter(CoverageWriter):
                     self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
                 else:
                     # Pour le proc n°1
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
 
                     # Pour les autres
                     for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.map_mpi[source]["dst_local_y_size"],
-                                            self.coverage.map_mpi[source]["dst_local_x_size"]])
+                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
+                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
                         self.coverage.comm.Recv(recvbuf, source=source)
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
 
             self.coverage.comm.barrier()
 
@@ -2251,19 +2251,19 @@ class DefaultWriter(CoverageWriter):
                     self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
                 else:
                     # Pour le proc n°1
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
 
                     # Pour les autres
                     for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.map_mpi[source]["dst_local_y_size"],
-                                            self.coverage.map_mpi[source]["dst_local_x_size"]])
+                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
+                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
                         self.coverage.comm.Recv(recvbuf, source=source)
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
 
             self.coverage.comm.barrier()
 
@@ -2315,19 +2315,19 @@ class DefaultWriter(CoverageWriter):
                     self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
                 else:
                     # Pour le proc n°1
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
 
                     # Pour les autres
                     for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.map_mpi[source]["dst_local_y_size"],
-                                            self.coverage.map_mpi[source]["dst_local_x_size"]])
+                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
+                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
                         self.coverage.comm.Recv(recvbuf, source=source)
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
 
             self.coverage.comm.barrier()
 
@@ -2379,19 +2379,19 @@ class DefaultWriter(CoverageWriter):
                     self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
                 else:
                     # Pour le proc n°1
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
 
                     # Pour les autres
                     for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.map_mpi[source]["dst_local_y_size"],
-                                            self.coverage.map_mpi[source]["dst_local_x_size"]])
+                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
+                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
                         self.coverage.comm.Recv(recvbuf, source=source)
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
 
             self.coverage.comm.barrier()
 
@@ -2443,19 +2443,19 @@ class DefaultWriter(CoverageWriter):
                     self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
                 else:
                     # Pour le proc n°1
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
 
                     # Pour les autres
                     for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.map_mpi[source]["dst_local_y_size"],
-                                            self.coverage.map_mpi[source]["dst_local_x_size"]])
+                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
+                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
                         self.coverage.comm.Recv(recvbuf, source=source)
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
 
             self.coverage.comm.barrier()
 
@@ -2507,19 +2507,19 @@ class DefaultWriter(CoverageWriter):
                     self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
                 else:
                     # Pour le proc n°1
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
 
                     # Pour les autres
                     for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.map_mpi[source]["dst_local_y_size"],
-                                            self.coverage.map_mpi[source]["dst_local_x_size"]])
+                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
+                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
                         self.coverage.comm.Recv(recvbuf, source=source)
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
 
             self.coverage.comm.barrier()
 
@@ -2571,19 +2571,19 @@ class DefaultWriter(CoverageWriter):
                     self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
                 else:
                     # Pour le proc n°1
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
 
                     # Pour les autres
                     for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.map_mpi[source]["dst_local_y_size"],
-                                            self.coverage.map_mpi[source]["dst_local_x_size"]])
+                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
+                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
                         self.coverage.comm.Recv(recvbuf, source=source)
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
 
             self.coverage.comm.barrier()
 
@@ -2635,19 +2635,19 @@ class DefaultWriter(CoverageWriter):
                     self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
                 else:
                     # Pour le proc n°1
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
 
                     # Pour les autres
                     for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.map_mpi[source]["dst_local_y_size"],
-                                            self.coverage.map_mpi[source]["dst_local_x_size"]])
+                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
+                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
                         self.coverage.comm.Recv(recvbuf, source=source)
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
 
             self.coverage.comm.barrier()
 
@@ -2699,31 +2699,31 @@ class DefaultWriter(CoverageWriter):
                     self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
                 else:
                     # Pour le proc n°1
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
                                 0,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data[0]
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data[0]
 
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
                                 1,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data[1]
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data[1]
 
                     # Pour les autres
                     for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([2, self.coverage.map_mpi[source]["dst_local_y_size"],
-                                            self.coverage.map_mpi[source]["dst_local_x_size"]])
+                        recvbuf = np.empty([2, self.coverage.parallel_map[source]["dst_local_y_size"],
+                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
                         self.coverage.comm.Recv(recvbuf, source=source)
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
                                     0,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf[0]
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf[0]
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
                                     1,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf[1]
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf[1]
 
             self.coverage.comm.barrier()
 
@@ -2793,31 +2793,31 @@ class DefaultWriter(CoverageWriter):
                     self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
                 else:
                     # Pour le proc n°1
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
                                 0,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data[0]
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data[0]
 
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
                                 1,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data[1]
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data[1]
 
                     # Pour les autres
                     for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([2, self.coverage.map_mpi[source]["dst_local_y_size"],
-                                            self.coverage.map_mpi[source]["dst_local_x_size"]])
+                        recvbuf = np.empty([2, self.coverage.parallel_map[source]["dst_local_y_size"],
+                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
                         self.coverage.comm.Recv(recvbuf, source=source)
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
                                     0,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf[0]
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf[0]
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
                                     1,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf[1]
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf[1]
 
             self.coverage.comm.barrier()
 
@@ -2882,19 +2882,19 @@ class DefaultWriter(CoverageWriter):
                     self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
                 else:
                     # Pour le proc n°1
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
 
                     # Pour les autres
                     for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.map_mpi[source]["dst_local_y_size"],
-                                            self.coverage.map_mpi[source]["dst_local_x_size"]])
+                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
+                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
                         self.coverage.comm.Recv(recvbuf, source=source)
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
 
             self.coverage.comm.barrier()
 
@@ -2945,19 +2945,19 @@ class DefaultWriter(CoverageWriter):
                     self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
                 else:
                     # Pour le proc n°1
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
 
                     # Pour les autres
                     for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.map_mpi[source]["dst_local_y_size"],
-                                            self.coverage.map_mpi[source]["dst_local_x_size"]])
+                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
+                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
                         self.coverage.comm.Recv(recvbuf, source=source)
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
 
             self.coverage.comm.barrier()
 
@@ -3008,19 +3008,19 @@ class DefaultWriter(CoverageWriter):
                     self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
                 else:
                     # Pour le proc n°1
-                    global_data[self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = local_data
+                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
 
                     # Pour les autres
                     for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.map_mpi[source]["dst_local_y_size"],
-                                            self.coverage.map_mpi[source]["dst_local_x_size"]])
+                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
+                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
                         self.coverage.comm.Recv(recvbuf, source=source)
 
-                        global_data[self.coverage.map_mpi[source]["dst_global_t"].start + time_index,
-                                    self.coverage.map_mpi[source]["dst_global_y"],
-                                    self.coverage.map_mpi[source]["dst_global_x"]] = recvbuf
+                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
+                                    self.coverage.parallel_map[source]["dst_global_y"],
+                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
 
             self.coverage.comm.barrier()
 

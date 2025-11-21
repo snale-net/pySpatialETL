@@ -78,10 +78,10 @@ class ECMWFWriter (CoverageWriter):
         longitudes.axis = "X" ; 
         
          # data
-        latitudes[self.coverage.map_mpi[self.coverage.rank]["dst_global_y"]] = self.coverage.read_axis_y()
-        longitudes[self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = self.coverage.read_axis_x()
+        latitudes[self.coverage.parallel_map[self.coverage.rank]["dst_global_y"]] = self.coverage.read_axis_y()
+        longitudes[self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = self.coverage.read_axis_x()
         times[
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_t"]] = date2num(self.coverage.read_axis_t(),
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_t"]] = date2num(self.coverage.read_axis_t(),
                                                                                   units=times.units,
                                                                                   calendar=times.calendar)
 
@@ -99,10 +99,10 @@ class ECMWFWriter (CoverageWriter):
             logging.info('[ECMWFWriter] Writing variable \'' + str(
                     VariableDefinition.LONG_NAME['land_binary_mask']) + '\' at time \'' + str(time) + '\'')
             var[
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index:
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index + 1,
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index:
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index + 1,
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
             ] = self.coverage.read_variable_2D_land_binary_mask_at_time(time)
 
             time_index += 1
@@ -121,10 +121,10 @@ class ECMWFWriter (CoverageWriter):
             data =  self.coverage.read_variable_surface_pressure_at_time(time)
             data[:] *= 100  # hPa to Pa
             var[
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index:
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index + 1,
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index:
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index + 1,
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
             ] = data
             time_index += 1
 
@@ -142,10 +142,10 @@ class ECMWFWriter (CoverageWriter):
             data = self.coverage.read_variable_sea_surface_air_pressure_at_time(time)
             data[:] *= 100 # hPa to Pa
             var[
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index:
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index + 1,
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index:
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index + 1,
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
             ] = data
             time_index += 1
 
@@ -162,10 +162,10 @@ class ECMWFWriter (CoverageWriter):
                     VariableDefinition.LONG_NAME['surface_downward_sensible_heat_flux']) + '\' at time \'' + str(time) + '\'')
 
             var[
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index:
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index + 1,
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index:
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index + 1,
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
             ] = self.coverage.read_variable_surface_downward_sensible_heat_flux_at_time(time)
             time_index += 1
 
@@ -181,10 +181,10 @@ class ECMWFWriter (CoverageWriter):
             logging.info('[ECMWFWriter] Writing variable \'' + str(
                     VariableDefinition.LONG_NAME['surface_downward_latent_heat_flux']) + '\' at time \'' + str(time) + '\'')
             var[
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index:
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index + 1,
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index:
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index + 1,
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
             ] = self.coverage.read_variable_surface_downward_latent_heat_flux_at_time(time)
             time_index += 1
 
@@ -210,17 +210,17 @@ class ECMWFWriter (CoverageWriter):
             data_u, data_v = self.coverage.read_variable_wind_10m_at_time(time)
 
             ucomp[
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index:
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index + 1,
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index:
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index + 1,
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
             ] = data_u
 
             vcomp[
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index:
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index + 1,
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index:
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index + 1,
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
             ] = data_v
 
             time_index += 1
@@ -239,10 +239,10 @@ class ECMWFWriter (CoverageWriter):
             data = self.coverage.read_variable_surface_air_temperature_at_time(time)
             data += 273.15 # Celsius to Kelvin
             var[
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index:
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index + 1,
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index:
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index + 1,
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
             ] = data
             time_index += 1
 
@@ -260,10 +260,10 @@ class ECMWFWriter (CoverageWriter):
             data = self.coverage.read_variable_dew_point_temperature_at_time(time)
             data += 273.15  # Celsius to Kelvin
             var[
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index:
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index + 1,
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index:
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index + 1,
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
             ] = data
             time_index += 1
 
@@ -279,10 +279,10 @@ class ECMWFWriter (CoverageWriter):
             logging.info('[ECMWFWriter] Writing variable \'' + str(
                     VariableDefinition.LONG_NAME['surface_downward_solar_radiation']) + '\' at time \'' + str(time) + '\'')
             var[
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index:
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index + 1,
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index:
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index + 1,
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
             ] = self.coverage.read_variable_surface_downward_solar_radiation_at_time(time)
             time_index += 1
 
@@ -298,10 +298,10 @@ class ECMWFWriter (CoverageWriter):
             logging.info('[ECMWFWriter] Writing variable \'' + str(
                     VariableDefinition.LONG_NAME['surface_downward_thermal_radiation']) + '\' at time \'' + str(time) + '\'')
             var[
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index:
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index + 1,
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index:
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index + 1,
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
             ] = self.coverage.read_variable_surface_downward_thermal_radiation_at_time(time)
             time_index += 1
 
@@ -317,10 +317,10 @@ class ECMWFWriter (CoverageWriter):
             logging.info('[ECMWFWriter] Writing variable \'' + str(
                     VariableDefinition.LONG_NAME['surface_solar_radiation']) + '\' at time \'' + str(time) + '\'')
             var[
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index:
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index + 1,
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index:
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index + 1,
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
             ] = self.coverage.read_variable_surface_solar_radiation_at_time(time)
 
             time_index += 1
@@ -337,10 +337,10 @@ class ECMWFWriter (CoverageWriter):
             logging.info('[ECMWFWriter] Writing variable \'' + str(
                     VariableDefinition.LONG_NAME['surface_thermal_radiation']) + '\' at time \'' + str(time) + '\'')
             var[
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index:
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index + 1,
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index:
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index + 1,
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
             ] = self.coverage.read_variable_surface_thermal_radiation_at_time(time)
             time_index += 1
 
@@ -356,9 +356,9 @@ class ECMWFWriter (CoverageWriter):
             logging.info('[ECMWFWriter] Writing variable \'' + str(
                     VariableDefinition.LONG_NAME['rainfall_amount']) + '\' at time \'' + str(time) + '\'')
             var[
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index:
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index + 1,
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index:
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index + 1,
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
             ] = self.coverage.read_variable_rainfall_amount_at_time(time)
             time_index += 1

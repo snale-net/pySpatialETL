@@ -30,12 +30,12 @@ def test_mpi_coverage():
     coverage = Coverage(reader)
 
     # test_get_x_size()
-    expected_size = coverage.map_mpi[coverage.rank]["dst_local_x_size"]
+    expected_size = coverage.parallel_map[coverage.rank]["dst_local_x_size"]
     candidate_size = coverage.get_x_size()
     assert expected_size == candidate_size, "test_get_x_size()"
 
     # test_get_y_size()
-    expected_size = coverage.map_mpi[coverage.rank]["dst_local_y_size"]
+    expected_size = coverage.parallel_map[coverage.rank]["dst_local_y_size"]
     candidate_size = coverage.get_y_size()
     assert expected_size == candidate_size, "test_get_y_size()"
 
@@ -45,14 +45,14 @@ def test_mpi_coverage():
     assert expected_value==candidate_value, "test_is_regular_grid()"
 
     # test_read_axis_x()
-    expected_shape = (coverage.map_mpi[coverage.rank]["dst_local_y_size"],
-                      coverage.map_mpi[coverage.rank]["dst_local_x_size"])
+    expected_shape = (coverage.parallel_map[coverage.rank]["dst_local_y_size"],
+                      coverage.parallel_map[coverage.rank]["dst_local_x_size"])
     candidate_shape = np.shape(coverage.read_axis_x())
     assert expected_shape==candidate_shape, "test_read_axis_x()"
 
     # test_read_axis_y()
-    expected_shape = (coverage.map_mpi[coverage.rank]["dst_local_y_size"],
-                      coverage.map_mpi[coverage.rank]["dst_local_x_size"])
+    expected_shape = (coverage.parallel_map[coverage.rank]["dst_local_y_size"],
+                      coverage.parallel_map[coverage.rank]["dst_local_x_size"])
     candidate_shape = np.shape(coverage.read_axis_y())
     assert expected_shape==candidate_shape, "test_read_axis_y()"
 
@@ -63,31 +63,31 @@ def test_mpi_coverage():
         assert expected_value==candidate_value, "test_find_point_index()"
 
     # test_read_variable_bathymetry()
-    expected_shape = (coverage.map_mpi[coverage.rank]["dst_local_y_size"],
-                      coverage.map_mpi[coverage.rank]["dst_local_x_size"])
+    expected_shape = (coverage.parallel_map[coverage.rank]["dst_local_y_size"],
+                      coverage.parallel_map[coverage.rank]["dst_local_x_size"])
     candidate_shape = np.shape(coverage.read_variable_bathymetry())
     assert expected_shape==candidate_shape, "test_read_variable_bathymetry()"
 
     # test_read_variable_mesh_size()
-    expected_shape = (coverage.map_mpi[coverage.rank]["dst_local_y_size"],
-                      coverage.map_mpi[coverage.rank]["dst_local_x_size"])
+    expected_shape = (coverage.parallel_map[coverage.rank]["dst_local_y_size"],
+                      coverage.parallel_map[coverage.rank]["dst_local_x_size"])
     candidate_shape = np.shape(coverage.read_variable_mesh_size())
     assert expected_shape==candidate_shape, "test_read_variable_mesh_size()"
 
     # test_read_variable_x_mesh_size()
-    expected_shape = (coverage.map_mpi[coverage.rank]["dst_local_y_size"],
-                      coverage.map_mpi[coverage.rank]["dst_local_x_size"])
+    expected_shape = (coverage.parallel_map[coverage.rank]["dst_local_y_size"],
+                      coverage.parallel_map[coverage.rank]["dst_local_x_size"])
     candidate_shape = np.shape(coverage.read_variable_x_mesh_size())
     assert expected_shape==candidate_shape, "test_read_variable_x_mesh_size()"
 
     # test_read_variable_y_mesh_size()
-    expected_shape = (coverage.map_mpi[coverage.rank]["dst_local_y_size"],
-                      coverage.map_mpi[coverage.rank]["dst_local_x_size"])
+    expected_shape = (coverage.parallel_map[coverage.rank]["dst_local_y_size"],
+                      coverage.parallel_map[coverage.rank]["dst_local_x_size"])
     candidate_shape = np.shape(coverage.read_variable_y_mesh_size())
     assert expected_shape==candidate_shape, "test_read_variable_y_mesh_size()"
 
     # test_read_variable_2D_sea_binary_mask()
-    expected_shape = (coverage.map_mpi[coverage.rank]["dst_local_y_size"],
-                      coverage.map_mpi[coverage.rank]["dst_local_x_size"])
+    expected_shape = (coverage.parallel_map[coverage.rank]["dst_local_y_size"],
+                      coverage.parallel_map[coverage.rank]["dst_local_x_size"])
     candidate_shape = np.shape(coverage.read_variable_2D_sea_binary_mask())
     assert expected_shape ==candidate_shape, "test_read_variable_2D_sea_binary_mask()"

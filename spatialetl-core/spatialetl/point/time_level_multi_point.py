@@ -53,7 +53,7 @@ class TimeLevelMultiPoint(LevelMultiPoint, TimeMultiPoint):
 
             for z in range(0, len(indexes_z)):
 
-                all_data = self.reader.read_variable_baroclinic_sea_water_velocity_at_time_and_depth(self.map_mpi[self.rank]["src_global_t"].start +indexes_t[t],
+                all_data = self.reader.read_variable_baroclinic_sea_water_velocity_at_time_and_depth(self.parallel_map[self.rank]["src_global_t"].start +indexes_t[t],
                                                                                                  indexes_z[z])
 
                 # Comp U
@@ -87,7 +87,7 @@ class TimeLevelMultiPoint(LevelMultiPoint, TimeMultiPoint):
 
         for t in range(0, len(indexes_t)):
             for z in range(0, len(indexes_z)):
-                    layers[t,z] = self.reader.read_variable_sea_water_temperature_at_time_and_depth(self.map_mpi[self.rank]["src_global_t"].start +indexes_t[t], indexes_z[z])
+                    layers[t,z] = self.reader.read_variable_sea_water_temperature_at_time_and_depth(self.parallel_map[self.rank]["src_global_t"].start +indexes_t[t], indexes_z[z])
 
             results[t] = self.interpolate_vertical(depth,vert_coord,indexes_z,layers[t])
 
@@ -112,7 +112,7 @@ class TimeLevelMultiPoint(LevelMultiPoint, TimeMultiPoint):
 
         for t in range(0, len(indexes_t)):
             for z in range(0, len(indexes_z)):
-                layers[t, z] = self.reader.read_variable_sea_water_salinity_at_time_and_depth(self.map_mpi[self.rank]["src_global_t"].start +indexes_t[t],
+                layers[t, z] = self.reader.read_variable_sea_water_salinity_at_time_and_depth(self.parallel_map[self.rank]["src_global_t"].start +indexes_t[t],
                                                                                                  indexes_z[z])
 
             results[t] = self.interpolate_vertical(depth, vert_coord, indexes_z, layers[t])

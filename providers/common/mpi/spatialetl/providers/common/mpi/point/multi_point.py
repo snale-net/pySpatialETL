@@ -81,7 +81,7 @@ class MultiPoint():
         self.reader = myReader;
 
         # MPI
-        self.map_mpi = None
+        self.parallel_map = None
         self.comm = MPI.COMM_WORLD
         self.size = self.comm.Get_size()
         self.rank = self.comm.Get_rank()

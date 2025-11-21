@@ -22,6 +22,7 @@
 # SOFTWARE.
 from __future__ import division, print_function, absolute_import
 
+import os
 from itertools import product
 
 import numpy as np
@@ -44,8 +45,8 @@ class LevelCoverage(Coverage):
     DEPTH_DELTA = 1.0; #meters
     VERTICAL_INTERPOLATION_METHOD = "linear"
     
-    def __init__(self, reader, bbox=None, resolution_x=None, resolution_y=None, zbox=None, resolution_z=None):
-        Coverage.__init__(self, reader, bbox=bbox, resolution_x=resolution_x, resolution_y=resolution_y);
+    def __init__(self, reader, bbox=None, resolution_x=None, resolution_y=None, zbox=None, resolution_z=None,nb_thread:int=os.cpu_count()-1):
+        Coverage.__init__(self, reader, bbox=bbox, resolution_x=resolution_x, resolution_y=resolution_y, nb_thread=nb_thread);
 
         self.vertical_resampling = False
         self.source_sigma_coordinate = False
@@ -143,31 +144,31 @@ class LevelCoverage(Coverage):
         if type == "source" and with_horizontal_overlap is True:
 
             if self.is_sigma_coordinate(type):
-                return self.source_global_axis_z[:,self.map_mpi[self.rank]["src_global_y_overlap"],
-                                                 self.map_mpi[self.rank]["src_global_x_overlap"]]
+                return self.source_global_axis_z[:,self.parallel_map[self.rank]["src_global_y_overlap"],
+                                                 self.parallel_map[self.rank]["src_global_x_overlap"]]
             else:
                 return self.source_global_axis_z
 
         elif type == "source" and with_horizontal_overlap is False:
 
             if self.is_sigma_coordinate(type):
-                return self.source_global_axis_z[:,self.map_mpi[self.rank]["src_global_y"],
-                                                 self.map_mpi[self.rank]["src_global_x"]]
+                return self.source_global_axis_z[:,self.parallel_map[self.rank]["src_global_y"],
+                                                 self.parallel_map[self.rank]["src_global_x"]]
             else:
                 return self.source_global_axis_z
 
         elif type == "target" and with_horizontal_overlap is True:
 
             if self.is_sigma_coordinate(type):
-                return self.target_global_axis_z[:,self.map_mpi[self.rank]["dst_global_y_overlap"],
-                                                 self.map_mpi[self.rank]["dst_global_x_overlap"]]
+                return self.target_global_axis_z[:,self.parallel_map[self.rank]["dst_global_y_overlap"],
+                                                 self.parallel_map[self.rank]["dst_global_x_overlap"]]
             else:
                 return self.target_global_axis_z
         else:
 
             if self.is_sigma_coordinate(type):
-                return self.target_global_axis_z[:,self.map_mpi[self.rank]["dst_global_y"],
-                                                 self.map_mpi[self.rank]["dst_global_x"]]
+                return self.target_global_axis_z[:,self.parallel_map[self.rank]["dst_global_y"],
+                                                 self.parallel_map[self.rank]["dst_global_x"]]
             else:
                 return self.target_global_axis_z
 
@@ -223,7 +224,7 @@ class LevelCoverage(Coverage):
 
             if method == "fast":
 
-                X = np.abs(self.source_global_axis_z[:,self.map_mpi[self.rank]["src_global_y_overlap"],self.map_mpi[self.rank]["src_global_x_overlap"]] - depth)
+                X = np.abs(self.source_global_axis_z[:,self.parallel_map[self.rank]["src_global_y_overlap"],self.parallel_map[self.rank]["src_global_x_overlap"]] - depth)
                 idx = np.where(X <= LevelCoverage.DEPTH_DELTA)
                 vert_coord[:] = None
 
@@ -320,10 +321,10 @@ class LevelCoverage(Coverage):
         for z in range(0, len(indexes_z)):
             self.layers_temp[z] = self.reader.read_variable_depth_at_depth(
                 indexes_z[z],
-                self.map_mpi[self.rank]["src_global_x_overlap"].start,
-                self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-                self.map_mpi[self.rank]["src_global_y_overlap"].start,
-                self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+                self.parallel_map[self.rank]["src_global_x_overlap"].start,
+                self.parallel_map[self.rank]["src_global_x_overlap"].stop,
+                self.parallel_map[self.rank]["src_global_y_overlap"].start,
+                self.parallel_map[self.rank]["src_global_y_overlap"].stop)
 
         idx = np.where(vert_coord != None)
         for index in range(np.shape(idx)[1]):
@@ -362,9 +363,9 @@ class LevelCoverage(Coverage):
                                        self.read_axis_x(type="target", with_overlap=True),
                                        self.read_axis_y(type="target", with_overlap=True),
                                        self.data_temp[0],
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[self.parallel_map[self.rank]["dst_local_y"], self.parallel_map[self.rank]["dst_local_x"]]
 
-        return self.data_temp[0,self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+        return self.data_temp[0,self.parallel_map[self.rank]["dst_local_y"], self.parallel_map[self.rank]["dst_local_x"]]
         
         
     

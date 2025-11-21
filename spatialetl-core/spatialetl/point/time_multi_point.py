@@ -114,13 +114,13 @@ class TimeMultiPoint(MultiPoint):
 
         if self.rank == 0:
             logging.debug("MPI map:")
-        for key in self.map_mpi[self.rank]:
-            logging.debug("Proc n°" + str(self.rank) + " " + str(key) + "=" + str(self.map_mpi[self.rank][key]))
+        for key in self.parallel_map[self.rank]:
+            logging.debug("Proc n°" + str(self.rank) + " " + str(key) + "=" + str(self.parallel_map[self.rank][key]))
         logging.debug("---------")
 
     def create_mpi_map(self):
 
-        self.map_mpi = np.empty(self.size, dtype=object)
+        self.parallel_map = np.empty(self.size, dtype=object)
         target_sample = (self.target_global_t_size,)
         target_slices = shape_split(target_sample, self.size, axis=[0])
 
@@ -158,7 +158,7 @@ class TimeMultiPoint(MultiPoint):
             map["src_local_t_size"] = map["dst_local_t_size"]
             map["src_local_t_size_overlap"] = map["dst_global_t_size_overlap"]
 
-            self.map_mpi[slice_index] = map
+            self.parallel_map[slice_index] = map
 
             slice_index = slice_index + 1
 
@@ -175,31 +175,31 @@ class TimeMultiPoint(MultiPoint):
             tmax = np.max(idx[0]) + 1
 
         # SRC GLOBAL
-        self.map_mpi[self.rank]["src_global_t"] = np.s_[tmin:tmax]
-        self.map_mpi[self.rank]["src_global_t_size"] = tmax - tmin
+        self.parallel_map[self.rank]["src_global_t"] = np.s_[tmin:tmax]
+        self.parallel_map[self.rank]["src_global_t_size"] = tmax - tmin
 
-        dst_global_t_min_overlap = max(0, self.map_mpi[self.rank][
+        dst_global_t_min_overlap = max(0, self.parallel_map[self.rank][
             "src_global_t"].start - TimeMultiPoint.TIME_OVERLAPING_SIZE)
         dst_global_t_max_overlap = min(self.source_global_t_size,
-                                       self.map_mpi[self.rank][
+                                       self.parallel_map[self.rank][
                                            "src_global_t"].stop + TimeMultiPoint.TIME_OVERLAPING_SIZE)
-        self.map_mpi[self.rank]["src_global_t_overlap"] = np.s_[
+        self.parallel_map[self.rank]["src_global_t_overlap"] = np.s_[
                                                           dst_global_t_min_overlap:dst_global_t_max_overlap]
 
-        self.map_mpi[self.rank]["src_global_t_size_overlap"] = self.map_mpi[self.rank][
+        self.parallel_map[self.rank]["src_global_t_size_overlap"] = self.parallel_map[self.rank][
                                                                    "src_global_t_overlap"].stop - \
-                                                               self.map_mpi[self.rank][
+                                                               self.parallel_map[self.rank][
                                                                    "src_global_t_overlap"].start
 
-        self.map_mpi[self.rank]["src_local_t_size"] = tmax - tmin
-        self.map_mpi[self.rank]["src_local_t"] = np.s_[0:self.map_mpi[self.rank]["src_local_t_size"]]
+        self.parallel_map[self.rank]["src_local_t_size"] = tmax - tmin
+        self.parallel_map[self.rank]["src_local_t"] = np.s_[0:self.parallel_map[self.rank]["src_local_t_size"]]
 
         # OVERLAP
-        self.map_mpi[self.rank]["src_local_t_size_overlap"] = self.map_mpi[self.rank][
+        self.parallel_map[self.rank]["src_local_t_size_overlap"] = self.parallel_map[self.rank][
             "src_global_t_size_overlap"]
 
-        self.map_mpi[self.rank]["src_local_t_overlap"] = np.s_[
-                                                         0:self.map_mpi[self.rank]["src_local_t_size_overlap"]]
+        self.parallel_map[self.rank]["src_local_t_overlap"] = np.s_[
+                                                         0:self.parallel_map[self.rank]["src_local_t_size_overlap"]]
 
     # Axis
     def read_axis_t(self, type="target", with_overlap=False, timestamp=0):
@@ -219,24 +219,24 @@ class TimeMultiPoint(MultiPoint):
             return self.source_global_axis_t
 
         elif type == "source" and with_overlap is True:
-            return self.reader.read_axis_t(self.map_mpi[self.rank]["src_global_t_overlap"].start,
-                                           self.map_mpi[self.rank]["src_global_t_overlap"].stop, timestamp)
+            return self.reader.read_axis_t(self.parallel_map[self.rank]["src_global_t_overlap"].start,
+                                           self.parallel_map[self.rank]["src_global_t_overlap"].stop, timestamp)
 
         elif type == "source" and with_overlap is False:
-            return self.reader.read_axis_t(self.map_mpi[self.rank]["src_global_t"].start,
-                                           self.map_mpi[self.rank]["src_global_t"].stop, timestamp)
+            return self.reader.read_axis_t(self.parallel_map[self.rank]["src_global_t"].start,
+                                           self.parallel_map[self.rank]["src_global_t"].stop, timestamp)
 
         elif type == "target" and with_overlap is True:
             if timestamp == 1:
                 return [(t - TimeMultiPoint.TIME_DATUM).total_seconds() \
-                        for t in self.target_global_axis_t[self.map_mpi[self.rank]["dst_global_t_overlap"]]];
-            return self.target_global_axis_t[self.map_mpi[self.rank]["dst_global_t_overlap"]]
+                        for t in self.target_global_axis_t[self.parallel_map[self.rank]["dst_global_t_overlap"]]];
+            return self.target_global_axis_t[self.parallel_map[self.rank]["dst_global_t_overlap"]]
 
         else:
             if timestamp == 1:
                 return [(t - TimeMultiPoint.TIME_DATUM).total_seconds() \
-                        for t in self.target_global_axis_t[self.map_mpi[self.rank]["dst_global_t"]]];
-            return self.target_global_axis_t[self.map_mpi[self.rank]["dst_global_t"]]
+                        for t in self.target_global_axis_t[self.parallel_map[self.rank]["dst_global_t"]]];
+            return self.target_global_axis_t[self.parallel_map[self.rank]["dst_global_t"]]
 
 
     def get_t_size(self, type="target", with_overlap=False):
@@ -245,13 +245,13 @@ class TimeMultiPoint(MultiPoint):
         elif type == "source_global":
             return self.source_global_t_size
         elif type == "source" and with_overlap is True:
-            return self.map_mpi[self.rank]["src_local_t_size_overlap"]
+            return self.parallel_map[self.rank]["src_local_t_size_overlap"]
         elif type == "source" and with_overlap is False:
-            return self.map_mpi[self.rank]["src_local_t_size"]
+            return self.parallel_map[self.rank]["src_local_t_size"]
         elif type == "target" and with_overlap is True:
-            return self.map_mpi[self.rank]["dst_local_t_size_overlap"]
+            return self.parallel_map[self.rank]["dst_local_t_size_overlap"]
         else:
-            return self.map_mpi[self.rank]["dst_local_t_size"]
+            return self.parallel_map[self.rank]["dst_local_t_size"]
 
     def find_time_index(self, t):
         """Retourne l'index de la date la plus proche à TIME_DELTA_MIN prêt.
@@ -383,12 +383,12 @@ class TimeMultiPoint(MultiPoint):
             layers[::] = np.NAN
 
             for t in range(0, len(index_t)):
-                layers[t] = self.reader.read_variable_longitude_at_time(self.map_mpi[self.rank]["src_global_t"].start + index_t[t])
+                layers[t] = self.reader.read_variable_longitude_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
 
             data = self.interpolate_time(date,index_t,layers)
 
         else:
-            data = self.reader.read_variable_longitude_at_time(self.map_mpi[self.rank]["src_global_t"].start + index_t[0])
+            data = self.reader.read_variable_longitude_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[0])
 
         return data
 
@@ -400,12 +400,12 @@ class TimeMultiPoint(MultiPoint):
             layers[::] = np.NAN
 
             for t in range(0, len(index_t)):
-                layers[t] = self.reader.read_variable_latitude_at_time(self.map_mpi[self.rank]["src_global_t"].start + index_t[t])
+                layers[t] = self.reader.read_variable_latitude_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
 
             data = self.interpolate_time(date,index_t,layers)
 
         else:
-            data = self.reader.read_variable_latitude_at_time(self.map_mpi[self.rank]["src_global_t"].start + index_t[0])
+            data = self.reader.read_variable_latitude_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[0])
 
         return data
 
@@ -422,12 +422,12 @@ class TimeMultiPoint(MultiPoint):
             layers[::] = np.NAN
 
             for t in range(0, len(index_t)):
-                layers[t] = self.reader.read_variable_sea_surface_height_above_mean_sea_level_at_time(self.map_mpi[self.rank]["src_global_t"].start + index_t[t])
+                layers[t] = self.reader.read_variable_sea_surface_height_above_mean_sea_level_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
 
             data = self.interpolate_time(date, index_t, layers)
 
         else:
-            data = self.reader.read_variable_sea_surface_height_above_mean_sea_level_at_time(self.map_mpi[self.rank]["src_global_t"].start + index_t[0])
+            data = self.reader.read_variable_sea_surface_height_above_mean_sea_level_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[0])
 
         return data
 
@@ -439,12 +439,12 @@ class TimeMultiPoint(MultiPoint):
             layers[::] = np.NAN
 
             for t in range(0, len(index_t)):
-                layers[t] = self.reader.read_variable_sea_surface_height_above_geoid_at_time(self.map_mpi[self.rank]["src_global_t"].start + index_t[t])
+                layers[t] = self.reader.read_variable_sea_surface_height_above_geoid_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
 
             data = self.interpolate_time(date, index_t, layers)
 
         else:
-            data = self.reader.read_variable_sea_surface_height_above_geoid_at_time(self.map_mpi[self.rank]["src_global_t"].start + index_t[0])
+            data = self.reader.read_variable_sea_surface_height_above_geoid_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[0])
 
         return data
 
@@ -457,13 +457,13 @@ class TimeMultiPoint(MultiPoint):
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_sea_water_column_thickness_at_time(
-                    self.map_mpi[self.rank]["src_global_t"].start + index_t[t])
+                    self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
 
             data = self.interpolate_time(date, index_t, layers)
 
         else:
             data = self.reader.read_variable_sea_water_column_thickness_at_time(
-                self.map_mpi[self.rank]["src_global_t"].start + index_t[0])
+                self.parallel_map[self.rank]["src_global_t"].start + index_t[0])
 
         return data
 
@@ -475,12 +475,12 @@ class TimeMultiPoint(MultiPoint):
             layers[::] = np.NAN
 
             for t in range(0, len(index_t)):
-                layers[t] = self.reader.read_variable_sea_surface_density_at_time(self.map_mpi[self.rank]["src_global_t"].start + index_t[t])
+                layers[t] = self.reader.read_variable_sea_surface_density_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
 
             data = self.interpolate_time(date,index_t,layers)
 
         else:
-            data = self.reader.read_variable_sea_surface_density_at_time(self.map_mpi[self.rank]["src_global_t"].start + index_t[0])
+            data = self.reader.read_variable_sea_surface_density_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[0])
 
         return data
 
@@ -492,12 +492,12 @@ class TimeMultiPoint(MultiPoint):
             layers[::] = np.NAN
 
             for t in range(0, len(index_t)):
-                layers[t] = self.reader.read_variable_sea_water_turbidity_at_time(self.map_mpi[self.rank]["src_global_t"].start + index_t[t])
+                layers[t] = self.reader.read_variable_sea_water_turbidity_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
 
             data = self.interpolate_time(date,index_t,layers)
 
         else:
-            data = self.reader.read_variable_sea_water_turbidity_at_time(self.map_mpi[self.rank]["src_global_t"].start + index_t[0])
+            data = self.reader.read_variable_sea_water_turbidity_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[0])
 
         return data
 
@@ -509,12 +509,12 @@ class TimeMultiPoint(MultiPoint):
             layers[::] = np.NAN
 
             for t in range(0, len(index_t)):
-                layers[t] = self.reader.read_variable_sea_water_electrical_conductivity_at_time(self.map_mpi[self.rank]["src_global_t"].start + index_t[t])
+                layers[t] = self.reader.read_variable_sea_water_electrical_conductivity_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
 
             data = self.interpolate_time(date,index_t,layers)
 
         else:
-            data = self.reader.read_variable_sea_water_electrical_conductivity_at_time(self.map_mpi[self.rank]["src_global_t"].start + index_t[0])
+            data = self.reader.read_variable_sea_water_electrical_conductivity_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[0])
 
         return data
 
@@ -529,7 +529,7 @@ class TimeMultiPoint(MultiPoint):
             layers[::] = np.NAN
 
             for t in range(0, len(index_t)):
-                comp = self.reader.read_variable_barotropic_sea_water_velocity_at_time(self.map_mpi[self.rank]["src_global_t"].start + index_t[t])
+                comp = self.reader.read_variable_barotropic_sea_water_velocity_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
                 layers[t][0] = comp[0]
                 layers[t][1] = comp[1]
 
@@ -537,7 +537,7 @@ class TimeMultiPoint(MultiPoint):
             data[1] = self.interpolate_time(date, index_t, layers[:, 1, :])
 
         else:
-            data = self.reader.read_variable_barotropic_sea_water_velocity_at_time(self.map_mpi[self.rank]["src_global_t"].start + index_t[0])
+            data = self.reader.read_variable_barotropic_sea_water_velocity_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[0])
 
         return data
 
@@ -587,12 +587,12 @@ class TimeMultiPoint(MultiPoint):
             layers[::] = np.NAN
 
             for t in range(0, len(index_t)):
-                layers[t] = self.reader.read_variable_sea_surface_temperature_at_time(self.map_mpi[self.rank]["src_global_t"].start + index_t[t])
+                layers[t] = self.reader.read_variable_sea_surface_temperature_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
 
             data = self.interpolate_time(date, index_t, layers)
 
         else:
-            data = self.reader.read_variable_sea_surface_temperature_at_time(self.map_mpi[self.rank]["src_global_t"].start + index_t[0])
+            data = self.reader.read_variable_sea_surface_temperature_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[0])
 
         return data
 
@@ -604,12 +604,12 @@ class TimeMultiPoint(MultiPoint):
             layers[::] = np.NAN
 
             for t in range(0, len(index_t)):
-                layers[t] = self.reader.read_variable_sea_surface_salinity_at_time(self.map_mpi[self.rank]["src_global_t"].start + index_t[t])
+                layers[t] = self.reader.read_variable_sea_surface_salinity_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
 
             data = self.interpolate_time(date, index_t, layers)
 
         else:
-            data = self.reader.read_variable_sea_surface_salinity_at_time(self.map_mpi[self.rank]["src_global_t"].start + index_t[0])
+            data = self.reader.read_variable_sea_surface_salinity_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[0])
 
         return data
 
@@ -621,12 +621,12 @@ class TimeMultiPoint(MultiPoint):
             layers[::] = np.NAN
 
             for t in range(0, len(index_t)):
-                layers[t] = self.reader.read_variable_sea_water_pressure_at_sea_water_surface_at_time(self.map_mpi[self.rank]["src_global_t"].start + index_t[t])
+                layers[t] = self.reader.read_variable_sea_water_pressure_at_sea_water_surface_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
 
             data = self.interpolate_time(date, index_t, layers)
 
         else:
-            data = self.reader.read_variable_sea_water_pressure_at_sea_water_surface_at_time(self.map_mpi[self.rank]["src_global_t"].start + index_t[0])
+            data = self.reader.read_variable_sea_water_pressure_at_sea_water_surface_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[0])
 
         return data
 
@@ -641,7 +641,7 @@ class TimeMultiPoint(MultiPoint):
             layers[::] = np.NAN
 
             for t in range(0, len(index_t)):
-                comp = self.reader.read_variable_sea_water_velocity_at_sea_water_surface_at_time(self.map_mpi[self.rank]["src_global_t"].start + index_t[t])
+                comp = self.reader.read_variable_sea_water_velocity_at_sea_water_surface_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
                 layers[t][0] = comp[0]
                 layers[t][1] = comp[1]
 
@@ -649,7 +649,7 @@ class TimeMultiPoint(MultiPoint):
             data[1] = self.interpolate_time(date, index_t, layers[:, 1, :])
 
         else:
-            data = self.reader.read_variable_sea_water_velocity_at_sea_water_surface_at_time(self.map_mpi[self.rank]["src_global_t"].start + index_t[0])
+            data = self.reader.read_variable_sea_water_velocity_at_sea_water_surface_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[0])
 
         return data
 
@@ -699,12 +699,12 @@ class TimeMultiPoint(MultiPoint):
             layers[::] = np.NAN
 
             for t in range(0, len(index_t)):
-                layers[t] = self.reader.read_variable_sea_water_temperature_at_ground_level_at_time(self.map_mpi[self.rank]["src_global_t"].start + index_t[t])
+                layers[t] = self.reader.read_variable_sea_water_temperature_at_ground_level_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
 
             data = self.interpolate_time(date, index_t, layers)
 
         else:
-            data = self.reader.read_variable_sea_water_temperature_at_ground_level_at_time(self.map_mpi[self.rank]["src_global_t"].start + index_t[0])
+            data = self.reader.read_variable_sea_water_temperature_at_ground_level_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[0])
 
         return data
 
@@ -716,12 +716,12 @@ class TimeMultiPoint(MultiPoint):
             layers[::] = np.NAN
 
             for t in range(0, len(index_t)):
-                layers[t] = self.reader.read_variable_sea_water_salinity_at_ground_level_at_time(self.map_mpi[self.rank]["src_global_t"].start + index_t[t])
+                layers[t] = self.reader.read_variable_sea_water_salinity_at_ground_level_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
 
             data = self.interpolate_time(date, index_t, layers)
 
         else:
-            data = self.reader.read_variable_sea_water_salinity_at_ground_level_at_time(self.map_mpi[self.rank]["src_global_t"].start + index_t[0])
+            data = self.reader.read_variable_sea_water_salinity_at_ground_level_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[0])
 
         return data
 
@@ -736,7 +736,7 @@ class TimeMultiPoint(MultiPoint):
             layers[::] = np.NAN
 
             for t in range(0, len(index_t)):
-                comp = self.reader.read_variable_sea_water_velocity_at_ground_level_at_time(self.map_mpi[self.rank]["src_global_t"].start + index_t[t])
+                comp = self.reader.read_variable_sea_water_velocity_at_ground_level_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
                 layers[t][0] = comp[0]
                 layers[t][1] = comp[1]
 
@@ -744,7 +744,7 @@ class TimeMultiPoint(MultiPoint):
             data[1] = self.interpolate_time(date, index_t, layers[:, 1, :])
 
         else:
-            data = self.reader.read_variable_sea_water_velocity_at_ground_level_at_time(self.map_mpi[self.rank]["src_global_t"].start + index_t[0])
+            data = self.reader.read_variable_sea_water_velocity_at_ground_level_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[0])
 
         return data
 
@@ -795,13 +795,13 @@ class TimeMultiPoint(MultiPoint):
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_sea_surface_wave_significant_height_at_time(
-                    self.map_mpi[self.rank]["src_global_t"].start + index_t[t])
+                    self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
 
             data = self.interpolate_time(date, index_t, layers)
 
         else:
             data = self.reader.read_variable_sea_surface_wave_significant_height_at_time(
-                self.map_mpi[self.rank]["src_global_t"].start + index_t[0])
+                self.parallel_map[self.rank]["src_global_t"].start + index_t[0])
 
         return data
 
@@ -814,13 +814,13 @@ class TimeMultiPoint(MultiPoint):
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_sea_surface_wave_mean_period_at_time(
-                    self.map_mpi[self.rank]["src_global_t"].start + index_t[t])
+                    self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
 
             data = self.interpolate_time(date, index_t, layers)
 
         else:
             data = self.reader.read_variable_sea_surface_wave_mean_period_at_time(
-                self.map_mpi[self.rank]["src_global_t"].start + index_t[0])
+                self.parallel_map[self.rank]["src_global_t"].start + index_t[0])
 
         return data
 
@@ -833,13 +833,13 @@ class TimeMultiPoint(MultiPoint):
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_sea_surface_wave_to_direction_at_time(
-                    self.map_mpi[self.rank]["src_global_t"].start + index_t[t])
+                    self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
 
             data = self.interpolate_time(date, index_t, layers)
 
         else:
             data = self.reader.read_variable_sea_surface_wave_to_direction_at_time(
-                self.map_mpi[self.rank]["src_global_t"].start + index_t[0])
+                self.parallel_map[self.rank]["src_global_t"].start + index_t[0])
 
         return data
 
@@ -867,13 +867,13 @@ class TimeMultiPoint(MultiPoint):
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_wave_collision_at_time(
-                    self.map_mpi[self.rank]["src_global_t"].start + index_t[t])
+                    self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
 
             data = self.interpolate_time(date, index_t, layers)
 
         else:
             data = self.reader.read_variable_wave_collision_at_time(
-                self.map_mpi[self.rank]["src_global_t"].start + index_t[0])
+                self.parallel_map[self.rank]["src_global_t"].start + index_t[0])
 
         return data
 
@@ -886,13 +886,13 @@ class TimeMultiPoint(MultiPoint):
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_wave_overtopping_at_time(
-                    self.map_mpi[self.rank]["src_global_t"].start + index_t[t])
+                    self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
 
             data = self.interpolate_time(date, index_t, layers)
 
         else:
             data = self.reader.read_variable_wave_overtopping_at_time(
-                self.map_mpi[self.rank]["src_global_t"].start + index_t[0])
+                self.parallel_map[self.rank]["src_global_t"].start + index_t[0])
 
         return data
 
@@ -910,12 +910,12 @@ class TimeMultiPoint(MultiPoint):
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_water_volume_transport_into_sea_water_from_rivers_at_time(
-                    self.map_mpi[self.rank]["src_global_t"].start + index_t[t])
+                    self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
 
             data = self.interpolate_time(date, index_t, layers)
 
         else:
-            data = self.reader.read_variable_water_volume_transport_into_sea_water_from_rivers_at_time(self.map_mpi[self.rank]["src_global_t"].start + index_t[0])
+            data = self.reader.read_variable_water_volume_transport_into_sea_water_from_rivers_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[0])
 
         return data
 
@@ -932,12 +932,12 @@ class TimeMultiPoint(MultiPoint):
             layers[::] = np.NAN
 
             for t in range(0, len(index_t)):
-                layers[t] = self.reader.read_variable_surface_air_pressure_at_time(self.map_mpi[self.rank]["src_global_t"].start + index_t[t])
+                layers[t] = self.reader.read_variable_surface_air_pressure_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
 
             data = self.interpolate_time(date,index_t,layers)
 
         else:
-            data = self.reader.read_variable_surface_air_pressure_at_time(self.map_mpi[self.rank]["src_global_t"].start + index_t[0])
+            data = self.reader.read_variable_surface_air_pressure_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[0])
 
         return data
 
@@ -949,12 +949,12 @@ class TimeMultiPoint(MultiPoint):
             layers[::] = np.NAN
 
             for t in range(0, len(index_t)):
-                layers[t] = self.reader.read_variable_sea_surface_air_pressure_at_time(self.map_mpi[self.rank]["src_global_t"].start + index_t[t])
+                layers[t] = self.reader.read_variable_sea_surface_air_pressure_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
 
             data = self.interpolate_time(date,index_t,layers)
 
         else:
-            data = self.reader.read_variable_sea_surface_air_pressure_at_time(self.map_mpi[self.rank]["src_global_t"].start + index_t[0])
+            data = self.reader.read_variable_sea_surface_air_pressure_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[0])
 
         return data
 
@@ -967,13 +967,13 @@ class TimeMultiPoint(MultiPoint):
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_surface_downward_sensible_heat_flux_at_time(
-                    self.map_mpi[self.rank]["src_global_t"].start + index_t[t])
+                    self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
 
             data = self.interpolate_time(date, index_t, layers)
 
         else:
             data = self.reader.read_variable_surface_downward_sensible_heat_flux_at_time(
-                self.map_mpi[self.rank]["src_global_t"].start + index_t[0])
+                self.parallel_map[self.rank]["src_global_t"].start + index_t[0])
 
         return data
 
@@ -985,12 +985,12 @@ class TimeMultiPoint(MultiPoint):
             layers[::] = np.NAN
 
             for t in range(0, len(index_t)):
-                layers[t] = self.reader.read_variable_rainfall_amount_at_time(self.map_mpi[self.rank]["src_global_t"].start + index_t[t])
+                layers[t] = self.reader.read_variable_rainfall_amount_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
 
             data = self.interpolate_time(date,index_t,layers)
 
         else:
-            data = self.reader.read_variable_rainfall_amount_at_time(self.map_mpi[self.rank]["src_global_t"].start + index_t[0])
+            data = self.reader.read_variable_rainfall_amount_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[0])
 
         return data
 
@@ -1006,7 +1006,7 @@ class TimeMultiPoint(MultiPoint):
 
             for t in range(0, len(index_t)):
                 comp = self.reader.read_variable_wind_stress_at_time(
-                    self.map_mpi[self.rank]["src_global_t"].start + index_t[t])
+                    self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
                 layers[t][0] = comp[0]
                 layers[t][1] = comp[1]
 
@@ -1015,7 +1015,7 @@ class TimeMultiPoint(MultiPoint):
 
         else:
             data = self.reader.read_variable_wind_stress_at_time(
-                self.map_mpi[self.rank]["src_global_t"].start + index_t[0])
+                self.parallel_map[self.rank]["src_global_t"].start + index_t[0])
 
         return data
 
@@ -1061,13 +1061,13 @@ class TimeMultiPoint(MultiPoint):
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_surface_downward_sensible_heat_flux_at_time(
-                    self.map_mpi[self.rank]["src_global_t"].start + index_t[t])
+                    self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
 
             data = self.interpolate_time(date, index_t, layers)
 
         else:
             data = self.reader.read_variable_surface_downward_sensible_heat_flux_at_time(
-                self.map_mpi[self.rank]["src_global_t"].start + index_t[0])
+                self.parallel_map[self.rank]["src_global_t"].start + index_t[0])
 
         return data
 
@@ -1080,13 +1080,13 @@ class TimeMultiPoint(MultiPoint):
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_surface_downward_latent_heat_flux_at_time(
-                    self.map_mpi[self.rank]["src_global_t"].start + index_t[t])
+                    self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
 
             data = self.interpolate_time(date, index_t, layers)
 
         else:
             data = self.reader.read_variable_surface_downward_latent_heat_flux_at_time(
-                self.map_mpi[self.rank]["src_global_t"].start + index_t[0])
+                self.parallel_map[self.rank]["src_global_t"].start + index_t[0])
 
         return data
 
@@ -1099,13 +1099,13 @@ class TimeMultiPoint(MultiPoint):
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_surface_air_temperature_at_time(
-                    self.map_mpi[self.rank]["src_global_t"].start + index_t[t])
+                    self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
 
             data = self.interpolate_time(date, index_t, layers)
 
         else:
             data = self.reader.read_variable_surface_air_temperature_at_time(
-                self.map_mpi[self.rank]["src_global_t"].start + index_t[0])
+                self.parallel_map[self.rank]["src_global_t"].start + index_t[0])
 
         return data
 
@@ -1118,13 +1118,13 @@ class TimeMultiPoint(MultiPoint):
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_dew_point_temperature_at_time(
-                    self.map_mpi[self.rank]["src_global_t"].start + index_t[t])
+                    self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
 
             data = self.interpolate_time(date, index_t, layers)
 
         else:
             data = self.reader.read_variable_dew_point_temperature_at_time(
-                self.map_mpi[self.rank]["src_global_t"].start + index_t[0])
+                self.parallel_map[self.rank]["src_global_t"].start + index_t[0])
 
         return data
 
@@ -1137,13 +1137,13 @@ class TimeMultiPoint(MultiPoint):
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_surface_downward_solar_radiation_at_time(
-                    self.map_mpi[self.rank]["src_global_t"].start + index_t[t])
+                    self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
 
             data = self.interpolate_time(date, index_t, layers)
 
         else:
             data = self.reader.read_variable_surface_downward_solar_radiation_at_time(
-                self.map_mpi[self.rank]["src_global_t"].start + index_t[0])
+                self.parallel_map[self.rank]["src_global_t"].start + index_t[0])
 
         return data
 
@@ -1156,13 +1156,13 @@ class TimeMultiPoint(MultiPoint):
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_surface_downward_thermal_radiation_at_time(
-                    self.map_mpi[self.rank]["src_global_t"].start + index_t[t])
+                    self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
 
             data = self.interpolate_time(date, index_t, layers)
 
         else:
             data = self.reader.read_variable_surface_downward_thermal_radiation_at_time(
-                self.map_mpi[self.rank]["src_global_t"].start + index_t[0])
+                self.parallel_map[self.rank]["src_global_t"].start + index_t[0])
 
         return data
 
@@ -1175,13 +1175,13 @@ class TimeMultiPoint(MultiPoint):
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_surface_solar_radiation_at_time(
-                    self.map_mpi[self.rank]["src_global_t"].start + index_t[t])
+                    self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
 
             data = self.interpolate_time(date, index_t, layers)
 
         else:
             data = self.reader.read_variable_surface_solar_radiation_at_time(
-                self.map_mpi[self.rank]["src_global_t"].start + index_t[0])
+                self.parallel_map[self.rank]["src_global_t"].start + index_t[0])
 
         return data
 
@@ -1194,13 +1194,13 @@ class TimeMultiPoint(MultiPoint):
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_surface_thermal_radiation_at_time(
-                    self.map_mpi[self.rank]["src_global_t"].start + index_t[t])
+                    self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
 
             data = self.interpolate_time(date, index_t, layers)
 
         else:
             data = self.reader.read_variable_surface_thermal_radiation_at_time(
-                self.map_mpi[self.rank]["src_global_t"].start + index_t[0])
+                self.parallel_map[self.rank]["src_global_t"].start + index_t[0])
 
         return data
 
@@ -1220,7 +1220,7 @@ class TimeMultiPoint(MultiPoint):
             layers[::] = np.NAN
 
             for t in range(0, len(index_t)):
-                comp = self.reader.read_variable_wind_10m_at_time(self.map_mpi[self.rank]["src_global_t"].start + index_t[t])
+                comp = self.reader.read_variable_wind_10m_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
                 layers[t][0] = comp[0]
                 layers[t][1] = comp[1]
 
@@ -1228,7 +1228,7 @@ class TimeMultiPoint(MultiPoint):
             data[1] = self.interpolate_time(date, index_t, layers[:, 1, :])
 
         else:
-            data = self.reader.read_variable_wind_10m_at_time(self.map_mpi[self.rank]["src_global_t"].start + index_t[0])
+            data = self.reader.read_variable_wind_10m_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[0])
 
         return data
 

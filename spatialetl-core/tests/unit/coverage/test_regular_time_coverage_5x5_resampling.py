@@ -25,13 +25,16 @@ from spatialetl.coverage.coverage import Coverage
 from spatialetl.coverage.io.memory_reader import MemoryReader
 from spatialetl.utils.logger import logging
 
-y_size = 10
-x_size = 10
+t_size = 5
+y_size = 5
+x_size = 5
 data = np.zeros([y_size, x_size])
 np.fill_diagonal(data, 2)
-source_y_axis, source_x_axis = np.mgrid[0:y_size, 0:x_size]
-target_x_axis = [0., 1., 2., 3., 4., 5., 6., 7., 8.]
-target_y_axis = [0., 1., 2., 3., 4., 5., 6., 7., 8.]
+source_t_axis = np.arange(0, x_size)
+source_x_axis = np.arange(0, x_size)
+source_y_axis = np.arange(0, y_size)
+target_x_axis = [0., 1., 2., 3.]
+target_y_axis = [0., 1., 2., 3.]
 target_data = np.zeros([y_size - 1, x_size - 1])
 np.fill_diagonal(target_data, 2)
 
@@ -40,7 +43,6 @@ def test_axis_x(caplog):
     caplog.set_level(logging.INFO)
 
     for thread in range(2, os.cpu_count()):
-        logging.info(f"Testing with {thread} threads")
         reader = MemoryReader(
             x=source_x_axis,
             y=source_y_axis
@@ -55,7 +57,6 @@ def test_axis_y(caplog):
     caplog.set_level(logging.INFO)
 
     for thread in range(2, os.cpu_count()):
-        logging.info(f"Testing with {thread} threads")
         reader = MemoryReader(
             x=source_x_axis,
             y=source_y_axis
@@ -67,10 +68,9 @@ def test_axis_y(caplog):
 
 
 def test_bathymetry(caplog):
-    caplog.set_level(logging.DEBUG)
+    caplog.set_level(logging.INFO)
 
     for thread in range(2, os.cpu_count()):
-        logging.info(f"Testing with {thread} threads")
         reader = MemoryReader(
             x=source_x_axis,
             y=source_y_axis,

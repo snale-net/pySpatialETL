@@ -32,12 +32,12 @@ def test_mpi_coverage():
     coverage = TimeCoverage(reader)
 
     # test_get_t_size()
-    expected_size = coverage.map_mpi[coverage.rank]["dst_local_t_size"]
+    expected_size = coverage.parallel_map[coverage.rank]["dst_local_t_size"]
     candidate_size = coverage.get_t_size()
     assert expected_size==candidate_size, "test_get_t_size()"
 
     # test_read_axis_t()
-    expected_shape = (coverage.map_mpi[coverage.rank]["dst_local_t_size"])
+    expected_shape = (coverage.parallel_map[coverage.rank]["dst_local_t_size"])
     candidate_shape = np.shape(coverage.read_axis_t())
     assert expected_shape==candidate_shape, "test_read_axis_t()"
 
@@ -50,8 +50,8 @@ def test_mpi_coverage():
 
 
     # test_read_variable_bathymetry()
-    # expected_shape = (coverage.map_mpi[coverage.rank]["dst_local_y_size"],
-    #                  coverage.map_mpi[coverage.rank]["dst_local_x_size"])
+    # expected_shape = (coverage.parallel_map[coverage.rank]["dst_local_y_size"],
+    #                  coverage.parallel_map[coverage.rank]["dst_local_x_size"])
     # candidate_shape = np.shape(coverage.read_variable_bathymetry())
     # assert expected_shape, candidate_shape, "test_read_variable_bathymetry()")
 
@@ -61,12 +61,12 @@ def test_mpi_interpolated_coverage():
     coverage = TimeCoverage(reader, freq="45min")
 
     # test_get_t_size()
-    expected_size = coverage.map_mpi[coverage.rank]["dst_local_t_size"]
+    expected_size = coverage.parallel_map[coverage.rank]["dst_local_t_size"]
     candidate_size = coverage.get_t_size()
     assert expected_size==candidate_size, "test_get_t_size()"
 
     # test_read_axis_t()
-    expected_shape = (coverage.map_mpi[coverage.rank]["dst_local_t_size"])
+    expected_shape = (coverage.parallel_map[coverage.rank]["dst_local_t_size"])
     candidate_shape = np.shape(coverage.read_axis_t())
     assert expected_shape==candidate_shape, "test_read_axis_t()"
 

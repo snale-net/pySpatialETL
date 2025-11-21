@@ -81,7 +81,7 @@ class MultiPoint():
 
         # MPI
         # TODO Make a multiprocessing version
-        self.map_mpi = None
+        self.parallel_map = None
         self.comm = None
         self.size = 1
         self.rank = 0

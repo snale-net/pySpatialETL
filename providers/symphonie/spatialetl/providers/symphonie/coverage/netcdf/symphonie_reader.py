@@ -559,7 +559,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             self.open_file(index_t)
             bathy = self.grid.variables["hm_w"][ymin:ymax, xmin:xmax]
             if "hssh" in self.ncfile.variables:
-                data = np.ma.filled(self.ncfile.variables["hssh"][index_t, ymin:ymax, xmin:xmax], fill_value=np.nan)
+                data = np.ma.filled(self.ncfile.variables["hssh"][0, ymin:ymax, xmin:xmax], fill_value=np.nan)
             elif "ssh_w" in self.ncfile.variables:
                 data = np.ma.filled(self.ncfile.variables["ssh_w"][0, ymin:ymax, xmin:xmax] + bathy, fill_value=np.nan)
             elif "ssh" in self.ncfile.variables:
