@@ -77,9 +77,14 @@ Step 3: Verify Installation
 
 Run tests to check everything works:
 
-.. code-block:: bash
+   .. code-block:: bash
 
-   uv run pytest spatialetl-core/spatialetl/coverage/tests/
+     uv run pytest spatialetl-core/spatialetl/coverage/tests/
+
+   All tests:
+
+   .. code-block:: bash
+     uv run pytest
 
 If tests pass, you're ready to contribute!
 

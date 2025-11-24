@@ -26,14 +26,27 @@ Project Overview
    ├── spatialetl-core/          # Core library
    │   └── spatialetl/
    │       ├── coverage/         # Gridded data processing
+   │       ├── exception/
    │       ├── point/            # Multi-point data
    │       ├── operator/         # Grid operators
    │       └── utils/            # Utilities
+   │
    ├── providers/                # Data format providers
-   │   ├── netcdf/
+   │   ├── common/
+   │   │   ├── gdal/
+   │   │   ├── grib/
+   │   │   ├── mpi/
+   │   │   └── netcdf/
    │   ├── ecmwf/
+   │   ├── gmt/
    │   ├── hycom/
-   │   └── ...
+   │   ├── mercator/
+   │   ├── meteofrance/
+   │   ├── swan/
+   │   ├── symphonie/
+   │   ├── telemac/
+   │   └── ww3
+   ├── contributings-docs/
    ├── demo/                     # Example scripts
    └── doc/                      # Documentation
 

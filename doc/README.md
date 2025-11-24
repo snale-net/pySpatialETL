@@ -43,16 +43,18 @@ uv run make clean && uv run make html
 ## Documentation project structure
 ```
 doc/
-├── source/              # Documentation source files
+├── source/             # Documentation source files
 │   ├── conf.py         # Sphinx configuration (extensions, theme, paths)
 │   ├── index.rst       # Documentation homepage
+│   ├── api-reference/  # Auto api generate docs
 │   ├── docs/           # User and developer documentation
 │   ├── _static/        # Custom CSS files, images
 │   └── _templates/     # Custom templates (autoapi, etc.)
 ├── build/              # Generated documentation (HTML, PDF, etc.)
 │   └── html/           # HTML version of documentation
-├── Makefile            # Build commands (Linux/macOS)
 ├── make.bat            # Build commands (Windows)
+├── Makefile            # Build commands (Linux/macOS)
+├── README.md           # This file
 └── requirements.txt    # Sphinx dependencies (sphinx, autoapi, rtd-theme)
 ```
 
