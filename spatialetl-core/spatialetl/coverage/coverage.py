@@ -30,6 +30,7 @@ from importlib.util import find_spec
 
 import numpy as np
 from array_split import shape_split
+from loky import get_reusable_executor
 from scipy.spatial import qhull
 
 from spatialetl.exception.not_found_in_rank_error import NotFoundInRankError
@@ -103,6 +104,7 @@ class Coverage(object):
 
             # Parallel multithreading
             self.threads_number = nb_thread
+            self.threads_executor = None
         else:
             # No parallel MPI
             self.comm = None
@@ -345,6 +347,7 @@ class Coverage(object):
             # If we can divide the grid dimensions with the number of threads,
             # we set the threads number by the number of slice
             self.threads_number = len(target_threads_slices.flatten())
+            self.threads_executor = get_reusable_executor(max_workers=self.threads_number, timeout=2)
 
             self.parallel_map[mpi_slice_index]['threads_map'] = np.empty([self.threads_number], dtype=object)
 
@@ -707,25 +710,25 @@ class Coverage(object):
             logging.info(
                 '[horizontal_interpolation] Compute weights...')
 
-            with ProcessPoolExecutor(max_workers=self.threads_number) as executor:
-                futures = []
-                for current_thread in range(0, executor._max_workers):
-                    if self.tri[self.rank][current_thread] is None:
-                        self.tri[self.rank][current_thread] = (
-                        )
 
-                    futures.append(executor.submit(interp_weights,
-                                                   self.read_thread_axis_x(type="source", with_overlap=True,
-                                                                           current_thread=current_thread),
-                                                   self.read_thread_axis_y(type="source", with_overlap=True,
-                                                                           current_thread=current_thread),
-                                                   current_thread))
+            futures = []
+            for current_thread in range(0, self.threads_executor._max_workers):
+                if self.tri[self.rank][current_thread] is None:
+                    self.tri[self.rank][current_thread] = (
+                    )
 
-                futures, _ = concurrent.futures.wait(futures)
+                futures.append(self.threads_executor.submit(interp_weights,
+                                               self.read_thread_axis_x(type="source", with_overlap=True,
+                                                                       current_thread=current_thread),
+                                               self.read_thread_axis_y(type="source", with_overlap=True,
+                                                                       current_thread=current_thread),
+                                               current_thread))
 
-                for f in futures:
-                    current_thread, data = f.result()
-                    self.tri[self.rank][current_thread] = data
+            futures, _ = concurrent.futures.wait(futures)
+
+            for f in futures:
+                current_thread, data = f.result()
+                self.tri[self.rank][current_thread] = data
     # Read metadata
     def read_metadata(self):
         """
@@ -1164,33 +1167,32 @@ class Coverage(object):
             local_data = np.zeros([self.get_y_size(), self.get_x_size()])
             local_data[:] = np.nan
 
-            with ProcessPoolExecutor(max_workers=self.threads_number) as executor:
-                futures = []
-                for current_thread in range(0, executor._max_workers):
-                    data = fn(
-                        self.parallel_map[self.rank]["threads_map"][current_thread]["src_global_x_overlap"].start,
-                        self.parallel_map[self.rank]["threads_map"][current_thread]["src_global_x_overlap"].stop,
-                        self.parallel_map[self.rank]["threads_map"][current_thread]["src_global_y_overlap"].start,
-                        self.parallel_map[self.rank]["threads_map"][current_thread]["src_global_y_overlap"].stop)
+            futures = []
+            for current_thread in range(0, self.threads_executor._max_workers):
+                data = fn(
+                    self.parallel_map[self.rank]["threads_map"][current_thread]["src_global_x_overlap"].start,
+                    self.parallel_map[self.rank]["threads_map"][current_thread]["src_global_x_overlap"].stop,
+                    self.parallel_map[self.rank]["threads_map"][current_thread]["src_global_y_overlap"].start,
+                    self.parallel_map[self.rank]["threads_map"][current_thread]["src_global_y_overlap"].stop)
 
-                    futures.append(executor.submit(resample_faster_2d_to_grid,
-                                                   self.tri[self.rank][current_thread],
-                                                   self.read_thread_axis_x(type="target", with_overlap=True,
-                                                                           current_thread=current_thread),
-                                                   self.read_thread_axis_y(type="target", with_overlap=True,
-                                                                           current_thread=current_thread),
-                                                   data,
-                                                   Coverage.HORIZONTAL_INTERPOLATION_METHOD,
-                                                   current_thread))
+                futures.append(self.threads_executor.submit(resample_faster_2d_to_grid,
+                                               self.tri[self.rank][current_thread],
+                                               self.read_thread_axis_x(type="target", with_overlap=True,
+                                                                       current_thread=current_thread),
+                                               self.read_thread_axis_y(type="target", with_overlap=True,
+                                                                       current_thread=current_thread),
+                                               data,
+                                               Coverage.HORIZONTAL_INTERPOLATION_METHOD,
+                                               current_thread))
 
-                futures, _ = concurrent.futures.wait(futures)
+            futures, _ = concurrent.futures.wait(futures)
 
-                for f in futures:
-                    current_thread, data = f.result()
-                    local_data[self.parallel_map[self.rank]["threads_map"][current_thread]["dst_global_y"],
-                    self.parallel_map[self.rank]["threads_map"][current_thread]["dst_global_x"]] = data[
-                        self.parallel_map[self.rank]["threads_map"][current_thread]["dst_local_y"],
-                        self.parallel_map[self.rank]["threads_map"][current_thread]["dst_local_x"]]
+            for f in futures:
+                current_thread, data = f.result()
+                local_data[self.parallel_map[self.rank]["threads_map"][current_thread]["dst_global_y"],
+                self.parallel_map[self.rank]["threads_map"][current_thread]["dst_global_x"]] = data[
+                    self.parallel_map[self.rank]["threads_map"][current_thread]["dst_local_y"],
+                    self.parallel_map[self.rank]["threads_map"][current_thread]["dst_local_x"]]
 
             return local_data
 

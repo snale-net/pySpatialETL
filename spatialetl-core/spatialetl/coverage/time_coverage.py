@@ -189,8 +189,8 @@ class TimeCoverage(Coverage):
                                      self.parallel_map[mpi_slice_index]["dst_local_x_size"])
             target_threads_slices = shape_split(target_threads_sample, self.threads_number, axis=[0, 0, 0])
 
-            # If we can divide the grid dimensions with the number of threads,
-            # we set the threads number by the number of slice
+            # If we can't divide the grid dimensions with the number of threads,
+            # we set the threads number with the number of slices
             self.threads_number = len(target_threads_slices.flatten())
 
             self.parallel_map[mpi_slice_index]['threads_map'] = np.empty([self.threads_number], dtype=object)
@@ -520,7 +520,7 @@ class TimeCoverage(Coverage):
                 futures = []
                 for current_thread in range(0, executor._max_workers):
                     data = fn(
-                        self.parallel_map[self.rank]["threads_map"][current_thread]["src_global_t"].start + index_t,
+                        self.parallel_map[self.rank]["src_global_t"].start + index_t,
                         self.parallel_map[self.rank]["threads_map"][current_thread]["src_global_x_overlap"].start,
                         self.parallel_map[self.rank]["threads_map"][current_thread]["src_global_x_overlap"].stop,
                         self.parallel_map[self.rank]["threads_map"][current_thread]["src_global_y_overlap"].start,
