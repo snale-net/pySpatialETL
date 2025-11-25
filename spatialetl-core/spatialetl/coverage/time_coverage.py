@@ -32,6 +32,7 @@ import cftime
 import numpy as np
 import pandas
 from array_split import shape_split
+from loky import get_reusable_executor
 
 from spatialetl.coverage.coverage import Coverage
 from spatialetl.exception.not_found_in_rank_error import NotFoundInRankError
@@ -122,15 +123,16 @@ class TimeCoverage(Coverage):
 
         self.__init_parallel_map()
 
-        if type(self) == TimeCoverage and self.horizontal_resampling and self.rank == 0:
-            logging.info(
-                '[horizontal_interpolation] Source grid size : (' + str(self.source_global_x_size) + ", " + str(
-                    self.source_global_y_size) + ")")
-            logging.info(
-                '[horizontal_interpolation] Target grid size : (' + str(self.target_global_x_size) + ", " + str(
-                    self.target_global_y_size) + ")")
+        if self.horizontal_resampling:
+            if self.rank == 0:
+                logging.info(
+                    '[horizontal_interpolation] Source grid size : (' + str(self.source_global_x_size) + ", " + str(
+                        self.source_global_y_size) + ")")
+                logging.info(
+                    '[horizontal_interpolation] Target grid size : (' + str(self.target_global_x_size) + ", " + str(
+                        self.target_global_y_size) + ")")
 
-            Coverage.compute_weight(self)
+            self.compute_weight()
 
         if self.rank == 0 and self.comm:
             logging.debug("MPI map:")
@@ -147,10 +149,10 @@ class TimeCoverage(Coverage):
             if self.comm:
                 logging.debug(f"    {key} = {self.parallel_map[self.rank][key]}")
 
-        for thread in range(len(self.parallel_map[self.rank]["threads_map"])):
+        for thread in range(len(self.parallel_map[self.rank]["threads"])):
             logging.debug(f"   {"-" * 10} Thread n° {thread} {"-" * 10}")
-            for thread_key in self.parallel_map[self.rank]["threads_map"][thread]:
-                logging.debug(f"    {thread_key} = {self.parallel_map[self.rank]["threads_map"][thread][thread_key]}")
+            for thread_key in self.parallel_map[self.rank]["threads"][thread]:
+                logging.debug(f"    {thread_key} = {self.parallel_map[self.rank]["threads"][thread][thread_key]}")
 
         if self.rank == 0:
             logging.debug("-" * 20)
@@ -182,7 +184,15 @@ class TimeCoverage(Coverage):
         mpi_slice_index = 0
         for slyce in target_mpi_slices.flatten():
             mpi_slice = tuple(slyce)
-            self.parallel_map[mpi_slice_index] = self.__compute_mpi_slice(mpi_slice)
+            self.parallel_map[mpi_slice_index] = self.compute_slice_coordinates(
+                mpi_slice,
+                self.source_global_t_size,
+                self.source_global_x_size,
+                self.source_global_y_size,
+                self.target_global_t_size,
+                self.target_global_x_size,
+                self.target_global_y_size
+            )
 
             # Split the axes with the number of threads
             target_threads_sample = (self.parallel_map[mpi_slice_index]["dst_local_t_size"],self.parallel_map[mpi_slice_index]["dst_local_y_size"],
@@ -192,24 +202,50 @@ class TimeCoverage(Coverage):
             # If we can't divide the grid dimensions with the number of threads,
             # we set the threads number with the number of slices
             self.threads_number = len(target_threads_slices.flatten())
+            self.threads_executor = get_reusable_executor(max_workers=self.threads_number, timeout=2)
 
-            self.parallel_map[mpi_slice_index]['threads_map'] = np.empty([self.threads_number], dtype=object)
+            self.parallel_map[mpi_slice_index]['threads'] = np.empty([self.threads_number], dtype=object)
 
             slice_thread_index = 0
             for thread_slyce in target_threads_slices.flatten():
                 thread_slice = tuple(thread_slyce)
-                self.parallel_map[mpi_slice_index]["threads_map"][slice_thread_index] = self.__compute_thread_slice(
-                    thread_slice)
+                self.parallel_map[mpi_slice_index]["threads"][slice_thread_index] = self.compute_slice_coordinates(
+                    thread_slice,
+                    self.parallel_map[mpi_slice_index]["src_local_t_size"],
+                    self.parallel_map[mpi_slice_index]["src_local_x_size"],
+                    self.parallel_map[mpi_slice_index]["src_local_y_size"],
+                    self.parallel_map[mpi_slice_index]["dst_local_t_size"],
+                    self.parallel_map[mpi_slice_index]["dst_local_x_size"],
+                    self.parallel_map[mpi_slice_index]["dst_local_y_size"],
+                    self.parallel_map[mpi_slice_index]["src_global_t"],
+                    self.parallel_map[mpi_slice_index]["src_global_x"],
+                    self.parallel_map[mpi_slice_index]["src_global_y"])
                 slice_thread_index = slice_thread_index + 1
 
             mpi_slice_index = mpi_slice_index + 1
 
-        self.__update_mpi_map()
-        self.__update_thread_map()
+    def compute_slice_coordinates(self,
+                                  slice,
+                                  source_global_t_size: int,
+                                  source_global_x_size: int,
+                                  source_global_y_size: int,
+                                  target_global_t_size: int,
+                                  target_global_x_size: int,
+                                  target_global_y_size: int,
+                                  source_global_t=None,
+                                  source_global_x=None,
+                                  source_global_y=None
+                                  ):
 
-    def __compute_mpi_slice(self,slice):
-
-        map = Coverage.compute_mpi_slice(self,slice[1:])
+        map = Coverage.compute_slice_coordinates(self,
+                                                 slice[1:],
+                                                 source_global_x_size,
+                                                 source_global_y_size,
+                                                 target_global_x_size,
+                                                 target_global_y_size,
+                                                 source_global_x,
+                                                 source_global_y
+                                                 )
 
         # Grille source
         map["dst_global_t"] = slice[0]
@@ -217,7 +253,7 @@ class TimeCoverage(Coverage):
         map["dst_local_t_size"] = map["dst_global_t"].stop - map["dst_global_t"].start
 
         dst_global_t_min_overlap = max(0, map["dst_global_t"].start - TimeCoverage.TIME_OVERLAPING_SIZE)
-        dst_global_t_max_overlap = min(self.target_global_t_size,
+        dst_global_t_max_overlap = min(target_global_t_size,
                                        map["dst_global_t"].stop + TimeCoverage.TIME_OVERLAPING_SIZE)
         map["dst_global_t_overlap"] = np.s_[dst_global_t_min_overlap:dst_global_t_max_overlap]
 
@@ -229,160 +265,60 @@ class TimeCoverage(Coverage):
         if map["dst_global_t"].start == 0:
             dst_t_min = 0
 
-        if map["dst_global_t"].stop == self.target_global_t_size:
+        if map["dst_global_t"].stop == target_global_t_size:
             dst_t_max = map["dst_global_t_size_overlap"]
 
         map["dst_local_t"] = np.s_[dst_t_min:dst_t_max]
 
         # Source grille
-        map["src_global_t"] = map["dst_global_t"]
+        source_global_axis_t = self.source_global_axis_t if source_global_t is None else self.source_global_axis_t[
+            source_global_t]
+        if target_global_t_size == 1:
 
-        map["src_global_t_overlap"] = map["dst_global_t_overlap"]
-
-        map["src_local_t"] = map["dst_local_t"]
-
-        map["src_local_t_size"] = map["dst_local_t_size"]
-
-        map["src_local_t_size_overlap"] = map["dst_global_t_size_overlap"]
-
-        return map
-
-    def __compute_thread_slice(self, slice):
-        """
-        Create the multi threading map for parallel processing.
-
-        Examples
-        --------
-        >>> coverage.__create_threading_map()
-        """
-        map = Coverage.compute_thread_slice(self,slice[1:])
-
-        #### Destination grid ###
-        map["dst_global_t"] = slice[0]
-
-        map["dst_local_t_size"] = map["dst_global_t"].stop - map["dst_global_t"].start
-
-        # Compute overlap
-        dst_global_t_min_overlap = max(0, map["dst_global_t"].start - TimeCoverage.TIME_OVERLAPING_SIZE)
-        dst_global_t_max_overlap = min(self.parallel_map[self.rank]["dst_local_t_size"],
-                                       map["dst_global_t"].stop + TimeCoverage.TIME_OVERLAPING_SIZE)
-        map["dst_global_t_overlap"] = np.s_[dst_global_t_min_overlap:dst_global_t_max_overlap]
-
-
-        map["dst_global_t_size_overlap"] = map["dst_global_t_overlap"].stop - map["dst_global_t_overlap"].start
-
-        # Compute dest local grid
-        if map["dst_global_t"].start == 0:
-            dst_local_t_min = 0
-        elif map["dst_global_t"].start == int(TimeCoverage.TIME_OVERLAPING_SIZE / 2):
-            dst_local_t_min = int(TimeCoverage.TIME_OVERLAPING_SIZE / 2)
-        elif map["dst_global_t"].start == TimeCoverage.TIME_OVERLAPING_SIZE:
-            dst_local_t_min = TimeCoverage.TIME_OVERLAPING_SIZE
-        else:
-            dst_local_t_min = map["dst_global_t"].start - map["dst_global_t_overlap"].start
-
-        dst_local_t_max = dst_local_t_min + map["dst_local_t_size"]
-
-        map["dst_local_t"] = np.s_[dst_local_t_min:dst_local_t_max]
-
-        ### Source grille ###
-        map["src_global_t"] = map["dst_global_t"]
-        map["src_global_t_overlap"] = map["dst_global_t_overlap"]
-        map["src_local_t"] = map["dst_local_t"]
-        map["src_local_t_size"] = map["dst_local_t_size"]
-        map["src_local_t_size_overlap"] = map["dst_global_t_size_overlap"]
-
-        return map
-
-    def __update_mpi_map(self):
-
-        Coverage.update_mpi_map(self)
-
-        if self.get_t_size(type="target", with_overlap=False) == 1:
-            tmin = (np.abs(np.asarray(self.read_axis_t(type="source_global", with_overlap=False, timestamp=1)) - np.min(
-                self.read_axis_t(type="target", with_overlap=False, timestamp=1)))).argmin()
+            tmin = (np.abs(np.asarray(source_global_axis_t) - np.min(
+                self.target_global_axis_t[map["dst_global_t"]]))).argmin()
             tmax = tmin + 1
         else:
-            idx = np.where((self.read_axis_t(type="source_global", with_overlap=False, timestamp=1) >= np.min(
-                self.read_axis_t(type="target", with_overlap=False, timestamp=1))) &
-                           (self.read_axis_t(type="source_global", with_overlap=False, timestamp=1) <= np.max(
-                               self.read_axis_t(type="target", with_overlap=False, timestamp=1))))
+            idx = np.where(
+                (np.asarray(source_global_axis_t) >= np.min(
+                    self.target_global_axis_t[map["dst_global_t"]])) &
+                (np.asarray(source_global_axis_t) <= np.max(
+                    self.target_global_axis_t[map["dst_global_t"]])))
 
             tmin = np.min(idx[0])
             tmax = np.max(idx[0]) + 1
 
-        # SRC GLOBAL
-        self.parallel_map[self.rank]["src_global_t"] = np.s_[tmin:tmax]
-        self.parallel_map[self.rank]["src_global_t_size"] = tmax - tmin
+            # SRC GLOBAL
+        map["src_global_t"] = np.s_[tmin:tmax]
+        map["src_global_t_size"] = tmax - tmin
 
-        dst_global_t_min_overlap = max(0, self.parallel_map[self.rank][
+        dst_global_t_min_overlap = max(0, map[
             "src_global_t"].start - TimeCoverage.TIME_OVERLAPING_SIZE)
-        dst_global_t_max_overlap = min(self.source_global_t_size,
-                                       self.parallel_map[self.rank][
+        dst_global_t_max_overlap = min(source_global_t_size,
+                                       map[
                                            "src_global_t"].stop + TimeCoverage.TIME_OVERLAPING_SIZE)
-        self.parallel_map[self.rank]["src_global_t_overlap"] = np.s_[
-                                                          dst_global_t_min_overlap:dst_global_t_max_overlap]
+        map["src_global_t_overlap"] = np.s_[
+            dst_global_t_min_overlap:dst_global_t_max_overlap]
 
-        self.parallel_map[self.rank]["src_global_t_size_overlap"] = self.parallel_map[self.rank][
-                                                                   "src_global_t_overlap"].stop - \
-                                                               self.parallel_map[self.rank][
-                                                                   "src_global_t_overlap"].start
+        map["src_global_t_size_overlap"] = \
+            map[
+                "src_global_t_overlap"].stop - \
+            map[
+                "src_global_t_overlap"].start
 
-        self.parallel_map[self.rank]["src_local_t_size"] = tmax - tmin
-        self.parallel_map[self.rank]["src_local_t"] = np.s_[0:self.parallel_map[self.rank]["src_local_t_size"]]
+        map["src_local_t_size"] = tmax - tmin
+        map["src_local_t"] = np.s_[
+            0:map["src_local_t_size"]]
 
         # OVERLAP
-        self.parallel_map[self.rank]["src_local_t_size_overlap"] = self.parallel_map[self.rank][
-            "src_global_t_size_overlap"]
-
-        self.parallel_map[self.rank]["src_local_t_overlap"] = np.s_[
-                                                         0:self.parallel_map[self.rank]["src_local_t_size_overlap"]]
-
-    def __update_thread_map(self):
-
-        Coverage.update_thread_map(self)
-
-        for thread in range(0, self.threads_number):
-
-            if self.get_t_size(type="target", with_overlap=False) == 1:
-                tmin = (np.abs(np.asarray(self.source_global_axis_t[self.parallel_map[self.rank]["src_global_t"]]) - np.min(
-                    self.__read_thread_axis_t(type="target", with_overlap=False, timestamp=0, current_thread=thread)))).argmin()
-                tmax = tmin + 1
-            else:
-                idx = np.where((np.asarray(self.source_global_axis_t[self.parallel_map[self.rank]["src_global_t"]]) >= np.min(
-                    self.__read_thread_axis_t(type="target", with_overlap=False, timestamp=0, current_thread=thread))) &
-                               (np.asarray(self.source_global_axis_t[self.parallel_map[self.rank]["src_global_t"]]) <= np.max(
-                                   self.__read_thread_axis_t(type="target", with_overlap=False, timestamp=0, current_thread=thread))))
-
-                tmin = np.min(idx[0])
-                tmax = np.max(idx[0]) + 1
-
-            # SRC GLOBAL
-            self.parallel_map[self.rank]["threads_map"][thread]["src_global_t"] = np.s_[tmin:tmax]
-            self.parallel_map[self.rank]["threads_map"][thread]["src_global_t_size"] = tmax - tmin
-
-            dst_global_t_min_overlap = max(0, self.parallel_map[self.rank]["threads_map"][thread][
-                "src_global_t"].start - TimeCoverage.TIME_OVERLAPING_SIZE)
-            dst_global_t_max_overlap = min(self.source_global_t_size,
-                                           self.parallel_map[self.rank]["threads_map"][thread][
-                                               "src_global_t"].stop + TimeCoverage.TIME_OVERLAPING_SIZE)
-            self.parallel_map[self.rank]["threads_map"][thread]["src_global_t_overlap"] = np.s_[
-                dst_global_t_min_overlap:dst_global_t_max_overlap]
-
-            self.parallel_map[self.rank]["threads_map"][thread]["src_global_t_size_overlap"] = self.parallel_map[self.rank]["threads_map"][thread][
-                                                                            "src_global_t_overlap"].stop - \
-                                                                        self.parallel_map[self.rank]["threads_map"][thread][
-                                                                            "src_global_t_overlap"].start
-
-            self.parallel_map[self.rank]["threads_map"][thread]["src_local_t_size"] = tmax - tmin
-            self.parallel_map[self.rank]["threads_map"][thread]["src_local_t"] = np.s_[0:self.parallel_map[self.rank]["threads_map"][thread]["src_local_t_size"]]
-
-            # OVERLAP
-            self.parallel_map[self.rank]["threads_map"][thread]["src_local_t_size_overlap"] = self.parallel_map[self.rank]["threads_map"][thread][
+        map["src_local_t_size_overlap"] = \
+            map[
                 "src_global_t_size_overlap"]
 
-            self.parallel_map[self.rank]["threads_map"][thread]["src_local_t_overlap"] = np.s_[
-                0:self.parallel_map[self.rank]["threads_map"][thread]["src_local_t_size_overlap"]]
+        map["src_local_t_overlap"] = np.s_[
+            0:map["src_local_t_size_overlap"]]
+
+        return map
 
     # Axis
     def find_time_index(self, t, method="fast", domain="source"):
@@ -402,7 +338,7 @@ class TimeCoverage(Coverage):
         if type(t) == datetime or type(t) == cftime._cftime.datetime or type(t) == cftime._cftime.real_datetime:
 
             target_timestamp = (t - TimeCoverage.TIME_DATUM).total_seconds()
-            array = np.asarray(self.read_axis_t(type="source", timestamp=1))
+            array = np.asarray(self.read_axis_t(type="source_mpi", timestamp=1))
 
             logging.debug("[TimeCoverage][find_time_index()] Looking for : " + str(t))
 
@@ -412,7 +348,7 @@ class TimeCoverage(Coverage):
                 if target_timestamp - array[nearest_t_index] == 0.0 or abs(
                         target_timestamp - array[nearest_t_index]) < (TimeCoverage.TIME_DELTA).total_seconds():
                     logging.debug("[TimeCoverage][find_time_index()] Nearest datetime found : " + str(
-                        self.read_axis_t(type="source", timestamp=0)[nearest_t_index]))
+                        self.read_axis_t(type="source_mpi", timestamp=0)[nearest_t_index]))
 
                     if domain == "source":
                         return nearest_t_index
@@ -430,33 +366,7 @@ class TimeCoverage(Coverage):
         else:
             raise ValueError("" + str(t) + " have to be an integer or a datetime. Current type: " + str(type(t)))
 
-
-    def __read_thread_axis_t(self,current_thread: int, type="target", with_overlap=False, timestamp=0):
-        """Retourne les valeurs de l'axe t.
-    @param timestamp: égale 1 si le temps est souhaité en timestamp depuis TIME_DATUM.
-    @return:  un tableau à une dimensions [z] au format datetime ou timestamp si timestamp=1."""
-
-        if type == "source" and with_overlap is True:
-            return self.reader.read_axis_t(self.parallel_map[self.rank]["threads_map"][current_thread]["src_global_t_overlap"].start,
-                                           self.parallel_map[self.rank]["threads_map"][current_thread]["src_global_t_overlap"].stop, timestamp)
-
-        elif type == "source" and with_overlap is False:
-            return self.reader.read_axis_t(self.parallel_map[self.rank]["threads_map"][current_thread]["src_global_t"].start,
-                                           self.parallel_map[self.rank]["threads_map"][current_thread]["src_global_t"].stop, timestamp)
-
-        elif type == "target" and with_overlap is True:
-            if timestamp == 1:
-                return [(t - TimeCoverage.TIME_DATUM).total_seconds() \
-                        for t in self.target_global_axis_t[self.parallel_map[self.rank]["threads_map"][current_thread]["dst_global_t_overlap"]]];
-            return self.target_global_axis_t[self.parallel_map[self.rank]["threads_map"][current_thread]["dst_global_t_overlap"]]
-
-        elif type == "target" and with_overlap is False:
-            if timestamp == 1:
-                return [(t - TimeCoverage.TIME_DATUM).total_seconds() \
-                        for t in self.target_global_axis_t[self.parallel_map[self.rank]["threads_map"][current_thread]["dst_global_t"]]];
-            return self.target_global_axis_t[self.parallel_map[self.rank]["threads_map"][current_thread]["dst_global_t"]]
-
-    def read_axis_t(self, type="target", with_overlap=False, timestamp=0):
+    def read_axis_t(self, type="target_mpi", with_overlap=False, timestamp=0,current_thread:int=None):
         """Retourne les valeurs de l'axe t.
     @param timestamp: égale 1 si le temps est souhaité en timestamp depuis TIME_DATUM.
     @return:  un tableau à une dimensions [z] au format datetime ou timestamp si timestamp=1."""
@@ -472,15 +382,40 @@ class TimeCoverage(Coverage):
                         for t in self.source_global_axis_t];
             return self.source_global_axis_t
 
-        elif type == "source" and with_overlap is True:
+        elif type == "source_mpi" and with_overlap is True:
             return self.reader.read_axis_t(self.parallel_map[self.rank]["src_global_t_overlap"].start,
                                            self.parallel_map[self.rank]["src_global_t_overlap"].stop, timestamp)
 
-        elif type == "source" and with_overlap is False:
+        elif type == "source_mpi" and with_overlap is False:
             return self.reader.read_axis_t(self.parallel_map[self.rank]["src_global_t"].start,
                                            self.parallel_map[self.rank]["src_global_t"].stop, timestamp)
 
+        elif type == "source" and with_overlap is True:
+            return self.reader.read_axis_t(
+                self.parallel_map[self.rank]["threads"][current_thread]["src_global_t_overlap"].start,
+                self.parallel_map[self.rank]["threads"][current_thread]["src_global_t_overlap"].stop, timestamp)
+
+        elif type == "source" and with_overlap is False:
+            return self.reader.read_axis_t(
+                self.parallel_map[self.rank]["threads"][current_thread]["src_global_t"].start,
+                self.parallel_map[self.rank]["threads"][current_thread]["src_global_t"].stop, timestamp)
+
         elif type == "target" and with_overlap is True:
+            if timestamp == 1:
+                return [(t - TimeCoverage.TIME_DATUM).total_seconds() \
+                        for t in self.target_global_axis_t[
+                            self.parallel_map[self.rank]["threads"][current_thread]["dst_global_t_overlap"]]];
+            return self.target_global_axis_t[
+                self.parallel_map[self.rank]["threads"][current_thread]["dst_global_t_overlap"]]
+
+        elif type == "target" and with_overlap is False:
+            if timestamp == 1:
+                return [(t - TimeCoverage.TIME_DATUM).total_seconds() \
+                        for t in self.target_global_axis_t[
+                            self.parallel_map[self.rank]["threads"][current_thread]["dst_global_t"]]];
+            return self.target_global_axis_t[self.parallel_map[self.rank]["threads"][current_thread]["dst_global_t"]]
+
+        elif type == "target_mpi" and with_overlap is True:
             if timestamp == 1:
                 return [(t - TimeCoverage.TIME_DATUM).total_seconds() \
                         for t in self.target_global_axis_t[self.parallel_map[self.rank]["dst_global_t_overlap"]]];
@@ -510,53 +445,37 @@ class TimeCoverage(Coverage):
 
         index_t = self.find_time_index(time);
 
+        data = fn(
+            self.parallel_map[self.rank]["src_global_t"].start + index_t,
+            self.parallel_map[self.rank]["src_global_x_overlap"].start,
+            self.parallel_map[self.rank]["src_global_x_overlap"].stop,
+            self.parallel_map[self.rank]["src_global_y_overlap"].start,
+            self.parallel_map[self.rank]["src_global_y_overlap"].stop)
+
+        is_vector = True if len(np.shape(data)) == 3 and np.shape(data)[0] == 2 else False
+
         if self.horizontal_resampling:
 
-            # We use multithreading to compute resampling in parallel
-            local_data = np.zeros([self.get_y_size(), self.get_x_size()])
-            local_data[:] = np.nan
-
-            with ProcessPoolExecutor(max_workers=self.threads_number) as executor:
-                futures = []
-                for current_thread in range(0, executor._max_workers):
-                    data = fn(
-                        self.parallel_map[self.rank]["src_global_t"].start + index_t,
-                        self.parallel_map[self.rank]["threads_map"][current_thread]["src_global_x_overlap"].start,
-                        self.parallel_map[self.rank]["threads_map"][current_thread]["src_global_x_overlap"].stop,
-                        self.parallel_map[self.rank]["threads_map"][current_thread]["src_global_y_overlap"].start,
-                        self.parallel_map[self.rank]["threads_map"][current_thread]["src_global_y_overlap"].stop)
-
-                    futures.append(executor.submit(resample_faster_2d_to_grid,
-                                                   self.tri[self.rank][current_thread],
-                                                   self.read_thread_axis_x(type="target", with_overlap=True,
-                                                                           current_thread=current_thread),
-                                                   self.read_thread_axis_y(type="target", with_overlap=True,
-                                                                           current_thread=current_thread),
-                                                   data,
-                                                   Coverage.HORIZONTAL_INTERPOLATION_METHOD,
-                                                   current_thread))
-
-                futures, _ = concurrent.futures.wait(futures)
-
-                for f in futures:
-                    current_thread, data = f.result()
-                    local_data[self.parallel_map[self.rank]["threads_map"][current_thread]["dst_global_y"],
-                    self.parallel_map[self.rank]["threads_map"][current_thread]["dst_global_x"]] = data[
-                        self.parallel_map[self.rank]["threads_map"][current_thread]["dst_local_y"],
-                        self.parallel_map[self.rank]["threads_map"][current_thread]["dst_local_x"]]
+            # We use multithreading to compute resampling
+            if is_vector:
+                local_data = np.zeros([2, self.get_y_size(), self.get_x_size()])
+                self.resample_2d_variable(data[0], local_data[0])
+                self.resample_2d_variable(data[1], local_data[1])
+            else:
+                local_data = np.zeros([self.get_y_size(), self.get_x_size()])
+                self.resample_2d_variable(data, local_data)
 
             return local_data
 
         else:
 
-            data = fn(
-                self.parallel_map[self.rank]["src_global_t"].start + index_t,
-                self.parallel_map[self.rank]["src_global_x_overlap"].start,
-                self.parallel_map[self.rank]["src_global_x_overlap"].stop,
-                self.parallel_map[self.rank]["src_global_y_overlap"].start,
-                self.parallel_map[self.rank]["src_global_y_overlap"].stop)
-
-            return data[self.parallel_map[self.rank]["dst_local_y"], self.parallel_map[self.rank]["dst_local_x"]]
+            if is_vector:
+                return [
+                    data[0][self.parallel_map[self.rank]["dst_local_y"], self.parallel_map[self.rank]["dst_local_x"]],
+                    data[1][self.parallel_map[self.rank]["dst_local_y"], self.parallel_map[self.rank]["dst_local_x"]]
+                ]
+            else:
+                return data[self.parallel_map[self.rank]["dst_local_y"], self.parallel_map[self.rank]["dst_local_x"]]
 
     # Variables
     def read_variable_2D_sea_binary_mask_at_time(self, t):

@@ -36,13 +36,13 @@ if __name__ == "__main__":
                              '/work/sciences/projects/2022-Snale/simu-Aubenas/output/v2-1992/GRAPHIQUES/')
 
     #depths = [0.0, 10.0]
-    coverage = TimeLevelCoverage(reader, resolution_x=0.001, resolution_y=0.001,resolution_z=0.0001,nb_thread=1,end_time="2022-06-07 17:45:36");
+    coverage = TimeLevelCoverage(reader, resolution_x=0.001, resolution_y=0.001,resolution_z=0.0001,nb_thread=8);
 
     writer = DefaultWriter(coverage, '/tmp/symphonie_regular.nc')
 
     #writer.write_variable_baroclinic_sea_water_velocity()
     #writer.write_variable_barotropic_sea_water_velocity()
-    writer.write_variable_sea_water_column_thickness()
+    #writer.write_variable_sea_water_column_thickness()
     #writer.write_variable_sea_surface_height_above_mean_sea_level()
     #writer.write_variable_wind_stress()
     #writer.write_variable_sea_water_temperature()

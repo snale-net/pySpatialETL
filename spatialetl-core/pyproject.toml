@@ -37,7 +37,9 @@ dependencies = [
   "numpy==1.26.4",
   "pandas==1.4.4",
   "scipy==1.11.4",
-  "array_split>=0.6.5"
+  "array_split>=0.6.5",
+  "loky",
+  "pytest"
 ]
 
 [project.urls]

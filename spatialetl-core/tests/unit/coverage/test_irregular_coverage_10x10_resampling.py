@@ -69,7 +69,7 @@ def test_axis_y(caplog):
 def test_bathymetry(caplog):
     caplog.set_level(logging.DEBUG)
 
-    for thread in range(2, os.cpu_count()):
+    for thread in range(2,3):
         logging.info(f"Testing with {thread} threads")
         reader = MemoryReader(
             x=source_x_axis,

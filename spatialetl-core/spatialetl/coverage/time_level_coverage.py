@@ -56,16 +56,6 @@ class TimeLevelCoverage(LevelCoverage, TimeCoverage):
             [self.get_z_size(type="source"), 2, self.get_y_size(type="source", with_overlap=True),
              self.get_x_size(type="source", with_overlap=True)])
 
-        if self.horizontal_resampling and self.rank == 0:
-            logging.info(
-                '[horizontal_interpolation] Source grid size : (' + str(self.source_global_x_size) + ", " + str(
-                    self.source_global_y_size) + ")")
-            logging.info(
-                '[horizontal_interpolation] Target grid size : (' + str(self.target_global_x_size) + ", " + str(
-                    self.target_global_y_size) + ")")
-
-            self.compute_weight()
-
 
     def __read_variable(self, function_name, time, depth):
 
@@ -126,7 +116,7 @@ class TimeLevelCoverage(LevelCoverage, TimeCoverage):
                 futures = []
                 for current_thread in range(0, executor._max_workers):
                     futures.append(executor.submit(resample_faster_2d_to_grid,
-                                                   self.tri[self.rank][current_thread],
+                                                   self.source_global_tri[self.rank][current_thread],
                                                    self.read_thread_axis_x(type="target", with_overlap=True,
                                                                            current_thread=current_thread),
                                                    self.read_thread_axis_y(type="target", with_overlap=True,
@@ -139,10 +129,10 @@ class TimeLevelCoverage(LevelCoverage, TimeCoverage):
 
                 for f in futures:
                     current_thread, data = f.result()
-                    local_data[self.parallel_map[self.rank]["threads_map"][current_thread]["dst_global_y"],
-                    self.parallel_map[self.rank]["threads_map"][current_thread]["dst_global_x"]] = data[
-                        self.parallel_map[self.rank]["threads_map"][current_thread]["dst_local_y"],
-                        self.parallel_map[self.rank]["threads_map"][current_thread]["dst_local_x"]]
+                    local_data[self.parallel_map[self.rank]["threads"][current_thread]["dst_global_y"],
+                    self.parallel_map[self.rank]["threads"][current_thread]["dst_global_x"]] = data[
+                        self.parallel_map[self.rank]["threads"][current_thread]["dst_local_y"],
+                        self.parallel_map[self.rank]["threads"][current_thread]["dst_local_x"]]
 
             return local_data
 

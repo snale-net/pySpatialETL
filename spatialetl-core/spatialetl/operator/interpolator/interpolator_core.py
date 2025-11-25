@@ -29,11 +29,32 @@ from datetime import datetime
 
 import numpy as np
 from numpy import int8, int16, int32, int64
-from scipy.interpolate import griddata, LinearNDInterpolator
+from scipy.interpolate import griddata, LinearNDInterpolator, NearestNDInterpolator
 from scipy.interpolate import interp1d
 
 from spatialetl.utils.logger import logging
 
+
+def interp_2d_weights(gridX, gridY, current_thread:int):
+    """
+    Interpolate the 2d weights of the source grid
+
+    :param gridX:
+    :param gridY:
+    :param current_thread (int): Current thread
+    :return current_thread, Delaunay triangulation
+    """
+
+    logging.debug(f"[InterpolatorCore][horizontal_interpolation()] Thread {current_thread} is computing weights")
+
+    gridX = np.ma.filled(gridX, fill_value=-9999.)
+    gridY = np.ma.filled(gridY, fill_value=-9999.)
+
+    if gridX.ndim == 1 and gridY.ndim == 1:
+        gridX, gridY = np.meshgrid(gridX, gridY)
+
+    points = np.array([gridX.flatten(), gridY.flatten()]).T
+    return current_thread, qhull.Delaunay(points)
 
 def resample_2d_to_grid(gridX,gridY,newX,newY,data,method,current_thread):
     """
@@ -58,19 +79,6 @@ def resample_2d_to_grid(gridX,gridY,newX,newY,data,method,current_thread):
 
     return current_thread, griddata(points, values, (xx, yy), method=method, rescale=False,fill_value=fill_value)
 
-def interp_weights(gridX,gridY,current_thread):
-
-    logging.debug(f"[InterpolatorCore][horizontal_interpolation()] Thread {current_thread} is computing weights")
-
-    gridX = np.ma.filled(gridX, fill_value=-9999.)
-    gridY = np.ma.filled(gridY, fill_value=-9999.)
-
-    if gridX.ndim == 1 and gridY.ndim == 1:
-        gridX, gridY = np.meshgrid(gridX, gridY)
-
-    points = np.array([gridX.flatten(), gridY.flatten()]).T
-    return current_thread, qhull.Delaunay(points)
-
 def resample_faster_2d_to_grid(tri,newX,newY,data,method,current_thread):
     """
     2D resampling function
@@ -85,8 +93,13 @@ def resample_faster_2d_to_grid(tri,newX,newY,data,method,current_thread):
     else:
         fill_value = 9.96921e+36
 
-    ip = LinearNDInterpolator(tri, values, fill_value=fill_value,
+    if method =="linear":
+        ip = LinearNDInterpolator(tri, values, fill_value=fill_value,
                               rescale=False)
+    elif method == "nearest":
+        ip = NearestNDInterpolator(tri, values, fill_value=fill_value,
+                                  rescale=False)
+
     return current_thread,ip((xx, yy))
 
 

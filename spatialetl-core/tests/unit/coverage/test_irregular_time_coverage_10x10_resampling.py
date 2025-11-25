@@ -47,6 +47,7 @@ def test_axis_x(caplog):
     for thread in range(2, os.cpu_count()):
         logging.info(f"Testing with {thread} threads")
         reader = MemoryReader(
+            t=source_t_axis,
             x=source_x_axis,
             y=source_y_axis
         )
@@ -62,6 +63,7 @@ def test_axis_y(caplog):
     for thread in range(2, os.cpu_count()):
         logging.info(f"Testing with {thread} threads")
         reader = MemoryReader(
+            t=source_t_axis,
             x=source_x_axis,
             y=source_y_axis
         )
