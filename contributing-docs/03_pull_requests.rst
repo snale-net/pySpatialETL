@@ -1,127 +1,282 @@
 Pull Request Guidelines
 ========================
 
-Ce document explique comment créer des Pull Requests et détaille les standards de code attendus lors de leur mise en œuvre.
+This document explains how to create Pull Requests and details the code standards expected during their implementation.
 
-Avant de soumettre
-------------------
+.. contents:: On this page
+   :local:
+   :depth: 2
 
-Checklist pré-soumission
+Before Submitting
+-----------------
+
+Pre-submission Checklist
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-Avant de soumettre une PR depuis ton fork, vérifie qu'elle respecte les points suivants :
+Before submitting a PR from your fork, ensure it meets the following requirements:
 
-✔️ **Tests requis**
+✔️ **Tests Required**
 
-Inclure des tests (doctests, tests unitaires avec pytest, ou les deux).
-Les tests doivent couvrir les nouvelles fonctionnalités et les cas limites.
+Include tests (doctests, unit tests with pytest, or both).
+Tests must cover new features and edge cases.
 
-✔️ **Build ReadTheDocs vert**
+✔️ **ReadTheDocs Build Passing**
 
-Le build de la documentation doit passer sans erreur.
-Les mainteneurs ne fusionneront jamais une PR qui casse le lint ou la documentation.
+Documentation build must pass without errors.
+Maintainers will never merge a PR that breaks linting or documentation.
 
-✔️ **Conversations résolues**
+✔️ **All Conversations Resolved**
 
-Toutes les discussions doivent être résolues avant que la PR soit fusionnée.
+All discussions must be resolved before the PR can be merged.
 
-✔️ **Rebase plutôt que merge**
+✔️ **Rebase Over Merge**
 
-Il est demandé de rebaser fréquemment ta PR pour garder un historique propre et faciliter la revue.
-Tous les conflits doivent être résolus.
+Rebase your PR frequently to maintain a clean history and facilitate review.
+All conflicts must be resolved.
 
-✔️ **Fusion en "Squash and Merge"**
+✔️ **Squash and Merge**
 
-Peu importe le nombre de commits pendant la review, la PR sera fusionnée en un seul commit.
-Les mainteneurs peuvent te demander de nettoyer ou regrouper les commits avant la fusion.
+Regardless of commit count during review, the PR will be merged as a single commit.
+Maintainers may request you to clean up or consolidate commits before merging.
 
-✔️ **Licence MIT obligatoire**
+✔️ **MIT License Required**
 
-Tout nouveau fichier doit commencer par l'en-tête de licence MIT.
+All new files must begin with the MIT license header.
 
-✔️ **Code + tests + docs dans la même PR**
+✔️ **Code + Tests + Docs in Same PR**
 
-Si tu ajoutes une fonctionnalité, les documents doivent être mis à jour dans la même PR :
+When adding a feature, documentation must be updated in the same PR:
 
-- Docstrings dans le code
-- Documentation Sphinx si nécessaire
-- Fichiers README si applicable
+- Docstrings in the code
+- Sphinx documentation if applicable
+- README files if relevant
 
-✔️ **PR petites et focalisées**
+✔️ **Small and Focused PRs**
 
-Ne mélange pas refactorings et nouvelles features.
-Les petites PR se review beaucoup mieux et facilitent le cherry-pick pour les releases correctives.
+Do not mix refactoring with new features.
+Small PRs are easier to review and facilitate cherry-picking for patch releases.
 
-Pour les grosses modifications :
+For large changes:
 
-1. Créer un Draft global pour discussion
-2. Envoyer ensuite plusieurs petites PR dérivées
+1. Create a draft PR for discussion
+2. Submit multiple smaller derived PRs
 
-✔️ **Exécuter les tests localement**
+✔️ **Run Tests Locally**
 
-Les tests suivent la même arborescence que le code.
+Tests follow the same structure as the code.
 
-Exemple : changements dans ``spatialetl-core/spatialetl/coverage/`` ⇒ tests dans ``spatialetl-core/spatialetl/coverage/tests/``
+Example: changes in ``spatialetl-core/spatialetl/coverage/`` ⇒ tests in ``spatialetl-core/spatialetl/coverage/tests/``
 
-Lancer les tests avec UV :
+Run tests with UV:
 
 .. code-block:: bash
 
-   # Tests d'un module spécifique
+   # Test a specific module
    uv run pytest spatialetl-core/spatialetl/coverage/tests/
 
-   # Tous les tests
+   # Run all tests
    uv run pytest
 
-✔️ **Tester sur Python 3.9**
+✔️ **Test on Python 3.9**
 
-Version minimale supportée : Python 3.9.
-Certaines fonctionnalités récentes (match/case, nouveaux types) ne fonctionnent pas sur cette version.
+Minimum supported version: Python 3.9.
+Some recent features (match/case, new type hints) are not available in this version.
 
-✔️ **Messages de commit conformes**
+✔️ **Conventional Commit Messages**
 
-Format recommandé : ``[Type] Description courte``
+Recommended format: ``[Type] Short description``
 
-Types acceptés :
+Accepted types:
 
-- ``[Feat]`` : Nouvelle fonctionnalité
-- ``[Fix]`` : Correction de bug
-- ``[Docs]`` : Documentation uniquement
-- ``[Chore]`` : Maintenance, dépendances
-- ``[Refactor]`` : Refactoring sans changement fonctionnel
-- ``[Test]`` : Ajout ou modification de tests
+- ``[Feat]``: New feature
+- ``[Fix]``: Bug fix
+- ``[Docs]``: Documentation only
+- ``[Chore]``: Maintenance, dependencies
+- ``[Refactor]``: Refactoring without functional changes
+- ``[Test]``: Adding or modifying tests
 
-Exemple : ``[Feat] add AROME forecast data provider``
+Example: ``[Feat] add AROME forecast data provider``
 
-Processus de review
--------------------
+Review Process
+--------------
 
-Résolution des conversations
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Conversation Resolution
+~~~~~~~~~~~~~~~~~~~~~~~
 
-Une PR est mergeable uniquement lorsque **toutes les conversations sont résolues**.
+A PR is mergeable only when **all conversations are resolved**.
 
-Cela permet :
+This ensures:
 
-- Une visibilité claire de l'état de la PR
-- Une boucle review/merge plus rapide
-- De limiter l'usage de "Request changes" aux cas vraiment bloquants
+- Clear visibility of PR status
+- Faster review/merge cycle
+- Limited use of "Request changes" to truly blocking issues
 
-Ce que les reviewers attendent
+What Reviewers Expect
+~~~~~~~~~~~~~~~~~~~~~
+
+- Readable and well-documented code
+- Relevant passing tests
+- Up-to-date documentation
+
+After Review
+~~~~~~~~~~~~
+
+If changes are requested:
+
+1. Apply the corrections
+2. Commit and push to your branch
+3. Reply to comments indicating completion
+
+Coding Style and Best Practices
+--------------------------------
+
+Don't Use Asserts Outside Tests
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- Code lisible et bien documenté
-- Tests pertinents et qui passent
-- Documentation à jour
+Our community agreed that for various reasons we do not use ``assert`` in production
+code of SpatialETL. Assertions are disabled when Python runs in optimized mode
+(``python -O``), making them unreliable for production validation.
 
-Après la review
-~~~~~~~~~~~~~~~
+**❌ Avoid:**
 
-Si des modifications sont demandées :
+.. code-block:: python
 
-1. Apporter les corrections
-2. Commit et push sur ta branche
-3. Répondre aux commentaires pour indiquer que c'est fait
-4. Marquer les conversations comme résolues si approprié
+   assert grid_shape == (1800, 1536)
+   assert geom.is_valid()
 
-Les mainteneurs fusionneront dès que tout est validé.
+**✅ Prefer:**
+
+.. code-block:: python
+
+   if grid_shape != (1800, 1536):
+       raise ValueError(f"Invalid AROME grid shape: expected (1800, 1536), got {grid_shape}")
+
+   if not geom.is_valid():
+       raise InvalidGeometryError(f"Geometry validation failed: {geom.wkt}")
+
+**Exception:** Type checking guards are acceptable:
+
+.. code-block:: python
+
+   if TYPE_CHECKING:
+       assert isinstance(dataset, xr.Dataset)
+
+Use Standard Python Exceptions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+We prioritize Python's standard exceptions over custom ones
+for better interoperability and clarity.
+
+**Hierarchy:**
+
+1. Python standard exceptions (``ValueError``, ``TypeError``, ``KeyError``, ``OSError``)
+2. Custom exceptions in ``spatialetl/exceptions.py`` (only when semantically necessary)
+
+**❌ Too generic:**
+
+.. code-block:: python
+
+   raise SpatialETLException("Invalid coordinates")
+
+**✅ Specific and standard:**
+
+.. code-block:: python
+
+   raise ValueError(f"Latitude must be between -90 and 90, got {lat}")
+   raise KeyError(f"Missing required config key: {key}")
+
+**✅ Custom when justified:**
+
+.. code-block:: python
+
+   # In spatialetl/exceptions.py
+   class InvalidCRSError(ValueError):
+       """Raised when coordinate reference system is invalid or unsupported."""
+       pass
+
+   # Usage
+   if not crs.is_valid:
+       raise InvalidCRSError(f"Unsupported CRS: {crs}")
+
+Don't Use time() for Duration Calculations
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Use monotonic clocks for duration calculations to avoid issues with system time
+adjustments (NTP synchronization, daylight saving time).
+
+If you wish to compute the time difference between two events within the same process,
+use ``time.monotonic()``, not ``time.time()`` nor ``datetime.now()``.
+
+**❌ Unreliable (affected by NTP, DST):**
+
+.. code-block:: python
+
+   start = time.time()
+   process_meteorological_data()
+   duration = time.time() - start
+
+**✅ Monotonic clock:**
+
+.. code-block:: python
+
+   start = time.monotonic()
+   process_meteorological_data()
+   duration = time.monotonic() - start
+   log.info(f"Processing took {duration:.2f}s")
+
+** High-precision benchmarking:**
+
+If you are measuring duration for performance reasons, use ``time.perf_counter()``.
+On many platforms, this uses the same underlying clock mechanism as monotonic, but
+``perf_counter()`` is guaranteed to be the highest accuracy clock on the system.
+
+.. code-block:: python
+
+   start = time.perf_counter()
+   extract_arome_grid()
+   duration = time.perf_counter() - start
+
+**⚠️ Database timestamps:** If the start time of a duration calculation needs to be
+stored in a database, then this has to be done using ``datetime`` objects. In all
+other cases, using ``datetime`` for duration calculation MUST be avoided as creating
+and diffing datetime operations are (comparatively) slow.
+
+Documentation Standards
+~~~~~~~~~~~~~~~~~~~~~~~
+
+**Docstrings**
+   English, following `Google style <https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings>`_.
+
+**Type hints**
+   Required for all public APIs.
+
+**Example:**
+
+.. code-block:: python
+
+   def extract_arome_variable(
+       dataset: xr.Dataset,
+       variable: str,
+       bounds: tuple[float, float, float, float],
+   ) -> np.ndarray:
+       """Extract a meteorological variable from AROME dataset.
+
+       Args:
+           dataset: NetCDF dataset containing AROME forecast data.
+           variable: Variable name (e.g., 'temperature', 'precipitation').
+           bounds: Spatial bounds as (min_lon, min_lat, max_lon, max_lat).
+
+       Returns:
+           Extracted data array with spatial subset.
+
+       Raises:
+           KeyError: If variable not found in dataset.
+           ValueError: If bounds are invalid.
+       """
+       if not is_valid_france_bounds(bounds):
+           raise ValueError(f"Bounds outside France extent: {bounds}")
+
+       return dataset[variable].sel(
+           lon=slice(bounds[0], bounds[2]),
+           lat=slice(bounds[1], bounds[3])
+       ).values

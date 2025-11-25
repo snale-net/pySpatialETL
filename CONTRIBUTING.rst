@@ -1,9 +1,9 @@
 Contributing to pySpatialETL
 =============================
 
-Thank you for your interest in contributing to pySpatialETL!
+Thank you for your interest in contributing to SpatialETL!
 
-pySpatialETL is an open-source ETL library for geospatial data processing, supporting various formats including NetCDF, GRIB, GeoTIFF, Shapefiles, and more.
+SpatialETL is an open-source ETL library for geospatial data processing, supporting various formats including NetCDF, GRIB, GeoTIFF, Shapefiles, and more.
 
 Ways to Contribute
 ------------------

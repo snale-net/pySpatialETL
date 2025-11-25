@@ -3,6 +3,10 @@ Quick Start Guide
 
 This guide will help you make your first contribution to pySpatialETL in just a few steps.
 
+.. contents:: On this page
+   :local:
+   :depth: 2
+
 Prerequisites
 -------------
 
@@ -20,7 +24,7 @@ If you need help with UV installation:
    powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
 
 Step 1: Fork and Clone
------------------------
+~~~~~~~~~~~~~~~~~~~~~~
 
 1. Fork the repository on GitHub: https://github.com/snale-net/pySpatialETL
 
@@ -38,7 +42,7 @@ Step 1: Fork and Clone
       git checkout develop
 
 Step 2: Set Up Environment
----------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 1. Create a virtual environment:
 
@@ -73,7 +77,7 @@ Step 2: Set Up Environment
       uv sync --all-extras
 
 Step 3: Verify Installation
-----------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Run tests to check everything works:
 
@@ -89,7 +93,7 @@ Run tests to check everything works:
 If tests pass, you're ready to contribute!
 
 Step 4: Make Your Changes
---------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 1. Create a new branch:
 
@@ -114,7 +118,7 @@ Step 4: Make Your Changes
       uv run pytest
 
 Step 5: Submit Pull Request
-----------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 1. Stage and commit your changes:
 
@@ -137,7 +141,7 @@ Step 5: Submit Pull Request
    - Fill in the PR description
 
 Quick Reference Commands
-------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: bash
 

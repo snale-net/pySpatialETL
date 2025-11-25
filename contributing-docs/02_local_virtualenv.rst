@@ -1,7 +1,11 @@
 Local Development with UV
 ==========================
 
-This guide describes how to install pySpatialETL in development mode with UV.
+This guide describes how to install SpatialETL in development mode with UV.
+
+.. contents:: On this page
+   :local:
+   :depth: 2
 
 Why UV?
 -------
@@ -93,7 +97,7 @@ This can be done very easily with ``uv`` by going to the provider's folder and r
 
 .. code-block:: bash
 
-   cd providers/netcdf
+   cd providers/common/netcdf
    uv sync
 
 This will use the ``.venv`` environment in the root of your project and will install dependency of your provider and providers it depends on and its development dependencies.
@@ -102,7 +106,7 @@ Then running tests for the provider is as simple as:
 
 .. code-block:: bash
 
-   uv run pytest
+   uv run pytest providers/common/netcdf
 
 Note that the ``uv sync`` command will automatically synchronize all dependencies needed for your provider and its development dependencies.
 
@@ -187,6 +191,7 @@ Quick Reference Commands
    uv pip list
 
    # Run tests
+   uv pip install pytest
    uv run pytest
 
    # Run a script

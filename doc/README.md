@@ -1,6 +1,18 @@
 # Sphinx Documentation - pySpatialETL
 
-Technical guide for generating pySpatialETL documentation using Sphinx.
+Technical guide for generating SpatialETL documentation using Sphinx.
+
+## Table of Contents
+- [Prerequisites](#prerequisites)
+- [Quick documentation generation](#quick-documentation-generation)
+- [Documentation project structure](#documentation-project-structure)
+- [Sphinx Configuration (`conf.py`)](#sphinx-configuration-confpy)
+- [AutoAPI Templates Customization](#autoapi-templates-customization)
+- [Project metadata](#project-metadata)
+- [Theme and customization](#theme-and-customization)
+- [Homepage structure (`index.rst`)](#homepage-structure-indexrst)
+- [Useful commands](#useful-commands)
+- [Resources](#resources)
 
 ## Prerequisites
 
