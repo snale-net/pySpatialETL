@@ -1,7 +1,7 @@
 Quick Start Guide
 =================
 
-This guide will help you make your first contribution to pySpatialETL in just a few steps.
+This guide will help you make your first contribution to SpatialETL in just a few steps.
 
 .. contents:: On this page
    :local:
@@ -26,13 +26,13 @@ If you need help with UV installation:
 Step 1: Fork and Clone
 ~~~~~~~~~~~~~~~~~~~~~~
 
-1. Fork the repository on GitHub: https://github.com/snale-net/pySpatialETL
+1. Fork the repository on GitHub: https://github.com/snale-net/SpatialETL
 
 2. Clone your fork:
 
    .. code-block:: bash
 
-      git clone https://github.com/YOUR_USERNAME/pySpatialETL.git
+      git clone https://github.com/YOUR_USERNAME/SpatialETL.git
       cd pySpatialETL
 
 3. Checkout the develop branch:
@@ -81,11 +81,6 @@ Step 3: Verify Installation
 
 Run tests to check everything works:
 
-   .. code-block:: bash
-
-     uv run pytest spatialetl-core/spatialetl/coverage/tests/
-
-   All tests:
 
    .. code-block:: bash
      uv run pytest
@@ -146,7 +141,7 @@ Quick Reference Commands
 .. code-block:: bash
 
    # Clone and setup
-   git clone https://github.com/YOUR_USERNAME/pySpatialETL.git
+   git clone https://github.com/YOUR_USERNAME/SpatialETL.git
    cd pySpatialETL
    git checkout develop
    uv venv

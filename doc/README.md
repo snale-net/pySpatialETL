@@ -1,4 +1,4 @@
-# Sphinx Documentation - pySpatialETL
+# Sphinx Documentation - SpatialETL
 
 Technical guide for generating SpatialETL documentation using Sphinx.
 
@@ -17,7 +17,7 @@ Technical guide for generating SpatialETL documentation using Sphinx.
 ## Prerequisites
 
 - **UV installed** (see [UV documentation](https://docs.astral.sh/uv/))
-- pySpatialETL project cloned with UV environment configured
+- SpatialETL project cloned with UV environment configured
 
 > **Note**: This guide uses UV commands (`uv run make html`). If you're not using UV,
 > replace `uv run make` with standard `make` commands.

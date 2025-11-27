@@ -59,4 +59,4 @@ Index
 Links
 -----
 
-- **Github** : `pySpatialETL <https://github.com/snale-net/pySpatialETL>`_
+- **Github** : `pySpatialETL <https://github.com/snale-net/SpatialETL>`_

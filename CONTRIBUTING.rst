@@ -1,4 +1,4 @@
-Contributing to pySpatialETL
+Contributing to SpatialETL
 =============================
 
 Thank you for your interest in contributing to SpatialETL!

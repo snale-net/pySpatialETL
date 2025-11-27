@@ -40,7 +40,7 @@ dependencies = [
 [project.urls]
 Homepage = "https://lab.snale.net/produits/pyspatialetl"
 Documentation = "https://readthedocs.org"
-Repository = "https://github.com/snale-net/pySpatialETL.git"
+Repository = "https://github.com/snale-net/SpatialETL.git"
 
 [dependency-groups]
 dev = [
