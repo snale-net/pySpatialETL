@@ -217,9 +217,7 @@ class TimeCoverage(Coverage):
                     self.parallel_map[mpi_slice_index]["dst_local_t_size"],
                     self.parallel_map[mpi_slice_index]["dst_local_x_size"],
                     self.parallel_map[mpi_slice_index]["dst_local_y_size"],
-                    self.parallel_map[mpi_slice_index]["src_global_t"],
-                    self.parallel_map[mpi_slice_index]["src_global_x"],
-                    self.parallel_map[mpi_slice_index]["src_global_y"])
+                    self.parallel_map[mpi_slice_index])
                 slice_thread_index = slice_thread_index + 1
 
             mpi_slice_index = mpi_slice_index + 1
@@ -232,10 +230,19 @@ class TimeCoverage(Coverage):
                                   target_global_t_size: int,
                                   target_global_x_size: int,
                                   target_global_y_size: int,
-                                  source_global_t=None,
-                                  source_global_x=None,
-                                  source_global_y=None
+                                  parent_slice=None
                                   ):
+        """
+        Compute slice coordinates in the source grid and the destination grid with overlap.
+
+        Args:
+           slice (array slice): Current slice to compute
+           source_global_x_size (int) : Size of the global source x axis
+           source_global_y_size (int) : Size of the global source y axis
+           target_global_x_size (int) : Size of the global target x axis
+           target_global_y_size (int) : Size of the global target y axis
+           parent_slice (map of slice, optionial) : Slice of the parent slice
+       """
 
         map = Coverage.compute_slice_coordinates(self,
                                                  slice[1:],
@@ -243,8 +250,7 @@ class TimeCoverage(Coverage):
                                                  source_global_y_size,
                                                  target_global_x_size,
                                                  target_global_y_size,
-                                                 source_global_x,
-                                                 source_global_y
+                                                 parent_slice
                                                  )
 
         # Grille source
@@ -271,19 +277,24 @@ class TimeCoverage(Coverage):
         map["dst_local_t"] = np.s_[dst_t_min:dst_t_max]
 
         # Source grille
-        source_global_axis_t = self.source_global_axis_t if source_global_t is None else self.source_global_axis_t[
-            source_global_t]
+        if parent_slice is not None:
+            source_global_axis_t =self.target_global_axis_t[parent_slice["dst_global_t"]]
+            target_global_axis_t = self.target_global_axis_t[parent_slice["dst_global_t"]]
+        else:
+            source_global_axis_t = self.source_global_axis_t
+            target_global_axis_t = self.target_global_axis_t
+
         if target_global_t_size == 1:
 
             tmin = (np.abs(np.asarray(source_global_axis_t) - np.min(
-                self.target_global_axis_t[map["dst_global_t"]]))).argmin()
+                self.target_global_axis_t))).argmin()
             tmax = tmin + 1
         else:
             idx = np.where(
                 (np.asarray(source_global_axis_t) >= np.min(
-                    self.target_global_axis_t[map["dst_global_t"]])) &
+                    self.target_global_axis_t)) &
                 (np.asarray(source_global_axis_t) <= np.max(
-                    self.target_global_axis_t[map["dst_global_t"]])))
+                    self.target_global_axis_t)))
 
             tmin = np.min(idx[0])
             tmax = np.max(idx[0]) + 1

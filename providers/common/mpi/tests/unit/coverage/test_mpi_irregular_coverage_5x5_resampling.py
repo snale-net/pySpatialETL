@@ -18,21 +18,24 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import numpy as np
 import os
 
-import numpy as np
 import pytest
 
 from spatialetl.coverage.coverage import Coverage
 from spatialetl.coverage.io.memory_reader import MemoryReader
 from spatialetl.utils.logger import logging
 
-y_size=5
-x_size=5
-data =np.zeros([y_size, x_size])
+y_size = 5
+x_size = 5
+data = np.zeros([y_size, x_size])
 np.fill_diagonal(data, 2)
-x_axis = np.arange(0,x_size)
-y_axis = np.arange(0,y_size)
+source_y_axis, source_x_axis = np.mgrid[0:y_size, 0:x_size]
+target_x_axis = [0., 1., 2., 3.]
+target_y_axis = [0., 1., 2., 3.]
+target_data = np.zeros([y_size - 1, x_size - 1])
+np.fill_diagonal(target_data, 2)
 
 @pytest.mark.mpi(ranks=[2,3], timeout=10, unit="s")
 def test_axis_x(caplog, mpi_ranks):
@@ -40,15 +43,16 @@ def test_axis_x(caplog, mpi_ranks):
 
     for thread in range(2, os.cpu_count() - mpi_ranks):
         logging.info(f"Testing with {thread} threads")
+        thread=1
         reader = MemoryReader(
-            x=x_axis,
-            y=y_axis
+            x=source_x_axis,
+            y=source_y_axis
         )
 
-        coverage = Coverage(reader=reader, nb_thread=thread)
+        coverage = Coverage(reader=reader,resolution_x=1, resolution_y=1, nb_thread=thread)
 
         if coverage.rank == 0:
-            actual_data = np.empty([coverage.get_x_size(type="target_global")])
+            actual_data = np.empty([coverage.get_y_size(type="target_global"),coverage.get_x_size(type="target_global")])
             actual_data[:] = np.nan
 
         local_data = coverage.read_axis_x()
@@ -57,34 +61,34 @@ def test_axis_x(caplog, mpi_ranks):
             coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
         else:
             # Pour le proc n°1
-            actual_data[coverage.parallel_map[coverage.rank]["dst_global_x"]] = local_data
+            actual_data[coverage.parallel_map[coverage.rank]["dst_global_y"],coverage.parallel_map[coverage.rank]["dst_global_x"]] = local_data
 
             # Pour les autres
             for source in range(1, coverage.size):
-                recvbuf = np.empty([coverage.parallel_map[source]["dst_local_x_size"]])
+                recvbuf = np.empty([coverage.parallel_map[source]["dst_local_y_size"],coverage.parallel_map[source]["dst_local_x_size"]])
                 coverage.comm.Recv(recvbuf, source=source)
-                actual_data[coverage.parallel_map[source]["dst_global_x"]] = recvbuf
+                actual_data[coverage.parallel_map[source]["dst_global_y"],coverage.parallel_map[source]["dst_global_x"]] = recvbuf
 
         coverage.comm.barrier()
 
         if coverage.rank == 0:
-            np.testing.assert_array_equal(actual_data, x_axis)
+            np.testing.assert_array_equal(actual_data, target_x_axis)
 
 @pytest.mark.mpi(ranks=[2,3], timeout=10, unit="s")
 def test_axis_y(caplog, mpi_ranks):
     caplog.set_level(logging.DEBUG)
 
-    for thread in range(2,os.cpu_count()-mpi_ranks):
+    for thread in range(2, os.cpu_count() - mpi_ranks):
         logging.info(f"Testing with {thread} threads")
         reader = MemoryReader(
-            x=x_axis,
-            y=y_axis
+            x=source_x_axis,
+            y=source_y_axis
         )
 
-        coverage = Coverage(reader=reader,nb_thread=thread)
+        coverage = Coverage(reader=reader,resolution_x=1, resolution_y=1,nb_thread=thread)
 
         if coverage.rank == 0:
-            actual_data = np.empty([coverage.get_y_size(type="target_global")])
+            actual_data = np.empty([coverage.get_y_size(type="target_global"),coverage.get_y_size(type="target_global")])
             actual_data[:] = np.nan
 
         local_data = coverage.read_axis_y()
@@ -93,31 +97,35 @@ def test_axis_y(caplog, mpi_ranks):
             coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
         else:
             # Pour le proc n°1
-            actual_data[coverage.parallel_map[coverage.rank]["dst_global_y"]] = local_data
+            actual_data[coverage.parallel_map[coverage.rank]["dst_global_y"],coverage.parallel_map[coverage.rank]["dst_global_y"]] = local_data
 
             # Pour les autres
             for source in range(1, coverage.size):
-                recvbuf = np.empty([coverage.parallel_map[source]["dst_local_y_size"]])
+                recvbuf = np.empty([coverage.parallel_map[source]["dst_local_y_size"],coverage.parallel_map[source]["dst_local_x_size"]])
                 coverage.comm.Recv(recvbuf, source=source)
-                actual_data[coverage.parallel_map[source]["dst_global_y"]] = recvbuf
+                actual_data[coverage.parallel_map[source]["dst_global_y"],coverage.parallel_map[source]["dst_global_x"]] = recvbuf
 
         coverage.comm.barrier()
 
         if coverage.rank == 0:
-            np.testing.assert_array_equal(actual_data,y_axis)
+            np.testing.assert_array_equal(actual_data,target_y_axis)
+
 
 @pytest.mark.mpi(ranks=[2,3], timeout=10, unit="s")
-def test_bathymetry(caplog, mpi_ranks):
+def test_bathymetry(caplog,mpi_ranks):
+#def test_bathymetry():
+    #caplog.set_level(logging.DEBUG)
+    logging.setLevel(logging.DEBUG)
 
-    for thread in range(2,os.cpu_count()-mpi_ranks):
+    for thread in range(2, os.cpu_count() - mpi_ranks):
         logging.info(f"Testing with {thread} threads")
         reader = MemoryReader(
-            x=x_axis,
-            y=y_axis,
+            x=source_x_axis,
+            y=source_y_axis,
             bathy=data
         )
 
-        coverage = Coverage(reader=reader, nb_thread=thread)
+        coverage = Coverage(reader=reader,resolution_x=1, resolution_y=1, nb_thread=thread)
 
         if coverage.rank == 0:
             actual_data = np.empty(
@@ -139,16 +147,15 @@ def test_bathymetry(caplog, mpi_ranks):
                 recvbuf = np.empty([coverage.parallel_map[source]["dst_local_y_size"],
                                     coverage.parallel_map[source]["dst_local_x_size"]])
                 coverage.comm.Recv(recvbuf, source=source)
+
                 actual_data[coverage.parallel_map[source]["dst_global_y"],
                 coverage.parallel_map[source]["dst_global_x"]] = recvbuf
 
         coverage.comm.barrier()
 
         if coverage.rank == 0:
-            np.testing.assert_array_equal(actual_data,data)
+            np.testing.assert_array_equal(actual_data, target_data)
+
 
 if __name__ == '__main__':
     test_bathymetry()
-
-
-

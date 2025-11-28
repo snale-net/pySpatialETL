@@ -43,7 +43,7 @@ class DefaultWriter (CoverageWriter):
         self.mode=mode
         format = 'NETCDF4_CLASSIC'
 
-        if self.mode=='w':
+        if self.mode=='w' and  self.coverage.rank == 0:
             self.ncfile = Dataset(self.filename, 'w', format=format)
             self.ncfile.description = 'Generated with pySpatialETL'
 
@@ -152,7 +152,8 @@ class DefaultWriter (CoverageWriter):
                     raise ValueError("Depth dimensions hasn't the same size than the Coverage. Unable to append the file.")
 
     def close(self):
-        self.ncfile.close()
+        if self.coverage.rank ==0:
+            self.ncfile.close()
 
     # Variables
     def write_variable_mesh_size(self):
@@ -329,21 +330,37 @@ class DefaultWriter (CoverageWriter):
     #################
     def write_variable_bathymetry(self):
 
-        if VariableDefinition.VARIABLE_NAME['bathymetry'] in self.ncfile.variables:
-            var = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['bathymetry']]
-        else:
-            var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['bathymetry'], float32, (VariableDefinition.VARIABLE_NAME['latitude'], VariableDefinition.VARIABLE_NAME['longitude'],),fill_value=9.96921e+36)
-        var.long_name = VariableDefinition.LONG_NAME['bathymetry']
-        var.standard_name = VariableDefinition.STANDARD_NAME['bathymetry']
-        var.units = VariableDefinition.CANONICAL_UNITS['bathymetry']
-
         if self.coverage.rank == 0:
-            logging.info('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['bathymetry']) + '\'')
+            if VariableDefinition.VARIABLE_NAME['bathymetry'] in self.ncfile.variables:
+                var = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['bathymetry']]
+            else:
+                var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['bathymetry'], float32,
+                                                 (VariableDefinition.VARIABLE_NAME['latitude'],
+                                                  VariableDefinition.VARIABLE_NAME['longitude'],),
+                                                 fill_value=9.96921e+36)
+            var.long_name = VariableDefinition.LONG_NAME['bathymetry']
+            var.standard_name = VariableDefinition.STANDARD_NAME['bathymetry']
+            var.units = VariableDefinition.CANONICAL_UNITS['bathymetry']
 
-        var[
-        self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-        self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
-        ] = self.coverage.read_variable_bathymetry()
+        local_data = self.coverage.read_variable_bathymetry()
+
+        if self.coverage.comm and self.coverage.rank != 0:
+            self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
+        else:
+            # Pour le proc n°1
+            var[self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                        self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
+
+            if self.coverage.comm:
+                # Pour les autres
+                for source in range(1, self.coverage.size):
+                    recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
+                                        self.coverage.parallel_map[source]["dst_local_x_size"]])
+                    self.coverage.comm.Recv(recvbuf, source=source)
+
+                    var[self.coverage.parallel_map[source]["dst_global_y"],
+                                self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
+
 
     def write_variable_barotropic_sea_water_velocity(self):
 
