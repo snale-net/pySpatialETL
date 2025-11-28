@@ -195,26 +195,25 @@ class TimeCoverage(Coverage):
             )
 
             # Split the axes with the number of threads
-            target_threads_sample = (self.parallel_map[mpi_slice_index]["dst_local_t_size"],self.parallel_map[mpi_slice_index]["dst_local_y_size"],
+            # We onlu split coverage grid
+            target_threads_sample = (self.parallel_map[mpi_slice_index]["dst_local_y_size"],
                                      self.parallel_map[mpi_slice_index]["dst_local_x_size"])
-            target_threads_slices = shape_split(target_threads_sample, self.threads_number, axis=[0, 0, 0])
+            target_threads_slices = shape_split(target_threads_sample, self.threads_number, axis=[0, 0])
 
             # If we can't divide the grid dimensions with the number of threads,
             # we set the threads number with the number of slices
             self.threads_number = len(target_threads_slices.flatten())
-            self.threads_executor = get_reusable_executor(max_workers=self.threads_number, timeout=2)
+            self.threads_executor = get_reusable_executor(max_workers=self.threads_number, timeout=3)
 
             self.parallel_map[mpi_slice_index]['threads'] = np.empty([self.threads_number], dtype=object)
 
             slice_thread_index = 0
             for thread_slyce in target_threads_slices.flatten():
                 thread_slice = tuple(thread_slyce)
-                self.parallel_map[mpi_slice_index]["threads"][slice_thread_index] = self.compute_slice_coordinates(
+                self.parallel_map[mpi_slice_index]["threads"][slice_thread_index] = Coverage.compute_slice_coordinates(self,
                     thread_slice,
-                    self.parallel_map[mpi_slice_index]["src_local_t_size"],
                     self.parallel_map[mpi_slice_index]["src_local_x_size"],
                     self.parallel_map[mpi_slice_index]["src_local_y_size"],
-                    self.parallel_map[mpi_slice_index]["dst_local_t_size"],
                     self.parallel_map[mpi_slice_index]["dst_local_x_size"],
                     self.parallel_map[mpi_slice_index]["dst_local_y_size"],
                     self.parallel_map[mpi_slice_index])
@@ -482,11 +481,11 @@ class TimeCoverage(Coverage):
 
             if is_vector:
                 return [
-                    data[0][self.parallel_map[self.rank]["dst_local_y"], self.parallel_map[self.rank]["dst_local_x"]],
-                    data[1][self.parallel_map[self.rank]["dst_local_y"], self.parallel_map[self.rank]["dst_local_x"]]
+                    data[0][self.parallel_map[self.rank]["dst_global_y"], self.parallel_map[self.rank]["dst_global_x"]],
+                    data[1][self.parallel_map[self.rank]["dst_global_y"], self.parallel_map[self.rank]["dst_global_x"]]
                 ]
             else:
-                return data[self.parallel_map[self.rank]["dst_local_y"], self.parallel_map[self.rank]["dst_local_x"]]
+                return data[self.parallel_map[self.rank]["dst_global_y"], self.parallel_map[self.rank]["dst_global_x"]]
 
     # Variables
     def read_variable_2D_sea_binary_mask_at_time(self, t):

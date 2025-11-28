@@ -518,22 +518,22 @@ class Coverage(object):
             mpi_slice_index = mpi_slice_index + 1
 
     def compute_slice_coordinates(self,
-                                  slice,
+                                  slice:tuple,
                                   source_global_x_size: int,
                                   source_global_y_size: int,
                                   target_global_x_size: int,
                                   target_global_y_size: int,
-                                  parent_slice=None):
+                                  parent_slice:tuple=None):
         """
         Compute slice coordinates in the source grid and the destination grid with overlap.
 
         Args:
-            slice (array slice): Current slice to compute
+            slice (tuple): Current slice to compute
             source_global_x_size (int) : Size of the global source x axis
             source_global_y_size (int) : Size of the global source y axis
             target_global_x_size (int) : Size of the global target x axis
             target_global_y_size (int) : Size of the global target y axis
-            parent_slice (map of slice, optionial) : Slice of the parent slice
+            parent_slice (tuple, optionial) : Slice of the parent slice
         """
         map = {}
 
