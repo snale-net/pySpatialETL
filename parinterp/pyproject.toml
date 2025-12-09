@@ -19,8 +19,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = [
+    "setuptools>=42",
+    "wheel",
+    "ninja",
+    "cmake>=3.12",
+    "pybind11",
+    "pybind11[global]"
+]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "spatialetl-parinterp"
@@ -33,8 +40,6 @@ description = "Parinterp"
 
 dependencies = [
     "spatialetl-core==0.0.1",
-    "numpy",
-    "scipy",
     "pybind11",
     "pybind11[global]"
 ]
@@ -44,10 +49,10 @@ Homepage = "https://lab.snale.net/produits/pyspatialetl"
 Documentation = "https://readthedocs.org"
 Repository = "https://github.com/snale-net/pySpatialETL.git"
 
-[tool.hatch.build.targets.wheel]
-packages = ['spatialetl']
-# This file only exists to make pyright/VSCode happy, don't ship it
-exclude = ["spatialetl/__init__.py"]
+#[tool.hatch.build.targets.wheel]
+#packages = ['spatialetl']
+## This file only exists to make pyright/VSCode happy, don't ship it
+#exclude = ["spatialetl/__init__.py"]
 
 [tool.uv.sources]
 # These names must match the names as defined in the pyproject.toml of the workspace items,

@@ -25,7 +25,7 @@ build-backend = "hatchling.build"
 [project]
 name = "spatialetl-core"
 version = "0.0.1"
-requires-python = ">=3.9"
+requires-python = ">=3.12"
 authors = [
   {name = "Fabien RÉTIF", email = "fabien.retif@snale.net"},
 ]
@@ -33,12 +33,12 @@ description = "Provider package spatialetl-providers-symphonie for SpatialETL"
 
 dependencies = [
   "setuptools>=70.1.1",
-  "cython>=0.29.35",
-  "numpy==1.26.4",
-  "pandas==1.4.4",
-  "scipy==1.11.4",
+  "cython",
+  "numpy",
+  "pandas",
+  "scipy",
   "array_split>=0.6.5",
-  "loky",
+  "omp4py @ git+https://github.com/citiususc/omp4py.git",
   "pytest"
 ]
 
@@ -49,6 +49,8 @@ Repository = "https://github.com/snale-net/pySpatialETL.git"
 
 [tool.hatch.build.targets.wheel]
 packages = ['spatialetl']
+[tool.hatch.metadata]
+allow-direct-references = true
 
 [tool.uv.sources]
 # These names must match the names as defined in the pyproject.toml of the workspace items,

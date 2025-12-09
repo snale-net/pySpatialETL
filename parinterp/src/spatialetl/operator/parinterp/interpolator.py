@@ -1,5 +1,5 @@
 import numpy as np
-from spatialetl.operator.parinterp.cpp.build.parinterp import Linear2DInterpolatorCpp
+from parinterp import Linear2DInterpolatorCpp
 from scipy.spatial import KDTree
 from typing import Optional
 

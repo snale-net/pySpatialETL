@@ -32,7 +32,7 @@ import cftime
 import numpy as np
 import pandas
 from array_split import shape_split
-from loky import get_reusable_executor
+from omp4py import omp_set_num_threads
 
 from spatialetl.coverage.coverage import Coverage
 from spatialetl.exception.not_found_in_rank_error import NotFoundInRankError
@@ -138,21 +138,26 @@ class TimeCoverage(Coverage):
             logging.debug("MPI map:")
 
         if self.comm:
-            logging.debug(f"{"-" * 10} Proc n° {self.rank} {"-" * 10}")
+            logging.debug(f"{"-" * 10} MPI rank n° {self.rank} {"-" * 10}")
         else:
             logging.debug("Multithreads map:")
+            logging.debug(f"{"-" * 10} Source grid {"-" * 10}")
+            for key in ['src_global_x', 'src_global_y', 'src_global_x_size', 'src_global_y_size', ]:
+                logging.debug(f"{key} = {self.parallel_map[self.rank][key]}")
             logging.debug(f"{"-" * 10} Target grid {"-" * 10}")
-            for key in ['dst_global_t','dst_global_x', 'dst_global_y', 'dst_local_t_size', 'dst_local_x_size', 'dst_local_y_size']:
+            for key in ['dst_global_x', 'dst_global_y', 'dst_local_x_size', 'dst_local_y_size']:
                 logging.debug(f"{key} = {self.parallel_map[self.rank][key]}")
 
         for key in self.parallel_map[self.rank]:
-            if self.comm:
-                logging.debug(f"    {key} = {self.parallel_map[self.rank][key]}")
+            if self.comm and key != "threads":
+                logging.debug(f"{key} = {self.parallel_map[self.rank][key]}")
 
+            # if len(self.parallel_map[self.rank]["threads"]) != 1:
         for thread in range(len(self.parallel_map[self.rank]["threads"])):
-            logging.debug(f"   {"-" * 10} Thread n° {thread} {"-" * 10}")
+            logging.debug(f"   {"-" * 10} Rank {self.rank} - Thread n° {thread} {"-" * 10}")
             for thread_key in self.parallel_map[self.rank]["threads"][thread]:
-                logging.debug(f"    {thread_key} = {self.parallel_map[self.rank]["threads"][thread][thread_key]}")
+                logging.debug(
+                    f"    {thread_key} = {self.parallel_map[self.rank]["threads"][thread][thread_key]}")
 
         if self.rank == 0:
             logging.debug("-" * 20)
@@ -195,7 +200,7 @@ class TimeCoverage(Coverage):
             )
 
             # Split the axes with the number of threads
-            # We onlu split coverage grid
+            # We only split coverage grid
             target_threads_sample = (self.parallel_map[mpi_slice_index]["dst_local_y_size"],
                                      self.parallel_map[mpi_slice_index]["dst_local_x_size"])
             target_threads_slices = shape_split(target_threads_sample, self.threads_number, axis=[0, 0])
@@ -203,7 +208,8 @@ class TimeCoverage(Coverage):
             # If we can't divide the grid dimensions with the number of threads,
             # we set the threads number with the number of slices
             self.threads_number = len(target_threads_slices.flatten())
-            self.threads_executor = get_reusable_executor(max_workers=self.threads_number, timeout=3)
+            omp_set_num_threads(self.threads_number)
+            logging.debug(f"Threads number is {self.threads_number}")
 
             self.parallel_map[mpi_slice_index]['threads'] = np.empty([self.threads_number], dtype=object)
 
@@ -277,29 +283,28 @@ class TimeCoverage(Coverage):
 
         # Source grille
         if parent_slice is not None:
-            source_global_axis_t =self.target_global_axis_t[parent_slice["dst_global_t"]]
-            target_global_axis_t = self.target_global_axis_t[parent_slice["dst_global_t"]]
+            source_global_axis_t =self.source_global_axis_t[parent_slice["dst_global_t"]]
         else:
             source_global_axis_t = self.source_global_axis_t
-            target_global_axis_t = self.target_global_axis_t
+
+        target_global_axis_t = self.target_global_axis_t[map["dst_global_t"]]
 
         if target_global_t_size == 1:
-
             tmin = (np.abs(np.asarray(source_global_axis_t) - np.min(
-                self.target_global_axis_t))).argmin()
+                target_global_axis_t))).argmin()
             tmax = tmin + 1
         else:
             idx = np.where(
                 (np.asarray(source_global_axis_t) >= np.min(
-                    self.target_global_axis_t)) &
+                    target_global_axis_t)) &
                 (np.asarray(source_global_axis_t) <= np.max(
-                    self.target_global_axis_t)))
+                    target_global_axis_t)))
 
             tmin = np.min(idx[0])
             tmax = np.max(idx[0]) + 1
 
             # SRC GLOBAL
-        map["src_global_t"] = np.s_[tmin:tmax]
+        map["src_global_t"] = np.s_[int(tmin):int(tmax)]
         map["src_global_t_size"] = tmax - tmin
 
         dst_global_t_min_overlap = max(0, map[

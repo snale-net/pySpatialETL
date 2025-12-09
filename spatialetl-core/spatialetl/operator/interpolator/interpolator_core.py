@@ -22,20 +22,26 @@
 # SOFTWARE.
 from __future__ import division, print_function, absolute_import
 
-from scipy.spatial import qhull
-
 from datetime import datetime
 
 import numpy as np
 from numpy import int8, int16, int32, int64
+from omp4py import omp, omp_get_thread_num
 from scipy.interpolate import griddata, LinearNDInterpolator, NearestNDInterpolator
 from scipy.interpolate import interp1d
+from scipy.spatial import qhull
 
 from spatialetl.operator.parinterp.interpolator import Linear2DInterpolator
 from spatialetl.utils.logger import logging
 
 
-def interp_2d_weights(gridX, gridY, current_thread:int):
+# try:
+#    from spatialetl.operator.parinterp.interpolator import Linear2DInterpolator
+# except Exception as ex:
+#    print(ex)
+
+@omp()
+def interp_2d_weights(gridX, gridY, map,threads_count:int):
     """
     Interpolate the 2d weights of the source grid
 
@@ -45,57 +51,81 @@ def interp_2d_weights(gridX, gridY, current_thread:int):
     :return current_thread, Delaunay triangulation
     """
 
-    logging.debug(f"[InterpolatorCore][horizontal_interpolation()] Thread {current_thread} is computing weights")
+    logging.debug(f"[InterpolatorCore][horizontal_interpolation()] computing weights")
 
     gridX = np.ma.filled(gridX, fill_value=-9999.)
     gridY = np.ma.filled(gridY, fill_value=-9999.)
 
-    if gridX.ndim == 1 and gridY.ndim == 1:
-        gridX, gridY = np.meshgrid(gridX, gridY)
+    tri = np.empty([threads_count], dtype=object)
 
-    points = np.array([gridX.flatten(), gridY.flatten()]).T
-    return current_thread, qhull.Delaunay(points)
+    with omp("parallel shared(tri)"):
+        current_thread = omp_get_thread_num()
 
-def resample_2d_to_grid(gridX,gridY,newX,newY,data,method,current_thread):
+        if gridX.ndim == 1 and gridY.ndim == 1:
+            local_grid_x,  local_grid_y = np.meshgrid(gridX[map[current_thread]["src_global_x_overlap"]], gridY[map[current_thread]["src_global_y_overlap"]])
+        else:
+            local_grid_x = gridX[map[current_thread]["src_global_y_overlap"],
+            map[current_thread]["src_global_x_overlap"]]
+            local_grid_y = gridY[map[current_thread]["src_global_y_overlap"],
+            map[current_thread]["src_global_x_overlap"]]
+
+        points = np.array([local_grid_x.flatten(), local_grid_y.flatten()]).T
+        tri[current_thread] = qhull.Delaunay(points)
+
+    return tri
+
+@omp()
+def resample_2d_to_grid(gridX,gridY,newX,newY,data,map,method):
     """
     2D resampling function
     """
 
-    logging.debug(f"[InterpolatorCore][horizontal_interpolation()] Thread {current_thread} is starting interpolation with method '{method}'")
+    logging.debug(f"[InterpolatorCore][horizontal_interpolation()] Thread {omp_get_thread_num()} is starting interpolation with method '{method}'")
 
-    gridX = np.ma.filled(gridX,fill_value=-9999.)
-    gridY = np.ma.filled(gridY,fill_value=-9999.)
+    local_data = np.zeros([np.shape(newY)[0],np.shape(newX)[0]])
 
-    if gridX.ndim ==1 and gridY.ndim==1:
-        gridX, gridY = np.meshgrid(gridX, gridY)
+    with omp("parallel shared(local_data)"):
+        current_thread = omp_get_thread_num()
 
-    points = np.array([gridX.flatten(), gridY.flatten()]).T
-    values = data.flatten()
-    xx, yy = np.meshgrid(newX, newY)
-    if data.dtype == int8 or data.dtype == int16 or data.dtype == int32 or data.dtype == int64:
-        fill_value = -9999
-    else:
-        fill_value = 9.96921e+36
+        # source grid
+        if gridX.ndim == 1 and gridY.ndim == 1:
+            local_grid_x, local_grid_y = np.meshgrid(gridX[map[current_thread]["src_global_x_overlap"]],
+                                                     gridY[map[current_thread]["src_global_y_overlap"]])
+        else:
+            local_grid_x = gridX[map[current_thread]["src_global_y_overlap"],
+            map[current_thread]["src_global_x_overlap"]]
+            local_grid_y = gridY[map[current_thread]["src_global_y_overlap"],
+            map[current_thread]["src_global_x_overlap"]]
 
-    #n, m = 300, 200
-    #points = np.random.randint(low=0, high=1024, size=(n, m))
-    #points = np.unique(points, axis=0)
-    #x_points = points[: n // 2]
+        points = np.array([local_grid_x.flatten(), local_grid_y.flatten()]).T
 
-    #print(np.shape(x_points))
-    #values = np.random.uniform(low=0.0, high=1.0, size=(len(x_points),))
-    interp_points = np.array([xx.flatten(), yy.flatten()]).T
+        # Target grid
+        dst_local_grid_x, dst_local_grid_y = np.meshgrid(newX[map[current_thread]["dst_global_x_overlap"]],
+                                                         newY[map[current_thread]["dst_global_y_overlap"]])
 
-    print(np.shape(interp_points))
+        # Values
+        values = data[map[current_thread]["src_global_y_overlap"],
+            map[current_thread]["src_global_x_overlap"]].flatten()
 
-    interpet = Linear2DInterpolator(points, values)
-    val = interpet(interp_points, values, fill_value=0.0)
 
-    print(f"shape {np.shape(val)} = {val}")
-    print(f"shape {np.shape(val.reshape(np.shape(newX)[0],np.shape(newY)[0]))} = {val.reshape(np.shape(newX)[0],np.shape(newY)[0])}")
-    #val = griddata(points, values, (xx, yy), method=method, rescale=False,fill_value=fill_value)
+        if data.dtype == int8 or data.dtype == int16 or data.dtype == int32 or data.dtype == int64:
+            fill_value = -9999
+        else:
+            fill_value = 9.96921e+36
 
-    return current_thread,val.reshape(np.shape(newX)[0],np.shape(newY)[0])
+        # scipy
+        #data = griddata(points, values, (dst_local_grid_x, dst_local_grid_y), method=method, rescale=False, fill_value=fill_value)
+
+        # parinterp
+        interp_points = np.array([dst_local_grid_x.flatten(), dst_local_grid_y.flatten()]).T
+        interpet = Linear2DInterpolator(points, values)
+        data = interpet(interp_points, values, fill_value=0.0).reshape(np.shape(newX)[0],np.shape(newY)[0])
+
+        local_data[map[current_thread]["dst_mpi_y"], map[current_thread]["dst_mpi_x"]] = data[
+            map[current_thread]["dst_local_y"],
+            map[current_thread]["dst_local_x"]]
+
+    return local_data
 
 def resample_faster_2d_to_grid(tri,newX,newY,data,method,current_thread):
     """
