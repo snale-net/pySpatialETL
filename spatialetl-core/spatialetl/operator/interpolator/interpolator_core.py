@@ -23,7 +23,6 @@
 from __future__ import division, print_function, absolute_import
 
 from scipy.spatial import qhull
-from threading import current_thread
 
 from datetime import datetime
 
@@ -32,6 +31,7 @@ from numpy import int8, int16, int32, int64
 from scipy.interpolate import griddata, LinearNDInterpolator
 from scipy.interpolate import interp1d
 
+from spatialetl.operator.parinterp.interpolator import Linear2DInterpolator
 from spatialetl.utils.logger import logging
 
 
@@ -56,7 +56,25 @@ def resample_2d_to_grid(gridX,gridY,newX,newY,data,method,current_thread):
     else:
         fill_value = 9.96921e+36
 
-    return current_thread, griddata(points, values, (xx, yy), method=method, rescale=False,fill_value=fill_value)
+    #n, m = 300, 200
+    #points = np.random.randint(low=0, high=1024, size=(n, m))
+    #points = np.unique(points, axis=0)
+    #x_points = points[: n // 2]
+
+    #print(np.shape(x_points))
+    #values = np.random.uniform(low=0.0, high=1.0, size=(len(x_points),))
+    interp_points = np.array([xx.flatten(), yy.flatten()]).T
+
+    print(np.shape(interp_points))
+
+    interpet = Linear2DInterpolator(points, values)
+    val = interpet(interp_points, values, fill_value=0.0)
+
+    print(f"shape {np.shape(val)} = {val}")
+    print(f"shape {np.shape(val.reshape(np.shape(newX)[0],np.shape(newY)[0]))} = {val.reshape(np.shape(newX)[0],np.shape(newY)[0])}")
+    #val = griddata(points, values, (xx, yy), method=method, rescale=False,fill_value=fill_value)
+
+    return current_thread,val.reshape(np.shape(newX)[0],np.shape(newY)[0])
 
 def interp_weights(gridX,gridY,current_thread):
 

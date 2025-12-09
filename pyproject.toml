@@ -35,7 +35,7 @@ license = "MIT"
 license-files = ["LICEN[CS]E.*"]
 
 dependencies = [
-    "dill>=0.4.0",
+    "spatialetl-parinterp==0.0.1",
     "spatialetl-core==0.0.1",
 ]
 packages = []
@@ -124,6 +124,7 @@ log_cli_level = "DEBUG"
 # *not* the workspace folder paths
 spatialetl = {workspace = true}
 spatialetl-core = {workspace = true}
+spatialetl-parinterp = {workspace = true}
 spatialetl-providers-common-gdal = {workspace = true}
 spatialetl-providers-common-grib = {workspace = true}
 spatialetl-providers-common-mpi = {workspace = true}
@@ -142,6 +143,7 @@ spatialetl-providers-ww3 = {workspace = true}
 members = [
     ".",
     "spatialetl-core",
+    "parinterp",
     "providers/common/gdal",
     "providers/common/grib",
     "providers/common/mpi",
