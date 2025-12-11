@@ -36,7 +36,7 @@ if __name__ == "__main__":
                              '/work/sciences/projects/2022-Snale/simu-Aubenas/output/v2-1992/GRAPHIQUES/')
 
     #depths = [0.0, 10.0]
-    coverage = TimeLevelCoverage(reader, resolution_x=0.001, resolution_y=0.001,resolution_z=0.0001,nb_thread=2);
+    coverage = TimeLevelCoverage(reader, resolution_x=0.0001, resolution_y=0.0001,resolution_z=0.0001,nb_thread=2);
 
     writer = DefaultWriter(coverage, '/tmp/symphonie_regular.nc')
 
@@ -48,9 +48,10 @@ if __name__ == "__main__":
     #writer.write_variable_sea_water_temperature()
     #writer.write_variable_sea_water_salinity()
     # writer.write_variable_wet_binary_mask()
-    writer.write_variable_2D_sea_binary_mask()
+    #writer.write_variable_2D_sea_binary_mask()
     #writer.write_variable_wind_10m()
     writer.write_variable_mesh_size()
+    writer.write_variable_bathymetry()
     #writer.write_variable_sea_surface_wave_significant_height()
     #writer.write_variable_sea_surface_wave_mean_period()
     #writer.write_variable_sea_surface_wave_peak_period()

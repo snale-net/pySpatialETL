@@ -1123,10 +1123,10 @@ class Coverage(object):
 
 
     def resample_2d_variable(self, values):
-        method="fast"
+        method="classic"
         if method == "classic":
             return resample_faster_2d_to_grid(
-                self.source_globalc_tri[self.rank],
+                self.source_global_tri[self.rank],
                  self.read_axis_x(type="target",
                                   with_overlap=True)
                                   ,
