@@ -35,7 +35,7 @@ dependencies = [
   "setuptools>=70.1.1",
   "cython",
   "numpy",
-  "pandas",
+  "pandas==2.3.3",
   "scipy",
   "array_split>=0.6.5",
   "omp4py @ git+https://github.com/citiususc/omp4py.git",

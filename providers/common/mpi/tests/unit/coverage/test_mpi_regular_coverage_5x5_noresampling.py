@@ -41,8 +41,8 @@ def test_axis_x(caplog, mpi_ranks):
     for thread in range(2, os.cpu_count() - mpi_ranks):
         logging.info(f"Testing with {thread} threads")
         reader = MemoryReader(
-            x=x_axis,
-            y=y_axis
+            x_axis=x_axis,
+            y_axis=y_axis
         )
 
         coverage = Coverage(reader=reader, nb_thread=thread)
@@ -77,8 +77,8 @@ def test_axis_y(caplog, mpi_ranks):
     for thread in range(2,os.cpu_count()-mpi_ranks):
         logging.info(f"Testing with {thread} threads")
         reader = MemoryReader(
-            x=x_axis,
-            y=y_axis
+            x_axis=x_axis,
+            y_axis=y_axis
         )
 
         coverage = Coverage(reader=reader,nb_thread=thread)
@@ -112,9 +112,9 @@ def test_bathymetry(caplog, mpi_ranks):
     for thread in range(2,os.cpu_count()-mpi_ranks):
         logging.info(f"Testing with {thread} threads")
         reader = MemoryReader(
-            x=x_axis,
-            y=y_axis,
-            bathy=data
+            x_axis=x_axis,
+            y_axis=y_axis,
+            bathymetry=data
         )
 
         coverage = Coverage(reader=reader, nb_thread=thread)

@@ -69,7 +69,8 @@ class TimeLevelCoverage(LevelCoverage, TimeCoverage):
 
         for z in range(0, len(indexes_z)):
             self.layers_temp[z] = fn(
-                self.parallel_map[self.rank]["src_global_t"].start + index_t, indexes_z[z],
+                self.parallel_map[self.rank]["src_global_t"].start + index_t,
+                indexes_z[z],
                 self.parallel_map[self.rank]["src_global_x_overlap"].start,
                 self.parallel_map[self.rank]["src_global_x_overlap"].stop,
                 self.parallel_map[self.rank]["src_global_y_overlap"].start,
@@ -106,39 +107,21 @@ class TimeLevelCoverage(LevelCoverage, TimeCoverage):
                 self.data_temp[0, y, x] = vertical_interpolation(candidateDepths, targetDepth, candidateValues,
                                                                  LevelCoverage.VERTICAL_INTERPOLATION_METHOD)
 
+        is_vector = True if len(np.shape(self.data_temp[0])) == 3 and np.shape(self.data_temp[0])[0] == 2 else False
+
         if self.horizontal_resampling:
-
-            # We use multithreading to compute resampling in parallel
-            local_data = np.zeros([self.get_y_size(), self.get_x_size()])
-            local_data[:] = np.nan
-
-            with ProcessPoolExecutor(max_workers=self.threads_number) as executor:
-                futures = []
-                for current_thread in range(0, executor._max_workers):
-                    futures.append(executor.submit(resample_faster_2d_to_grid,
-                                                   self.source_global_tri[self.rank][current_thread],
-                                                   self.read_thread_axis_x(type="target", with_overlap=True,
-                                                                           current_thread=current_thread),
-                                                   self.read_thread_axis_y(type="target", with_overlap=True,
-                                                                           current_thread=current_thread),
-                                                   self.data_temp[0],
-                                                   Coverage.HORIZONTAL_INTERPOLATION_METHOD,
-                                                   current_thread))
-
-                futures, _ = concurrent.futures.wait(futures)
-
-                for f in futures:
-                    current_thread, data = f.result()
-                    local_data[self.parallel_map[self.rank]["threads"][current_thread]["dst_global_y"],
-                    self.parallel_map[self.rank]["threads"][current_thread]["dst_global_x"]] = data[
-                        self.parallel_map[self.rank]["threads"][current_thread]["dst_local_y"],
-                        self.parallel_map[self.rank]["threads"][current_thread]["dst_local_x"]]
-
-            return local_data
-
+            if is_vector:
+                return [self.resample_2d_variable(self.data_temp[0,0]),self.resample_2d_variable(self.data_temp[0,1])]
+            else:
+                return self.resample_2d_variable(self.data_temp[0])
         else:
-            return self.data_temp[0, self.parallel_map[self.rank]["dst_local_y"], self.parallel_map[self.rank]["dst_local_x"]]
-
+            if is_vector:
+                return [
+                    self.data_temp[0,0,self.parallel_map[self.rank]["dst_global_y"], self.parallel_map[self.rank]["dst_global_x"]],
+                    self.data_temp[0,1,self.parallel_map[self.rank]["dst_global_y"], self.parallel_map[self.rank]["dst_global_x"]]
+                ]
+            else:
+                return self.data_temp[0,self.parallel_map[self.rank]["dst_global_y"], self.parallel_map[self.rank]["dst_global_x"]]
 
     #################
     # HYDRO

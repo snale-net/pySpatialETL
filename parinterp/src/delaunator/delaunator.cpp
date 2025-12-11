@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include <algorithm>
+#include <cassert>
 #include <cmath>
 #include <numeric>
 #include <limits>
@@ -61,43 +62,15 @@ inline double circumradius(const Point& p1, const Point& p2, const Point& p3)
     return (std::numeric_limits<double>::max)();
 }
 
-inline double circumradius(
-    const double ax,
-    const double ay,
-    const double bx,
-    const double by,
-    const double cx,
-    const double cy) {
-    const double dx = bx - ax;
-    const double dy = by - ay;
-    const double ex = cx - ax;
-    const double ey = cy - ay;
-
-    const double bl = dx * dx + dy * dy;
-    const double cl = ex * ex + ey * ey;
-    const double d = dx * ey - dy * ex;
-
-    const double x = (ey * bl - dy * cl) * 0.5 / d;
-    const double y = (dx * cl - ex * bl) * 0.5 / d;
-
-    if ((bl > 0.0 || bl < 0.0) && (cl > 0.0 || cl < 0.0) && (d > 0.0 || d < 0.0)) {
-        return x * x + y * y;
-    } else {
-        return (std::numeric_limits<double>::max)();
-    }
-}
-
 inline bool clockwise(const Point& p0, const Point& p1, const Point& p2)
 {
     Point v0 = Point::vector(p0, p1);
     Point v1 = Point::vector(p0, p2);
     double det = Point::determinant(v0, v1);
-    double dist = v0.magnitude2() + v1.magnitude2();
-    double dist2 = Point::dist2(v0, v1);
     if (det == 0)
-    {
         return false;
-    }
+
+    double dist = v0.magnitude2() + v1.magnitude2();
     double reldet = std::abs(dist / det);
     if (reldet > 1e14)
         return false;
@@ -118,10 +91,10 @@ inline bool counterclockwise(const Point& p0, const Point& p1, const Point& p2)
     Point v0 = Point::vector(p0, p1);
     Point v1 = Point::vector(p0, p2);
     double det = Point::determinant(v0, v1);
-    double dist = v0.magnitude2() + v1.magnitude2();
-    double dist2 = Point::dist2(v0, v1);
     if (det == 0)
         return false;
+
+    double dist = v0.magnitude2() + v1.magnitude2();
     double reldet = std::abs(dist / det);
     if (reldet > 1e14)
         return false;
@@ -203,7 +176,9 @@ inline double pseudo_angle(const double dx, const double dy) {
 Delaunator::Delaunator(std::vector<double> const& in_coords)
     : coords(in_coords), m_points(in_coords)
 {
-    std::size_t n = coords.size() >> 1;
+    std::size_t n = m_points.size();
+    if (n < 3)
+        throw std::runtime_error("Can't triangulate fewer than three points.");
 
     std::vector<std::size_t> ids(n);
     std::iota(ids.begin(), ids.end(), 0);
@@ -247,13 +222,17 @@ Delaunator::Delaunator(std::vector<double> const& in_coords)
 
     // find the point closest to the seed
     for (std::size_t i = 0; i < n; i++) {
-        if (i == i0) continue;
+        if (i == i0)
+            continue;
         const double d = Point::dist2(p0, m_points[i]);
         if (d < min_dist && d > 0.0) {
             i1 = i;
             min_dist = d;
         }
     }
+
+    if (i1 == INVALID_INDEX)
+        throw std::runtime_error("All points are duplicates of one another.");
 
     const Point& p1 = m_points[i1];
 
@@ -262,7 +241,8 @@ Delaunator::Delaunator(std::vector<double> const& in_coords)
     // find the third point which forms the smallest circumcircle
     // with the first two
     for (std::size_t i = 0; i < n; i++) {
-        if (i == i0 || i == i1) continue;
+        if (i == i0 || i == i1)
+            continue;
 
         const double r = circumradius(p0, p1, m_points[i]);
         if (r < min_radius) {
@@ -271,9 +251,8 @@ Delaunator::Delaunator(std::vector<double> const& in_coords)
         }
     }
 
-    if (!(min_radius < (std::numeric_limits<double>::max)())) {
-        throw std::runtime_error("not triangulation");
-    }
+    if (i2 == INVALID_INDEX)
+        throw std::runtime_error("All points collinear");
 
     const Point& p2 = m_points[i2];
 
@@ -305,7 +284,8 @@ Delaunator::Delaunator(std::vector<double> const& in_coords)
             { return dists[i] < dists[j]; });
 
     // initialize a hash table for storing edges of the advancing convex hull
-    m_hash_size = static_cast<std::size_t>(std::ceil(std::sqrt(n)));
+    // 1.618 is the golden ratio.
+    m_hash_size = static_cast<std::size_t>(1.618 * std::ceil(std::sqrt(n)));
     m_hash.resize(m_hash_size);
     std::fill(m_hash.begin(), m_hash.end(), INVALID_INDEX);
 
@@ -315,8 +295,6 @@ Delaunator::Delaunator(std::vector<double> const& in_coords)
     hull_tri.resize(n);
 
     hull_start = i0;
-
-    size_t hull_size = 3;
 
     hull_next[i0] = hull_prev[i2] = i1;
     hull_next[i1] = hull_prev[i0] = i2;
@@ -418,7 +396,6 @@ Delaunator::Delaunator(std::vector<double> const& in_coords)
 
         hull_tri[i] = legalize(t + 2); // Legalize the triangle we just added.
         hull_tri[e] = t;
-        hull_size++;
 
         // walk forward through the hull, adding more triangles and
         // flipping recursively
@@ -433,7 +410,6 @@ Delaunator::Delaunator(std::vector<double> const& in_coords)
                 hull_tri[i], INVALID_INDEX, hull_tri[next]);
             hull_tri[i] = legalize(t + 2);
             hull_next[next] = next; // mark as removed
-            hull_size--;
             next = q;
         }
 
@@ -450,7 +426,6 @@ Delaunator::Delaunator(std::vector<double> const& in_coords)
                 legalize(t + 2);
                 hull_tri[q] = t;
                 hull_next[e] = e; // mark as removed
-                hull_size--;
                 e = q;
             }
         }
@@ -471,11 +446,9 @@ double Delaunator::get_hull_area()
 {
     std::vector<double> hull_area;
     size_t e = hull_start;
-    size_t cnt = 1;
     do {
         hull_area.push_back((coords[2 * e] - coords[2 * hull_prev[e]]) *
             (coords[2 * e + 1] + coords[2 * hull_prev[e] + 1]));
-        cnt++;
         e = hull_next[e];
     } while (e != hull_start);
     return sum(hull_area);
@@ -492,6 +465,8 @@ double Delaunator::get_triangle_area()
         const double by = coords[2 * triangles[i + 1] + 1];
         const double cx = coords[2 * triangles[i + 2]];
         const double cy = coords[2 * triangles[i + 2] + 1];
+        //ABELL - Is this right? It looks like a cross-product, which would give you twice the area.
+        //  Test.
         double val = std::fabs((by - ay) * (cx - bx) - (bx - ax) * (cy - by));
         vals.push_back(val);
     }

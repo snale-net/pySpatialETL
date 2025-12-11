@@ -35,9 +35,9 @@ def test_tiff_default_reader():
     data =np.zeros([10, 10])
     np.fill_diagonal(data, 5)
     reader = MemoryReader(
-        x=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-        y=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-        bathy=data
+        x_axis=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+        y_axis=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+        bathymetry=data
     )
 
     logging.setLevel(logging.DEBUG)

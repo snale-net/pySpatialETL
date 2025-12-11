@@ -174,26 +174,61 @@ class DefaultWriter(CoverageWriter):
         if self.coverage.rank == 0:
             self.ncfile.close()
 
+    def _gathering_var(self, local_data, var, time_index=None):
+        if self.coverage.comm and self.coverage.rank != 0:
+            self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
+        else:
+            # For MPI rank n°1
+            if time_index:
+                var[
+                    self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index:
+                    self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index + 1,
+                    self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                    self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
+                ] = local_data
+            else:
+                var[
+                    self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                    self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
+                ] = local_data
+
+            if self.coverage.comm:
+                # For othes MPI rank
+                for source in range(1, self.coverage.size):
+                    recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
+                                        self.coverage.parallel_map[source]["dst_local_x_size"]])
+                    self.coverage.comm.Recv(recvbuf, source=source)
+
+                    if time_index:
+                        var[
+                            self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index:
+                            self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index + 1,
+                            self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                            self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
+                        ] = recvbuf
+                    else:
+                        var[
+                            self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                            self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
+                        ] = recvbuf
+
     # Variables
     def write_variable_mesh_size(self):
 
-        if VariableDefinition.VARIABLE_NAME['mesh_size'] in self.ncfile.variables:
-            var = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['mesh_size']]
-        else:
-            var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['mesh_size'], float32,
-                                             (VariableDefinition.VARIABLE_NAME['latitude'],
-                                              VariableDefinition.VARIABLE_NAME['longitude'],), fill_value=9.96921e+36)
-        var.long_name = VariableDefinition.LONG_NAME['mesh_size']
-        var.standard_name = VariableDefinition.STANDARD_NAME['mesh_size']
-        var.units = VariableDefinition.CANONICAL_UNITS['mesh_size']
-
         if self.coverage.rank == 0:
             logging.info('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['mesh_size']) + '\'')
+            if VariableDefinition.VARIABLE_NAME['mesh_size'] in self.ncfile.variables:
+                var = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['mesh_size']]
+            else:
+                var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['mesh_size'], float32,
+                                                 (VariableDefinition.VARIABLE_NAME['latitude'],
+                                                  VariableDefinition.VARIABLE_NAME['longitude'],), fill_value=9.96921e+36)
+            var.long_name = VariableDefinition.LONG_NAME['mesh_size']
+            var.standard_name = VariableDefinition.STANDARD_NAME['mesh_size']
+            var.units = VariableDefinition.CANONICAL_UNITS['mesh_size']
 
-        var[
-            self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-            self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
-        ] = self.coverage.read_variable_mesh_size()
+        local_data = self.coverage.read_variable_mesh_size()
+        self._gathering_var(local_data,var)
 
     def write_variable_mesh_size_factor(self):
 
@@ -214,10 +249,7 @@ class DefaultWriter(CoverageWriter):
         y = self.coverage.read_variable_y_mesh_size()
         factor = np.divide(x, y)
 
-        var[
-            self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-            self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
-        ] = factor
+        self._gathering_var(factor, var)
 
     def write_variable_2D_sea_binary_mask(self):
 
@@ -236,10 +268,8 @@ class DefaultWriter(CoverageWriter):
             logging.info(
                 '[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['2d_sea_binary_mask']) + '\'')
 
-        var[
-            self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-            self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
-        ] = self.coverage.read_variable_2D_sea_binary_mask()
+        local_data = self.coverage.read_variable_2D_sea_binary_mask()
+        self._gathering_var(local_data, var)
 
     def write_variable_wet_binary_mask(self):
 
@@ -267,12 +297,8 @@ class DefaultWriter(CoverageWriter):
                 logging.info(
                     '[DefaultWriter] Writing variable \'' + str(
                         VariableDefinition.VARIABLE_NAME['wet_binary_mask']) + '\' at time \'' + str(time) + '\'')
-                var[
-                    self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index:
-                    self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index + 1,
-                    self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                    self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
-                ] = self.coverage.read_variable_2D_wet_binary_mask_at_time(time)
+                local_data = self.coverage.read_variable_2D_wet_binary_mask_at_time(time)
+                self._gathering_var(local_data, var, time_index=time_index)
 
                 time_index += 1
         else:
@@ -283,17 +309,17 @@ class DefaultWriter(CoverageWriter):
 
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
-            if VariableDefinition.VARIABLE_NAME['2d_sea_binary_mask'] in self.ncfile.variables:
-                var = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['2d_sea_binary_mask']]
+            if VariableDefinition.VARIABLE_NAME['"3d_sea_binary_mask'] in self.ncfile.variables:
+                var = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['3d_sea_binary_mask']]
             else:
                 var = self.ncfile.createVariable(
-                    VariableDefinition.VARIABLE_NAME['2d_sea_binary_mask'], float32, (
+                    VariableDefinition.VARIABLE_NAME['3d_sea_binary_mask'], float32, (
                         VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['latitude'],
                         VariableDefinition.VARIABLE_NAME['longitude'],), fill_value=9.96921e+36)
 
-            var.long_name = VariableDefinition.LONG_NAME['2d_sea_binary_mask']
-            var.standard_name = VariableDefinition.STANDARD_NAME['2d_sea_binary_mask']
-            var.units = VariableDefinition.CANONICAL_UNITS['2d_sea_binary_mask']
+            var.long_name = VariableDefinition.LONG_NAME['3d_sea_binary_mask']
+            var.standard_name = VariableDefinition.STANDARD_NAME['3d_sea_binary_mask']
+            var.units = VariableDefinition.CANONICAL_UNITS['3d_sea_binary_mask']
 
             if self.coverage.rank == 0:
                 logging.info('[DefaultWriter] Writing variable \'' + str(
@@ -302,15 +328,11 @@ class DefaultWriter(CoverageWriter):
             time_index = 0
             for time in self.coverage.read_axis_t():
                 logging.info('[DefaultWriter] Writing variable \'' + str(
-                    VariableDefinition.LONG_NAME['2d_sea_binary_mask']) + '\' at time \'' + str(
+                    VariableDefinition.LONG_NAME['3d_sea_binary_mask']) + '\' at time \'' + str(
                     time) + '\'')
 
-                var[
-                    self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index:
-                    self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index + 1,
-                    self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                    self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
-                ] = self.coverage.read_variable_2D_sea_binary_mask_at_time(time)
+                local_data = self.coverage.read_variable_2D_sea_binary_mask_at_time(time)
+                self._gathering_var(local_data, var,time_index=time_index)
 
                 time_index += 1
         else:
@@ -321,34 +343,30 @@ class DefaultWriter(CoverageWriter):
 
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
-            if VariableDefinition.VARIABLE_NAME['2d_land_binary_mask'] in self.ncfile.variables:
-                var = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['2d_land_binary_mask']]
+            if VariableDefinition.VARIABLE_NAME['3d_land_binary_mask'] in self.ncfile.variables:
+                var = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['3d_land_binary_mask']]
             else:
                 var = self.ncfile.createVariable(
-                    VariableDefinition.VARIABLE_NAME['2d_land_binary_mask'], float32, (
+                    VariableDefinition.VARIABLE_NAME['3d_land_binary_mask'], float32, (
                         VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['latitude'],
                         VariableDefinition.VARIABLE_NAME['longitude'],), fill_value=9.96921e+36)
 
-            var.long_name = VariableDefinition.LONG_NAME['2d_land_binary_mask']
-            var.standard_name = VariableDefinition.STANDARD_NAME['2d_land_binary_mask']
-            var.units = VariableDefinition.CANONICAL_UNITS['2d_land_binary_mask']
+            var.long_name = VariableDefinition.LONG_NAME['3d_land_binary_mask']
+            var.standard_name = VariableDefinition.STANDARD_NAME['3d_land_binary_mask']
+            var.units = VariableDefinition.CANONICAL_UNITS['3d_land_binary_mask']
 
             if self.coverage.rank == 0:
                 logging.info('[DefaultWriter] Writing variable \'' + str(
-                    VariableDefinition.LONG_NAME['2d_land_binary_mask']) + '\'')
+                    VariableDefinition.LONG_NAME['3d_land_binary_mask']) + '\'')
 
             time_index = 0
             for time in self.coverage.read_axis_t():
                 logging.info('[DefaultWriter] Writing variable \'' + str(
-                    VariableDefinition.LONG_NAME['2d_land_binary_mask']) + '\' at time \'' + str(
+                    VariableDefinition.LONG_NAME['3d_land_binary_mask']) + '\' at time \'' + str(
                     time) + '\'')
 
-                var[
-                    self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index:
-                    self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index + 1,
-                    self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                    self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
-                ] = self.coverage.read_variable_2D_land_binary_mask_at_time(time)
+                local_data = self.coverage.read_variable_3D_land_binary_mask_at_time(time)
+                self._gathering_var(local_data, var,time_index=time_index)
 
                 time_index += 1
         else:
@@ -362,6 +380,8 @@ class DefaultWriter(CoverageWriter):
     def write_variable_bathymetry(self):
 
         if self.coverage.rank == 0:
+            logging.info('[DefaultWriter] Writing variable \'' + str(
+                VariableDefinition.LONG_NAME['bathymetry']) + '\'')
             if VariableDefinition.VARIABLE_NAME['bathymetry'] in self.ncfile.variables:
                 var = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['bathymetry']]
             else:
@@ -374,78 +394,53 @@ class DefaultWriter(CoverageWriter):
             var.units = VariableDefinition.CANONICAL_UNITS['bathymetry']
 
         local_data = self.coverage.read_variable_bathymetry()
-
-        if self.coverage.comm and self.coverage.rank != 0:
-            self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
-        else:
-            # For MPI rank n°1
-            var[self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-            self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
-
-            if self.coverage.comm:
-                # For othes MPI rank
-                for source in range(1, self.coverage.size):
-                    recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
-                                        self.coverage.parallel_map[source]["dst_local_x_size"]])
-                    self.coverage.comm.Recv(recvbuf, source=source)
-
-                    var[self.coverage.parallel_map[source]["dst_global_y"],
-                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
+        self._gathering_var(local_data, var)
 
     def write_variable_barotropic_sea_water_velocity(self):
 
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
-            if VariableDefinition.VARIABLE_NAME['barotropic_eastward_sea_water_velocity'] in self.ncfile.variables:
-                ucomp = self.ncfile.variables[
-                    VariableDefinition.VARIABLE_NAME['barotropic_eastward_sea_water_velocity']]
-            else:
-                ucomp = self.ncfile.createVariable(
-                    VariableDefinition.VARIABLE_NAME['barotropic_eastward_sea_water_velocity'],
-                    float32,
-                    (VariableDefinition.VARIABLE_NAME['time'],
-                     VariableDefinition.VARIABLE_NAME['latitude'],
-                     VariableDefinition.VARIABLE_NAME['longitude'],), fill_value=9.96921e+36)
-            ucomp.long_name = VariableDefinition.LONG_NAME['barotropic_eastward_sea_water_velocity']
-            ucomp.standard_name = VariableDefinition.STANDARD_NAME['barotropic_eastward_sea_water_velocity']
-            ucomp.units = VariableDefinition.CANONICAL_UNITS['barotropic_eastward_sea_water_velocity']
-            ucomp.comment = "cur=sqrt(U**2+V**2)";
-
-            if VariableDefinition.VARIABLE_NAME['barotropic_northward_sea_water_velocity'] in self.ncfile.variables:
-                vcomp = self.ncfile.variables[
-                    VariableDefinition.VARIABLE_NAME['barotropic_northward_sea_water_velocity']]
-            else:
-                vcomp = self.ncfile.createVariable(
-                    VariableDefinition.VARIABLE_NAME['barotropic_northward_sea_water_velocity'],
-                    float32,
-                    (VariableDefinition.VARIABLE_NAME['time'],
-                     VariableDefinition.VARIABLE_NAME['latitude'],
-                     VariableDefinition.VARIABLE_NAME['longitude'],), fill_value=9.96921e+36)
-            vcomp.long_name = VariableDefinition.LONG_NAME['barotropic_northward_sea_water_velocity']
-            vcomp.standard_name = VariableDefinition.STANDARD_NAME['barotropic_northward_sea_water_velocity']
-            vcomp.units = VariableDefinition.CANONICAL_UNITS['barotropic_northward_sea_water_velocity']
-            vcomp.comment = "cur=sqrt(U**2+V**2)";
-
             if self.coverage.rank == 0:
-                logging.info('[DefaultWriter] Writing variable \'Barotropic Sea Water Velocity\'\'')
+
+                if VariableDefinition.VARIABLE_NAME['barotropic_eastward_sea_water_velocity'] in self.ncfile.variables:
+                    ucomp = self.ncfile.variables[
+                        VariableDefinition.VARIABLE_NAME['barotropic_eastward_sea_water_velocity']]
+                else:
+                    ucomp = self.ncfile.createVariable(
+                        VariableDefinition.VARIABLE_NAME['barotropic_eastward_sea_water_velocity'],
+                        float32,
+                        (VariableDefinition.VARIABLE_NAME['time'],
+                         VariableDefinition.VARIABLE_NAME['latitude'],
+                         VariableDefinition.VARIABLE_NAME['longitude'],), fill_value=9.96921e+36)
+                ucomp.long_name = VariableDefinition.LONG_NAME['barotropic_eastward_sea_water_velocity']
+                ucomp.standard_name = VariableDefinition.STANDARD_NAME['barotropic_eastward_sea_water_velocity']
+                ucomp.units = VariableDefinition.CANONICAL_UNITS['barotropic_eastward_sea_water_velocity']
+                ucomp.comment = "cur=sqrt(U**2+V**2)";
+
+                if VariableDefinition.VARIABLE_NAME['barotropic_northward_sea_water_velocity'] in self.ncfile.variables:
+                    vcomp = self.ncfile.variables[
+                        VariableDefinition.VARIABLE_NAME['barotropic_northward_sea_water_velocity']]
+                else:
+                    vcomp = self.ncfile.createVariable(
+                        VariableDefinition.VARIABLE_NAME['barotropic_northward_sea_water_velocity'],
+                        float32,
+                        (VariableDefinition.VARIABLE_NAME['time'],
+                         VariableDefinition.VARIABLE_NAME['latitude'],
+                         VariableDefinition.VARIABLE_NAME['longitude'],), fill_value=9.96921e+36)
+                vcomp.long_name = VariableDefinition.LONG_NAME['barotropic_northward_sea_water_velocity']
+                vcomp.standard_name = VariableDefinition.STANDARD_NAME['barotropic_northward_sea_water_velocity']
+                vcomp.units = VariableDefinition.CANONICAL_UNITS['barotropic_northward_sea_water_velocity']
+                vcomp.comment = "cur=sqrt(U**2+V**2)";
 
             time_index = 0
             for time in self.coverage.read_axis_t():
-                logging.info(
+                if self.coverage.rank == 0:
+                    logging.info(
                     '[DefaultWriter] Writing variable \'Barotropic Sea Water Velocity\' at time \'' + str(time) + '\'')
 
-                data_u, data_v = self.coverage.read_variable_barotropic_sea_water_velocity_at_time(time)
-
-                ucomp[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index:
-                      self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index + 1,
-                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = data_u
-
-                vcomp[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index:
-                      self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index + 1,
-                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = data_v
-
+                local_data_u,local_data_v = self.coverage.read_variable_barotropic_sea_water_velocity_at_time(time)
+                self._gathering_var(local_data_u, ucomp,time_index=time_index)
+                self._gathering_var(local_data_v, vcomp, time_index=time_index)
                 time_index += 1
         else:
             raise CoverageError("DefaultWriter",
@@ -580,34 +575,53 @@ class DefaultWriter(CoverageWriter):
 
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
-            if VariableDefinition.VARIABLE_NAME['sea_surface_height_above_mean_sea_level'] in self.ncfile.variables:
-                var = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['sea_surface_height_above_mean_sea_level']]
-            else:
-                var = self.ncfile.createVariable(
-                    VariableDefinition.VARIABLE_NAME['sea_surface_height_above_mean_sea_level'], float32,
-                    (VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['latitude'],
-                     VariableDefinition.VARIABLE_NAME['longitude'],), fill_value=9.96921e+36)
-
-            var.long_name = VariableDefinition.LONG_NAME['sea_surface_height_above_mean_sea_level']
-            var.standard_name = VariableDefinition.STANDARD_NAME['sea_surface_height_above_mean_sea_level']
-            var.units = VariableDefinition.CANONICAL_UNITS['sea_surface_height_above_mean_sea_level']
-
             if self.coverage.rank == 0:
-                logging.info('[DefaultWriter] Writing variable \'' + str(
-                    VariableDefinition.LONG_NAME['sea_surface_height_above_mean_sea_level']) + '\'')
+                if VariableDefinition.VARIABLE_NAME['sea_surface_height_above_mean_sea_level'] in self.ncfile.variables:
+                    var = self.ncfile.variables[VariableDefinition.VARIABLE_NAME['sea_surface_height_above_mean_sea_level']]
+                else:
+                    var = self.ncfile.createVariable(
+                        VariableDefinition.VARIABLE_NAME['sea_surface_height_above_mean_sea_level'], float32,
+                        (VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['latitude'],
+                         VariableDefinition.VARIABLE_NAME['longitude'],), fill_value=9.96921e+36)
+
+                var.long_name = VariableDefinition.LONG_NAME['sea_surface_height_above_mean_sea_level']
+                var.standard_name = VariableDefinition.STANDARD_NAME['sea_surface_height_above_mean_sea_level']
+                var.units = VariableDefinition.CANONICAL_UNITS['sea_surface_height_above_mean_sea_level']
 
             time_index = 0
             for time in self.coverage.read_axis_t():
-                logging.info('[DefaultWriter] Writing variable \'' + str(
+
+                if self.coverage.rank == 0:
+                    logging.info('[DefaultWriter] Writing variable \'' + str(
                     VariableDefinition.LONG_NAME['sea_surface_height_above_mean_sea_level']) + '\' at time \'' + str(
                     time) + '\'')
 
-                var[
-                    self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index:
-                    self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index + 1,
-                    self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                    self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
-                ] = self.coverage.read_variable_sea_surface_height_above_mean_sea_level_at_time(time)
+                local_data = self.coverage.read_variable_sea_surface_height_above_mean_sea_level_at_time(time)
+
+                if self.coverage.comm and self.coverage.rank != 0:
+                    self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
+                else:
+                    # For MPI rank n°1
+                    var[
+                        self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index:
+                        self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index + 1,
+                        self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                        self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
+                    ] = local_data
+
+                    if self.coverage.comm:
+                        # For othes MPI rank
+                        for source in range(1, self.coverage.size):
+                            recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
+                                                self.coverage.parallel_map[source]["dst_local_x_size"]])
+                            self.coverage.comm.Recv(recvbuf, source=source)
+
+                            var[
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index:
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index + 1,
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
+                            ] = recvbuf
 
                 time_index += 1
         else:

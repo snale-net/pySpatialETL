@@ -29,9 +29,18 @@ y_size = 5
 x_size = 5
 data = np.zeros([y_size, x_size])
 np.fill_diagonal(data, 2)
-source_y_axis, source_x_axis = np.mgrid[0:y_size, 0:x_size]
-target_x_axis = [0., 1., 2., 3.]
-target_y_axis = [0., 1., 2., 3.]
+source_x_axis = np.asarray([[2.3781743, 2.37824526, 2.37831553, 2.37838509, 2.37845394],
+                            [2.37850636, 2.37857763, 2.37864818, 2.37871803, 2.37878718],
+                            [2.37883913, 2.37891069, 2.37898154, 2.37905169, 2.37912114],
+                            [2.3791726, 2.37924445, 2.3793156, 2.37938605, 2.3794558],
+                            [2.37950676, 2.37957891, 2.37965036, 2.37972111, 2.37979117]])
+source_y_axis = np.asarray([[6.45008085, 6.4497511, 6.44942105, 6.4490907, 6.44876006],
+                            [6.45015187, 6.44982141, 6.44949066, 6.44915961, 6.44882827],
+                            [6.45022317, 6.44989202, 6.44956057, 6.44922883, 6.44889678],
+                            [6.45029478, 6.44996292, 6.44963078, 6.44929833, 6.44896559],
+                            [6.45036667, 6.45003412, 6.44970128, 6.44936814, 6.4490347]])
+target_x_axis = [2.3781743, 2.3786743, 2.3791743000000003, 2.3796743000000005]
+target_y_axis = [6.44876006, 6.449260059999999, 6.449760059999999, 6.450260059999999]
 target_data = np.zeros([y_size - 1, x_size - 1])
 np.fill_diagonal(target_data, 2)
 
@@ -42,11 +51,11 @@ def test_axis_x(caplog):
     for thread in range(2, os.cpu_count()):
         logging.info(f"Testing with {thread} threads")
         reader = MemoryReader(
-            x=source_x_axis,
-            y=source_y_axis
+            x_axis=source_x_axis,
+            y_axis=source_y_axis
         )
 
-        coverage = Coverage(reader=reader, resolution_x=1, resolution_y=1, nb_thread=thread)
+        coverage = Coverage(reader=reader, resolution_x=0.0005, resolution_y=0.0005, nb_thread=thread)
         actual_data = coverage.read_axis_x()
         np.testing.assert_array_equal(actual_data, target_x_axis)
 
@@ -57,11 +66,11 @@ def test_axis_y(caplog):
     for thread in range(2, os.cpu_count()):
         logging.info(f"Testing with {thread} threads")
         reader = MemoryReader(
-            x=source_x_axis,
-            y=source_y_axis
+            x_axis=source_x_axis,
+            y_axis=source_y_axis
         )
 
-        coverage = Coverage(reader=reader, resolution_x=1, resolution_y=1, nb_thread=thread)
+        coverage = Coverage(reader=reader, resolution_x=0.0005, resolution_y=0.0005, nb_thread=thread)
         actual_data = coverage.read_axis_y()
         np.testing.assert_array_equal(actual_data, target_y_axis)
 
@@ -72,11 +81,11 @@ def test_bathymetry(caplog):
     for thread in range(2, os.cpu_count()):
         logging.info(f"Testing with {thread} threads")
         reader = MemoryReader(
-            x=source_x_axis,
-            y=source_y_axis,
-            bathy=data
+            x_axis=source_x_axis,
+            y_axis=source_y_axis,
+            bathymetry=data
         )
 
-        coverage = Coverage(reader=reader, resolution_x=1, resolution_y=1, nb_thread=thread)
+        coverage = Coverage(reader=reader, resolution_x=0.0005, resolution_y=0.0005, nb_thread=thread)
         actual_data = coverage.read_variable_bathymetry()
         np.testing.assert_array_equal(actual_data, target_data)

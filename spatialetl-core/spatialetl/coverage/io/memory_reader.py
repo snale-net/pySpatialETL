@@ -28,13 +28,15 @@ from spatialetl.coverage.io.coverage_reader import CoverageReader
 
 class MemoryReader (CoverageReader):
 
-    def __init__(self,x,y,bathy=None,t=None,sp=None):
-        self.x = x
-        self.y = y
-        self.t = t
+    def __init__(self, x_axis, y_axis, t_axis=None, z_axis=None,
+                 bathymetry=None,
+                 surface_air_pressure=None):
+        self.x = x_axis
+        self.y = y_axis
+        self.t = t_axis
 
-        self.bathy = bathy
-        self.sp = sp
+        self.bathy = bathymetry
+        self.sp = surface_air_pressure
 
     def is_regular_grid(self):
         return True if len(np.shape(self.x)) == 1 else False
@@ -52,6 +54,7 @@ class MemoryReader (CoverageReader):
         if self.is_regular_grid():
             return self.x[xmin:xmax]
         else:
+
             return self.x[ymin:ymax,xmin:xmax]
 
     def read_axis_y(self,xmin=None,xmax=None,ymin=None,ymax=None):

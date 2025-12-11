@@ -591,10 +591,6 @@ class Coverage(object):
         if parent_slice is not None:
             map["dst_mpi_x"] = slice[1]
             map["dst_mpi_y"] = slice[0]
-            # map["dst_mpi_x"] = np.s_[dst_local_x_min:dst_local_x_min + dst_local_x_size]
-            # map["dst_mpi_y"] = np.s_[dst_local_y_min:dst_local_y_min + dst_local_y_size]
-            # dst_local_x_min = dst_local_x_min + parent_slice["dst_global_x"].start
-            # dst_local_y_min = dst_local_y_min + parent_slice["dst_global_y"].start
 
         dst_local_x_max = dst_local_x_min + dst_local_x_size
         dst_local_y_max = dst_local_y_min + dst_local_y_size
@@ -605,65 +601,46 @@ class Coverage(object):
         map["dst_local_x_size"] = dst_local_x_size
         map["dst_local_y_size"] = dst_local_y_size
 
+        # TODO case of target irregular grid
         target_global_axis_x = self.target_global_axis_x[map["dst_global_x"]]
         target_global_axis_y = self.target_global_axis_y[map["dst_global_y"]]
 
         ### Source grille ###
         # Find xmin, xmax, ymin, ymax coordinates of the destination grid in the source grid
-        # TODO case of target irregular grid
-        if self.is_regular_grid(type="source"):
-            if parent_slice is not None:
-                source_global_axis_x = self.source_global_axis_x[parent_slice["src_global_x"]]
-                source_global_axis_y = self.source_global_axis_y[parent_slice["src_global_y"]]
-            else:
-                source_global_axis_x = self.source_global_axis_x
-                source_global_axis_y = self.source_global_axis_y
-
+        if np.min(target_global_axis_x) == np.max(target_global_axis_x):
             idx = np.where(
-                (source_global_axis_x >= np.min(
-                    target_global_axis_x)) &
-                (source_global_axis_x <= np.max(
+                (self.source_global_axis_x >= np.min(
                     target_global_axis_x)))
-
-            xmin = np.min(idx[0])
-            xmax = np.max(idx[0]) + 1
-
-            idx = np.where(
-                (source_global_axis_y >= np.min(
-                    target_global_axis_y)) &
-                (source_global_axis_y <= np.max(
-                    target_global_axis_y)))
-
-            ymin = np.min(idx[0])
-            ymax = np.max(idx[0]) + 1
-
         else:
-            if parent_slice is not None:
-                source_global_axis_x = self.source_global_axis_x[
-                    parent_slice["src_global_y"], parent_slice["src_global_x"]]
-                source_global_axis_y = self.source_global_axis_y[
-                    parent_slice["src_global_y"], parent_slice["src_global_x"]]
-            else:
-                source_global_axis_x = self.source_global_axis_x
-                source_global_axis_y = self.source_global_axis_y
-
             idx = np.where(
-                (source_global_axis_x >= np.min(
-                    target_global_axis_x)) &
-                (source_global_axis_x <= np.max(
-                    target_global_axis_x)) &
-                (source_global_axis_y >= np.min(
+            (self.source_global_axis_x >= np.min(
+                target_global_axis_x)) &
+            (self.source_global_axis_x <= np.max(
+                target_global_axis_x)))
+
+        if idx[0].size == 0:
+            raise ValueError(f"Unable to find target xmin / xmax in the source grid")
+        xmin = np.min(idx[0])
+        xmax = np.max(idx[0]) + 1
+
+        if  np.min(target_global_axis_y) ==  np.max(target_global_axis_y):
+            idx = np.where(
+                (self.source_global_axis_y >= np.min(
+                    target_global_axis_y)))
+        else:
+            idx = np.where(
+                (self.source_global_axis_y >= np.min(
                     target_global_axis_y)) &
-                (source_global_axis_y <= np.max(
+                (self.source_global_axis_y < np.max(
                     target_global_axis_y)))
 
-            ymin = np.min(idx[0])
-            ymax = np.max(idx[0]) + 1
-            xmin = np.min(idx[1])
-            xmax = np.max(idx[1]) + 1
+        if idx[0].size == 0:
+            raise ValueError(f"Unable to find target ymin / ymax in the source grid")
+
+        ymin = np.min(idx[0])
+        ymax = np.max(idx[0]) + 1
 
         # Compute source global slice with new xmin, xmax, ymin, ymax
-
         if parent_slice is not None:
             map["src_global_x"] = np.s_[
                 int(parent_slice["src_global_x"].start + xmin): int(parent_slice["src_global_x"].start + xmax)]
@@ -741,17 +718,15 @@ class Coverage(object):
         Compute horizontal interpolation weight (Delaunay triangulation)
         """
         if self.horizontal_resampling:
-            self.source_global_tri = np.empty([self.size, self.threads_number], dtype=object)
+            self.source_global_tri = np.empty([self.size], dtype=object)
 
             if self.rank == 0:
                 logging.info(
                     '[horizontal_interpolation] Compute weights...')
 
-                self.source_global_tri[self.rank] = interp_2d_weights(
-                    self.read_axis_x(type="source_mpi", with_overlap=True,),
-                    self.read_axis_y(type="source_mpi", with_overlap=True),
-                    self.parallel_map[self.rank]["threads"],
-                self.threads_number)
+            self.source_global_tri[self.rank] = interp_2d_weights(
+                self.read_axis_x(type="source", with_overlap=True,),
+                self.read_axis_y(type="source", with_overlap=True))
 
     def read_metadata(self):
         """
@@ -860,7 +835,7 @@ class Coverage(object):
             return self.source_regular_grid
 
     # Axis
-    def read_axis_x(self, type="target_mpi", with_overlap=False,current_thread:int=None):
+    def read_axis_x(self, type="target", with_overlap=False,current_thread:int=None):
         """
         Return the values of the x axis.
 
@@ -888,29 +863,29 @@ class Coverage(object):
         elif type == "source_global":
             return self.source_global_axis_x
 
-        elif type == "source_mpi" and with_overlap is True:
+        elif type == "source" and current_thread is None and with_overlap is True:
             return self.reader.read_axis_x(self.parallel_map[self.rank]["src_global_x_overlap"].start,
                                            self.parallel_map[self.rank]["src_global_x_overlap"].stop,
                                            self.parallel_map[self.rank]["src_global_y_overlap"].start,
                                            self.parallel_map[self.rank]["src_global_y_overlap"].stop)
-        elif type == "source_mpi" and with_overlap is False:
+        elif type == "source" and current_thread is None and with_overlap is False:
             return self.reader.read_axis_x(self.parallel_map[self.rank]["src_global_x"].start,
                                            self.parallel_map[self.rank]["src_global_x"].stop,
                                            self.parallel_map[self.rank]["src_global_y"].start,
                                            self.parallel_map[self.rank]["src_global_y"].stop)
-        elif type == "source" and with_overlap is True:
+        elif type == "source" and current_thread is not None and with_overlap is True:
             return self.reader.read_axis_x(
                 self.parallel_map[self.rank]["threads"][current_thread]["src_global_x_overlap"].start,
                 self.parallel_map[self.rank]["threads"][current_thread]["src_global_x_overlap"].stop,
                 self.parallel_map[self.rank]["threads"][current_thread]["src_global_y_overlap"].start,
                 self.parallel_map[self.rank]["threads"][current_thread]["src_global_y_overlap"].stop)
-        elif type == "source" and with_overlap is False:
+        elif type == "source" and current_thread is not None and with_overlap is False:
             return self.reader.read_axis_x(
                 self.parallel_map[self.rank]["threads"][current_thread]["src_global_x"].start,
                 self.parallel_map[self.rank]["threads"][current_thread]["src_global_x"].stop,
                 self.parallel_map[self.rank]["threads"][current_thread]["src_global_y"].start,
                 self.parallel_map[self.rank]["threads"][current_thread]["src_global_y"].stop)
-        elif type == "target" and with_overlap is True:
+        elif type == "target" and current_thread is not None and with_overlap is True:
             if self.is_regular_grid():
                 return self.target_global_axis_x[
                     self.parallel_map[self.rank]["threads"][current_thread]["dst_global_x_overlap"]]
@@ -918,7 +893,7 @@ class Coverage(object):
                 return self.target_global_axis_x[
                     self.parallel_map[self.rank]["threads"][current_thread]["dst_global_y_overlap"],
                     self.parallel_map[self.rank]["threads"][current_thread]["dst_global_x_overlap"]]
-        elif type == "target" and with_overlap is False:
+        elif type == "target" and current_thread is not None and with_overlap is False:
             if self.is_regular_grid():
                 return self.target_global_axis_x[
                     self.parallel_map[self.rank]["threads"][current_thread]["dst_global_x"]]
@@ -927,20 +902,20 @@ class Coverage(object):
                     self.parallel_map[self.rank]["threads"][current_thread]["dst_global_y"],
                     self.parallel_map[self.rank]["threads"][current_thread]["dst_global_x"]]
 
-        elif type == "target_mpi" and with_overlap is True:
+        elif type == "target" and current_thread is None and with_overlap is True:
             if self.is_regular_grid():
                 return self.target_global_axis_x[self.parallel_map[self.rank]["dst_global_x_overlap"]]
             else:
                 return self.target_global_axis_x[self.parallel_map[self.rank]["dst_global_y_overlap"],
                 self.parallel_map[self.rank]["dst_global_x_overlap"]]
-        elif type == "target_mpi" and with_overlap is False:
+        elif type == "target" and current_thread is None and with_overlap is False:
             if self.is_regular_grid():
                 return self.target_global_axis_x[self.parallel_map[self.rank]["dst_global_x"]]
             else:
                 return self.target_global_axis_x[
                     self.parallel_map[self.rank]["dst_global_y"], self.parallel_map[self.rank]["dst_global_x"]]
 
-    def read_axis_y(self, type="target_mpi", with_overlap=False,current_thread:int=None):
+    def read_axis_y(self, type="target", with_overlap=False,current_thread:int=None):
         """
         Return the values (often latitude) of the y axis.
 
@@ -967,29 +942,29 @@ class Coverage(object):
         elif type == "source_global":
             return self.source_global_axis_y
 
-        elif type == "source_mpi" and with_overlap is True:
+        elif type == "source" and current_thread is None and with_overlap is True:
             return self.reader.read_axis_y(self.parallel_map[self.rank]["src_global_x_overlap"].start,
                                            self.parallel_map[self.rank]["src_global_x_overlap"].stop,
                                            self.parallel_map[self.rank]["src_global_y_overlap"].start,
                                            self.parallel_map[self.rank]["src_global_y_overlap"].stop)
-        elif type == "source_mpi" and with_overlap is False:
+        elif type == "source" and current_thread is None and with_overlap is False:
             return self.reader.read_axis_y(self.parallel_map[self.rank]["src_global_x"].start,
                                            self.parallel_map[self.rank]["src_global_x"].stop,
                                            self.parallel_map[self.rank]["src_global_y"].start,
                                            self.parallel_map[self.rank]["src_global_y"].stop)
-        elif type == "source" and with_overlap is True:
+        elif type == "source" and current_thread is not None and with_overlap is True:
             return self.reader.read_axis_y(
                 self.parallel_map[self.rank]["threads"][current_thread]["src_global_x_overlap"].start,
                 self.parallel_map[self.rank]["threads"][current_thread]["src_global_x_overlap"].stop,
                 self.parallel_map[self.rank]["threads"][current_thread]["src_global_y_overlap"].start,
                 self.parallel_map[self.rank]["threads"][current_thread]["src_global_y_overlap"].stop)
-        elif type == "source" and with_overlap is False:
+        elif type == "source" and current_thread is not None and with_overlap is False:
             return self.reader.read_axis_y(
                 self.parallel_map[self.rank]["threads"][current_thread]["src_global_x"].start,
                 self.parallel_map[self.rank]["threads"][current_thread]["src_global_x"].stop,
                 self.parallel_map[self.rank]["threads"][current_thread]["src_global_y"].start,
                 self.parallel_map[self.rank]["threads"][current_thread]["src_global_y"].stop)
-        elif type == "target" and with_overlap is True:
+        elif type == "target" and current_thread is not None and with_overlap is True:
             if self.is_regular_grid():
                 return self.target_global_axis_y[
                     self.parallel_map[self.rank]["threads"][current_thread]["dst_global_y_overlap"]]
@@ -997,7 +972,7 @@ class Coverage(object):
                 return self.target_global_axis_y[
                     self.parallel_map[self.rank]["threads"][current_thread]["dst_global_y_overlap"],
                     self.parallel_map[self.rank]["threads"][current_thread]["dst_global_x_overlap"]]
-        elif type == "target" and with_overlap is False:
+        elif type == "target" and current_thread is not None and with_overlap is False:
             if self.is_regular_grid():
                 return self.target_global_axis_y[
                     self.parallel_map[self.rank]["threads"][current_thread]["dst_global_y"]]
@@ -1005,13 +980,13 @@ class Coverage(object):
                 return self.target_global_axis_y[
                     self.parallel_map[self.rank]["threads"][current_thread]["dst_global_y"],
                     self.parallel_map[self.rank]["threads"][current_thread]["dst_global_x"]]
-        elif type == "target_mpi" and with_overlap is True:
+        elif type == "target" and current_thread is None and with_overlap is True:
             if self.is_regular_grid():
                 return self.target_global_axis_y[self.parallel_map[self.rank]["dst_global_y_overlap"]]
             else:
                 return self.target_global_axis_y[self.parallel_map[self.rank]["dst_global_y_overlap"],
                 self.parallel_map[self.rank]["dst_global_x_overlap"]]
-        elif type == "target_mpi" and with_overlap is False:
+        elif type == "target" and current_thread is None and with_overlap is False:
             if self.is_regular_grid():
                 return self.target_global_axis_y[self.parallel_map[self.rank]["dst_global_y"]]
             else:
@@ -1148,23 +1123,35 @@ class Coverage(object):
 
 
     def resample_2d_variable(self, values):
-        #Version OpenMP
-       return resample_2d_to_grid(
-           #self.source_global_tri[self.rank],
-           self.read_axis_x(type="source_mpi", with_overlap=True),
-           self.read_axis_y(type="source_mpi", with_overlap=True),
-            self.read_axis_x(type="target_mpi",
-                             with_overlap=True)
-                             ,
-            self.read_axis_y(type="target_mpi",
-                             with_overlap=True),
-            values,
-           self.parallel_map[self.rank]["threads"],
-           Coverage.HORIZONTAL_INTERPOLATION_METHOD
-           # "nearest",
-           #self.threads_number
-       )
+        method="fast"
+        if method == "classic":
+            return resample_faster_2d_to_grid(
+                self.source_globalc_tri[self.rank],
+                 self.read_axis_x(type="target",
+                                  with_overlap=True)
+                                  ,
+                 self.read_axis_y(type="target",
+                                  with_overlap=True),
+                 values,
+                Coverage.HORIZONTAL_INTERPOLATION_METHOD
+            )[self.parallel_map[self.rank]["dst_local_y"],self.parallel_map[self.rank]["dst_local_x"]]
 
+        else:
+           return resample_2d_to_grid(
+               self.read_axis_x(type="source",
+                                with_overlap=True)
+               ,
+               self.read_axis_y(type="source",
+                                with_overlap=True),
+               self.read_axis_x(type="target",
+                                with_overlap=True)
+               ,
+               self.read_axis_y(type="target",
+                                with_overlap=True),
+               values,
+               self.parallel_map[self.rank]["threads"],
+               Coverage.HORIZONTAL_INTERPOLATION_METHOD
+           )[self.parallel_map[self.rank]["dst_local_y"], self.parallel_map[self.rank]["dst_local_x"]]
 
     def __read_variable(self, function_name):
 
@@ -1179,15 +1166,10 @@ class Coverage(object):
         is_vector = True if len(np.shape(data)) == 3 and np.shape(data)[0] == 2 else False
 
         if self.horizontal_resampling:
-
-            # We use multithreading to compute resampling
             if is_vector:
-                local_data = np.zeros([2, self.get_y_size(), self.get_x_size()])
-                self.resample_2d_variable(data[0], local_data[0])
-                self.resample_2d_variable(data[1], local_data[1])
+                return [self.resample_2d_variable(data[0]), self.resample_2d_variable(data[1])]
             else:
                 return self.resample_2d_variable(data)
-
         else:
             if is_vector:
                 return [

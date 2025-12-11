@@ -189,9 +189,9 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             xmin_overlap, xmax_overlap, ymin_overlap, ymax_overlap, new_xmin, new_xmax, new_ymin, new_ymax = self.compute_overlap_indexes(
                 xmin, xmax, ymin, ymax)
 
-            mask_t = self.grid.variables["mask_t"][ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
-            mask_u = self.grid.variables["mask_u"][ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
-            mask_v = self.grid.variables["mask_v"][ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+            mask_t = self.grid.variables["mask_t"][index_z,ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+            mask_u = self.grid.variables["mask_u"][index_z,ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
+            mask_v = self.grid.variables["mask_v"][index_z,ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
 
             if self.gridrotcos_t is None and self.gridrotsin_t is None:
                 self.compute_rot()
