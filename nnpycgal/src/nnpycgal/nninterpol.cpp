@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <stdint.h>
+#include <ctime>
 
 #include <omp.h>
 
@@ -53,7 +54,6 @@ Delaunay_triangulation triangulate(Vdouble x, Vdouble y) {
 }
 
 Vdouble2d nninterpol(Delaunay_triangulation T, Vdouble z, Vdouble2d xx, Vdouble2d yy, double fill_value) {
-
     int dst_x_size = size(xx);
     int dst_y_size = size(xx[0]);
     Vdouble2d raster = make_2d_vector<double>(dst_x_size, dst_y_size);
@@ -66,14 +66,14 @@ Vdouble2d nninterpol(Delaunay_triangulation T, Vdouble z, Vdouble2d xx, Vdouble2
     // Optimization (Face_handle look-up + OpenMP) following:
     // https://stackoverflow.com/questions/30354284/cgal-natural-neighbor-interpolation
     Delaunay_triangulation::Face_handle fh;
-
-    #pragma omp parallel for private(fh) collapse(2)
+    double start = omp_get_wtime();
+    #pragma omp parallel for num_threads(1) private(fh) collapse(2)
     for(int i=0; i<dst_x_size; i++) {
         for(int j=0; j<dst_y_size; j++) {
             Point p(xx[i][j], yy[i][j]);
             fh = T.locate(p, fh);
             std::vector< std::pair< Point, Coord_type > > coords;
-            CGAL::Triple<std::back_insert_iterator<Coordinate_vector>, K::FT, bool> natneighbor = CGAL::natural_neighbor_coordinates_2(T, p, std::back_inserter(coords), fh);
+            CGAL::Triple<std::back_insert_iterator<Coordinate_vector>, K::FT, bool> natneighbor = CGAL::natural_neighbor_coordinates_2(T, p, std::back_inserter(coords),fh);
 
             // error checking following:
             // https://github.com/remotesensinginfo/spdlib/blob/cf88633bd068638b13fb7701d93f01a28a8cd488/src/spd/SPDPointInterpolation.cpp
@@ -88,6 +88,10 @@ Vdouble2d nninterpol(Delaunay_triangulation T, Vdouble z, Vdouble2d xx, Vdouble2
         }
     }
 
+    double end = omp_get_wtime();
+    double elapsed = double(end - start);
+    std::cout << "Time : " << elapsed << " seconds." << std::endl;
+
     return raster;
 }
 
@@ -95,5 +99,5 @@ PYBIND11_MODULE(nninterpol, m) {
     m.doc() = "Natural Neighbor Interpolation using CGAL";
     py::class_<Delaunay_triangulation>(m, "Delaunay_triangulation");
     m.def("triangulate", &triangulate, "Triangulate the source grid using CGAL");
-    m.def("nninterpol", &nninterpol, "Linear Interpolation using CGAL");
+    m.def("nninterpol", &nninterpol,py::call_guard<py::gil_scoped_release>(), "Linear Interpolation using CGAL");
 }

@@ -726,7 +726,10 @@ class Coverage(object):
 
             self.source_global_tri[self.rank] = interp_2d_weights(
                 self.read_axis_x(type="source", with_overlap=True,),
-                self.read_axis_y(type="source", with_overlap=True))
+                self.read_axis_y(type="source", with_overlap=True),
+                self.parallel_map[self.rank]["threads"],
+                self.threads_number
+            )
 
     def read_metadata(self):
         """
@@ -1133,7 +1136,8 @@ class Coverage(object):
                  self.read_axis_y(type="target",
                                   with_overlap=True),
                  values,
-                Coverage.HORIZONTAL_INTERPOLATION_METHOD
+                Coverage.HORIZONTAL_INTERPOLATION_METHOD,
+                self.parallel_map[self.rank]["threads"]
             )[self.parallel_map[self.rank]["dst_local_y"],self.parallel_map[self.rank]["dst_local_x"]]
 
         else:

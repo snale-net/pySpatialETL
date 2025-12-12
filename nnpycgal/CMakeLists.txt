@@ -10,7 +10,9 @@ endif()
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -O3 -fopenmp")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -fopenmp")
+set(CMAKE_BUILD_TYPE Release)
 
 # Fetch pybind11
 include(FetchContent)
@@ -18,7 +20,7 @@ include(FetchContent)
 FetchContent_Declare(
   pybind11
   GIT_REPOSITORY https://github.com/pybind/pybind11
-  GIT_TAG v2.11.1
+  GIT_TAG v3.0.1
 )
 FetchContent_MakeAvailable(pybind11)
 

@@ -226,6 +226,8 @@ class DefaultWriter(CoverageWriter):
             var.long_name = VariableDefinition.LONG_NAME['mesh_size']
             var.standard_name = VariableDefinition.STANDARD_NAME['mesh_size']
             var.units = VariableDefinition.CANONICAL_UNITS['mesh_size']
+        else:
+            var=None
 
         local_data = self.coverage.read_variable_mesh_size()
         self._gathering_var(local_data,var)
@@ -392,6 +394,8 @@ class DefaultWriter(CoverageWriter):
             var.long_name = VariableDefinition.LONG_NAME['bathymetry']
             var.standard_name = VariableDefinition.STANDARD_NAME['bathymetry']
             var.units = VariableDefinition.CANONICAL_UNITS['bathymetry']
+        else:
+            var=None
 
         local_data = self.coverage.read_variable_bathymetry()
         self._gathering_var(local_data, var)
