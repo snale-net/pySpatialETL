@@ -201,15 +201,15 @@ class DefaultWriter(CoverageWriter):
 
                     if time_index:
                         var[
-                            self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index:
-                            self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index + 1,
-                            self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                            self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
+                            self.coverage.parallel_map[source]["dst_global_t"].start + time_index:
+                            self.coverage.parallel_map[source]["dst_global_t"].start + time_index + 1,
+                            self.coverage.parallel_map[source]["dst_global_y"],
+                            self.coverage.parallel_map[source]["dst_global_x"]
                         ] = recvbuf
                     else:
                         var[
-                            self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                            self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
+                            self.coverage.parallel_map[source]["dst_global_y"],
+                            self.coverage.parallel_map[source]["dst_global_x"]
                         ] = recvbuf
 
     # Variables

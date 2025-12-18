@@ -22,36 +22,45 @@
 # SOFTWARE.
 import time
 
+import numpy
+
+from spatialetl.coverage import Coverage
 from spatialetl.coverage.time_level_coverage import TimeLevelCoverage
-from spatialetl.providers.symphonie.coverage.netcdf.v293.symphonie_reader import SYMPHONIEReader as CoverageReader
+from spatialetl.providers.symphonie.coverage.netcdf.symphonie_reader import SYMPHONIEReader as CoverageReader
 from spatialetl.providers.common.netcdf.coverage.default_writer import DefaultWriter
 from spatialetl.utils.logger import logging
 
 if __name__ == "__main__":
     start_time = time.time()
-    logging.setLevel(logging.INFO)
+    logging.setLevel(logging.RUN)
+
+    Coverage.HORIZONTAL_INTERPOLATOR = "cgal"
 
     # Read file
-    reader = CoverageReader('/work/sciences/projects/2022-Snale/simu-Aubenas/output/v2-1992/grid.nc',
-                             '/work/sciences/projects/2022-Snale/simu-Aubenas/output/v2-1992/GRAPHIQUES/')
+    #reader = CoverageReader('/work/sciences/projects/2022-Snale/simu-Aubenas/output/v2-1992/grid.nc',
+    #                         '/work/sciences/projects/2022-Snale/simu-Aubenas/output/v2-1992/GRAPHIQUES/')
+    reader = CoverageReader('/work/sciences/projects/Nokoue-2019/grid/grid_zoom.nc',
+                            '/work/sciences/projects/Nokoue-2019/modelling/symphonie/outputs/REF2018/')
 
-    #depths = [0.0, 10.0]
-    coverage = TimeLevelCoverage(reader, resolution_x=0.0001, resolution_y=0.0001,resolution_z=0.0001,nb_thread=2);
+    depths = [0.0, 1.5]
+    coverage = TimeLevelCoverage(reader, resolution_x=0.0005, resolution_y=0.0005,resolution_z=0.5, zbox=depths,freq="1d",nb_thread=15);
 
-    writer = DefaultWriter(coverage, '/tmp/symphonie_regular.nc')
+    writer = DefaultWriter(coverage, '/work/sciences/projects/Nokoue-2019/modelling/symphonie/outputs/symphonie_regular.nc')
 
     #writer.write_variable_baroclinic_sea_water_velocity()
-    #writer.write_variable_barotropic_sea_water_velocity()
+    writer.write_variable_barotropic_sea_water_velocity()
     #writer.write_variable_sea_water_column_thickness()
-    #writer.write_variable_sea_surface_height_above_mean_sea_level()
+    writer.write_variable_sea_surface_height_above_mean_sea_level()
     #writer.write_variable_wind_stress()
     #writer.write_variable_sea_water_temperature()
     #writer.write_variable_sea_water_salinity()
+    writer.write_variable_sea_surface_salinity()
+    writer.write_variable_sea_water_salinity_at_ground_level()
     # writer.write_variable_wet_binary_mask()
     #writer.write_variable_2D_sea_binary_mask()
     #writer.write_variable_wind_10m()
-    writer.write_variable_mesh_size()
-    writer.write_variable_bathymetry()
+    #writer.write_variable_mesh_size()
+    #writer.write_variable_bathymetry()
     #writer.write_variable_sea_surface_wave_significant_height()
     #writer.write_variable_sea_surface_wave_mean_period()
     #writer.write_variable_sea_surface_wave_peak_period()

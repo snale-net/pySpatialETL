@@ -22,28 +22,19 @@
 # SOFTWARE.
 from __future__ import division, print_function, absolute_import
 
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 
 import numpy as np
-from nnpycgal.nninterpol import nninterpol
-from nnpycgal.nninterpol import triangulate
 from numpy import int8, int16, int32, int64
-from omp4py import omp, omp_get_thread_num
-from scipy.interpolate import griddata, LinearNDInterpolator, NearestNDInterpolator
+from scipy.interpolate import LinearNDInterpolator, NearestNDInterpolator
 from scipy.interpolate import interp1d
 from scipy.spatial import qhull
 
-#from spatialetl.operator.parinterp.interpolator import Linear2DInterpolator
 from spatialetl.utils.logger import logging
-from spatialetl.utils.timing import timing
 
 
-# try:
-#    from spatialetl.operator.parinterp.interpolator import Linear2DInterpolator
-# except Exception as ex:
-#    print(ex)
-@omp()
-def interp_2d_weights(gridX, gridY,map,threads_count):
+def interp_2d_weights(gridX, gridY, map, interpolator="scipy"):
     """
     Interpolate the 2d weights of the source grid
 
@@ -53,162 +44,114 @@ def interp_2d_weights(gridX, gridY,map,threads_count):
     :return current_thread, Delaunay triangulation
     """
 
-    logging.debug(f"[InterpolatorCore][horizontal_interpolation()] computing weights")
+    logging.debug(f"[InterpolatorCore][horizontal_interpolation()] computing weights with '{interpolator}'")
 
     gridX = np.ma.filled(gridX, fill_value=-9999.)
     gridY = np.ma.filled(gridY, fill_value=-9999.)
 
-    #Version OpenMP
-    tri = np.empty([threads_count], dtype=object)
+    if interpolator == "cgal":
+        try:
+            from spatialetl.operator.interpolator.interpcgal.nninterpol import triangulate
 
-    with omp("parallel shared(tri)"):
-        current_thread = omp_get_thread_num()
+            threads_count = np.shape(map)[0]
+            tri = np.empty([threads_count], dtype=object)
 
+            with ThreadPoolExecutor(max_workers=threads_count) as executor:
+                futures = []
+                for current_thread in range(0, executor._max_workers):
+                    if gridX.ndim == 1 and gridY.ndim == 1:
+                        local_grid_x, local_grid_y = np.meshgrid(gridX[map[current_thread]["src_global_x_overlap"]],
+                                                                 gridY[map[current_thread]["src_global_y_overlap"]])
+                    else:
+                        local_grid_x = gridX[map[current_thread]["src_global_y_overlap"],
+                        map[current_thread]["src_global_x_overlap"]]
+                        local_grid_y = gridY[map[current_thread]["src_global_y_overlap"],
+                        map[current_thread]["src_global_x_overlap"]]
+
+                    points = np.array([local_grid_x.flatten(), local_grid_y.flatten()]).T
+
+                    futures.append(
+                        executor.submit(triangulate, points))
+
+                for current_thread, f in enumerate(futures):
+                    tri[current_thread] = f.result()
+
+            return tri
+        except ModuleNotFoundError:
+            logging.warning(f"Unable to find the cgal interpolator, we switch to scipy")
+            interpolator = "scipy"
+
+    if interpolator == "scipy":
         if gridX.ndim == 1 and gridY.ndim == 1:
-            local_grid_x, local_grid_y = np.meshgrid(gridX[map[current_thread]["src_global_x_overlap"]],
-                                                     gridY[map[current_thread]["src_global_y_overlap"]])
+            local_grid_x, local_grid_y = np.meshgrid(gridX, gridY)
         else:
-            local_grid_x = gridX[map[current_thread]["src_global_y_overlap"],
-            map[current_thread]["src_global_x_overlap"]]
-            local_grid_y = gridY[map[current_thread]["src_global_y_overlap"],
-            map[current_thread]["src_global_x_overlap"]]
+            local_grid_x = gridX
+            local_grid_y = gridY
 
-        # scipy
-        #points = np.array([local_grid_x.flatten(), local_grid_y.flatten()]).T
-        #tri[current_thread] = qhull.Delaunay(points)
-
-        #cgal
-        tri[current_thread] = triangulate(local_grid_x.flatten(), local_grid_y.flatten())
-
-    return tri
-
-    if gridX.ndim == 1 and gridY.ndim == 1:
-        local_grid_x, local_grid_y = np.meshgrid(gridX,
-                                                 gridY)
+        points = np.array([local_grid_x.flatten(), local_grid_y.flatten()]).T
+        return qhull.Delaunay(points)
     else:
-        local_grid_x = gridX
-        local_grid_y = gridY
-
-    # scipy
-    #points = np.array([local_grid_x.flatten(), local_grid_y.flatten()]).T
-    #return qhull.Delaunay(points)
-
-    #cgal
-    return triangulate(local_grid_x.flatten(), local_grid_y.flatten())
+        raise ValueError(f"Unable to find interpolator {interpolator}")
 
 
-def resample_2d_to_grid(gridX, gridY, newX, newY, data, map, method):
+def resample_2d_to_grid(tri, newX, newY, data, method, map, interpolator="scipy"):
     """
     2D resampling function
     """
-    logging.debug(
-        f"[InterpolatorCore][horizontal_interpolation()] Starting interpolation with method '{method}'")
-
-    #local_data = np.zeros([np.shape(newY)[0], np.shape(newX)[0]])
-
-    #with omp("parallel shared(local_data)"):
-    #current_thread = omp_get_thread_num()
-
-    # source grid
-    if gridX.ndim == 1 and gridY.ndim == 1:
-        local_grid_x, local_grid_y = np.meshgrid(gridX,
-                                                 gridY)
-    else:
-        local_grid_x = gridX
-        local_grid_y = gridY
-
-    points = np.array([local_grid_x.flatten(), local_grid_y.flatten()]).T
-
-    # Target grid
-    dst_local_grid_x, dst_local_grid_y = np.meshgrid(newX,
-                                                     newY)
-
-    # Values
-    values = data.flatten()
+    logging.debug(f"[InterpolatorCore][horizontal_interpolation()] Starting interpolation with '{interpolator}'")
 
     if data.dtype == int8 or data.dtype == int16 or data.dtype == int32 or data.dtype == int64:
         fill_value = -9999
     else:
         fill_value = 9.96921e+36
 
-    # scipy
-    data = griddata(points, values, (dst_local_grid_x, dst_local_grid_y), method=method, rescale=False,
-                    fill_value=fill_value)
+    if interpolator == "cgal":
+        try:
+            from spatialetl.operator.interpolator.interpcgal.nninterpol import nninterpol
+            threads_count = np.shape(map)[0]
+            local_data = np.zeros([np.shape(newY)[0], np.shape(newX)[0]])
+            local_data[:] = fill_value
 
-    # parinterp
-    # interp_points = np.array([dst_local_grid_x.flatten(), dst_local_grid_y.flatten()]).T
-    # interpet = Linear2DInterpolator(points, -1)
-    # data = interpet(interp_points, values, fill_value=0.0).reshape(np.shape(newX)[0],np.shape(newY)[0])
+            with ThreadPoolExecutor(max_workers=threads_count) as executor:
+                futures = []
+                for current_thread in range(0, executor._max_workers):
+                    dst_local_grid_x, dst_local_grid_y = np.meshgrid(newX[map[current_thread]["dst_parent_x_overlap"]],
+                                                                     newY[map[current_thread]["dst_parent_y_overlap"]])
 
-    #cgal
-    #data = np.array(nninterpol(local_grid_x.flatten().filled(np.nan),local_grid_y.flatten().filled(np.nan), values, dst_local_grid_x, dst_local_grid_y,fill_value))
+                    values = data[map[current_thread]["src_global_y_overlap"],
+                    map[current_thread]["src_global_x_overlap"]].flatten().T
 
-    return  data
-@timing
-@omp()
-def resample_faster_2d_to_grid(tri, newX, newY, data, method,map):
-    """
-    2D resampling function
-    """
+                    futures.append(
+                        executor.submit(nninterpol, tri[current_thread], values, dst_local_grid_x, dst_local_grid_y,
+                                        fill_value))
 
-    logging.debug(f"[InterpolatorCore][horizontal_interpolation()] Starting interpolation")
+                for current_thread, f in enumerate(futures):
+                    data = f.result()
+                    slice_data = np.array(data)
+                    local_data[map[current_thread]["dst_parent_y"], map[current_thread]["dst_parent_x"]] = slice_data[
+                        map[current_thread]["dst_local_y"],
+                        map[current_thread]["dst_local_x"]]
 
-    # Version OMP
-    local_data = np.zeros([np.shape(newY)[0], np.shape(newX)[0]])
+            return local_data
+        except ModuleNotFoundError:
+            logging.warning(f"Unable to find the cgal interpolator, we switch to scipy")
+            interpolator = "scipy"
 
-    with omp("parallel shared(local_data)"):
-        current_thread = omp_get_thread_num()
-
+    if interpolator == "scipy":
         # Target grid
-        dst_local_grid_x, dst_local_grid_y = np.meshgrid(newX[map[current_thread]["dst_global_x_overlap"]],
-                                                         newY[map[current_thread]["dst_global_y_overlap"]])
+        dst_local_grid_x, dst_local_grid_y = np.meshgrid(newX, newY)
+
         # Values
-        values = data[map[current_thread]["src_global_y_overlap"],
-        map[current_thread]["src_global_x_overlap"]].flatten()
+        values = data.flatten()
+        if method == "linear":
+            ip = LinearNDInterpolator(tri, values, fill_value=fill_value,
+                                      rescale=False)
+        elif method == "nearest":
+            ip = NearestNDInterpolator(tri, values, rescale=False)
 
-        if data.dtype == int8 or data.dtype == int16 or data.dtype == int32 or data.dtype == int64:
-            fill_value = -9999
-        else:
-            fill_value = 9.96921e+36
-
-        # scipy
-        #ip = LinearNDInterpolator(tri[current_thread], values, fill_value=fill_value,
-        #                           rescale=False)
-        #tt = ip((dst_local_grid_x, dst_local_grid_y))
-
-        # parinterp
-        #interp_points = np.array([dst_local_grid_x.flatten(), dst_local_grid_y.flatten()]).T
-        #interpet = Linear2DInterpolator(points, values)
-        #data = interpet(interp_points, values, fill_value=0.0).reshape(np.shape(newX)[0], np.shape(newY)[0])
-
-        #cgal
-        tt = np.array(nninterpol(tri[current_thread], values, dst_local_grid_x, dst_local_grid_y, fill_value))
-
-        local_data[map[current_thread]["dst_mpi_y"], map[current_thread]["dst_mpi_x"]] = tt[
-            map[current_thread]["dst_local_y"],
-            map[current_thread]["dst_local_x"]]
-
-    return local_data
-
-    values = data.flatten()
-    xx, yy = np.meshgrid(newX, newY)
-    if data.dtype == int8 or data.dtype == int16 or data.dtype == int32 or data.dtype == int64:
-        fill_value = -9999
+        return ip((dst_local_grid_x, dst_local_grid_y))
     else:
-        fill_value = 9.96921e+36
-
-    #scipy
-    # if method == "linear":
-    #     ip = LinearNDInterpolator(tri, values, fill_value=fill_value,
-    #                               rescale=False)
-    # elif method == "nearest":
-    #     ip = NearestNDInterpolator(tri, values, rescale=False)
-    #
-    # return ip((xx, yy))
-
-    #cgal
-    return np.array(nninterpol(tri, values,xx, yy, fill_value))
-
+        raise ValueError(f"Unable to find interpolator {interpolator}")
 
 def vertical_interpolation(sourceAxis, targetAxis, data, method, extrapolate=False):
     # logging.debug("[InterpolatorCore][vertical_interpolation()] Looking for water depth : " + str(

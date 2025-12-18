@@ -20,20 +20,14 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-import concurrent
 import inspect
 import os
-from concurrent.futures import ProcessPoolExecutor
 
 import numpy as np
 
-from spatialetl.coverage.coverage import Coverage
 from spatialetl.coverage.level_coverage import LevelCoverage
 from spatialetl.coverage.time_coverage import TimeCoverage
-from spatialetl.operator.interpolator.interpolator_core import resample_2d_to_grid, resample_faster_2d_to_grid
 from spatialetl.operator.interpolator.interpolator_core import vertical_interpolation
-from spatialetl.utils.logger import logging
-from spatialetl.utils.timing import timing
 
 
 class TimeLevelCoverage(LevelCoverage, TimeCoverage):
@@ -137,10 +131,6 @@ class TimeLevelCoverage(LevelCoverage, TimeCoverage):
     @return: un tableau en deux dimensions [y,x]."""
         return self.__read_variable(inspect.stack()[0][3],time=time, depth=depth)
 
-
-
-
-    @timing
     def read_variable_sea_water_salinity_at_time_and_depth(self, time, depth):
         """Retourne la salinité à la date souhaitée et au niveau souhaité sur toute la couverture horizontale.
     @type time: datetime ou l'index
@@ -149,7 +139,6 @@ class TimeLevelCoverage(LevelCoverage, TimeCoverage):
     @param depth: profondeur souhaitée. Si le z est un entier, on considère qu'il s'agit de l'index,
     si c'est un flottant on considère qu'il s'agit d'une profondeur
     @return: un tableau en deux dimensions [y,x]."""
-
         return self.__read_variable(inspect.stack()[0][3],time=time, depth=depth)
 
     def read_variable_baroclinic_sea_water_velocity_at_time_and_depth(self, time, depth):
@@ -161,71 +150,4 @@ class TimeLevelCoverage(LevelCoverage, TimeCoverage):
     si c'est un flottant on considère qu'il s'agit d'une profondeur
     @return: un tableau en deux dimensions [u_comp,v_comp] contenant chacun deux dimensions [y,x]."""
 
-        index_t = self.find_time_index(time);
-        vert_coord, indexes_z = self.find_level_index(depth);
-        self.layers_temp[::] = np.nan
-        self.data_temp[:] = np.nan
-        targetDepth = [depth]
-
-        for z in range(0, len(indexes_z)):
-            self.layers_temp[z] = self.reader.read_variable_baroclinic_sea_water_velocity_at_time_and_depth(
-                self.parallel_map[self.rank]["src_global_t"].start + index_t, indexes_z[z],
-                self.parallel_map[self.rank]["src_global_x_overlap"].start,
-                self.parallel_map[self.rank]["src_global_x_overlap"].stop,
-                self.parallel_map[self.rank]["src_global_y_overlap"].start,
-                self.parallel_map[self.rank]["src_global_y_overlap"].stop)
-
-        idx = np.where(vert_coord != None)
-        for index in range(np.shape(idx)[1]):
-            x = idx[1][index]
-            y = idx[0][index]
-
-            if len(vert_coord[y, x]) == 1:
-                # Il n'y a qu'une seule couche de sélectionner donc pas d'interpolation possible
-                # On retrouve l'index de la layer
-                index_layer = (np.abs(indexes_z - vert_coord[y, x][0])).argmin()
-
-                self.data_temp[0, y, x] = self.layers_temp[index_layer, 0, y, x]
-                self.data_temp[1, y, x] = self.layers_temp[index_layer, 1, y, x]
-            else:
-                candidateValues = np.zeros([2, len(vert_coord[y, x])])
-                candidateDepths = np.zeros([len(vert_coord[y, x])])
-
-                for z in range(0, len(vert_coord[y, x])):
-                    # On retrouve l'index de la layer
-                    index_layer = (np.abs(indexes_z - vert_coord[y, x][z])).argmin()
-
-                    if self.is_sigma_coordinate(type="source"):
-                        candidateDepths[z] = self.read_axis_z(type="source", with_horizontal_overlap=True)[
-                            vert_coord[y, x][z], y, x]
-                    else:
-                        candidateDepths[z] = self.read_axis_z(type="source", with_horizontal_overlap=True)[
-                            vert_coord[y, x][z]]
-
-                    candidateValues[0, z] = self.layers_temp[index_layer, 0, y, x]
-                    candidateValues[1, z] = self.layers_temp[index_layer, 1, y, x]
-
-                self.data_temp[0, y, x] = vertical_interpolation(candidateDepths, targetDepth, candidateValues[0],
-                                                                 LevelCoverage.VERTICAL_INTERPOLATION_METHOD)
-
-                self.data_temp[1, y, x] = vertical_interpolation(candidateDepths, targetDepth, candidateValues[1],
-                                                                 LevelCoverage.VERTICAL_INTERPOLATION_METHOD)
-
-        if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       self.data_temp[0],
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.parallel_map[self.rank]["dst_local_y"], self.parallel_map[self.rank]["dst_local_x"]], \
-            resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                self.read_axis_y(type="source", with_overlap=True),
-                                self.read_axis_x(type="target", with_overlap=True),
-                                self.read_axis_y(type="target", with_overlap=True),
-                                self.data_temp[1],
-                                Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.parallel_map[self.rank]["dst_local_y"], self.parallel_map[self.rank]["dst_local_x"]]
-
-        return self.data_temp[0, self.parallel_map[self.rank]["dst_local_y"], self.parallel_map[self.rank]["dst_local_x"]], \
-        self.data_temp[1, self.parallel_map[self.rank]["dst_local_y"], self.parallel_map[self.rank]["dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3],time=time, depth=depth)

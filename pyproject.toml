@@ -35,7 +35,6 @@ license = "MIT"
 license-files = ["LICEN[CS]E.*"]
 
 dependencies = [
-    "spatialetl-nnpycgal==0.1",
     "spatialetl-core==0.0.1",
 ]
 packages = []
@@ -49,6 +48,9 @@ Repository = "https://github.com/snale-net/pySpatialETL.git"
 exclude = ["spatialetl.providers","spatialetl.providers.*","*.tests", "*.tests.*", "tests.*", "tests", "demo"]
 
 [project.optional-dependencies]
+"interpcgal" = [
+    "spatialetl-interpcgal"
+]
 "gdal" = [
     "spatialetl-providers-common-gdal"
 ]
@@ -89,6 +91,7 @@ exclude = ["spatialetl.providers","spatialetl.providers.*","*.tests", "*.tests.*
     "spatialetl-providers-ww3"
 ]
 "all" = [
+    "spatialetl-interpcgal",
     "spatialetl-providers-common-gdal",
     "spatialetl-providers-common-grib",
     "spatialetl-providers-common-mpi",
@@ -124,8 +127,7 @@ log_cli_level = "DEBUG"
 # *not* the workspace folder paths
 spatialetl = {workspace = true}
 spatialetl-core = {workspace = true}
-spatialetl-parinterp = {workspace = true}
-spatialetl-nnpycgal = {workspace = true}
+spatialetl-interpcgal = {workspace = true}
 spatialetl-providers-common-gdal = {workspace = true}
 spatialetl-providers-common-grib = {workspace = true}
 spatialetl-providers-common-mpi = {workspace = true}
@@ -144,8 +146,7 @@ spatialetl-providers-ww3 = {workspace = true}
 members = [
     ".",
     "spatialetl-core",
-    "nnpycgal",
-    "parinterp",
+    "interpcgal",
     "providers/common/gdal",
     "providers/common/grib",
     "providers/common/mpi",

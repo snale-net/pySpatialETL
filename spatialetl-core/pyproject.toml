@@ -33,13 +33,12 @@ description = "Provider package spatialetl-providers-symphonie for SpatialETL"
 
 dependencies = [
   "setuptools>=70.1.1",
-  "cython",
-  "numpy",
+  "cython==3.2.2",
+  "numpy==2.3.1",
   "pandas==2.3.3",
-  "scipy",
-  "array_split>=0.6.5",
-  "omp4py @ git+https://github.com/citiususc/omp4py.git",
-  "pytest"
+  "scipy==1.16.3",
+  "array_split==0.6.5",
+  "pytest==9.0.1"
 ]
 
 [project.urls]

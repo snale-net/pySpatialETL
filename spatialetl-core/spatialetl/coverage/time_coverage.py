@@ -20,11 +20,9 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-import concurrent
 import inspect
 import math
 import os
-from concurrent.futures import ProcessPoolExecutor
 from datetime import datetime
 from datetime import timedelta
 
@@ -32,11 +30,9 @@ import cftime
 import numpy as np
 import pandas
 from array_split import shape_split
-from omp4py import omp_set_num_threads
 
 from spatialetl.coverage.coverage import Coverage
 from spatialetl.exception.not_found_in_rank_error import NotFoundInRankError
-from spatialetl.operator.interpolator.interpolator_core import resample_2d_to_grid, resample_faster_2d_to_grid
 from spatialetl.utils.logger import logging
 
 
@@ -208,7 +204,6 @@ class TimeCoverage(Coverage):
             # If we can't divide the grid dimensions with the number of threads,
             # we set the threads number with the number of slices
             self.threads_number = len(target_threads_slices.flatten())
-            omp_set_num_threads(self.threads_number)
             logging.debug(f"Threads number is {self.threads_number}")
 
             self.parallel_map[mpi_slice_index]['threads'] = np.empty([self.threads_number], dtype=object)
@@ -323,7 +318,7 @@ class TimeCoverage(Coverage):
 
         map["src_local_t_size"] = tmax - tmin
         map["src_local_t"] = np.s_[
-            0:map["src_local_t_size"]]
+            0:int(map["src_local_t_size"])]
 
         # OVERLAP
         map["src_local_t_size_overlap"] = \

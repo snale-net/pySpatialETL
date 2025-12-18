@@ -18,43 +18,6 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-[build-system]
-requires = [
-    "setuptools>=42",
-    "wheel",
-    "ninja",
-    "cmake>=3.12",
-    "pybind11",
-    "pybind11[global]"
-]
-build-backend = "setuptools.build_meta"
+from setuptools import setup
 
-[project]
-name = "spatialetl-parinterp"
-version = "0.0.1"
-requires-python = ">=3.9"
-authors = [
-    { name = "Fabien RÉTIF", email = "fabien.retif@snale.net" },
-]
-description = "Parinterp"
-
-dependencies = [
-    "spatialetl-core==0.0.1",
-    "pybind11",
-    "pybind11[global]"
-]
-
-[project.urls]
-Homepage = "https://lab.snale.net/produits/pyspatialetl"
-Documentation = "https://readthedocs.org"
-Repository = "https://github.com/snale-net/pySpatialETL.git"
-
-#[tool.hatch.build.targets.wheel]
-#packages = ['spatialetl']
-## This file only exists to make pyright/VSCode happy, don't ship it
-#exclude = ["spatialetl/__init__.py"]
-
-[tool.uv.sources]
-# These names must match the names as defined in the pyproject.toml of the workspace items,
-# *not* the workspace folder paths
-spatialetl = {workspace = true}
+setup()
