@@ -45,7 +45,12 @@ Documentation = "https://readthedocs.org"
 Repository = "https://github.com/snale-net/pySpatialETL.git"
 
 [tool.setuptools.packages.find]
-exclude = ["spatialetl.providers","spatialetl.providers.*","*.tests", "*.tests.*", "tests.*", "tests", "demo"]
+exclude = ["spatialetl.providers","spatialetl.providers.*","*.tests", "*.tests.*", "tests.*", "tests", "examples"]
+
+[dependency-groups]
+test = [
+    "pytest==9.0.1"
+]
 
 [project.optional-dependencies]
 "interpcgal" = [

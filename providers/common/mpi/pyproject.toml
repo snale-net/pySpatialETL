@@ -38,11 +38,9 @@ dependencies = [
   "spatialetl-providers-common-netcdf>=0.0.1"
 ]
 
-[project.optional-dependencies]
-"pytest" = [
-    # General pytest devel tools
-    "pytest-isolate-mpi>=0.3",
-    "pytest",
+[dependency-groups]
+test = [
+     "pytest-isolate-mpi>=0.3",
 ]
 
 [project.urls]
