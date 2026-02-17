@@ -42,7 +42,7 @@ packages = []
 [project.urls]
 Homepage = "https://lab.snale.net/produits/pyspatialetl"
 Documentation = "https://readthedocs.org"
-Repository = "https://github.com/snale-net/pySpatialETL.git"
+Repository = "https://github.com/snale-net/SpatialETL.git"
 
 [tool.setuptools.packages.find]
 exclude = ["spatialetl.providers","spatialetl.providers.*","*.tests", "*.tests.*", "tests.*", "tests", "demo"]
@@ -105,7 +105,7 @@ exclude = ["spatialetl.providers","spatialetl.providers.*","*.tests", "*.tests.*
 
 ## pytest settings ##
 [tool.pytest.ini_options]
-# We need to make sure airflow-core sources are first in the pythonpath, because uv sync adds sources to
+# We need to make sure spatialetl-core sources are first in the pythonpath, because uv sync adds sources to
 # pythonpath in basically random order and pytest does not understand legacy namespace packages and cannot
 # use namespace packages effectively when collecting tests.
 pythonpath = [
