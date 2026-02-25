@@ -29,7 +29,7 @@ import numpy as np
 import pandas
 from array_split import shape_split
 
-from spatialetl.operator.interpolator.interpolator_core import time_1d_interpolation
+from spatialetl.operator.interpolator.interpolator_core import temporal_1d_interpolation
 from spatialetl.point.multi_point import MultiPoint
 from spatialetl.utils.logger import logging
 
@@ -367,7 +367,7 @@ class TimeMultiPoint(MultiPoint):
 
             if len(finalCandidateValues) > 1:
                 # We have more than 1 value, we interpole them
-                results[x] = time_1d_interpolation(finalCandidateTimes, targetTime, finalCandidateValues,TimeMultiPoint.TIME_INTERPOLATION_METHOD)
+                results[x] = temporal_1d_interpolation(finalCandidateTimes, targetTime, finalCandidateValues, TimeMultiPoint.TIME_INTERPOLATION_METHOD)
             else:
                 # We take the only value
                 results[x] = candidateValues[0]

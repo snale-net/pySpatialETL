@@ -33,6 +33,7 @@ from netCDF4 import Dataset, num2date
 from spatialetl.coverage.time_coverage import TimeCoverage
 from spatialetl.coverage.io.coverage_reader import CoverageReader
 from spatialetl.exception.variable_name_error import VariableNameError
+from spatialetl.utils.timing import timing
 from spatialetl.utils.variable_definition import VariableDefinition
 from spatialetl.utils.logger import logging
 from spatialetl.utils.path import path_leaf
@@ -218,6 +219,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
         return u_t, v_t
 
+    @timing
     def compute_vector_rotation(self, data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v):
 
         x_size = np.shape(mask_t)[1]
@@ -471,7 +473,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
                                     fill_value=np.nan)
             else:
                 logging.debug(
-                    "No variables found for '" + str(VariableDefinition.LONG_NAME['_wet_binary_mask']) + "'")
+                    "No variables found for '" + str(VariableDefinition.LONG_NAME['wet_binary_mask']) + "'")
                 raise (VariableNameError("SymphonieReader",
                                          "No variables found for '" + str(
                                              VariableDefinition.LONG_NAME['wet_binary_mask']) + "'",
@@ -608,8 +610,6 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
-
-
 
     def read_variable_sea_surface_salinity_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
@@ -817,6 +817,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
 
+    @timing
     def read_variable_barotropic_sea_water_velocity_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
             self.open_file(index_t)

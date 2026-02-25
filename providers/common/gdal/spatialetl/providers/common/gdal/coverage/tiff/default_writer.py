@@ -68,150 +68,97 @@ class DefaultWriter(CoverageWriter):
     def write_variable_mesh_size(self):
 
         if self.coverage.rank == 0:
-            logging.info('[DefaultWriter] Gathering data from all processors')
-            global_data = np.empty(
+            var = np.zeros(
                 [self.coverage.get_y_size(type="target_global"),
                  self.coverage.get_x_size(type="target_global")])
-            global_data[:] = np.nan
-
-        local_data = self.coverage.read_variable_mesh_size()
-
-        if self.coverage.rank != 0:
-            self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
+            var[:] = np.nan
         else:
-            # Pour le proc n°1
-            global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                        self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
-
-            # Pour les autres
-            for source in range(1, self.coverage.size):
-                recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
-                                    self.coverage.parallel_map[source]["dst_local_x_size"]])
-                self.coverage.comm.Recv(recvbuf, source=source)
-
-                global_data[self.coverage.parallel_map[source]["dst_global_y"],
-                            self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
-
-        #self.coverage.comm.barrier()
+            var = None
 
         if self.coverage.rank == 0:
             logging.info('[DefaultWriter] Writing variable \'' + str(
-                VariableDefinition.LONG_NAME['mesh_size']) + '\'')
+                VariableDefinition.LONG_NAME[
+                    'mesh_size']) + '\'')
 
-            file = self.driver.Create(
-                os.path.join(self.filename, VariableDefinition.VARIABLE_NAME['mesh_size'] + ".tiff"),
-                int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+        local_data = self.coverage.read_variable_mesh_size()
+        self._gathering_var(local_data, var)
 
-            # CRS info
-            proj = osr.SpatialReference()
-            proj.SetWellKnownGeogCS("EPSG:4326")
-            file.SetProjection(proj.ExportToWkt())
-            file.SetGeoTransform(self.geotransform)
-            file.GetRasterBand(1).WriteArray(global_data)
+        file = self.driver.Create(os.path.join(self.filename, VariableDefinition.VARIABLE_NAME[
+                                                   'mesh_size'] + ".tiff"),
+                                  int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+
+        # CRS info
+        proj = osr.SpatialReference()
+        proj.SetWellKnownGeogCS("EPSG:4326")
+        file.SetProjection(proj.ExportToWkt())
+        file.SetGeoTransform(self.geotransform)
+        file.GetRasterBand(1).WriteArray(var)
 
     def write_variable_2D_sea_binary_mask(self):
 
         if self.coverage.rank == 0:
-            logging.info('[DefaultWriter] Gathering data from all processors')
-            global_data = np.empty(
+            var = np.zeros(
                 [self.coverage.get_y_size(type="target_global"),
                  self.coverage.get_x_size(type="target_global")])
-            global_data[:] = np.nan
-
-        local_data = self.coverage.read_variable_2d_sea_binary_mask()
-
-        if self.coverage.rank != 0:
-            self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
+            var[:] = np.nan
         else:
-            # Pour le proc n°1
-            global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                        self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
-
-            # Pour les autres
-            for source in range(1, self.coverage.size):
-                recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
-                                    self.coverage.parallel_map[source]["dst_local_x_size"]])
-                self.coverage.comm.Recv(recvbuf, source=source)
-
-                global_data[self.coverage.parallel_map[source]["dst_global_y"],
-                            self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
-
-        self.coverage.comm.barrier()
+            var = None
 
         if self.coverage.rank == 0:
             logging.info('[DefaultWriter] Writing variable \'' + str(
-                VariableDefinition.LONG_NAME['2d_sea_binary_mask']) + '\'')
+                VariableDefinition.LONG_NAME[
+                    '2d_sea_binary_mask']) + '\'')
 
-            file = self.driver.Create(
-                os.path.join(self.filename, VariableDefinition.VARIABLE_NAME['2d_sea_binary_mask'] + ".tiff"),
-                int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+        local_data = self.coverage.read_variable_2D_sea_binary_mask()
+        self._gathering_var(local_data, var)
 
-            # CRS info
-            proj = osr.SpatialReference()
-            proj.SetWellKnownGeogCS("EPSG:4326")
-            file.SetProjection(proj.ExportToWkt())
-            file.SetGeoTransform(self.geotransform)
-            file.GetRasterBand(1).WriteArray(global_data)
+        file = self.driver.Create(os.path.join(self.filename, VariableDefinition.VARIABLE_NAME[
+            '2d_sea_binary_mask'] + ".tiff"),
+                                  int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+
+        # CRS info
+        proj = osr.SpatialReference()
+        proj.SetWellKnownGeogCS("EPSG:4326")
+        file.SetProjection(proj.ExportToWkt())
+        file.SetGeoTransform(self.geotransform)
+        file.GetRasterBand(1).WriteArray(var)
 
     def write_variable_wet_binary_mask(self):
 
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
             if self.coverage.rank == 0:
-                logging.info('[DefaultWriter] Gathering data from all processors')
-                global_data = np.empty(
-                    [self.coverage.get_t_size(type="target_global"),
-                     self.coverage.get_y_size(type="target_global"),
+                var = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
                      self.coverage.get_x_size(type="target_global")])
-                global_data[:] = np.nan
+                var[:] = np.nan
+            else:
+                var = None
 
-            for time_index in range(0, self.coverage.get_t_size()):
+            for time_index in range(0, self.coverage.get_t_size(type="target_global")):
+                time = self.coverage.read_axis_t(type="target_global")[time_index]
 
-                local_data = self.coverage.read_variable_wet_binary_mask_at_time(time_index)
-
-                if self.coverage.rank != 0:
-                    self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
-                else:
-                    # Pour le proc n°1
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
-
-                    # Pour les autres
-                    for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
-                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
-                        self.coverage.comm.Recv(recvbuf, source=source)
-
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
-
-            self.coverage.comm.barrier()
-
-            if self.coverage.rank == 0:
-
-                logging.info('[DefaultWriter] Writing variable \'' + str(
-                    VariableDefinition.LONG_NAME['wet_binary_mask']) + '\'')
-
-                for time_index in range(0, self.coverage.get_t_size(type="target_global")):
-                    time = self.coverage.read_axis_t(type="target_global")[time_index]
-
-                    logging.debug('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME[
-                                                                                  'wet_binary_mask']) + '\' at time \'' + str(
+                if self.coverage.rank == 0:
+                    logging.info('[DefaultWriter] Writing variable \'' + str(
+                        VariableDefinition.LONG_NAME[
+                            'wet_binary_mask']) + '\' at time \'' + str(
                         time) + '\'')
 
-                    file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                           VariableDefinition.VARIABLE_NAME[
-                                                               'wet_binary_mask'] + ".tiff"),
-                                              int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+                local_data = self.coverage.read_variable_2D_wet_binary_mask_at_time(time)
+                self._gathering_var(local_data, var, time_index=time_index)
 
-                    # CRS info
-                    proj = osr.SpatialReference()
-                    proj.SetWellKnownGeogCS("EPSG:4326")
-                    file.SetProjection(proj.ExportToWkt())
-                    file.SetGeoTransform(self.geotransform)
-                    file.GetRasterBand(1).WriteArray(global_data[time_index])
+                file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                       VariableDefinition.VARIABLE_NAME[
+                                                           'wet_binary_mask'] + ".tiff"),
+                                          int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+
+                # CRS info
+                proj = osr.SpatialReference()
+                proj.SetWellKnownGeogCS("EPSG:4326")
+                file.SetProjection(proj.ExportToWkt())
+                file.SetGeoTransform(self.geotransform)
+                file.GetRasterBand(1).WriteArray(var[time_index])
+
         else:
             raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
@@ -220,60 +167,37 @@ class DefaultWriter(CoverageWriter):
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
             if self.coverage.rank == 0:
-                logging.info('[DefaultWriter] Gathering data from all processors')
-                global_data = np.empty(
-                    [self.coverage.get_t_size(type="target_global"),
-                     self.coverage.get_y_size(type="target_global"),
+                var = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
                      self.coverage.get_x_size(type="target_global")])
-                global_data[:] = np.nan
+                var[:] = np.nan
+            else:
+                var = None
 
-            for time_index in range(0, self.coverage.get_t_size()):
+            for time_index in range(0, self.coverage.get_t_size(type="target_global")):
+                time = self.coverage.read_axis_t(type="target_global")[time_index]
 
-                local_data = self.coverage.read_variable_2D_sea_binary_mask_at_time(time_index)
-
-                if self.coverage.rank != 0:
-                    self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
-                else:
-                    # Pour le proc n°1
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
-
-                    # Pour les autres
-                    for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
-                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
-                        self.coverage.comm.Recv(recvbuf, source=source)
-
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
-
-            self.coverage.comm.barrier()
-
-            if self.coverage.rank == 0:
-
-                logging.info('[DefaultWriter] Writing variable \'' + str(
-                    VariableDefinition.LONG_NAME['2d_sea_binary_mask']) + '\'')
-
-                for time_index in range(0, self.coverage.get_t_size(type="target_global")):
-                    time = self.coverage.read_axis_t(type="target_global")[time_index]
-
-                    logging.debug('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME[
-                                                                                  '2d_sea_binary_mask']) + '\' at time \'' + str(
+                if self.coverage.rank == 0:
+                    logging.info('[DefaultWriter] Writing variable \'' + str(
+                        VariableDefinition.LONG_NAME[
+                            '2d_sea_binary_mask']) + '\' at time \'' + str(
                         time) + '\'')
 
-                    file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                           VariableDefinition.VARIABLE_NAME[
-                                                               '2d_sea_binary_mask'] + ".tiff"),
-                                              int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+                local_data = self.coverage.read_variable_2d_sea_binary_mask_at_time(time)
+                self._gathering_var(local_data, var, time_index=time_index)
 
-                    # CRS info
-                    proj = osr.SpatialReference()
-                    proj.SetWellKnownGeogCS("EPSG:4326")
-                    file.SetProjection(proj.ExportToWkt())
-                    file.SetGeoTransform(self.geotransform)
-                    file.GetRasterBand(1).WriteArray(global_data[time_index])
+                file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                       VariableDefinition.VARIABLE_NAME[
+                                                           '2d_sea_binary_mask'] + ".tiff"),
+                                          int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+
+                # CRS info
+                proj = osr.SpatialReference()
+                proj.SetWellKnownGeogCS("EPSG:4326")
+                file.SetProjection(proj.ExportToWkt())
+                file.SetGeoTransform(self.geotransform)
+                file.GetRasterBand(1).WriteArray(var[time_index])
+
         else:
             raise CoverageError("DefaultWriter",
                                 "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
@@ -283,60 +207,37 @@ class DefaultWriter(CoverageWriter):
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
             if self.coverage.rank == 0:
-                logging.info('[DefaultWriter] Gathering data from all processors')
-                global_data = np.empty(
-                    [self.coverage.get_t_size(type="target_global"),
-                     self.coverage.get_y_size(type="target_global"),
+                var = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
                      self.coverage.get_x_size(type="target_global")])
-                global_data[:] = np.nan
+                var[:] = np.nan
+            else:
+                var = None
 
-            for time_index in range(0, self.coverage.get_t_size()):
+            for time_index in range(0, self.coverage.get_t_size(type="target_global")):
+                time = self.coverage.read_axis_t(type="target_global")[time_index]
 
-                local_data = self.coverage.read_variable_2D_land_binary_mask_at_time(time_index)
-
-                if self.coverage.rank != 0:
-                    self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
-                else:
-                    # Pour le proc n°1
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
-
-                    # Pour les autres
-                    for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
-                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
-                        self.coverage.comm.Recv(recvbuf, source=source)
-
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
-
-            self.coverage.comm.barrier()
-
-            if self.coverage.rank == 0:
-
-                logging.info('[DefaultWriter] Writing variable \'' + str(
-                    VariableDefinition.LONG_NAME['2d_land_binary_mask']) + '\'')
-
-                for time_index in range(0, self.coverage.get_t_size(type="target_global")):
-                    time = self.coverage.read_axis_t(type="target_global")[time_index]
-
-                    logging.debug('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME[
-                                                                                  '2d_land_binary_mask']) + '\' at time \'' + str(
+                if self.coverage.rank == 0:
+                    logging.info('[DefaultWriter] Writing variable \'' + str(
+                        VariableDefinition.LONG_NAME[
+                            '2d_land_binary_mask']) + '\' at time \'' + str(
                         time) + '\'')
 
-                    file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                           VariableDefinition.VARIABLE_NAME[
-                                                               '2d_land_binary_mask'] + ".tiff"),
-                                              int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+                local_data = self.coverage.read_variable_2d_land_binary_mask_at_time(time)
+                self._gathering_var(local_data, var, time_index=time_index)
 
-                    # CRS info
-                    proj = osr.SpatialReference()
-                    proj.SetWellKnownGeogCS("EPSG:4326")
-                    file.SetProjection(proj.ExportToWkt())
-                    file.SetGeoTransform(self.geotransform)
-                    file.GetRasterBand(1).WriteArray(global_data[time_index])
+                file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                       VariableDefinition.VARIABLE_NAME[
+                                                           '2d_land_binary_mask'] + ".tiff"),
+                                          int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+
+                # CRS info
+                proj = osr.SpatialReference()
+                proj.SetWellKnownGeogCS("EPSG:4326")
+                file.SetProjection(proj.ExportToWkt())
+                file.SetGeoTransform(self.geotransform)
+                file.GetRasterBand(1).WriteArray(var[time_index])
+
         else:
             raise CoverageError("DefaultWriter",
                                 "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
@@ -348,143 +249,94 @@ class DefaultWriter(CoverageWriter):
     def write_variable_bathymetry(self):
 
         if self.coverage.rank == 0:
-            logging.info('[DefaultWriter] Gathering data from all processors')
-            global_data = np.empty(
+            var = np.zeros(
                 [self.coverage.get_y_size(type="target_global"),
                  self.coverage.get_x_size(type="target_global")])
-            global_data[:] = np.nan
-
-        local_data = self.coverage.read_variable_bathymetry()
-
-        if self.coverage.comm and self.coverage.rank != 0:
-            self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
+            var[:] = np.nan
         else:
-            # Pour le proc n°1
-            global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                        self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
-
-            if self.coverage.comm:
-                # Pour les autres
-                for source in range(1, self.coverage.size):
-                    recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
-                                        self.coverage.parallel_map[source]["dst_local_x_size"]])
-                    self.coverage.comm.Recv(recvbuf, source=source)
-
-                    global_data[self.coverage.parallel_map[source]["dst_global_y"],
-                                self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
-
-        if self.coverage.comm:
-            self.coverage.comm.barrier()
+            var = None
 
         if self.coverage.rank == 0:
-
             logging.info('[DefaultWriter] Writing variable \'' + str(
-                VariableDefinition.LONG_NAME['bathymetry']) + '\'')
+                VariableDefinition.LONG_NAME[
+                    'bathymetry']) + '\'')
 
-            file = self.driver.Create(os.path.join(self.filename, VariableDefinition.VARIABLE_NAME['bathymetry'] + ".tiff"),
-                                      int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+        local_data = self.coverage.read_variable_bathymetry()
+        self._gathering_var(local_data, var)
 
-            # CRS info
-            proj = osr.SpatialReference()
-            proj.SetWellKnownGeogCS("EPSG:4326")
-            file.SetProjection(proj.ExportToWkt())
-            file.SetGeoTransform(self.geotransform)
-            file.GetRasterBand(1).WriteArray(global_data)
+        file = self.driver.Create(os.path.join(self.filename, VariableDefinition.VARIABLE_NAME[
+            'bathymetry'] + ".tiff"),
+                                  int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+
+        # CRS info
+        proj = osr.SpatialReference()
+        proj.SetWellKnownGeogCS("EPSG:4326")
+        file.SetProjection(proj.ExportToWkt())
+        file.SetGeoTransform(self.geotransform)
+        file.GetRasterBand(1).WriteArray(var)
 
     def write_variable_barotropic_sea_water_velocity(self):
 
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
             if self.coverage.rank == 0:
-                logging.info('[DefaultWriter] Gathering data from all processors')
-                global_data = np.empty(
-                    [self.coverage.get_t_size(type="target_global"),
-                     2,
-                     self.coverage.get_y_size(type="target_global"),
+                ucomp = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
                      self.coverage.get_x_size(type="target_global")])
-                global_data[:] = np.nan
+                ucomp[:] = np.nan
+                vcomp = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
+                     self.coverage.get_x_size(type="target_global")])
+                vcomp[:] = np.nan
+            else:
+                ucomp = None
+                vcomp = None
 
-            for time_index in range(0, self.coverage.get_t_size()):
+            for time_index in range(0, self.coverage.get_t_size(type="target_global")):
+                time = self.coverage.read_axis_t(type="target_global")[time_index]
 
-                local_data = self.coverage.read_variable_barotropic_sea_water_velocity_at_time(time_index)
+                if self.coverage.rank == 0:
+                    logging.info('[DefaultWriter] Writing variable \'Barotropic Sea Water Velocity\' at time \'' + str(
+                        time) + '\'')
 
-                if self.coverage.rank != 0:
-                    self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
-                else:
-                    # Pour le proc n°1
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                0,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data[0]
+                local_data_u, local_data_v = self.coverage.read_variable_barotropic_sea_water_velocity_at_time(time)
 
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                1,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data[1]
+                # We remove nan value
+                local_data_u[local_data_u == 9.96921e+36] = np.nan
+                local_data_v[local_data_v == 9.96921e+36] = np.nan
 
-                    # Pour les autres
-                    for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([2, self.coverage.parallel_map[source]["dst_local_y_size"],
-                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
-                        self.coverage.comm.Recv(recvbuf, source=source)
+                self._gathering_var(local_data_u, ucomp, time_index=time_index)
+                self._gathering_var(local_data_v, vcomp, time_index=time_index)
 
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    0,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf[0]
+                for vector in range(0, 2):
 
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    1,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf[1]
+                    if vector == 0:
 
-            #self.coverage.comm.barrier()
+                        file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                               VariableDefinition.VARIABLE_NAME[
+                                                                   'barotropic_eastward_sea_water_velocity'] + ".tiff"),
+                                                  int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
 
-            if self.coverage.rank == 0:
+                        # CRS info
+                        proj = osr.SpatialReference()
+                        proj.SetWellKnownGeogCS("EPSG:4326")
+                        file.SetProjection(proj.ExportToWkt())
+                        file.SetGeoTransform(self.geotransform)
+                        file.GetRasterBand(1).WriteArray(ucomp[time_index])
 
-                logging.info('[DefaultWriter] Writing variable \'Barotropic Sea Water Velocity\'\'')
+                    else:
 
-                #file = open(self.filename, "w")
+                        file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                               VariableDefinition.VARIABLE_NAME[
+                                                                   'barotropic_northward_sea_water_velocity'] + ".tiff"),
+                                                  int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
 
-                for time_index in range(0, self.coverage.get_t_size(type="target_global")):
-                    time = self.coverage.read_axis_t(type="target_global")[time_index] 
-                    
-                    logging.info(
-                        '[DefaultWriter] Writing variable \'Barotropic Sea Water Velocity\' at time \'' + str(
-                            time) + '\'')
-                            
-                    global_data[time_index][0][global_data[time_index][0] == 9.96921e+36] = np.nan
-                    global_data[time_index][1][global_data[time_index][1] ==  9.96921e+36] = np.nan  
-                    
-                    for vector in range(0, 2):
-                    	                    
-                        if vector == 0:
-
-                            file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                                   VariableDefinition.VARIABLE_NAME[
-                                                                       'barotropic_eastward_sea_water_velocity'] + ".tiff"),
-                                                      int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
-
-                            # CRS info
-                            proj = osr.SpatialReference()
-                            proj.SetWellKnownGeogCS("EPSG:4326")
-                            file.SetProjection(proj.ExportToWkt())
-                            file.SetGeoTransform(self.geotransform)
-                            file.GetRasterBand(1).WriteArray(global_data[time_index][0])
-
-                        else:
-
-                            file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                                   VariableDefinition.VARIABLE_NAME[
-                                                                       'barotropic_northward_sea_water_velocity'] + ".tiff"),
-                                                      int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
-
-                            # CRS info
-                            proj = osr.SpatialReference()
-                            proj.SetWellKnownGeogCS("EPSG:4326")
-                            file.SetProjection(proj.ExportToWkt())
-                            file.SetGeoTransform(self.geotransform)
-                            file.GetRasterBand(1).WriteArray(global_data[time_index][1])
+                        # CRS info
+                        proj = osr.SpatialReference()
+                        proj.SetWellKnownGeogCS("EPSG:4326")
+                        file.SetProjection(proj.ExportToWkt())
+                        file.SetGeoTransform(self.geotransform)
+                        file.GetRasterBand(1).WriteArray(vcomp[time_index])
 
         else:
             raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
@@ -498,54 +350,34 @@ class DefaultWriter(CoverageWriter):
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
             if self.coverage.rank == 0:
-                logging.info('[DefaultWriter] Gathering data from all processors')
-                global_data = np.empty(
-                    [self.coverage.get_t_size(type="target_global"),
-                     self.coverage.get_y_size(type="target_global"),
-                     self.coverage.get_x_size(type="target_global")])
-                global_data[:] = np.nan
+                var = np.zeros([self.coverage.get_t_size(type="target_global"),self.coverage.get_y_size(type="target_global"),self.coverage.get_x_size(type="target_global")])
+                var[:] = np.nan
+            else:
+                var = None
 
-            for time_index in range(0, self.coverage.get_t_size()):
+            for time_index in range(0, self.coverage.get_t_size(type="target_global")):
+                time = self.coverage.read_axis_t(type="target_global")[time_index]
 
-                local_data = self.coverage.read_variable_sea_surface_height_above_mean_sea_level_at_time(time_index)
+                if self.coverage.rank == 0:
+                    logging.info('[DefaultWriter] Writing variable \'' + str(
+                        VariableDefinition.LONG_NAME[
+                            'sea_surface_height_above_mean_sea_level']) + '\' at time \'' + str(
+                        time) + '\'')
 
-                if self.coverage.rank != 0:
-                    self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
-                else:
-                    # Pour le proc n°1
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
+                local_data = self.coverage.read_variable_sea_surface_height_above_mean_sea_level_at_time(time)
+                self._gathering_var(local_data, var, time_index=time_index)
 
-                    # Pour les autres
-                    for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
-                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
-                        self.coverage.comm.Recv(recvbuf, source=source)
+                file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                       VariableDefinition.VARIABLE_NAME[
+                                                           'sea_surface_height_above_mean_sea_level'] + ".tiff"),
+                                          int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
 
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
-
-            self.coverage.comm.barrier()
-
-            if self.coverage.rank == 0:
-
-                logging.info('[DefaultWriter] Writing variable \''+str(VariableDefinition.LONG_NAME['sea_surface_height_above_mean_sea_level'])+'\'')
-
-                for time_index in range(0, self.coverage.get_t_size(type="target_global")):
-                    time = self.coverage.read_axis_t(type="target_global")[time_index]
-
-                    logging.debug('[DefaultWriter] Writing variable \''+str(VariableDefinition.LONG_NAME['sea_surface_height_above_mean_sea_level'])+'\' at time \'' + str(time) + '\'')
-
-                    file = self.driver.Create(os.path.join(self.filename,time.strftime("%Y%m%d_%H%M%S")+"_"+VariableDefinition.VARIABLE_NAME['sea_surface_height_above_mean_sea_level']+".tiff"), int(self.rows),int(self.cols), 1,gdal.GDT_Float64)
-
-                    # CRS info
-                    proj = osr.SpatialReference()
-                    proj.SetWellKnownGeogCS("EPSG:4326")
-                    file.SetProjection(proj.ExportToWkt())
-                    file.SetGeoTransform(self.geotransform)
-                    file.GetRasterBand(1).WriteArray(global_data[time_index])
+                # CRS info
+                proj = osr.SpatialReference()
+                proj.SetWellKnownGeogCS("EPSG:4326")
+                file.SetProjection(proj.ExportToWkt())
+                file.SetGeoTransform(self.geotransform)
+                file.GetRasterBand(1).WriteArray(var[time_index])
 
         else:
             raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
@@ -555,60 +387,37 @@ class DefaultWriter(CoverageWriter):
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
             if self.coverage.rank == 0:
-                logging.info('[DefaultWriter] Gathering data from all processors')
-                global_data = np.empty(
-                    [self.coverage.get_t_size(type="target_global"),
-                     self.coverage.get_y_size(type="target_global"),
+                var = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
                      self.coverage.get_x_size(type="target_global")])
-                global_data[:] = np.nan
+                var[:] = np.nan
+            else:
+                var = None
 
-            for time_index in range(0, self.coverage.get_t_size()):
+            for time_index in range(0, self.coverage.get_t_size(type="target_global")):
+                time = self.coverage.read_axis_t(type="target_global")[time_index]
 
-                local_data = self.coverage.read_variable_sea_surface_height_above_geoid_at_time(time_index)
-
-                if self.coverage.rank != 0:
-                    self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
-                else:
-                    # Pour le proc n°1
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
-
-                    # Pour les autres
-                    for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
-                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
-                        self.coverage.comm.Recv(recvbuf, source=source)
-
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
-
-            self.coverage.comm.barrier()
-
-            if self.coverage.rank == 0:
-
-                logging.info('[DefaultWriter] Writing variable \'' + str(
-                    VariableDefinition.LONG_NAME['sea_surface_height_above_geoid']) + '\'')
-
-                for time_index in range(0, self.coverage.get_t_size(type="target_global")):
-                    time = self.coverage.read_axis_t(type="target_global")[time_index]
-
-                    logging.debug('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME[
-                                                                                  'sea_surface_height_above_geoid']) + '\' at time \'' + str(
+                if self.coverage.rank == 0:
+                    logging.info('[DefaultWriter] Writing variable \'' + str(
+                        VariableDefinition.LONG_NAME[
+                            'sea_surface_height_above_geoid']) + '\' at time \'' + str(
                         time) + '\'')
 
-                    file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                           VariableDefinition.VARIABLE_NAME[
-                                                               'sea_surface_height_above_geoid'] + ".tiff"),
-                                              int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+                local_data = self.coverage.read_variable_sea_surface_height_above_mean_sea_level_at_time(time)
+                self._gathering_var(local_data, var, time_index=time_index)
 
-                    # CRS info
-                    proj = osr.SpatialReference()
-                    proj.SetWellKnownGeogCS("EPSG:4326")
-                    file.SetProjection(proj.ExportToWkt())
-                    file.SetGeoTransform(self.geotransform)
-                    file.GetRasterBand(1).WriteArray(global_data[time_index])
+                file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                       VariableDefinition.VARIABLE_NAME[
+                                                           'sea_surface_height_above_geoid'] + ".tiff"),
+                                          int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+
+                # CRS info
+                proj = osr.SpatialReference()
+                proj.SetWellKnownGeogCS("EPSG:4326")
+                file.SetProjection(proj.ExportToWkt())
+                file.SetGeoTransform(self.geotransform)
+                file.GetRasterBand(1).WriteArray(var[time_index])
+
         else:
             raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
@@ -617,60 +426,37 @@ class DefaultWriter(CoverageWriter):
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
             if self.coverage.rank == 0:
-                logging.info('[DefaultWriter] Gathering data from all processors')
-                global_data = np.empty(
-                    [self.coverage.get_t_size(type="target_global"),
-                     self.coverage.get_y_size(type="target_global"),
+                var = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
                      self.coverage.get_x_size(type="target_global")])
-                global_data[:] = np.nan
+                var[:] = np.nan
+            else:
+                var = None
 
-            for time_index in range(0, self.coverage.get_t_size()):
+            for time_index in range(0, self.coverage.get_t_size(type="target_global")):
+                time = self.coverage.read_axis_t(type="target_global")[time_index]
 
-                local_data = self.coverage.read_variable_sea_water_column_thickness_at_time(time_index)
-
-                if self.coverage.rank != 0:
-                    self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
-                else:
-                    # Pour le proc n°1
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
-
-                    # Pour les autres
-                    for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
-                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
-                        self.coverage.comm.Recv(recvbuf, source=source)
-
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
-
-            self.coverage.comm.barrier()
-
-            if self.coverage.rank == 0:
-
-                logging.info('[DefaultWriter] Writing variable \'' + str(
-                    VariableDefinition.LONG_NAME['sea_water_column_thickness']) + '\'')
-
-                for time_index in range(0, self.coverage.get_t_size(type="target_global")):
-                    time = self.coverage.read_axis_t(type="target_global")[time_index]
-
-                    logging.debug('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME[
-                                                                                  'sea_water_column_thickness']) + '\' at time \'' + str(
+                if self.coverage.rank == 0:
+                    logging.info('[DefaultWriter] Writing variable \'' + str(
+                        VariableDefinition.LONG_NAME[
+                            'sea_water_column_thickness']) + '\' at time \'' + str(
                         time) + '\'')
 
-                    file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                           VariableDefinition.VARIABLE_NAME[
-                                                               'sea_water_column_thickness'] + ".tiff"),
-                                              int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+                local_data = self.coverage.read_variable_sea_water_column_thickness_at_time(time)
+                self._gathering_var(local_data, var, time_index=time_index)
 
-                    # CRS info
-                    proj = osr.SpatialReference()
-                    proj.SetWellKnownGeogCS("EPSG:4326")
-                    file.SetProjection(proj.ExportToWkt())
-                    file.SetGeoTransform(self.geotransform)
-                    file.GetRasterBand(1).WriteArray(global_data[time_index])
+                file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                       VariableDefinition.VARIABLE_NAME[
+                                                           'sea_water_column_thickness'] + ".tiff"),
+                                          int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+
+                # CRS info
+                proj = osr.SpatialReference()
+                proj.SetWellKnownGeogCS("EPSG:4326")
+                file.SetProjection(proj.ExportToWkt())
+                file.SetGeoTransform(self.geotransform)
+                file.GetRasterBand(1).WriteArray(var[time_index])
+
         else:
             raise CoverageError("DefaultWriter",
                                 "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
@@ -680,60 +466,37 @@ class DefaultWriter(CoverageWriter):
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
             if self.coverage.rank == 0:
-                logging.info('[DefaultWriter] Gathering data from all processors')
-                global_data = np.empty(
-                    [self.coverage.get_t_size(type="target_global"),
-                     self.coverage.get_y_size(type="target_global"),
+                var = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
                      self.coverage.get_x_size(type="target_global")])
-                global_data[:] = np.nan
+                var[:] = np.nan
+            else:
+                var = None
 
-            for time_index in range(0, self.coverage.get_t_size()):
+            for time_index in range(0, self.coverage.get_t_size(type="target_global")):
+                time = self.coverage.read_axis_t(type="target_global")[time_index]
 
-                local_data = self.coverage.read_variable_sea_surface_temperature_at_time(time_index)
-
-                if self.coverage.rank != 0:
-                    self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
-                else:
-                    # Pour le proc n°1
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
-
-                    # Pour les autres
-                    for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
-                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
-                        self.coverage.comm.Recv(recvbuf, source=source)
-
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
-
-            self.coverage.comm.barrier()
-
-            if self.coverage.rank == 0:
-
-                logging.info('[DefaultWriter] Writing variable \'' + str(
-                    VariableDefinition.LONG_NAME['sea_surface_temperature']) + '\'')
-
-                for time_index in range(0, self.coverage.get_t_size(type="target_global")):
-                    time = self.coverage.read_axis_t(type="target_global")[time_index]
-
-                    logging.debug('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME[
-                                                                                  'sea_surface_temperature']) + '\' at time \'' + str(
+                if self.coverage.rank == 0:
+                    logging.info('[DefaultWriter] Writing variable \'' + str(
+                        VariableDefinition.LONG_NAME[
+                            'sea_surface_temperature']) + '\' at time \'' + str(
                         time) + '\'')
 
-                    file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                           VariableDefinition.VARIABLE_NAME[
-                                                               'sea_surface_temperature'] + ".tiff"),
-                                              int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+                local_data = self.coverage.read_variable_sea_surface_temperature_at_time(time)
+                self._gathering_var(local_data, var, time_index=time_index)
 
-                    # CRS info
-                    proj = osr.SpatialReference()
-                    proj.SetWellKnownGeogCS("EPSG:4326")
-                    file.SetProjection(proj.ExportToWkt())
-                    file.SetGeoTransform(self.geotransform)
-                    file.GetRasterBand(1).WriteArray(global_data[time_index])
+                file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                       VariableDefinition.VARIABLE_NAME[
+                                                           'sea_surface_temperature'] + ".tiff"),
+                                          int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+
+                # CRS info
+                proj = osr.SpatialReference()
+                proj.SetWellKnownGeogCS("EPSG:4326")
+                file.SetProjection(proj.ExportToWkt())
+                file.SetGeoTransform(self.geotransform)
+                file.GetRasterBand(1).WriteArray(var[time_index])
+
         else:
             raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
@@ -742,60 +505,37 @@ class DefaultWriter(CoverageWriter):
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
             if self.coverage.rank == 0:
-                logging.info('[DefaultWriter] Gathering data from all processors')
-                global_data = np.empty(
-                    [self.coverage.get_t_size(type="target_global"),
-                     self.coverage.get_y_size(type="target_global"),
+                var = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
                      self.coverage.get_x_size(type="target_global")])
-                global_data[:] = np.nan
+                var[:] = np.nan
+            else:
+                var = None
 
-            for time_index in range(0, self.coverage.get_t_size()):
+            for time_index in range(0, self.coverage.get_t_size(type="target_global")):
+                time = self.coverage.read_axis_t(type="target_global")[time_index]
 
-                local_data = self.coverage.read_variable_sea_surface_salinity_at_time(time_index)
-
-                if self.coverage.rank != 0:
-                    self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
-                else:
-                    # Pour le proc n°1
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
-
-                    # Pour les autres
-                    for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
-                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
-                        self.coverage.comm.Recv(recvbuf, source=source)
-
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
-
-            self.coverage.comm.barrier()
-
-            if self.coverage.rank == 0:
-
-                logging.info('[DefaultWriter] Writing variable \'' + str(
-                    VariableDefinition.LONG_NAME['sea_surface_salinity']) + '\'')
-
-                for time_index in range(0, self.coverage.get_t_size(type="target_global")):
-                    time = self.coverage.read_axis_t(type="target_global")[time_index]
-
-                    logging.debug('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME[
-                                                                                  'sea_surface_salinity']) + '\' at time \'' + str(
+                if self.coverage.rank == 0:
+                    logging.info('[DefaultWriter] Writing variable \'' + str(
+                        VariableDefinition.LONG_NAME[
+                            'sea_surface_salinity']) + '\' at time \'' + str(
                         time) + '\'')
 
-                    file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                           VariableDefinition.VARIABLE_NAME[
-                                                               'sea_surface_salinity'] + ".tiff"),
-                                              int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+                local_data = self.coverage.read_variable_sea_surface_salinity_at_time(time)
+                self._gathering_var(local_data, var, time_index=time_index)
 
-                    # CRS info
-                    proj = osr.SpatialReference()
-                    proj.SetWellKnownGeogCS("EPSG:4326")
-                    file.SetProjection(proj.ExportToWkt())
-                    file.SetGeoTransform(self.geotransform)
-                    file.GetRasterBand(1).WriteArray(global_data[time_index])
+                file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                       VariableDefinition.VARIABLE_NAME[
+                                                           'sea_surface_salinity'] + ".tiff"),
+                                          int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+
+                # CRS info
+                proj = osr.SpatialReference()
+                proj.SetWellKnownGeogCS("EPSG:4326")
+                file.SetProjection(proj.ExportToWkt())
+                file.SetGeoTransform(self.geotransform)
+                file.GetRasterBand(1).WriteArray(var[time_index])
+
         else:
             raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
@@ -804,90 +544,63 @@ class DefaultWriter(CoverageWriter):
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
             if self.coverage.rank == 0:
-                logging.info('[DefaultWriter] Gathering data from all processors')
-                global_data = np.empty(
-                    [self.coverage.get_t_size(type="target_global"),
-                     2,
-                     self.coverage.get_y_size(type="target_global"),
+                ucomp = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
                      self.coverage.get_x_size(type="target_global")])
-                global_data[:] = np.nan
+                ucomp[:] = np.nan
+                vcomp = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
+                     self.coverage.get_x_size(type="target_global")])
+                vcomp[:] = np.nan
+            else:
+                ucomp = None
+                vcomp = None
 
-            for time_index in range(0, self.coverage.get_t_size()):
+            for time_index in range(0, self.coverage.get_t_size(type="target_global")):
+                time = self.coverage.read_axis_t(type="target_global")[time_index]
 
-                local_data = self.coverage.read_variable_sea_water_velocity_at_sea_water_surface_at_time(time_index)
+                if self.coverage.rank == 0:
+                    logging.info('[DefaultWriter] Writing variable \'Sea Water Velocity at Sea Water Surface\' at time \'' + str(
+                        time) + '\'')
 
-                if self.coverage.rank != 0:
-                    self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
-                else:
-                    # Pour le proc n°1
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                0,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data[0]
+                local_data_u, local_data_v = self.coverage.read_variable_sea_water_velocity_at_sea_water_surface_at_time(time)
 
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                1,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data[1]
+                # We remove nan value
+                local_data_u[local_data_u == 9.96921e+36] = np.nan
+                local_data_v[local_data_v == 9.96921e+36] = np.nan
 
-                    # Pour les autres
-                    for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([2, self.coverage.parallel_map[source]["dst_local_y_size"],
-                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
-                        self.coverage.comm.Recv(recvbuf, source=source)
+                self._gathering_var(local_data_u, ucomp, time_index=time_index)
+                self._gathering_var(local_data_v, vcomp, time_index=time_index)
 
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    0,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf[0]
+                for vector in range(0, 2):
 
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    1,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf[1]
+                    if vector == 0:
 
-            self.coverage.comm.barrier()
+                        file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                               VariableDefinition.VARIABLE_NAME[
+                                                                   'eastward_sea_water_velocity_at_sea_water_surface'] + ".tiff"),
+                                                  int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
 
-            if self.coverage.rank == 0:
+                        # CRS info
+                        proj = osr.SpatialReference()
+                        proj.SetWellKnownGeogCS("EPSG:4326")
+                        file.SetProjection(proj.ExportToWkt())
+                        file.SetGeoTransform(self.geotransform)
+                        file.GetRasterBand(1).WriteArray(ucomp[time_index])
 
-                logging.info('[DefaultWriter] Writing variable \'Sea Water Velocity at Sea Water Surface\'\'')
+                    else:
 
-                file = open(self.filename, "w")
+                        file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                               VariableDefinition.VARIABLE_NAME[
+                                                                   'northward_sea_water_velocity_at_sea_water_surface'] + ".tiff"),
+                                                  int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
 
-                for time_index in range(0, self.coverage.get_t_size(type="target_global")):
-                    time = self.coverage.read_axis_t(type="target_global")[time_index]
-
-                    logging.info(
-                        '[DefaultWriter] Writing variable \'Sea Water Velocity at Sea Water Surface\' at time \'' + str(
-                            time) + '\'')
-                    for vector in range(0, 2):
-                        if vector == 0:
-
-                            file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                                   VariableDefinition.VARIABLE_NAME[
-                                                                       'eastward_sea_water_velocity_at_sea_water_surface'] + ".tiff"),
-                                                      int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
-
-                            # CRS info
-                            proj = osr.SpatialReference()
-                            proj.SetWellKnownGeogCS("EPSG:4326")
-                            file.SetProjection(proj.ExportToWkt())
-                            file.SetGeoTransform(self.geotransform)
-                            file.GetRasterBand(1).WriteArray(global_data[time_index][0])
-
-                        else:
-
-                            file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                                   VariableDefinition.VARIABLE_NAME[
-                                                                       'northward_sea_water_velocity_at_sea_water_surface'] + ".tiff"),
-                                                      int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
-
-                            # CRS info
-                            proj = osr.SpatialReference()
-                            proj.SetWellKnownGeogCS("EPSG:4326")
-                            file.SetProjection(proj.ExportToWkt())
-                            file.SetGeoTransform(self.geotransform)
-                            file.GetRasterBand(1).WriteArray(global_data[time_index][1])
+                        # CRS info
+                        proj = osr.SpatialReference()
+                        proj.SetWellKnownGeogCS("EPSG:4326")
+                        file.SetProjection(proj.ExportToWkt())
+                        file.SetGeoTransform(self.geotransform)
+                        file.GetRasterBand(1).WriteArray(vcomp[time_index])
 
         else:
             raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
@@ -902,60 +615,37 @@ class DefaultWriter(CoverageWriter):
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
             if self.coverage.rank == 0:
-                logging.info('[DefaultWriter] Gathering data from all processors')
-                global_data = np.empty(
-                    [self.coverage.get_t_size(type="target_global"),
-                     self.coverage.get_y_size(type="target_global"),
+                var = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
                      self.coverage.get_x_size(type="target_global")])
-                global_data[:] = np.nan
+                var[:] = np.nan
+            else:
+                var = None
 
-            for time_index in range(0, self.coverage.get_t_size()):
+            for time_index in range(0, self.coverage.get_t_size(type="target_global")):
+                time = self.coverage.read_axis_t(type="target_global")[time_index]
 
-                local_data = self.coverage.read_variable_sea_water_temperature_at_ground_level_at_time(time_index)
-
-                if self.coverage.rank != 0:
-                    self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
-                else:
-                    # Pour le proc n°1
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
-
-                    # Pour les autres
-                    for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
-                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
-                        self.coverage.comm.Recv(recvbuf, source=source)
-
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
-
-            self.coverage.comm.barrier()
-
-            if self.coverage.rank == 0:
-
-                logging.info('[DefaultWriter] Writing variable \'' + str(
-                    VariableDefinition.LONG_NAME['sea_water_temperature_at_ground_level']) + '\'')
-
-                for time_index in range(0, self.coverage.get_t_size(type="target_global")):
-                    time = self.coverage.read_axis_t(type="target_global")[time_index]
-
-                    logging.debug('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME[
-                                                                                  'sea_water_temperature_at_ground_level']) + '\' at time \'' + str(
+                if self.coverage.rank == 0:
+                    logging.info('[DefaultWriter] Writing variable \'' + str(
+                        VariableDefinition.LONG_NAME[
+                            'sea_water_temperature_at_ground_level']) + '\' at time \'' + str(
                         time) + '\'')
 
-                    file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                           VariableDefinition.VARIABLE_NAME[
-                                                               'sea_water_temperature_at_ground_level'] + ".tiff"),
-                                              int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+                local_data = self.coverage.read_variable_sea_water_temperature_at_ground_level_at_time(time)
+                self._gathering_var(local_data, var, time_index=time_index)
 
-                    # CRS info
-                    proj = osr.SpatialReference()
-                    proj.SetWellKnownGeogCS("EPSG:4326")
-                    file.SetProjection(proj.ExportToWkt())
-                    file.SetGeoTransform(self.geotransform)
-                    file.GetRasterBand(1).WriteArray(global_data[time_index])
+                file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                       VariableDefinition.VARIABLE_NAME[
+                                                           'sea_water_temperature_at_ground_level'] + ".tiff"),
+                                          int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+
+                # CRS info
+                proj = osr.SpatialReference()
+                proj.SetWellKnownGeogCS("EPSG:4326")
+                file.SetProjection(proj.ExportToWkt())
+                file.SetGeoTransform(self.geotransform)
+                file.GetRasterBand(1).WriteArray(var[time_index])
+
         else:
             raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
@@ -964,60 +654,37 @@ class DefaultWriter(CoverageWriter):
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
             if self.coverage.rank == 0:
-                logging.info('[DefaultWriter] Gathering data from all processors')
-                global_data = np.empty(
-                    [self.coverage.get_t_size(type="target_global"),
-                     self.coverage.get_y_size(type="target_global"),
+                var = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
                      self.coverage.get_x_size(type="target_global")])
-                global_data[:] = np.nan
+                var[:] = np.nan
+            else:
+                var = None
 
-            for time_index in range(0, self.coverage.get_t_size()):
+            for time_index in range(0, self.coverage.get_t_size(type="target_global")):
+                time = self.coverage.read_axis_t(type="target_global")[time_index]
 
-                local_data = self.coverage.read_variable_sea_water_salinity_at_ground_level_at_time(time_index)
-
-                if self.coverage.rank != 0:
-                    self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
-                else:
-                    # Pour le proc n°1
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
-
-                    # Pour les autres
-                    for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
-                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
-                        self.coverage.comm.Recv(recvbuf, source=source)
-
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
-
-            self.coverage.comm.barrier()
-
-            if self.coverage.rank == 0:
-
-                logging.info('[DefaultWriter] Writing variable \'' + str(
-                    VariableDefinition.LONG_NAME['sea_water_salinity_at_ground_level']) + '\'')
-
-                for time_index in range(0, self.coverage.get_t_size(type="target_global")):
-                    time = self.coverage.read_axis_t(type="target_global")[time_index]
-
-                    logging.debug('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME[
-                                                                                  'sea_water_salinity_at_ground_level']) + '\' at time \'' + str(
+                if self.coverage.rank == 0:
+                    logging.info('[DefaultWriter] Writing variable \'' + str(
+                        VariableDefinition.LONG_NAME[
+                            'sea_water_salinity_at_ground_level']) + '\' at time \'' + str(
                         time) + '\'')
 
-                    file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                           VariableDefinition.VARIABLE_NAME[
-                                                               'sea_water_salinity_at_ground_level'] + ".tiff"),
-                                              int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+                local_data = self.coverage.read_variable_sea_water_salinity_at_ground_level_at_time(time)
+                self._gathering_var(local_data, var, time_index=time_index)
 
-                    # CRS info
-                    proj = osr.SpatialReference()
-                    proj.SetWellKnownGeogCS("EPSG:4326")
-                    file.SetProjection(proj.ExportToWkt())
-                    file.SetGeoTransform(self.geotransform)
-                    file.GetRasterBand(1).WriteArray(global_data[time_index])
+                file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                       VariableDefinition.VARIABLE_NAME[
+                                                           'sea_water_salinity_at_ground_level'] + ".tiff"),
+                                          int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+
+                # CRS info
+                proj = osr.SpatialReference()
+                proj.SetWellKnownGeogCS("EPSG:4326")
+                file.SetProjection(proj.ExportToWkt())
+                file.SetGeoTransform(self.geotransform)
+                file.GetRasterBand(1).WriteArray(var[time_index])
+
         else:
             raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
@@ -1026,90 +693,64 @@ class DefaultWriter(CoverageWriter):
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
             if self.coverage.rank == 0:
-                logging.info('[DefaultWriter] Gathering data from all processors')
-                global_data = np.empty(
-                    [self.coverage.get_t_size(type="target_global"),
-                     2,
-                     self.coverage.get_y_size(type="target_global"),
+                ucomp = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
                      self.coverage.get_x_size(type="target_global")])
-                global_data[:] = np.nan
+                ucomp[:] = np.nan
+                vcomp = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
+                     self.coverage.get_x_size(type="target_global")])
+                vcomp[:] = np.nan
+            else:
+                ucomp = None
+                vcomp = None
 
-            for time_index in range(0, self.coverage.get_t_size()):
+            for time_index in range(0, self.coverage.get_t_size(type="target_global")):
+                time = self.coverage.read_axis_t(type="target_global")[time_index]
 
-                local_data = self.coverage.read_variable_sea_water_velocity_at_ground_level_at_time(time_index)
+                if self.coverage.rank == 0:
+                    logging.info('[DefaultWriter] Writing variable \'Sea Water Velocity at Ground Level\' at time \'' + str(
+                        time) + '\'')
 
-                if self.coverage.rank != 0:
-                    self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
-                else:
-                    # Pour le proc n°1
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                0,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data[0]
+                local_data_u, local_data_v = self.coverage.read_variable_sea_water_velocity_at_ground_level_at_time(time)
 
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                1,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data[1]
+                # We remove nan value
+                local_data_u[local_data_u == 9.96921e+36] = np.nan
+                local_data_v[local_data_v == 9.96921e+36] = np.nan
 
-                    # Pour les autres
-                    for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([2, self.coverage.parallel_map[source]["dst_local_y_size"],
-                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
-                        self.coverage.comm.Recv(recvbuf, source=source)
+                self._gathering_var(local_data_u, ucomp, time_index=time_index)
+                self._gathering_var(local_data_v, vcomp, time_index=time_index)
 
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    0,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf[0]
+                for vector in range(0, 2):
 
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    1,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf[1]
+                    if vector == 0:
 
-            self.coverage.comm.barrier()
+                        file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                               VariableDefinition.VARIABLE_NAME[
+                                                                   'eastward_sea_water_velocity_at_ground_level'] + ".tiff"),
+                                                  int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
 
-            if self.coverage.rank == 0:
+                        # CRS info
+                        proj = osr.SpatialReference()
+                        proj.SetWellKnownGeogCS("EPSG:4326")
+                        file.SetProjection(proj.ExportToWkt())
+                        file.SetGeoTransform(self.geotransform)
+                        file.GetRasterBand(1).WriteArray(ucomp[time_index])
 
-                logging.info('[DefaultWriter] Writing variable \'Sea Water Velocity at Ground Level\'\'')
+                    else:
 
-                file = open(self.filename, "w")
+                        file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                               VariableDefinition.VARIABLE_NAME[
+                                                                   'northward_sea_water_velocity_at_ground_level'] + ".tiff"),
+                                                  int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
 
-                for time_index in range(0, self.coverage.get_t_size(type="target_global")):
-                    time = self.coverage.read_axis_t(type="target_global")[time_index]
+                        # CRS info
+                        proj = osr.SpatialReference()
+                        proj.SetWellKnownGeogCS("EPSG:4326")
+                        file.SetProjection(proj.ExportToWkt())
+                        file.SetGeoTransform(self.geotransform)
+                        file.GetRasterBand(1).WriteArray(vcomp[time_index])
 
-                    logging.info(
-                        '[DefaultWriter] Writing variable \'Sea Water Velocity at Ground Level\' at time \'' + str(
-                            time) + '\'')
-                    for vector in range(0, 2):
-                        if vector == 0:
-
-                            file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                                   VariableDefinition.VARIABLE_NAME[
-                                                                       'eastward_sea_water_velocity_at_ground_level'] + ".tiff"),
-                                                      int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
-
-                            # CRS info
-                            proj = osr.SpatialReference()
-                            proj.SetWellKnownGeogCS("EPSG:4326")
-                            file.SetProjection(proj.ExportToWkt())
-                            file.SetGeoTransform(self.geotransform)
-                            file.GetRasterBand(1).WriteArray(global_data[time_index][0])
-
-                        else:
-
-                            file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                                   VariableDefinition.VARIABLE_NAME[
-                                                                       'northward_sea_water_velocity_at_ground_level'] + ".tiff"),
-                                                      int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
-
-                            # CRS info
-                            proj = osr.SpatialReference()
-                            proj.SetWellKnownGeogCS("EPSG:4326")
-                            file.SetProjection(proj.ExportToWkt())
-                            file.SetGeoTransform(self.geotransform)
-                            file.GetRasterBand(1).WriteArray(global_data[time_index][1])
         else:
             raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
@@ -1119,66 +760,6 @@ class DefaultWriter(CoverageWriter):
     # 3D
     #################
 
-    # def write_variable_depth(self):
-    #
-    #     if (isinstance(self.coverage, LevelCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
-    #
-    #         #if VariableDefinition.VARIABLE_NAME['depth_sigma'] in self.ncfile.variables:
-    #         #self.coverage.read_variable_depth_at_depth(level)
-    #     else:
-    #         raise CoverageError("DefaultWriter",
-    #                             "The given coverage is not an instance of 'LevelCoverage' or 'TimeLevelCoverage'")
-    #
-    # def write_variable_sea_water_temperature(self):
-    #
-    #     if (isinstance(self.coverage, TimeLevelCoverage)):
-    #
-    #         #if VariableDefinition.VARIABLE_NAME['sea_water_temperature'] in self.ncfile.variables:
-    #         level_index = 0
-    #         for level in self.coverage.read_axis_z():
-    #             # Pas d'interpolation temporelle donc on parcours les index du temps
-    #             var[
-    #             self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index:self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index + 1,
-    #             level_index:level_index + 1,
-    #             self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-    #             self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
-    #             ] = self.coverage.read_variable_sea_water_temperature_at_time_and_depth(time, level)
-    #
-    #             level_index += 1
-    #
-    #     else:
-    #         raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeLevelCoverage'")
-    #
-    # def write_variable_sea_water_salinity(self):
-    #
-    #     if (isinstance(self.coverage, TimeLevelCoverage)):
-    #
-    #         #if VariableDefinition.VARIABLE_NAME['sea_water_salinity'] in self.ncfile.variables:
-    #         level_index = 0
-    #         for level in self.coverage.read_axis_z():
-    #             # Pas d'interpolation temporelle donc on parcours les index du temps
-    #             var[
-    #             self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index:self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index + 1,
-    #             level_index:level_index + 1,
-    #             self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-    #             self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
-    #             ] = self.coverage.read_variable_sea_water_salinity_at_time_and_depth(time, level)
-    #
-    #             level_index += 1
-    #
-    #
-    #     else:
-    #         raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeLevelCoverage'")
-    #
-    # def write_variable_baroclinic_sea_water_velocity(self):
-    #
-    #     if (isinstance(self.coverage, TimeLevelCoverage)):
-    #
-    #         #if VariableDefinition.VARIABLE_NAME['baroclinic_eastward_sea_water_velocity'] in self.ncfile.variables:
-    #         #if VariableDefinition.VARIABLE_NAME['baroclinic_northward_sea_water_velocity'] in self.ncfile.variables:
-    #
-    #     else:
-    #         raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeLevelCoverage'")
 
     #################
     # WAVES
@@ -1189,60 +770,37 @@ class DefaultWriter(CoverageWriter):
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
             if self.coverage.rank == 0:
-                logging.info('[DefaultWriter] Gathering data from all processors')
-                global_data = np.empty(
-                    [self.coverage.get_t_size(type="target_global"),
-                     self.coverage.get_y_size(type="target_global"),
+                var = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
                      self.coverage.get_x_size(type="target_global")])
-                global_data[:] = np.nan
+                var[:] = np.nan
+            else:
+                var = None
 
-            for time_index in range(0, self.coverage.get_t_size()):
+            for time_index in range(0, self.coverage.get_t_size(type="target_global")):
+                time = self.coverage.read_axis_t(type="target_global")[time_index]
 
-                local_data = self.coverage.read_variable_sea_surface_wave_significant_height_at_time(time_index)
-
-                if self.coverage.rank != 0:
-                    self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
-                else:
-                    # Pour le proc n°1
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
-
-                    # Pour les autres
-                    for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
-                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
-                        self.coverage.comm.Recv(recvbuf, source=source)
-
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
-
-            self.coverage.comm.barrier()
-
-            if self.coverage.rank == 0:
-
-                logging.info('[DefaultWriter] Writing variable \'' + str(
-                    VariableDefinition.LONG_NAME['sea_surface_wave_significant_height']) + '\'')
-
-                for time_index in range(0, self.coverage.get_t_size(type="target_global")):
-                    time = self.coverage.read_axis_t(type="target_global")[time_index]
-
-                    logging.debug('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME[
-                                                                                  'sea_surface_wave_significant_height']) + '\' at time \'' + str(
+                if self.coverage.rank == 0:
+                    logging.info('[DefaultWriter] Writing variable \'' + str(
+                        VariableDefinition.LONG_NAME[
+                            'sea_surface_wave_significant_height']) + '\' at time \'' + str(
                         time) + '\'')
 
-                    file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                           VariableDefinition.VARIABLE_NAME[
-                                                               'sea_surface_wave_significant_height'] + ".tiff"),
-                                              int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+                local_data = self.coverage.read_variable_sea_surface_wave_significant_height_at_time(time)
+                self._gathering_var(local_data, var, time_index=time_index)
 
-                    # CRS info
-                    proj = osr.SpatialReference()
-                    proj.SetWellKnownGeogCS("EPSG:4326")
-                    file.SetProjection(proj.ExportToWkt())
-                    file.SetGeoTransform(self.geotransform)
-                    file.GetRasterBand(1).WriteArray(global_data[time_index])
+                file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                       VariableDefinition.VARIABLE_NAME[
+                                                           'sea_surface_wave_significant_height'] + ".tiff"),
+                                          int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+
+                # CRS info
+                proj = osr.SpatialReference()
+                proj.SetWellKnownGeogCS("EPSG:4326")
+                file.SetProjection(proj.ExportToWkt())
+                file.SetGeoTransform(self.geotransform)
+                file.GetRasterBand(1).WriteArray(var[time_index])
+
         else:
             raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
@@ -1251,60 +809,37 @@ class DefaultWriter(CoverageWriter):
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
             if self.coverage.rank == 0:
-                logging.info('[DefaultWriter] Gathering data from all processors')
-                global_data = np.empty(
-                    [self.coverage.get_t_size(type="target_global"),
-                     self.coverage.get_y_size(type="target_global"),
+                var = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
                      self.coverage.get_x_size(type="target_global")])
-                global_data[:] = np.nan
+                var[:] = np.nan
+            else:
+                var = None
 
-            for time_index in range(0, self.coverage.get_t_size()):
+            for time_index in range(0, self.coverage.get_t_size(type="target_global")):
+                time = self.coverage.read_axis_t(type="target_global")[time_index]
 
-                local_data = self.coverage.read_variable_sea_surface_wave_breaking_height_at_time(time_index)
-
-                if self.coverage.rank != 0:
-                    self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
-                else:
-                    # Pour le proc n°1
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
-
-                    # Pour les autres
-                    for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
-                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
-                        self.coverage.comm.Recv(recvbuf, source=source)
-
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
-
-            self.coverage.comm.barrier()
-
-            if self.coverage.rank == 0:
-
-                logging.info('[DefaultWriter] Writing variable \'' + str(
-                    VariableDefinition.LONG_NAME['sea_surface_wave_breaking_height']) + '\'')
-
-                for time_index in range(0, self.coverage.get_t_size(type="target_global")):
-                    time = self.coverage.read_axis_t(type="target_global")[time_index]
-
-                    logging.debug('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME[
-                                                                                  'sea_surface_wave_breaking_height']) + '\' at time \'' + str(
+                if self.coverage.rank == 0:
+                    logging.info('[DefaultWriter] Writing variable \'' + str(
+                        VariableDefinition.LONG_NAME[
+                            'sea_surface_wave_breaking_height']) + '\' at time \'' + str(
                         time) + '\'')
 
-                    file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                           VariableDefinition.VARIABLE_NAME[
-                                                               'sea_surface_wave_breaking_height'] + ".tiff"),
-                                              int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+                local_data = self.coverage.read_variable_sea_surface_wave_breaking_height_at_time(time)
+                self._gathering_var(local_data, var, time_index=time_index)
 
-                    # CRS info
-                    proj = osr.SpatialReference()
-                    proj.SetWellKnownGeogCS("EPSG:4326")
-                    file.SetProjection(proj.ExportToWkt())
-                    file.SetGeoTransform(self.geotransform)
-                    file.GetRasterBand(1).WriteArray(global_data[time_index])
+                file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                       VariableDefinition.VARIABLE_NAME[
+                                                           'sea_surface_wave_breaking_height'] + ".tiff"),
+                                          int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+
+                # CRS info
+                proj = osr.SpatialReference()
+                proj.SetWellKnownGeogCS("EPSG:4326")
+                file.SetProjection(proj.ExportToWkt())
+                file.SetGeoTransform(self.geotransform)
+                file.GetRasterBand(1).WriteArray(var[time_index])
+
         else:
             raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
@@ -1313,60 +848,37 @@ class DefaultWriter(CoverageWriter):
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
             if self.coverage.rank == 0:
-                logging.info('[DefaultWriter] Gathering data from all processors')
-                global_data = np.empty(
-                    [self.coverage.get_t_size(type="target_global"),
-                     self.coverage.get_y_size(type="target_global"),
+                var = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
                      self.coverage.get_x_size(type="target_global")])
-                global_data[:] = np.nan
+                var[:] = np.nan
+            else:
+                var = None
 
-            for time_index in range(0, self.coverage.get_t_size()):
+            for time_index in range(0, self.coverage.get_t_size(type="target_global")):
+                time = self.coverage.read_axis_t(type="target_global")[time_index]
 
-                local_data = self.coverage.read_variable_sea_surface_wave_mean_period_at_time(time_index)
-
-                if self.coverage.rank != 0:
-                    self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
-                else:
-                    # Pour le proc n°1
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
-
-                    # Pour les autres
-                    for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
-                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
-                        self.coverage.comm.Recv(recvbuf, source=source)
-
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
-
-            self.coverage.comm.barrier()
-
-            if self.coverage.rank == 0:
-
-                logging.info('[DefaultWriter] Writing variable \'' + str(
-                    VariableDefinition.LONG_NAME['sea_surface_wave_mean_period']) + '\'')
-
-                for time_index in range(0, self.coverage.get_t_size(type="target_global")):
-                    time = self.coverage.read_axis_t(type="target_global")[time_index]
-
-                    logging.debug('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME[
-                                                                                  'sea_surface_wave_mean_period']) + '\' at time \'' + str(
+                if self.coverage.rank == 0:
+                    logging.info('[DefaultWriter] Writing variable \'' + str(
+                        VariableDefinition.LONG_NAME[
+                            'sea_surface_wave_mean_period']) + '\' at time \'' + str(
                         time) + '\'')
 
-                    file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                           VariableDefinition.VARIABLE_NAME[
-                                                               'sea_surface_wave_mean_period'] + ".tiff"),
-                                              int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+                local_data = self.coverage.read_variable_sea_surface_wave_mean_period_at_time(time)
+                self._gathering_var(local_data, var, time_index=time_index)
 
-                    # CRS info
-                    proj = osr.SpatialReference()
-                    proj.SetWellKnownGeogCS("EPSG:4326")
-                    file.SetProjection(proj.ExportToWkt())
-                    file.SetGeoTransform(self.geotransform)
-                    file.GetRasterBand(1).WriteArray(global_data[time_index])
+                file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                       VariableDefinition.VARIABLE_NAME[
+                                                           'sea_surface_wave_mean_period'] + ".tiff"),
+                                          int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+
+                # CRS info
+                proj = osr.SpatialReference()
+                proj.SetWellKnownGeogCS("EPSG:4326")
+                file.SetProjection(proj.ExportToWkt())
+                file.SetGeoTransform(self.geotransform)
+                file.GetRasterBand(1).WriteArray(var[time_index])
+
         else:
             raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
@@ -1375,60 +887,37 @@ class DefaultWriter(CoverageWriter):
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
             if self.coverage.rank == 0:
-                logging.info('[DefaultWriter] Gathering data from all processors')
-                global_data = np.empty(
-                    [self.coverage.get_t_size(type="target_global"),
-                     self.coverage.get_y_size(type="target_global"),
+                var = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
                      self.coverage.get_x_size(type="target_global")])
-                global_data[:] = np.nan
+                var[:] = np.nan
+            else:
+                var = None
 
-            for time_index in range(0, self.coverage.get_t_size()):
+            for time_index in range(0, self.coverage.get_t_size(type="target_global")):
+                time = self.coverage.read_axis_t(type="target_global")[time_index]
 
-                local_data = self.coverage.read_variable_sea_surface_wave_peak_period_at_time(time_index)
-
-                if self.coverage.rank != 0:
-                    self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
-                else:
-                    # Pour le proc n°1
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
-
-                    # Pour les autres
-                    for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
-                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
-                        self.coverage.comm.Recv(recvbuf, source=source)
-
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
-
-            self.coverage.comm.barrier()
-
-            if self.coverage.rank == 0:
-
-                logging.info('[DefaultWriter] Writing variable \'' + str(
-                    VariableDefinition.LONG_NAME['sea_surface_wave_peak_period']) + '\'')
-
-                for time_index in range(0, self.coverage.get_t_size(type="target_global")):
-                    time = self.coverage.read_axis_t(type="target_global")[time_index]
-
-                    logging.debug('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME[
-                                                                                  'sea_surface_wave_peak_period']) + '\' at time \'' + str(
+                if self.coverage.rank == 0:
+                    logging.info('[DefaultWriter] Writing variable \'' + str(
+                        VariableDefinition.LONG_NAME[
+                            'sea_surface_wave_peak_period']) + '\' at time \'' + str(
                         time) + '\'')
 
-                    file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                           VariableDefinition.VARIABLE_NAME[
-                                                               'sea_surface_wave_peak_period'] + ".tiff"),
-                                              int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+                local_data = self.coverage.read_variable_sea_surface_wave_peak_period_at_time(time)
+                self._gathering_var(local_data, var, time_index=time_index)
 
-                    # CRS info
-                    proj = osr.SpatialReference()
-                    proj.SetWellKnownGeogCS("EPSG:4326")
-                    file.SetProjection(proj.ExportToWkt())
-                    file.SetGeoTransform(self.geotransform)
-                    file.GetRasterBand(1).WriteArray(global_data[time_index])
+                file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                       VariableDefinition.VARIABLE_NAME[
+                                                           'sea_surface_wave_peak_period'] + ".tiff"),
+                                          int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+
+                # CRS info
+                proj = osr.SpatialReference()
+                proj.SetWellKnownGeogCS("EPSG:4326")
+                file.SetProjection(proj.ExportToWkt())
+                file.SetGeoTransform(self.geotransform)
+                file.GetRasterBand(1).WriteArray(var[time_index])
+
         else:
             raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
@@ -1437,60 +926,37 @@ class DefaultWriter(CoverageWriter):
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
             if self.coverage.rank == 0:
-                logging.info('[DefaultWriter] Gathering data from all processors')
-                global_data = np.empty(
-                    [self.coverage.get_t_size(type="target_global"),
-                     self.coverage.get_y_size(type="target_global"),
+                var = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
                      self.coverage.get_x_size(type="target_global")])
-                global_data[:] = np.nan
+                var[:] = np.nan
+            else:
+                var = None
 
-            for time_index in range(0, self.coverage.get_t_size()):
+            for time_index in range(0, self.coverage.get_t_size(type="target_global")):
+                time = self.coverage.read_axis_t(type="target_global")[time_index]
 
-                local_data = self.coverage.read_variable_sea_surface_wave_from_direction_at_time(time_index)
-
-                if self.coverage.rank != 0:
-                    self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
-                else:
-                    # Pour le proc n°1
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
-
-                    # Pour les autres
-                    for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
-                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
-                        self.coverage.comm.Recv(recvbuf, source=source)
-
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
-
-            self.coverage.comm.barrier()
-
-            if self.coverage.rank == 0:
-
-                logging.info('[DefaultWriter] Writing variable \'' + str(
-                    VariableDefinition.LONG_NAME['sea_surface_wave_from_direction']) + '\'')
-
-                for time_index in range(0, self.coverage.get_t_size(type="target_global")):
-                    time = self.coverage.read_axis_t(type="target_global")[time_index]
-
-                    logging.debug('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME[
-                                                                                  'sea_surface_wave_from_direction']) + '\' at time \'' + str(
+                if self.coverage.rank == 0:
+                    logging.info('[DefaultWriter] Writing variable \'' + str(
+                        VariableDefinition.LONG_NAME[
+                            'sea_surface_wave_from_direction']) + '\' at time \'' + str(
                         time) + '\'')
 
-                    file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                           VariableDefinition.VARIABLE_NAME[
-                                                               'sea_surface_wave_from_direction'] + ".tiff"),
-                                              int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+                local_data = self.coverage.read_variable_sea_surface_wave_from_direction_at_time(time)
+                self._gathering_var(local_data, var, time_index=time_index)
 
-                    # CRS info
-                    proj = osr.SpatialReference()
-                    proj.SetWellKnownGeogCS("EPSG:4326")
-                    file.SetProjection(proj.ExportToWkt())
-                    file.SetGeoTransform(self.geotransform)
-                    file.GetRasterBand(1).WriteArray(global_data[time_index])
+                file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                       VariableDefinition.VARIABLE_NAME[
+                                                           'sea_surface_wave_from_direction'] + ".tiff"),
+                                          int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+
+                # CRS info
+                proj = osr.SpatialReference()
+                proj.SetWellKnownGeogCS("EPSG:4326")
+                file.SetProjection(proj.ExportToWkt())
+                file.SetGeoTransform(self.geotransform)
+                file.GetRasterBand(1).WriteArray(var[time_index])
+
         else:
             raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
@@ -1499,60 +965,36 @@ class DefaultWriter(CoverageWriter):
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
             if self.coverage.rank == 0:
-                logging.info('[DefaultWriter] Gathering data from all processors')
-                global_data = np.empty(
-                    [self.coverage.get_t_size(type="target_global"),
-                     self.coverage.get_y_size(type="target_global"),
+                var = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
                      self.coverage.get_x_size(type="target_global")])
-                global_data[:] = np.nan
+                var[:] = np.nan
+            else:
+                var = None
 
-            for time_index in range(0, self.coverage.get_t_size()):
+            for time_index in range(0, self.coverage.get_t_size(type="target_global")):
+                time = self.coverage.read_axis_t(type="target_global")[time_index]
 
-                local_data = self.coverage.read_variable_sea_surface_wave_to_direction_at_time(time_index)
-
-                if self.coverage.rank != 0:
-                    self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
-                else:
-                    # Pour le proc n°1
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
-
-                    # Pour les autres
-                    for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
-                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
-                        self.coverage.comm.Recv(recvbuf, source=source)
-
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
-
-            self.coverage.comm.barrier()
-
-            if self.coverage.rank == 0:
-
-                logging.info('[DefaultWriter] Writing variable \'' + str(
-                    VariableDefinition.LONG_NAME['sea_surface_wave_to_direction']) + '\'')
-
-                for time_index in range(0, self.coverage.get_t_size(type="target_global")):
-                    time = self.coverage.read_axis_t(type="target_global")[time_index]
-
-                    logging.debug('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME[
-                                                                                  'sea_surface_wave_to_direction']) + '\' at time \'' + str(
+                if self.coverage.rank == 0:
+                    logging.info('[DefaultWriter] Writing variable \'' + str(
+                        VariableDefinition.LONG_NAME[
+                            'sea_surface_wave_to_direction']) + '\' at time \'' + str(
                         time) + '\'')
 
-                    file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                           VariableDefinition.VARIABLE_NAME[
-                                                               'sea_surface_wave_to_direction'] + ".tiff"),
-                                              int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+                local_data = self.coverage.read_variable_sea_surface_wave_to_direction_at_time(time)
+                self._gathering_var(local_data, var, time_index=time_index)
 
-                    # CRS info
-                    proj = osr.SpatialReference()
-                    proj.SetWellKnownGeogCS("EPSG:4326")
-                    file.SetProjection(proj.ExportToWkt())
-                    file.SetGeoTransform(self.geotransform)
-                    file.GetRasterBand(1).WriteArray(global_data[time_index])
+                file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                       VariableDefinition.VARIABLE_NAME[
+                                                           'sea_surface_wave_to_direction'] + ".tiff"),
+                                          int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+
+                # CRS info
+                proj = osr.SpatialReference()
+                proj.SetWellKnownGeogCS("EPSG:4326")
+                file.SetProjection(proj.ExportToWkt())
+                file.SetGeoTransform(self.geotransform)
+                file.GetRasterBand(1).WriteArray(var[time_index])
         else:
             raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
@@ -1561,90 +1003,63 @@ class DefaultWriter(CoverageWriter):
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
             if self.coverage.rank == 0:
-                logging.info('[DefaultWriter] Gathering data from all processors')
-                global_data = np.empty(
-                    [self.coverage.get_t_size(type="target_global"),
-                     2,
-                     self.coverage.get_y_size(type="target_global"),
+                ucomp = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
                      self.coverage.get_x_size(type="target_global")])
-                global_data[:] = np.nan
+                ucomp[:] = np.nan
+                vcomp = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
+                     self.coverage.get_x_size(type="target_global")])
+                vcomp[:] = np.nan
+            else:
+                ucomp = None
+                vcomp = None
 
-            for time_index in range(0, self.coverage.get_t_size()):
+            for time_index in range(0, self.coverage.get_t_size(type="target_global")):
+                time = self.coverage.read_axis_t(type="target_global")[time_index]
 
-                local_data = self.coverage.read_variable_sea_surface_wave_stokes_drift_velocity_at_time(time_index)
-
-                if self.coverage.rank != 0:
-                    self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
-                else:
-                    # Pour le proc n°1
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                0,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data[0]
-
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                1,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data[1]
-
-                    # Pour les autres
-                    for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([2, self.coverage.parallel_map[source]["dst_local_y_size"],
-                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
-                        self.coverage.comm.Recv(recvbuf, source=source)
-
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    0,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf[0]
-
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    1,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf[1]
-
-            self.coverage.comm.barrier()
-
-            if self.coverage.rank == 0:
-
-                logging.info('[DefaultWriter] Writing variable \'Surface Stokes Drift Velocity\'\'')
-
-                file = open(self.filename, "w")
-
-                for time_index in range(0, self.coverage.get_t_size(type="target_global")):
-                    time = self.coverage.read_axis_t(type="target_global")[time_index]
-
+                if self.coverage.rank == 0:
                     logging.info('[DefaultWriter] Writing variable \'Surface Stokes Drift Velocity\' at time \'' + str(
                         time) + '\'')
 
-                    for vector in range(0, 2):
-                        if vector == 0:
+                local_data_u, local_data_v = self.coverage.read_variable_sea_surface_wave_stokes_drift_velocity_at_time(time)
 
-                            file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                                   VariableDefinition.VARIABLE_NAME[
-                                                                       'eastward_sea_surface_wave_stokes_drift_velocity'] + ".tiff"),
-                                                      int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+                # We remove nan value
+                local_data_u[local_data_u == 9.96921e+36] = np.nan
+                local_data_v[local_data_v == 9.96921e+36] = np.nan
 
-                            # CRS info
-                            proj = osr.SpatialReference()
-                            proj.SetWellKnownGeogCS("EPSG:4326")
-                            file.SetProjection(proj.ExportToWkt())
-                            file.SetGeoTransform(self.geotransform)
-                            file.GetRasterBand(1).WriteArray(global_data[time_index][0])
+                self._gathering_var(local_data_u, ucomp, time_index=time_index)
+                self._gathering_var(local_data_v, vcomp, time_index=time_index)
 
-                        else:
+                for vector in range(0, 2):
 
-                            file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                                   VariableDefinition.VARIABLE_NAME[
-                                                                       'northward_sea_surface_wave_stokes_drift_velocity'] + ".tiff"),
-                                                      int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+                    if vector == 0:
 
-                            # CRS info
-                            proj = osr.SpatialReference()
-                            proj.SetWellKnownGeogCS("EPSG:4326")
-                            file.SetProjection(proj.ExportToWkt())
-                            file.SetGeoTransform(self.geotransform)
-                            file.GetRasterBand(1).WriteArray(global_data[time_index][1])
+                        file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                               VariableDefinition.VARIABLE_NAME[
+                                                                   'eastward_sea_surface_wave_stokes_drift_velocity'] + ".tiff"),
+                                                  int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+
+                        # CRS info
+                        proj = osr.SpatialReference()
+                        proj.SetWellKnownGeogCS("EPSG:4326")
+                        file.SetProjection(proj.ExportToWkt())
+                        file.SetGeoTransform(self.geotransform)
+                        file.GetRasterBand(1).WriteArray(ucomp[time_index])
+
+                    else:
+
+                        file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                               VariableDefinition.VARIABLE_NAME[
+                                                                   'northward_sea_surface_wave_stokes_drift_velocity'] + ".tiff"),
+                                                  int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+
+                        # CRS info
+                        proj = osr.SpatialReference()
+                        proj.SetWellKnownGeogCS("EPSG:4326")
+                        file.SetProjection(proj.ExportToWkt())
+                        file.SetGeoTransform(self.geotransform)
+                        file.GetRasterBand(1).WriteArray(vcomp[time_index])
 
         else:
             raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
@@ -1654,60 +1069,37 @@ class DefaultWriter(CoverageWriter):
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
             if self.coverage.rank == 0:
-                logging.info('[DefaultWriter] Gathering data from all processors')
-                global_data = np.empty(
-                    [self.coverage.get_t_size(type="target_global"),
-                     self.coverage.get_y_size(type="target_global"),
+                var = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
                      self.coverage.get_x_size(type="target_global")])
-                global_data[:] = np.nan
+                var[:] = np.nan
+            else:
+                var = None
 
-            for time_index in range(0, self.coverage.get_t_size()):
+            for time_index in range(0, self.coverage.get_t_size(type="target_global")):
+                time = self.coverage.read_axis_t(type="target_global")[time_index]
 
-                local_data = self.coverage.read_variable_radiation_pressure_bernouilli_head_at_time(time_index)
-
-                if self.coverage.rank != 0:
-                    self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
-                else:
-                    # Pour le proc n°1
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
-
-                    # Pour les autres
-                    for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
-                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
-                        self.coverage.comm.Recv(recvbuf, source=source)
-
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
-
-            self.coverage.comm.barrier()
-
-            if self.coverage.rank == 0:
-
-                logging.info('[DefaultWriter] Writing variable \'' + str(
-                    VariableDefinition.LONG_NAME['radiation_pressure_bernouilli_head']) + '\'')
-
-                for time_index in range(0, self.coverage.get_t_size(type="target_global")):
-                    time = self.coverage.read_axis_t(type="target_global")[time_index]
-
-                    logging.debug('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME[
-                                                                                  'radiation_pressure_bernouilli_head']) + '\' at time \'' + str(
+                if self.coverage.rank == 0:
+                    logging.info('[DefaultWriter] Writing variable \'' + str(
+                        VariableDefinition.LONG_NAME[
+                            'radiation_pressure_bernouilli_head']) + '\' at time \'' + str(
                         time) + '\'')
 
-                    file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                           VariableDefinition.VARIABLE_NAME[
-                                                               'radiation_pressure_bernouilli_head'] + ".tiff"),
-                                              int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+                local_data = self.coverage.read_variable_radiation_pressure_bernouilli_head_at_time(time)
+                self._gathering_var(local_data, var, time_index=time_index)
 
-                    # CRS info
-                    proj = osr.SpatialReference()
-                    proj.SetWellKnownGeogCS("EPSG:4326")
-                    file.SetProjection(proj.ExportToWkt())
-                    file.SetGeoTransform(self.geotransform)
-                    file.GetRasterBand(1).WriteArray(global_data[time_index])
+                file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                       VariableDefinition.VARIABLE_NAME[
+                                                           'radiation_pressure_bernouilli_head'] + ".tiff"),
+                                          int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+
+                # CRS info
+                proj = osr.SpatialReference()
+                proj.SetWellKnownGeogCS("EPSG:4326")
+                file.SetProjection(proj.ExportToWkt())
+                file.SetGeoTransform(self.geotransform)
+                file.GetRasterBand(1).WriteArray(var[time_index])
+
         else:
             raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
@@ -1716,60 +1108,38 @@ class DefaultWriter(CoverageWriter):
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
             if self.coverage.rank == 0:
-                logging.info('[DefaultWriter] Gathering data from all processors')
-                global_data = np.empty(
-                    [self.coverage.get_t_size(type="target_global"),
-                     self.coverage.get_y_size(type="target_global"),
+                var = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
                      self.coverage.get_x_size(type="target_global")])
-                global_data[:] = np.nan
+                var[:] = np.nan
+            else:
+                var = None
 
-            for time_index in range(0, self.coverage.get_t_size()):
+            for time_index in range(0, self.coverage.get_t_size(type="target_global")):
+                time = self.coverage.read_axis_t(type="target_global")[time_index]
 
-                local_data = self.coverage.read_variable_sea_surface_wave_energy_flux_to_ocean_at_time(time_index)
-
-                if self.coverage.rank != 0:
-                    self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
-                else:
-                    # Pour le proc n°1
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
-
-                    # Pour les autres
-                    for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
-                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
-                        self.coverage.comm.Recv(recvbuf, source=source)
-
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
-
-            self.coverage.comm.barrier()
-
-            if self.coverage.rank == 0:
-
-                logging.info('[DefaultWriter] Writing variable \'' + str(
-                    VariableDefinition.LONG_NAME['sea_surface_wave_energy_flux_to_ocean']) + '\'')
-
-                for time_index in range(0, self.coverage.get_t_size(type="target_global")):
-                    time = self.coverage.read_axis_t(type="target_global")[time_index]
-
-                    logging.debug('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME[
-                                                                                  'sea_surface_wave_energy_flux_to_ocean']) + '\' at time \'' + str(
+                if self.coverage.rank == 0:
+                    logging.info('[DefaultWriter] Writing variable \'' + str(
+                        VariableDefinition.LONG_NAME[
+                            'sea_surface_wave_energy_flux_to_ocean']) + '\' at time \'' + str(
                         time) + '\'')
 
-                    file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                           VariableDefinition.VARIABLE_NAME[
-                                                               'sea_surface_wave_energy_flux_to_ocean'] + ".tiff"),
-                                              int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+                local_data = self.coverage.read_variable_sea_surface_wave_energy_flux_to_ocean_at_time(
+                    time)
+                self._gathering_var(local_data, var, time_index=time_index)
 
-                    # CRS info
-                    proj = osr.SpatialReference()
-                    proj.SetWellKnownGeogCS("EPSG:4326")
-                    file.SetProjection(proj.ExportToWkt())
-                    file.SetGeoTransform(self.geotransform)
-                    file.GetRasterBand(1).WriteArray(global_data[time_index])
+                file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                       VariableDefinition.VARIABLE_NAME[
+                                                           'sea_surface_wave_energy_flux_to_ocean'] + ".tiff"),
+                                          int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+
+                # CRS info
+                proj = osr.SpatialReference()
+                proj.SetWellKnownGeogCS("EPSG:4326")
+                file.SetProjection(proj.ExportToWkt())
+                file.SetGeoTransform(self.geotransform)
+                file.GetRasterBand(1).WriteArray(var[time_index])
+
         else:
             raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
@@ -1782,60 +1152,37 @@ class DefaultWriter(CoverageWriter):
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
             if self.coverage.rank == 0:
-                logging.info('[DefaultWriter] Gathering data from all processors')
-                global_data = np.empty(
-                    [self.coverage.get_t_size(type="target_global"),
-                     self.coverage.get_y_size(type="target_global"),
+                var = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
                      self.coverage.get_x_size(type="target_global")])
-                global_data[:] = np.nan
+                var[:] = np.nan
+            else:
+                var = None
 
-            for time_index in range(0, self.coverage.get_t_size()):
+            for time_index in range(0, self.coverage.get_t_size(type="target_global")):
+                time = self.coverage.read_axis_t(type="target_global")[time_index]
 
-                local_data = self.coverage.read_variable_sea_surface_wave_energy_dissipation_at_ground_level_at_time(time_index)
-
-                if self.coverage.rank != 0:
-                    self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
-                else:
-                    # Pour le proc n°1
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
-
-                    # Pour les autres
-                    for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
-                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
-                        self.coverage.comm.Recv(recvbuf, source=source)
-
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
-
-            self.coverage.comm.barrier()
-
-            if self.coverage.rank == 0:
-
-                logging.info('[DefaultWriter] Writing variable \'' + str(
-                    VariableDefinition.LONG_NAME['sea_surface_wave_energy_dissipation_at_ground_level']) + '\'')
-
-                for time_index in range(0, self.coverage.get_t_size(type="target_global")):
-                    time = self.coverage.read_axis_t(type="target_global")[time_index]
-
-                    logging.debug('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME[
-                                                                                  'sea_surface_wave_energy_dissipation_at_ground_level']) + '\' at time \'' + str(
+                if self.coverage.rank == 0:
+                    logging.info('[DefaultWriter] Writing variable \'' + str(
+                        VariableDefinition.LONG_NAME[
+                            'sea_surface_wave_energy_dissipation_at_ground_level']) + '\' at time \'' + str(
                         time) + '\'')
 
-                    file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                           VariableDefinition.VARIABLE_NAME[
-                                                               'sea_surface_wave_energy_dissipation_at_ground_level'] + ".tiff"),
-                                              int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+                local_data = self.coverage.read_variable_sea_surface_wave_energy_dissipation_at_ground_level_at_time(time)
+                self._gathering_var(local_data, var, time_index=time_index)
 
-                    # CRS info
-                    proj = osr.SpatialReference()
-                    proj.SetWellKnownGeogCS("EPSG:4326")
-                    file.SetProjection(proj.ExportToWkt())
-                    file.SetGeoTransform(self.geotransform)
-                    file.GetRasterBand(1).WriteArray(global_data[time_index])
+                file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                       VariableDefinition.VARIABLE_NAME[
+                                                           'sea_surface_wave_energy_dissipation_at_ground_level'] + ".tiff"),
+                                          int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+
+                # CRS info
+                proj = osr.SpatialReference()
+                proj.SetWellKnownGeogCS("EPSG:4326")
+                file.SetProjection(proj.ExportToWkt())
+                file.SetGeoTransform(self.geotransform)
+                file.GetRasterBand(1).WriteArray(var[time_index])
+
         else:
             raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
@@ -1848,91 +1195,63 @@ class DefaultWriter(CoverageWriter):
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
             if self.coverage.rank == 0:
-                logging.info('[DefaultWriter] Gathering data from all processors')
-                global_data = np.empty(
-                    [self.coverage.get_t_size(type="target_global"),
-                     2,
-                     self.coverage.get_y_size(type="target_global"),
+                ucomp = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
                      self.coverage.get_x_size(type="target_global")])
-                global_data[:] = np.nan
+                ucomp[:] = np.nan
+                vcomp = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
+                     self.coverage.get_x_size(type="target_global")])
+                vcomp[:] = np.nan
+            else:
+                ucomp = None
+                vcomp = None
 
-            for time_index in range(0, self.coverage.get_t_size()):
+            for time_index in range(0, self.coverage.get_t_size(type="target_global")):
+                time = self.coverage.read_axis_t(type="target_global")[time_index]
 
-                local_data = self.coverage.read_variable_atmosphere_momentum_flux_to_waves_at_time(time_index)
+                if self.coverage.rank == 0:
+                    logging.info('[DefaultWriter] Writing variable \'Atmosphere Momentum Flux to Waves\' at time \'' + str(
+                        time) + '\'')
 
-                if self.coverage.rank != 0:
-                    self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
-                else:
-                    # Pour le proc n°1
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                0,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data[0]
+                local_data_u, local_data_v = self.coverage.read_variable_atmosphere_momentum_flux_to_waves_at_time(time)
 
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                1,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data[1]
+                # We remove nan value
+                local_data_u[local_data_u == 9.96921e+36] = np.nan
+                local_data_v[local_data_v == 9.96921e+36] = np.nan
 
-                    # Pour les autres
-                    for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([2, self.coverage.parallel_map[source]["dst_local_y_size"],
-                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
-                        self.coverage.comm.Recv(recvbuf, source=source)
+                self._gathering_var(local_data_u, ucomp, time_index=time_index)
+                self._gathering_var(local_data_v, vcomp, time_index=time_index)
 
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    0,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf[0]
+                for vector in range(0, 2):
 
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    1,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf[1]
+                    if vector == 0:
 
-            self.coverage.comm.barrier()
+                        file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                               VariableDefinition.VARIABLE_NAME[
+                                                                   'eastward_atmosphere_momentum_flux_to_waves'] + ".tiff"),
+                                                  int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
 
-            if self.coverage.rank == 0:
+                        # CRS info
+                        proj = osr.SpatialReference()
+                        proj.SetWellKnownGeogCS("EPSG:4326")
+                        file.SetProjection(proj.ExportToWkt())
+                        file.SetGeoTransform(self.geotransform)
+                        file.GetRasterBand(1).WriteArray(ucomp[time_index])
 
-                logging.info('[DefaultWriter] Writing variable \'Atmosphere Momentum Flux to Waves\'\'')
+                    else:
 
-                file = open(self.filename, "w")
+                        file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                               VariableDefinition.VARIABLE_NAME[
+                                                                   'northward_atmosphere_momentum_flux_to_waves'] + ".tiff"),
+                                                  int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
 
-                for time_index in range(0, self.coverage.get_t_size(type="target_global")):
-                    time = self.coverage.read_axis_t(type="target_global")[time_index]
-
-                    logging.info(
-                        '[DefaultWriter] Writing variable \'Atmosphere Momentum Flux to Waves\' at time \'' + str(
-                            time) + '\'')
-
-                    for vector in range(0, 2):
-                        if vector == 0:
-
-                            file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                                   VariableDefinition.VARIABLE_NAME[
-                                                                       'eastward_atmosphere_momentum_flux_to_waves'] + ".tiff"),
-                                                      int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
-
-                            # CRS info
-                            proj = osr.SpatialReference()
-                            proj.SetWellKnownGeogCS("EPSG:4326")
-                            file.SetProjection(proj.ExportToWkt())
-                            file.SetGeoTransform(self.geotransform)
-                            file.GetRasterBand(1).WriteArray(global_data[time_index][0])
-
-                        else:
-
-                            file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                                   VariableDefinition.VARIABLE_NAME[
-                                                                       'northward_atmosphere_momentum_flux_to_waves'] + ".tiff"),
-                                                      int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
-
-                            # CRS info
-                            proj = osr.SpatialReference()
-                            proj.SetWellKnownGeogCS("EPSG:4326")
-                            file.SetProjection(proj.ExportToWkt())
-                            file.SetGeoTransform(self.geotransform)
-                            file.GetRasterBand(1).WriteArray(global_data[time_index][1])
+                        # CRS info
+                        proj = osr.SpatialReference()
+                        proj.SetWellKnownGeogCS("EPSG:4326")
+                        file.SetProjection(proj.ExportToWkt())
+                        file.SetGeoTransform(self.geotransform)
+                        file.GetRasterBand(1).WriteArray(vcomp[time_index])
 
         else:
             raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
@@ -1942,89 +1261,63 @@ class DefaultWriter(CoverageWriter):
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
             if self.coverage.rank == 0:
-                logging.info('[DefaultWriter] Gathering data from all processors')
-                global_data = np.empty(
-                    [self.coverage.get_t_size(type="target_global"),
-                     2,
-                     self.coverage.get_y_size(type="target_global"),
+                ucomp = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
                      self.coverage.get_x_size(type="target_global")])
-                global_data[:] = np.nan
+                ucomp[:] = np.nan
+                vcomp = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
+                     self.coverage.get_x_size(type="target_global")])
+                vcomp[:] = np.nan
+            else:
+                ucomp = None
+                vcomp = None
 
-            for time_index in range(0, self.coverage.get_t_size()):
+            for time_index in range(0, self.coverage.get_t_size(type="target_global")):
+                time = self.coverage.read_axis_t(type="target_global")[time_index]
 
-                local_data = self.coverage.read_variable_waves_momentum_flux_to_ocean_at_time(time_index)
+                if self.coverage.rank == 0:
+                    logging.info('[DefaultWriter] Writing variable \'Waves Momentum Flux To Ocean\' at time \'' + str(
+                        time) + '\'')
 
-                if self.coverage.rank != 0:
-                    self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
-                else:
-                    # Pour le proc n°1
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                0,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data[0]
+                local_data_u, local_data_v = self.coverage.read_variable_waves_momentum_flux_to_ocean_at_time(time)
 
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                1,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data[1]
+                # We remove nan value
+                local_data_u[local_data_u == 9.96921e+36] = np.nan
+                local_data_v[local_data_v == 9.96921e+36] = np.nan
 
-                    # Pour les autres
-                    for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([2, self.coverage.parallel_map[source]["dst_local_y_size"],
-                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
-                        self.coverage.comm.Recv(recvbuf, source=source)
+                self._gathering_var(local_data_u, ucomp, time_index=time_index)
+                self._gathering_var(local_data_v, vcomp, time_index=time_index)
 
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    0,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf[0]
+                for vector in range(0, 2):
 
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    1,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf[1]
+                    if vector == 0:
 
-            self.coverage.comm.barrier()
+                        file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                               VariableDefinition.VARIABLE_NAME[
+                                                                   'eastward_waves_momentum_flux_to_ocean'] + ".tiff"),
+                                                  int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
 
-            if self.coverage.rank == 0:
+                        # CRS info
+                        proj = osr.SpatialReference()
+                        proj.SetWellKnownGeogCS("EPSG:4326")
+                        file.SetProjection(proj.ExportToWkt())
+                        file.SetGeoTransform(self.geotransform)
+                        file.GetRasterBand(1).WriteArray(ucomp[time_index])
 
-                logging.info('[DefaultWriter] Writing variable \'Waves Momentum Flux To Ocean\'\'')
+                    else:
 
-                file = open(self.filename, "w")
+                        file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                               VariableDefinition.VARIABLE_NAME[
+                                                                   'northward_waves_momentum_flux_to_ocean'] + ".tiff"),
+                                                  int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
 
-                for time_index in range(0, self.coverage.get_t_size(type="target_global")):
-                    time = self.coverage.read_axis_t(type="target_global")[time_index]
-
-                    logging.info('[DefaultWriter] Writing variable \'Waves Momentum Flux To Ocean\' at time \''+str(time)+'\'')
-
-                    for vector in range(0, 2):
-                        if vector == 0:
-
-                            file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                                   VariableDefinition.VARIABLE_NAME[
-                                                                       'eastward_waves_momentum_flux_to_ocean'] + ".tiff"),
-                                                      int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
-
-                            # CRS info
-                            proj = osr.SpatialReference()
-                            proj.SetWellKnownGeogCS("EPSG:4326")
-                            file.SetProjection(proj.ExportToWkt())
-                            file.SetGeoTransform(self.geotransform)
-                            file.GetRasterBand(1).WriteArray(global_data[time_index][0])
-
-                        else:
-
-                            file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                                   VariableDefinition.VARIABLE_NAME[
-                                                                       'northward_waves_momentum_flux_to_ocean'] + ".tiff"),
-                                                      int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
-
-                            # CRS info
-                            proj = osr.SpatialReference()
-                            proj.SetWellKnownGeogCS("EPSG:4326")
-                            file.SetProjection(proj.ExportToWkt())
-                            file.SetGeoTransform(self.geotransform)
-                            file.GetRasterBand(1).WriteArray(global_data[time_index][1])
+                        # CRS info
+                        proj = osr.SpatialReference()
+                        proj.SetWellKnownGeogCS("EPSG:4326")
+                        file.SetProjection(proj.ExportToWkt())
+                        file.SetGeoTransform(self.geotransform)
+                        file.GetRasterBand(1).WriteArray(vcomp[time_index])
 
         else:
             raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
@@ -2043,61 +1336,37 @@ class DefaultWriter(CoverageWriter):
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
             if self.coverage.rank == 0:
-                logging.info('[DefaultWriter] Gathering data from all processors')
-                global_data = np.empty(
-                    [self.coverage.get_t_size(type="target_global"),
-                     self.coverage.get_y_size(type="target_global"),
+                var = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
                      self.coverage.get_x_size(type="target_global")])
-                global_data[:] = np.nan
+                var[:] = np.nan
+            else:
+                var = None
 
-            for time_index in range(0, self.coverage.get_t_size()):
+            for time_index in range(0, self.coverage.get_t_size(type="target_global")):
+                time = self.coverage.read_axis_t(type="target_global")[time_index]
 
-                local_data = self.coverage.read_variable_sea_surface_air_pressure_at_time(
-                    time_index)
-
-                if self.coverage.rank != 0:
-                    self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
-                else:
-                    # Pour le proc n°1
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
-
-                    # Pour les autres
-                    for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
-                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
-                        self.coverage.comm.Recv(recvbuf, source=source)
-
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
-
-            self.coverage.comm.barrier()
-
-            if self.coverage.rank == 0:
-
-                logging.info('[DefaultWriter] Writing variable \'' + str(
-                    VariableDefinition.LONG_NAME['sea_surface_air_pressure']) + '\'')
-
-                for time_index in range(0, self.coverage.get_t_size(type="target_global")):
-                    time = self.coverage.read_axis_t(type="target_global")[time_index]
-
-                    logging.debug('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME[
-                                                                                  'sea_surface_air_pressure']) + '\' at time \'' + str(
+                if self.coverage.rank == 0:
+                    logging.info('[DefaultWriter] Writing variable \'' + str(
+                        VariableDefinition.LONG_NAME[
+                            'sea_surface_air_pressure']) + '\' at time \'' + str(
                         time) + '\'')
 
-                    file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                           VariableDefinition.VARIABLE_NAME[
-                                                               'sea_surface_air_pressure'] + ".tiff"),
-                                              int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+                local_data = self.coverage.read_variable_sea_surface_air_pressure_at_time(time)
+                self._gathering_var(local_data, var, time_index=time_index)
 
-                    # CRS info
-                    proj = osr.SpatialReference()
-                    proj.SetWellKnownGeogCS("EPSG:4326")
-                    file.SetProjection(proj.ExportToWkt())
-                    file.SetGeoTransform(self.geotransform)
-                    file.GetRasterBand(1).WriteArray(global_data[time_index])
+                file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                       VariableDefinition.VARIABLE_NAME[
+                                                           'sea_surface_air_pressure'] + ".tiff"),
+                                          int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+
+                # CRS info
+                proj = osr.SpatialReference()
+                proj.SetWellKnownGeogCS("EPSG:4326")
+                file.SetProjection(proj.ExportToWkt())
+                file.SetGeoTransform(self.geotransform)
+                file.GetRasterBand(1).WriteArray(var[time_index])
+
         else:
             raise CoverageError("DefaultWriter",
                                 "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
@@ -2107,61 +1376,37 @@ class DefaultWriter(CoverageWriter):
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
             if self.coverage.rank == 0:
-                logging.info('[DefaultWriter] Gathering data from all processors')
-                global_data = np.empty(
-                    [self.coverage.get_t_size(type="target_global"),
-                     self.coverage.get_y_size(type="target_global"),
+                var = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
                      self.coverage.get_x_size(type="target_global")])
-                global_data[:] = np.nan
+                var[:] = np.nan
+            else:
+                var = None
 
-            for time_index in range(0, self.coverage.get_t_size()):
+            for time_index in range(0, self.coverage.get_t_size(type="target_global")):
+                time = self.coverage.read_axis_t(type="target_global")[time_index]
 
-                local_data = self.coverage.read_variable_surface_air_temperature_at_time(
-                    time_index)
-
-                if self.coverage.rank != 0:
-                    self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
-                else:
-                    # Pour le proc n°1
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
-
-                    # Pour les autres
-                    for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
-                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
-                        self.coverage.comm.Recv(recvbuf, source=source)
-
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
-
-            self.coverage.comm.barrier()
-
-            if self.coverage.rank == 0:
-
-                logging.info('[DefaultWriter] Writing variable \'' + str(
-                    VariableDefinition.LONG_NAME['surface_air_temperature']) + '\'')
-
-                for time_index in range(0, self.coverage.get_t_size(type="target_global")):
-                    time = self.coverage.read_axis_t(type="target_global")[time_index]
-
-                    logging.debug('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME[
-                                                                                  'surface_air_temperature']) + '\' at time \'' + str(
+                if self.coverage.rank == 0:
+                    logging.info('[DefaultWriter] Writing variable \'' + str(
+                        VariableDefinition.LONG_NAME[
+                            'surface_air_temperature']) + '\' at time \'' + str(
                         time) + '\'')
 
-                    file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                           VariableDefinition.VARIABLE_NAME[
-                                                               'surface_air_temperature'] + ".tiff"),
-                                              int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+                local_data = self.coverage.read_variable_surface_air_temperature_at_time(time)
+                self._gathering_var(local_data, var, time_index=time_index)
 
-                    # CRS info
-                    proj = osr.SpatialReference()
-                    proj.SetWellKnownGeogCS("EPSG:4326")
-                    file.SetProjection(proj.ExportToWkt())
-                    file.SetGeoTransform(self.geotransform)
-                    file.GetRasterBand(1).WriteArray(global_data[time_index])
+                file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                       VariableDefinition.VARIABLE_NAME[
+                                                           'surface_air_temperature'] + ".tiff"),
+                                          int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+
+                # CRS info
+                proj = osr.SpatialReference()
+                proj.SetWellKnownGeogCS("EPSG:4326")
+                file.SetProjection(proj.ExportToWkt())
+                file.SetGeoTransform(self.geotransform)
+                file.GetRasterBand(1).WriteArray(var[time_index])
+
         else:
             raise CoverageError("DefaultWriter",
                                 "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
@@ -2171,61 +1416,37 @@ class DefaultWriter(CoverageWriter):
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
             if self.coverage.rank == 0:
-                logging.info('[DefaultWriter] Gathering data from all processors')
-                global_data = np.empty(
-                    [self.coverage.get_t_size(type="target_global"),
-                     self.coverage.get_y_size(type="target_global"),
+                var = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
                      self.coverage.get_x_size(type="target_global")])
-                global_data[:] = np.nan
+                var[:] = np.nan
+            else:
+                var = None
 
-            for time_index in range(0, self.coverage.get_t_size()):
+            for time_index in range(0, self.coverage.get_t_size(type="target_global")):
+                time = self.coverage.read_axis_t(type="target_global")[time_index]
 
-                local_data = self.coverage.read_variable_dew_point_temperature_at_time(
-                    time_index)
-
-                if self.coverage.rank != 0:
-                    self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
-                else:
-                    # Pour le proc n°1
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
-
-                    # Pour les autres
-                    for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
-                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
-                        self.coverage.comm.Recv(recvbuf, source=source)
-
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
-
-            self.coverage.comm.barrier()
-
-            if self.coverage.rank == 0:
-
-                logging.info('[DefaultWriter] Writing variable \'' + str(
-                    VariableDefinition.LONG_NAME['dew_point_temperature']) + '\'')
-
-                for time_index in range(0, self.coverage.get_t_size(type="target_global")):
-                    time = self.coverage.read_axis_t(type="target_global")[time_index]
-
-                    logging.debug('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME[
-                                                                                  'dew_point_temperature']) + '\' at time \'' + str(
+                if self.coverage.rank == 0:
+                    logging.info('[DefaultWriter] Writing variable \'' + str(
+                        VariableDefinition.LONG_NAME[
+                            'dew_point_temperature']) + '\' at time \'' + str(
                         time) + '\'')
 
-                    file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                           VariableDefinition.VARIABLE_NAME[
-                                                               'dew_point_temperature'] + ".tiff"),
-                                              int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+                local_data = self.coverage.read_variable_dew_point_temperature_at_time(time)
+                self._gathering_var(local_data, var, time_index=time_index)
 
-                    # CRS info
-                    proj = osr.SpatialReference()
-                    proj.SetWellKnownGeogCS("EPSG:4326")
-                    file.SetProjection(proj.ExportToWkt())
-                    file.SetGeoTransform(self.geotransform)
-                    file.GetRasterBand(1).WriteArray(global_data[time_index])
+                file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                       VariableDefinition.VARIABLE_NAME[
+                                                           'dew_point_temperature'] + ".tiff"),
+                                          int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+
+                # CRS info
+                proj = osr.SpatialReference()
+                proj.SetWellKnownGeogCS("EPSG:4326")
+                file.SetProjection(proj.ExportToWkt())
+                file.SetGeoTransform(self.geotransform)
+                file.GetRasterBand(1).WriteArray(var[time_index])
+
         else:
             raise CoverageError("DefaultWriter",
                                 "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
@@ -2235,61 +1456,37 @@ class DefaultWriter(CoverageWriter):
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
             if self.coverage.rank == 0:
-                logging.info('[DefaultWriter] Gathering data from all processors')
-                global_data = np.empty(
-                    [self.coverage.get_t_size(type="target_global"),
-                     self.coverage.get_y_size(type="target_global"),
+                var = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
                      self.coverage.get_x_size(type="target_global")])
-                global_data[:] = np.nan
+                var[:] = np.nan
+            else:
+                var = None
 
-            for time_index in range(0, self.coverage.get_t_size()):
+            for time_index in range(0, self.coverage.get_t_size(type="target_global")):
+                time = self.coverage.read_axis_t(type="target_global")[time_index]
 
-                local_data = self.coverage.read_variable_rainfall_amount_at_time(
-                    time_index)
-
-                if self.coverage.rank != 0:
-                    self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
-                else:
-                    # Pour le proc n°1
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
-
-                    # Pour les autres
-                    for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
-                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
-                        self.coverage.comm.Recv(recvbuf, source=source)
-
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
-
-            self.coverage.comm.barrier()
-
-            if self.coverage.rank == 0:
-
-                logging.info('[DefaultWriter] Writing variable \'' + str(
-                    VariableDefinition.LONG_NAME['rainfall_amount']) + '\'')
-
-                for time_index in range(0, self.coverage.get_t_size(type="target_global")):
-                    time = self.coverage.read_axis_t(type="target_global")[time_index]
-
-                    logging.debug('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME[
-                                                                                  'rainfall_amount']) + '\' at time \'' + str(
+                if self.coverage.rank == 0:
+                    logging.info('[DefaultWriter] Writing variable \'' + str(
+                        VariableDefinition.LONG_NAME[
+                            'rainfall_amount']) + '\' at time \'' + str(
                         time) + '\'')
 
-                    file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                           VariableDefinition.VARIABLE_NAME[
-                                                               'rainfall_amount'] + ".tiff"),
-                                              int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+                local_data = self.coverage.read_variable_rainfall_amount_at_time(time)
+                self._gathering_var(local_data, var, time_index=time_index)
 
-                    # CRS info
-                    proj = osr.SpatialReference()
-                    proj.SetWellKnownGeogCS("EPSG:4326")
-                    file.SetProjection(proj.ExportToWkt())
-                    file.SetGeoTransform(self.geotransform)
-                    file.GetRasterBand(1).WriteArray(global_data[time_index])
+                file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                       VariableDefinition.VARIABLE_NAME[
+                                                           'rainfall_amount'] + ".tiff"),
+                                          int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+
+                # CRS info
+                proj = osr.SpatialReference()
+                proj.SetWellKnownGeogCS("EPSG:4326")
+                file.SetProjection(proj.ExportToWkt())
+                file.SetGeoTransform(self.geotransform)
+                file.GetRasterBand(1).WriteArray(var[time_index])
+
         else:
             raise CoverageError("DefaultWriter",
                                 "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
@@ -2299,61 +1496,37 @@ class DefaultWriter(CoverageWriter):
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
             if self.coverage.rank == 0:
-                logging.info('[DefaultWriter] Gathering data from all processors')
-                global_data = np.empty(
-                    [self.coverage.get_t_size(type="target_global"),
-                     self.coverage.get_y_size(type="target_global"),
+                var = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
                      self.coverage.get_x_size(type="target_global")])
-                global_data[:] = np.nan
+                var[:] = np.nan
+            else:
+                var = None
 
-            for time_index in range(0, self.coverage.get_t_size()):
+            for time_index in range(0, self.coverage.get_t_size(type="target_global")):
+                time = self.coverage.read_axis_t(type="target_global")[time_index]
 
-                local_data = self.coverage.read_variable_surface_downward_sensible_heat_flux_at_time(
-                    time_index)
-
-                if self.coverage.rank != 0:
-                    self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
-                else:
-                    # Pour le proc n°1
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
-
-                    # Pour les autres
-                    for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
-                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
-                        self.coverage.comm.Recv(recvbuf, source=source)
-
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
-
-            self.coverage.comm.barrier()
-
-            if self.coverage.rank == 0:
-
-                logging.info('[DefaultWriter] Writing variable \'' + str(
-                    VariableDefinition.LONG_NAME['surface_downward_sensible_heat_flux']) + '\'')
-
-                for time_index in range(0, self.coverage.get_t_size(type="target_global")):
-                    time = self.coverage.read_axis_t(type="target_global")[time_index]
-
-                    logging.debug('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME[
-                                                                                  'surface_downward_sensible_heat_flux']) + '\' at time \'' + str(
+                if self.coverage.rank == 0:
+                    logging.info('[DefaultWriter] Writing variable \'' + str(
+                        VariableDefinition.LONG_NAME[
+                            'surface_downward_sensible_heat_flux']) + '\' at time \'' + str(
                         time) + '\'')
 
-                    file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                           VariableDefinition.VARIABLE_NAME[
-                                                               'surface_downward_sensible_heat_flux'] + ".tiff"),
-                                              int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+                local_data = self.coverage.read_variable_surface_downward_sensible_heat_flux_at_time(time)
+                self._gathering_var(local_data, var, time_index=time_index)
 
-                    # CRS info
-                    proj = osr.SpatialReference()
-                    proj.SetWellKnownGeogCS("EPSG:4326")
-                    file.SetProjection(proj.ExportToWkt())
-                    file.SetGeoTransform(self.geotransform)
-                    file.GetRasterBand(1).WriteArray(global_data[time_index])
+                file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                       VariableDefinition.VARIABLE_NAME[
+                                                           'surface_downward_sensible_heat_flux'] + ".tiff"),
+                                          int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+
+                # CRS info
+                proj = osr.SpatialReference()
+                proj.SetWellKnownGeogCS("EPSG:4326")
+                file.SetProjection(proj.ExportToWkt())
+                file.SetGeoTransform(self.geotransform)
+                file.GetRasterBand(1).WriteArray(var[time_index])
+
         else:
             raise CoverageError("DefaultWriter",
                                 "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
@@ -2363,61 +1536,37 @@ class DefaultWriter(CoverageWriter):
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
             if self.coverage.rank == 0:
-                logging.info('[DefaultWriter] Gathering data from all processors')
-                global_data = np.empty(
-                    [self.coverage.get_t_size(type="target_global"),
-                     self.coverage.get_y_size(type="target_global"),
+                var = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
                      self.coverage.get_x_size(type="target_global")])
-                global_data[:] = np.nan
+                var[:] = np.nan
+            else:
+                var = None
 
-            for time_index in range(0, self.coverage.get_t_size()):
+            for time_index in range(0, self.coverage.get_t_size(type="target_global")):
+                time = self.coverage.read_axis_t(type="target_global")[time_index]
 
-                local_data = self.coverage.read_variable_surface_downward_latent_heat_flux_at_time(
-                    time_index)
-
-                if self.coverage.rank != 0:
-                    self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
-                else:
-                    # Pour le proc n°1
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
-
-                    # Pour les autres
-                    for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
-                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
-                        self.coverage.comm.Recv(recvbuf, source=source)
-
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
-
-            self.coverage.comm.barrier()
-
-            if self.coverage.rank == 0:
-
-                logging.info('[DefaultWriter] Writing variable \'' + str(
-                    VariableDefinition.LONG_NAME['surface_downward_latent_heat_flux']) + '\'')
-
-                for time_index in range(0, self.coverage.get_t_size(type="target_global")):
-                    time = self.coverage.read_axis_t(type="target_global")[time_index]
-
-                    logging.debug('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME[
-                                                                                  'surface_downward_latent_heat_flux']) + '\' at time \'' + str(
+                if self.coverage.rank == 0:
+                    logging.info('[DefaultWriter] Writing variable \'' + str(
+                        VariableDefinition.LONG_NAME[
+                            'surface_downward_latent_heat_flux']) + '\' at time \'' + str(
                         time) + '\'')
 
-                    file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                           VariableDefinition.VARIABLE_NAME[
-                                                               'surface_downward_latent_heat_flux'] + ".tiff"),
-                                              int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+                local_data = self.coverage.read_variable_surface_downward_latent_heat_flux_at_time(time)
+                self._gathering_var(local_data, var, time_index=time_index)
 
-                    # CRS info
-                    proj = osr.SpatialReference()
-                    proj.SetWellKnownGeogCS("EPSG:4326")
-                    file.SetProjection(proj.ExportToWkt())
-                    file.SetGeoTransform(self.geotransform)
-                    file.GetRasterBand(1).WriteArray(global_data[time_index])
+                file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                       VariableDefinition.VARIABLE_NAME[
+                                                           'surface_downward_latent_heat_flux'] + ".tiff"),
+                                          int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+
+                # CRS info
+                proj = osr.SpatialReference()
+                proj.SetWellKnownGeogCS("EPSG:4326")
+                file.SetProjection(proj.ExportToWkt())
+                file.SetGeoTransform(self.geotransform)
+                file.GetRasterBand(1).WriteArray(var[time_index])
+
         else:
             raise CoverageError("DefaultWriter",
                                 "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
@@ -2427,61 +1576,37 @@ class DefaultWriter(CoverageWriter):
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
             if self.coverage.rank == 0:
-                logging.info('[DefaultWriter] Gathering data from all processors')
-                global_data = np.empty(
-                    [self.coverage.get_t_size(type="target_global"),
-                     self.coverage.get_y_size(type="target_global"),
+                var = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
                      self.coverage.get_x_size(type="target_global")])
-                global_data[:] = np.nan
+                var[:] = np.nan
+            else:
+                var = None
 
-            for time_index in range(0, self.coverage.get_t_size()):
+            for time_index in range(0, self.coverage.get_t_size(type="target_global")):
+                time = self.coverage.read_axis_t(type="target_global")[time_index]
 
-                local_data = self.coverage.read_variable_surface_downward_solar_radiation_at_time(
-                    time_index)
-
-                if self.coverage.rank != 0:
-                    self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
-                else:
-                    # Pour le proc n°1
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
-
-                    # Pour les autres
-                    for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
-                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
-                        self.coverage.comm.Recv(recvbuf, source=source)
-
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
-
-            self.coverage.comm.barrier()
-
-            if self.coverage.rank == 0:
-
-                logging.info('[DefaultWriter] Writing variable \'' + str(
-                    VariableDefinition.LONG_NAME['surface_downwards_solar_radiation']) + '\'')
-
-                for time_index in range(0, self.coverage.get_t_size(type="target_global")):
-                    time = self.coverage.read_axis_t(type="target_global")[time_index]
-
-                    logging.debug('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME[
-                                                                                  'surface_downwards_solar_radiation']) + '\' at time \'' + str(
+                if self.coverage.rank == 0:
+                    logging.info('[DefaultWriter] Writing variable \'' + str(
+                        VariableDefinition.LONG_NAME[
+                            'surface_downwards_solar_radiation']) + '\' at time \'' + str(
                         time) + '\'')
 
-                    file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                           VariableDefinition.VARIABLE_NAME[
-                                                               'surface_downwards_solar_radiation'] + ".tiff"),
-                                              int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+                local_data = self.coverage.read_variable_surface_downwards_solar_radiation_at_time(time)
+                self._gathering_var(local_data, var, time_index=time_index)
 
-                    # CRS info
-                    proj = osr.SpatialReference()
-                    proj.SetWellKnownGeogCS("EPSG:4326")
-                    file.SetProjection(proj.ExportToWkt())
-                    file.SetGeoTransform(self.geotransform)
-                    file.GetRasterBand(1).WriteArray(global_data[time_index])
+                file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                       VariableDefinition.VARIABLE_NAME[
+                                                           'surface_downwards_solar_radiation'] + ".tiff"),
+                                          int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+
+                # CRS info
+                proj = osr.SpatialReference()
+                proj.SetWellKnownGeogCS("EPSG:4326")
+                file.SetProjection(proj.ExportToWkt())
+                file.SetGeoTransform(self.geotransform)
+                file.GetRasterBand(1).WriteArray(var[time_index])
+
         else:
             raise CoverageError("DefaultWriter",
                                 "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
@@ -2491,61 +1616,37 @@ class DefaultWriter(CoverageWriter):
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
             if self.coverage.rank == 0:
-                logging.info('[DefaultWriter] Gathering data from all processors')
-                global_data = np.empty(
-                    [self.coverage.get_t_size(type="target_global"),
-                     self.coverage.get_y_size(type="target_global"),
+                var = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
                      self.coverage.get_x_size(type="target_global")])
-                global_data[:] = np.nan
+                var[:] = np.nan
+            else:
+                var = None
 
-            for time_index in range(0, self.coverage.get_t_size()):
+            for time_index in range(0, self.coverage.get_t_size(type="target_global")):
+                time = self.coverage.read_axis_t(type="target_global")[time_index]
 
-                local_data = self.coverage.read_variable_surface_downward_thermal_radiation_at_time(
-                    time_index)
-
-                if self.coverage.rank != 0:
-                    self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
-                else:
-                    # Pour le proc n°1
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
-
-                    # Pour les autres
-                    for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
-                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
-                        self.coverage.comm.Recv(recvbuf, source=source)
-
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
-
-            self.coverage.comm.barrier()
-
-            if self.coverage.rank == 0:
-
-                logging.info('[DefaultWriter] Writing variable \'' + str(
-                    VariableDefinition.LONG_NAME['surface_downwards_thermal_radiation']) + '\'')
-
-                for time_index in range(0, self.coverage.get_t_size(type="target_global")):
-                    time = self.coverage.read_axis_t(type="target_global")[time_index]
-
-                    logging.debug('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME[
-                                                                                  'surface_downwards_thermal_radiation']) + '\' at time \'' + str(
+                if self.coverage.rank == 0:
+                    logging.info('[DefaultWriter] Writing variable \'' + str(
+                        VariableDefinition.LONG_NAME[
+                            'surface_downwards_thermal_radiation']) + '\' at time \'' + str(
                         time) + '\'')
 
-                    file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                           VariableDefinition.VARIABLE_NAME[
-                                                               'surface_downwards_thermal_radiation'] + ".tiff"),
-                                              int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+                local_data = self.coverage.read_variable_surface_downwards_thermal_radiation_at_time(time)
+                self._gathering_var(local_data, var, time_index=time_index)
 
-                    # CRS info
-                    proj = osr.SpatialReference()
-                    proj.SetWellKnownGeogCS("EPSG:4326")
-                    file.SetProjection(proj.ExportToWkt())
-                    file.SetGeoTransform(self.geotransform)
-                    file.GetRasterBand(1).WriteArray(global_data[time_index])
+                file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                       VariableDefinition.VARIABLE_NAME[
+                                                           'surface_downwards_thermal_radiation'] + ".tiff"),
+                                          int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+
+                # CRS info
+                proj = osr.SpatialReference()
+                proj.SetWellKnownGeogCS("EPSG:4326")
+                file.SetProjection(proj.ExportToWkt())
+                file.SetGeoTransform(self.geotransform)
+                file.GetRasterBand(1).WriteArray(var[time_index])
+
         else:
             raise CoverageError("DefaultWriter",
                                 "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
@@ -2555,61 +1656,37 @@ class DefaultWriter(CoverageWriter):
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
             if self.coverage.rank == 0:
-                logging.info('[DefaultWriter] Gathering data from all processors')
-                global_data = np.empty(
-                    [self.coverage.get_t_size(type="target_global"),
-                     self.coverage.get_y_size(type="target_global"),
+                var = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
                      self.coverage.get_x_size(type="target_global")])
-                global_data[:] = np.nan
+                var[:] = np.nan
+            else:
+                var = None
 
-            for time_index in range(0, self.coverage.get_t_size()):
+            for time_index in range(0, self.coverage.get_t_size(type="target_global")):
+                time = self.coverage.read_axis_t(type="target_global")[time_index]
 
-                local_data = self.coverage.read_variable_surface_solar_radiation_at_time(
-                    time_index)
-
-                if self.coverage.rank != 0:
-                    self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
-                else:
-                    # Pour le proc n°1
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
-
-                    # Pour les autres
-                    for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
-                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
-                        self.coverage.comm.Recv(recvbuf, source=source)
-
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
-
-            self.coverage.comm.barrier()
-
-            if self.coverage.rank == 0:
-
-                logging.info('[DefaultWriter] Writing variable \'' + str(
-                    VariableDefinition.LONG_NAME['surface_solar_radiation']) + '\'')
-
-                for time_index in range(0, self.coverage.get_t_size(type="target_global")):
-                    time = self.coverage.read_axis_t(type="target_global")[time_index]
-
-                    logging.debug('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME[
-                                                                                  'surface_solar_radiation']) + '\' at time \'' + str(
+                if self.coverage.rank == 0:
+                    logging.info('[DefaultWriter] Writing variable \'' + str(
+                        VariableDefinition.LONG_NAME[
+                            'surface_solar_radiation']) + '\' at time \'' + str(
                         time) + '\'')
 
-                    file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                           VariableDefinition.VARIABLE_NAME[
-                                                               'surface_solar_radiation'] + ".tiff"),
-                                              int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+                local_data = self.coverage.read_variable_surface_solar_radiation_at_time(time)
+                self._gathering_var(local_data, var, time_index=time_index)
 
-                    # CRS info
-                    proj = osr.SpatialReference()
-                    proj.SetWellKnownGeogCS("EPSG:4326")
-                    file.SetProjection(proj.ExportToWkt())
-                    file.SetGeoTransform(self.geotransform)
-                    file.GetRasterBand(1).WriteArray(global_data[time_index])
+                file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                       VariableDefinition.VARIABLE_NAME[
+                                                           'surface_solar_radiation'] + ".tiff"),
+                                          int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+
+                # CRS info
+                proj = osr.SpatialReference()
+                proj.SetWellKnownGeogCS("EPSG:4326")
+                file.SetProjection(proj.ExportToWkt())
+                file.SetGeoTransform(self.geotransform)
+                file.GetRasterBand(1).WriteArray(var[time_index])
+
         else:
             raise CoverageError("DefaultWriter",
                                 "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
@@ -2619,61 +1696,37 @@ class DefaultWriter(CoverageWriter):
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
             if self.coverage.rank == 0:
-                logging.info('[DefaultWriter] Gathering data from all processors')
-                global_data = np.empty(
-                    [self.coverage.get_t_size(type="target_global"),
-                     self.coverage.get_y_size(type="target_global"),
+                var = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
                      self.coverage.get_x_size(type="target_global")])
-                global_data[:] = np.nan
+                var[:] = np.nan
+            else:
+                var = None
 
-            for time_index in range(0, self.coverage.get_t_size()):
+            for time_index in range(0, self.coverage.get_t_size(type="target_global")):
+                time = self.coverage.read_axis_t(type="target_global")[time_index]
 
-                local_data = self.coverage.read_variable_surface_thermal_radiation_at_time(
-                    time_index)
-
-                if self.coverage.rank != 0:
-                    self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
-                else:
-                    # Pour le proc n°1
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
-
-                    # Pour les autres
-                    for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
-                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
-                        self.coverage.comm.Recv(recvbuf, source=source)
-
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
-
-            self.coverage.comm.barrier()
-
-            if self.coverage.rank == 0:
-
-                logging.info('[DefaultWriter] Writing variable \'' + str(
-                    VariableDefinition.LONG_NAME['surface_thermal_radiation']) + '\'')
-
-                for time_index in range(0, self.coverage.get_t_size(type="target_global")):
-                    time = self.coverage.read_axis_t(type="target_global")[time_index]
-
-                    logging.debug('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME[
-                                                                                  'surface_thermal_radiation']) + '\' at time \'' + str(
+                if self.coverage.rank == 0:
+                    logging.info('[DefaultWriter] Writing variable \'' + str(
+                        VariableDefinition.LONG_NAME[
+                            'surface_thermal_radiation']) + '\' at time \'' + str(
                         time) + '\'')
 
-                    file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                           VariableDefinition.VARIABLE_NAME[
-                                                               'surface_thermal_radiation'] + ".tiff"),
-                                              int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+                local_data = self.coverage.read_variable_surface_thermal_radiation_at_time(time)
+                self._gathering_var(local_data, var, time_index=time_index)
 
-                    # CRS info
-                    proj = osr.SpatialReference()
-                    proj.SetWellKnownGeogCS("EPSG:4326")
-                    file.SetProjection(proj.ExportToWkt())
-                    file.SetGeoTransform(self.geotransform)
-                    file.GetRasterBand(1).WriteArray(global_data[time_index])
+                file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                       VariableDefinition.VARIABLE_NAME[
+                                                           'surface_thermal_radiation'] + ".tiff"),
+                                          int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+
+                # CRS info
+                proj = osr.SpatialReference()
+                proj.SetWellKnownGeogCS("EPSG:4326")
+                file.SetProjection(proj.ExportToWkt())
+                file.SetGeoTransform(self.geotransform)
+                file.GetRasterBand(1).WriteArray(var[time_index])
+
         else:
             raise CoverageError("DefaultWriter",
                                 "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
@@ -2683,87 +1736,63 @@ class DefaultWriter(CoverageWriter):
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
             if self.coverage.rank == 0:
-                logging.info('[DefaultWriter] Gathering data from all processors')
-                global_data = np.empty(
-                    [self.coverage.get_t_size(type="target_global"),
-                     2,
-                     self.coverage.get_y_size(type="target_global"),
+                ucomp = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
                      self.coverage.get_x_size(type="target_global")])
-                global_data[:] = np.nan
+                ucomp[:] = np.nan
+                vcomp = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
+                     self.coverage.get_x_size(type="target_global")])
+                vcomp[:] = np.nan
+            else:
+                ucomp = None
+                vcomp = None
 
-            for time_index in range(0, self.coverage.get_t_size()):
+            for time_index in range(0, self.coverage.get_t_size(type="target_global")):
+                time = self.coverage.read_axis_t(type="target_global")[time_index]
 
-                local_data = self.coverage.read_variable_wind_stress_at_time(time_index)
+                if self.coverage.rank == 0:
+                    logging.info('[DefaultWriter] Writing variable \'Wind Stress\' at time \'' + str(
+                        time) + '\'')
 
-                if self.coverage.rank != 0:
-                    self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
-                else:
-                    # Pour le proc n°1
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                0,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data[0]
+                local_data_u, local_data_v = self.coverage.read_variable_wind_stress_at_time(time)
 
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                1,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data[1]
+                # We remove nan value
+                local_data_u[local_data_u == 9.96921e+36] = np.nan
+                local_data_v[local_data_v == 9.96921e+36] = np.nan
 
-                    # Pour les autres
-                    for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([2, self.coverage.parallel_map[source]["dst_local_y_size"],
-                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
-                        self.coverage.comm.Recv(recvbuf, source=source)
+                self._gathering_var(local_data_u, ucomp, time_index=time_index)
+                self._gathering_var(local_data_v, vcomp, time_index=time_index)
 
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    0,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf[0]
+                for vector in range(0, 2):
 
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    1,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf[1]
+                    if vector == 0:
 
-            self.coverage.comm.barrier()
+                        file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                               VariableDefinition.VARIABLE_NAME[
+                                                                   'eastward_wind_stress'] + ".tiff"),
+                                                  int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
 
-            if self.coverage.rank == 0:
+                        # CRS info
+                        proj = osr.SpatialReference()
+                        proj.SetWellKnownGeogCS("EPSG:4326")
+                        file.SetProjection(proj.ExportToWkt())
+                        file.SetGeoTransform(self.geotransform)
+                        file.GetRasterBand(1).WriteArray(ucomp[time_index])
 
-                logging.info('[DefaultWriter] Writing variable \'Wind Stress\'\'')
+                    else:
 
-                for time_index in range(0, self.coverage.get_t_size(type="target_global")):
-                    time = self.coverage.read_axis_t(type="target_global")[time_index]
+                        file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                               VariableDefinition.VARIABLE_NAME[
+                                                                   'northward_wind_stress'] + ".tiff"),
+                                                  int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
 
-                    logging.info('[DefaultWriter] Writing variable \'Wind Stress\' at time \'' + str(time) + '\'')
-
-                    for vector in range(0, 2):
-                        if vector == 0:
-
-                            file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                                   VariableDefinition.VARIABLE_NAME[
-                                                                       'eastward_wind_stress'] + ".tiff"),
-                                                      int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
-
-                            # CRS info
-                            proj = osr.SpatialReference()
-                            proj.SetWellKnownGeogCS("EPSG:4326")
-                            file.SetProjection(proj.ExportToWkt())
-                            file.SetGeoTransform(self.geotransform)
-                            file.GetRasterBand(1).WriteArray(global_data[time_index][0])
-
-                        else:
-
-                            file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                                   VariableDefinition.VARIABLE_NAME[
-                                                                       'northward_wind_stress'] + ".tiff"),
-                                                      int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
-
-                            # CRS info
-                            proj = osr.SpatialReference()
-                            proj.SetWellKnownGeogCS("EPSG:4326")
-                            file.SetProjection(proj.ExportToWkt())
-                            file.SetGeoTransform(self.geotransform)
-                            file.GetRasterBand(1).WriteArray(global_data[time_index][1])
+                        # CRS info
+                        proj = osr.SpatialReference()
+                        proj.SetWellKnownGeogCS("EPSG:4326")
+                        file.SetProjection(proj.ExportToWkt())
+                        file.SetGeoTransform(self.geotransform)
+                        file.GetRasterBand(1).WriteArray(vcomp[time_index])
 
         else:
             raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
@@ -2777,87 +1806,64 @@ class DefaultWriter(CoverageWriter):
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
             if self.coverage.rank == 0:
-                logging.info('[DefaultWriter] Gathering data from all processors')
-                global_data = np.empty(
-                    [self.coverage.get_t_size(type="target_global"),
-                     2,
-                     self.coverage.get_y_size(type="target_global"),
+                ucomp = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
                      self.coverage.get_x_size(type="target_global")])
-                global_data[:] = np.nan
+                ucomp[:] = np.nan
+                vcomp = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
+                     self.coverage.get_x_size(type="target_global")])
+                vcomp[:] = np.nan
+            else:
+                ucomp = None
+                vcomp = None
 
-            for time_index in range(0, self.coverage.get_t_size()):
+            for time_index in range(0, self.coverage.get_t_size(type="target_global")):
+                time = self.coverage.read_axis_t(type="target_global")[time_index]
 
-                local_data = self.coverage.read_variable_wind_10m_at_time(time_index)
+                if self.coverage.rank == 0:
+                    logging.info('[DefaultWriter] Writing variable \'Wind 10m\' at time \'' + str(
+                        time) + '\'')
 
-                if self.coverage.rank != 0:
-                    self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
-                else:
-                    # Pour le proc n°1
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                0,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data[0]
+                local_data_u, local_data_v = self.coverage.read_variable_wind_10m_at_time(time)
 
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                1,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data[1]
+                # We remove nan value
+                local_data_u[local_data_u == 9.96921e+36] = np.nan
+                local_data_v[local_data_v == 9.96921e+36] = np.nan
 
-                    # Pour les autres
-                    for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([2, self.coverage.parallel_map[source]["dst_local_y_size"],
-                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
-                        self.coverage.comm.Recv(recvbuf, source=source)
+                self._gathering_var(local_data_u, ucomp, time_index=time_index)
+                self._gathering_var(local_data_v, vcomp, time_index=time_index)
 
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    0,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf[0]
+                for vector in range(0, 2):
 
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    1,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf[1]
+                    if vector == 0:
 
-            self.coverage.comm.barrier()
+                        file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                               VariableDefinition.VARIABLE_NAME[
+                                                                   'eastward_wind_10m'] + ".tiff"),
+                                                  int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
 
-            if self.coverage.rank == 0:
+                        # CRS info
+                        proj = osr.SpatialReference()
+                        proj.SetWellKnownGeogCS("EPSG:4326")
+                        file.SetProjection(proj.ExportToWkt())
+                        file.SetGeoTransform(self.geotransform)
+                        file.GetRasterBand(1).WriteArray(ucomp[time_index])
 
-                logging.info('[DefaultWriter] Writing variable \'Wind 10m\'')
+                    else:
 
-                for time_index in range(0, self.coverage.get_t_size(type="target_global")):
-                    time = self.coverage.read_axis_t(type="target_global")[time_index]
+                        file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                               VariableDefinition.VARIABLE_NAME[
+                                                                   'northward_wind_10m'] + ".tiff"),
+                                                  int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
 
-                    logging.info('[DefaultWriter] Writing variable \'Wind 10m\' at time \''+str(time)+'\'')
+                        # CRS info
+                        proj = osr.SpatialReference()
+                        proj.SetWellKnownGeogCS("EPSG:4326")
+                        file.SetProjection(proj.ExportToWkt())
+                        file.SetGeoTransform(self.geotransform)
+                        file.GetRasterBand(1).WriteArray(vcomp[time_index])
 
-                    for vector in range(0, 2):
-                        if vector == 0:
-
-                            file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                                   VariableDefinition.VARIABLE_NAME[
-                                                                       'eastward_wind_10m'] + ".tiff"),
-                                                      int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
-
-                            # CRS info
-                            proj = osr.SpatialReference()
-                            proj.SetWellKnownGeogCS("EPSG:4326")
-                            file.SetProjection(proj.ExportToWkt())
-                            file.SetGeoTransform(self.geotransform)
-                            file.GetRasterBand(1).WriteArray(global_data[time_index][0])
-
-                        else:
-
-                            file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                                   VariableDefinition.VARIABLE_NAME[
-                                                                       'northward_wind_10m'] + ".tiff"),
-                                                      int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
-
-                            # CRS info
-                            proj = osr.SpatialReference()
-                            proj.SetWellKnownGeogCS("EPSG:4326")
-                            file.SetProjection(proj.ExportToWkt())
-                            file.SetGeoTransform(self.geotransform)
-                            file.GetRasterBand(1).WriteArray(global_data[time_index][1])
         else:
             raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
@@ -2866,61 +1872,37 @@ class DefaultWriter(CoverageWriter):
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
             if self.coverage.rank == 0:
-                logging.info('[DefaultWriter] Gathering data from all processors')
-                global_data = np.empty(
-                    [self.coverage.get_t_size(type="target_global"),
-                     self.coverage.get_y_size(type="target_global"),
+                var = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
                      self.coverage.get_x_size(type="target_global")])
-                global_data[:] = np.nan
+                var[:] = np.nan
+            else:
+                var = None
 
-            for time_index in range(0, self.coverage.get_t_size()):
+            for time_index in range(0, self.coverage.get_t_size(type="target_global")):
+                time = self.coverage.read_axis_t(type="target_global")[time_index]
 
-                local_data = self.coverage.read_variable_wind_speed_10m_at_time(
-                    time_index)
-
-                if self.coverage.rank != 0:
-                    self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
-                else:
-                    # Pour le proc n°1
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
-
-                    # Pour les autres
-                    for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
-                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
-                        self.coverage.comm.Recv(recvbuf, source=source)
-
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
-
-            self.coverage.comm.barrier()
-
-            if self.coverage.rank == 0:
-
-                logging.info('[DefaultWriter] Writing variable \'' + str(
-                    VariableDefinition.LONG_NAME['wind_speed_10m']) + '\'')
-
-                for time_index in range(0, self.coverage.get_t_size(type="target_global")):
-                    time = self.coverage.read_axis_t(type="target_global")[time_index]
-
-                    logging.debug('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME[
-                                                                                  'wind_speed_10m']) + '\' at time \'' + str(
+                if self.coverage.rank == 0:
+                    logging.info('[DefaultWriter] Writing variable \'' + str(
+                        VariableDefinition.LONG_NAME[
+                            'wind_speed_10m']) + '\' at time \'' + str(
                         time) + '\'')
 
-                    file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                           VariableDefinition.VARIABLE_NAME[
-                                                               'wind_speed_10m'] + ".tiff"),
-                                              int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+                local_data = self.coverage.read_variable_wind_speed_10m_at_time(time)
+                self._gathering_var(local_data, var, time_index=time_index)
 
-                    # CRS info
-                    proj = osr.SpatialReference()
-                    proj.SetWellKnownGeogCS("EPSG:4326")
-                    file.SetProjection(proj.ExportToWkt())
-                    file.SetGeoTransform(self.geotransform)
-                    file.GetRasterBand(1).WriteArray(global_data[time_index])
+                file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                       VariableDefinition.VARIABLE_NAME[
+                                                           'wind_speed_10m'] + ".tiff"),
+                                          int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+
+                # CRS info
+                proj = osr.SpatialReference()
+                proj.SetWellKnownGeogCS("EPSG:4326")
+                file.SetProjection(proj.ExportToWkt())
+                file.SetGeoTransform(self.geotransform)
+                file.GetRasterBand(1).WriteArray(var[time_index])
+
         else:
             raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
@@ -2929,61 +1911,37 @@ class DefaultWriter(CoverageWriter):
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
             if self.coverage.rank == 0:
-                logging.info('[DefaultWriter] Gathering data from all processors')
-                global_data = np.empty(
-                    [self.coverage.get_t_size(type="target_global"),
-                     self.coverage.get_y_size(type="target_global"),
+                var = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
                      self.coverage.get_x_size(type="target_global")])
-                global_data[:] = np.nan
+                var[:] = np.nan
+            else:
+                var = None
 
-            for time_index in range(0, self.coverage.get_t_size()):
+            for time_index in range(0, self.coverage.get_t_size(type="target_global")):
+                time = self.coverage.read_axis_t(type="target_global")[time_index]
 
-                local_data = self.coverage.read_variable_wind_to_direction_10m_at_time(
-                    time_index)
-
-                if self.coverage.rank != 0:
-                    self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
-                else:
-                    # Pour le proc n°1
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
-
-                    # Pour les autres
-                    for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
-                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
-                        self.coverage.comm.Recv(recvbuf, source=source)
-
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
-
-            self.coverage.comm.barrier()
-
-            if self.coverage.rank == 0:
-
-                logging.info('[DefaultWriter] Writing variable \'' + str(
-                    VariableDefinition.LONG_NAME['wind_to_direction_10m']) + '\'')
-
-                for time_index in range(0, self.coverage.get_t_size(type="target_global")):
-                    time = self.coverage.read_axis_t(type="target_global")[time_index]
-
-                    logging.debug('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME[
-                                                                                  'wind_to_direction_10m']) + '\' at time \'' + str(
+                if self.coverage.rank == 0:
+                    logging.info('[DefaultWriter] Writing variable \'' + str(
+                        VariableDefinition.LONG_NAME[
+                            'wind_to_direction_10m']) + '\' at time \'' + str(
                         time) + '\'')
 
-                    file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                           VariableDefinition.VARIABLE_NAME[
-                                                               'wind_to_direction_10m'] + ".tiff"),
-                                              int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+                local_data = self.coverage.read_variable_wind_to_direction_10m_at_time(time)
+                self._gathering_var(local_data, var, time_index=time_index)
 
-                    # CRS info
-                    proj = osr.SpatialReference()
-                    proj.SetWellKnownGeogCS("EPSG:4326")
-                    file.SetProjection(proj.ExportToWkt())
-                    file.SetGeoTransform(self.geotransform)
-                    file.GetRasterBand(1).WriteArray(global_data[time_index])
+                file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                       VariableDefinition.VARIABLE_NAME[
+                                                           'wind_to_direction_10m'] + ".tiff"),
+                                          int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+
+                # CRS info
+                proj = osr.SpatialReference()
+                proj.SetWellKnownGeogCS("EPSG:4326")
+                file.SetProjection(proj.ExportToWkt())
+                file.SetGeoTransform(self.geotransform)
+                file.GetRasterBand(1).WriteArray(var[time_index])
+
         else:
             raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
@@ -2992,61 +1950,37 @@ class DefaultWriter(CoverageWriter):
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
             if self.coverage.rank == 0:
-                logging.info('[DefaultWriter] Gathering data from all processors')
-                global_data = np.empty(
-                    [self.coverage.get_t_size(type="target_global"),
-                     self.coverage.get_y_size(type="target_global"),
+                var = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
                      self.coverage.get_x_size(type="target_global")])
-                global_data[:] = np.nan
+                var[:] = np.nan
+            else:
+                var = None
 
-            for time_index in range(0, self.coverage.get_t_size()):
+            for time_index in range(0, self.coverage.get_t_size(type="target_global")):
+                time = self.coverage.read_axis_t(type="target_global")[time_index]
 
-                local_data = self.coverage.read_variable_wind_from_direction_10m_at_time(
-                    time_index)
-
-                if self.coverage.rank != 0:
-                    self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
-                else:
-                    # Pour le proc n°1
-                    global_data[self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index,
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
-                                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = local_data
-
-                    # Pour les autres
-                    for source in range(1, self.coverage.size):
-                        recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
-                                            self.coverage.parallel_map[source]["dst_local_x_size"]])
-                        self.coverage.comm.Recv(recvbuf, source=source)
-
-                        global_data[self.coverage.parallel_map[source]["dst_global_t"].start + time_index,
-                                    self.coverage.parallel_map[source]["dst_global_y"],
-                                    self.coverage.parallel_map[source]["dst_global_x"]] = recvbuf
-
-            self.coverage.comm.barrier()
-
-            if self.coverage.rank == 0:
-
-                logging.info('[DefaultWriter] Writing variable \'' + str(
-                    VariableDefinition.LONG_NAME['wind_from_direction_10m']) + '\'')
-
-                for time_index in range(0, self.coverage.get_t_size(type="target_global")):
-                    time = self.coverage.read_axis_t(type="target_global")[time_index]
-
-                    logging.debug('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME[
-                                                                                  'wind_from_direction_10m']) + '\' at time \'' + str(
+                if self.coverage.rank == 0:
+                    logging.info('[DefaultWriter] Writing variable \'' + str(
+                        VariableDefinition.LONG_NAME[
+                            'wind_from_direction_10m']) + '\' at time \'' + str(
                         time) + '\'')
 
-                    file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
-                                                           VariableDefinition.VARIABLE_NAME[
-                                                               'wind_from_direction_10m'] + ".tiff"),
-                                              int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+                local_data = self.coverage.read_variable_wind_from_direction_10m_at_time(time)
+                self._gathering_var(local_data, var, time_index=time_index)
 
-                    # CRS info
-                    proj = osr.SpatialReference()
-                    proj.SetWellKnownGeogCS("EPSG:4326")
-                    file.SetProjection(proj.ExportToWkt())
-                    file.SetGeoTransform(self.geotransform)
-                    file.GetRasterBand(1).WriteArray(global_data[time_index])
+                file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
+                                                       VariableDefinition.VARIABLE_NAME[
+                                                           'wind_from_direction_10m'] + ".tiff"),
+                                          int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
+
+                # CRS info
+                proj = osr.SpatialReference()
+                proj.SetWellKnownGeogCS("EPSG:4326")
+                file.SetProjection(proj.ExportToWkt())
+                file.SetGeoTransform(self.geotransform)
+                file.GetRasterBand(1).WriteArray(var[time_index])
+
         else:
             raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 

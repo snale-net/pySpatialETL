@@ -23,7 +23,7 @@
 from __future__ import division, print_function, absolute_import
 
 from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime
+from datetime import datetime, UTC
 
 import numpy as np
 from numpy import int8, int16, int32, int64
@@ -199,16 +199,16 @@ def vertical_interpolation(sourceAxis, targetAxis, data, method, extrapolate=Fal
         raise ValueError("Unable to decode vertical interpolation method : " + str(method))
 
 
-def time_1d_interpolation(sourceAxis, targetAxis, data, method, extrapolate=False):
-    logging.debug("[InterpolatorCore][time_interpolation()] Looking for time : " + str(
+def temporal_1d_interpolation(sourceAxis, targetAxis, data, method, extrapolate=False):
+    logging.debug("[InterpolatorCore][temporal_interpolation()] Looking for time : " + str(
         datetime.utcfromtimestamp(targetAxis[0])) + " with method '" + str(method) + "'.")
     for time in sourceAxis:
         logging.debug(
-            "[InterpolatorCore][time_interpolation()] Source Axis contains: " + str(datetime.utcfromtimestamp(time)))
+            "[InterpolatorCore][temporal_interpolation()] Source Axis contains: " + str(datetime.utcfromtimestamp(time)))
 
     for time in targetAxis:
         logging.debug(
-            "[InterpolatorCore][time_interpolation()] Target Axis contains: " + str(datetime.utcfromtimestamp(time)))
+            "[InterpolatorCore][temporal_interpolation()] Target Axis contains: " + str(datetime.utcfromtimestamp(time)))
 
     if method is None:
         return np.nan
@@ -228,23 +228,33 @@ def time_1d_interpolation(sourceAxis, targetAxis, data, method, extrapolate=Fals
             f = interp1d(sourceAxis, data, kind=method, bounds_error=True)
             return f(targetAxis)
         except ValueError as ex:
-            logging.warning("[InterpolatorCore][time_interpolation()] Error: " + str(ex))
+            logging.warning("[InterpolatorCore][temporal_interpolation()] Error: " + str(ex))
             logging.warning(
-                "[InterpolatorCore][time_interpolation()] This error may occur when you ask for a datetime  out of range : " + str(
+                "[InterpolatorCore][temporal_interpolation()] This error may occur when you ask for a datetime  out of range : " + str(
                     datetime.utcfromtimestamp(targetAxis[0])))
             logging.warning(
-                "[InterpolatorCore][time_interpolation()] To avoid this error, you can change your time range or use another time interpolation method.")
+                "[InterpolatorCore][temporal_interpolation()] To avoid this error, you can change your time range or use another time interpolation method.")
             if extrapolate:
                 logging.warning(
-                    "[InterpolatorCore][vertical_interpolation()] We continue by using an extrapolation method.")
-                logging.warning("[InterpolatorCore][vertical_interpolation()] ----------------------------------------")
+                    "[InterpolatorCore][temporal_interpolation()] We continue by using an extrapolation method.")
+                logging.warning("[InterpolatorCore][temporal_interpolation()] ----------------------------------------")
                 f = interp1d(sourceAxis, data, kind=method, fill_value="extrapolate")
                 return f(targetAxis)
             else:
-                logging.warning("[InterpolatorCore][vertical_interpolation()] We continue by using the nearest method.")
-                logging.warning("[InterpolatorCore][vertical_interpolation()] ----------------------------------------")
+                logging.warning("[InterpolatorCore][temporal_interpolation()] We continue by using the nearest method.")
+                logging.warning("[InterpolatorCore][temporal_interpolation()] ----------------------------------------")
                 array = np.asarray(sourceAxis)
                 nearest_index_t = (np.abs(array - targetAxis[0])).argmin()
                 return data[nearest_index_t]
     else:
-        raise ValueError("Unable to decode vertical interpolation method : " + str(method))
+        raise ValueError("Unable to decode temporal interpolation method : " + str(method))
+
+def temporal_2d_interpolation(data, method):
+    logging.debug(f"[InterpolatorCore][temporal_interpolation()] Starting interpolation with method '{method}'.")
+
+    if method == "nearest":
+        return data
+    elif method == "mean":
+        return np.mean(data,axis=0)
+    else:
+        raise ValueError("Unable to decode temporal interpolation method : " + str(method))

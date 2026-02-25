@@ -20,6 +20,6 @@
 # SOFTWARE.
 __path__ = __import__("pkgutil").extend_path(__path__, __name__)
 
-from .interpolator_core import time_1d_interpolation, resample_2d_to_grid, vertical_interpolation
+from .interpolator_core import temporal_1d_interpolation, resample_2d_to_grid, vertical_interpolation
 
-__all__ = ["time_1d_interpolation", "resample_2d_to_grid", "vertical_interpolation"]
+__all__ = ["temporal_1d_interpolation", "resample_2d_to_grid", "vertical_interpolation"]
