@@ -222,6 +222,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
     @timing
     def compute_vector_rotation(self, data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v):
 
+        #TODO Speed up the function with C
         x_size = np.shape(mask_t)[1]
         y_size = np.shape(mask_t)[0]
 

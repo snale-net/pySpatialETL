@@ -35,10 +35,12 @@ from spatialetl.utils.logger import logging
 from spatialetl.utils.variable_definition import VariableDefinition
 
 
+# TODO Apply refactoring with generic write function like Netcdf Writer
+
 class DefaultWriter(CoverageWriter):
 
-    def __init__(self,cov,myFile):
-        CoverageWriter.__init__(self,cov,myFile);
+    def __init__(self, cov, myFile):
+        CoverageWriter.__init__(self, cov, myFile);
 
         if self.coverage.is_regular_grid() == False:
             raise ValueError("This writer supports only Coverage with a regular horizontal axis.")
@@ -52,12 +54,12 @@ class DefaultWriter(CoverageWriter):
         self.rows = self.coverage.get_x_size(type="target_global")
         self.cols = self.coverage.get_y_size(type="target_global")
 
-        xmin=np.min(self.coverage.read_axis_x(type="target_global"))
-        xmax=np.max(self.coverage.read_axis_x(type="target_global"))
-        ymin=np.min(self.coverage.read_axis_y(type="target_global"))
-        ymax=np.max(self.coverage.read_axis_y(type="target_global"))
-        x_pixel_size=round((xmax-xmin)/self.coverage.get_x_size(type="target_global"),6)
-        y_pixel_size=round((ymax-ymin)/self.coverage.get_y_size(type="target_global"),6)
+        xmin = np.min(self.coverage.read_axis_x(type="target_global"))
+        xmax = np.max(self.coverage.read_axis_x(type="target_global"))
+        ymin = np.min(self.coverage.read_axis_y(type="target_global"))
+        ymax = np.max(self.coverage.read_axis_y(type="target_global"))
+        x_pixel_size = round((xmax - xmin) / self.coverage.get_x_size(type="target_global"), 6)
+        y_pixel_size = round((ymax - ymin) / self.coverage.get_y_size(type="target_global"), 6)
 
         self.geotransform = (xmin, x_pixel_size, 0, ymin, 0, y_pixel_size)
 
@@ -84,7 +86,7 @@ class DefaultWriter(CoverageWriter):
         self._gathering_var(local_data, var)
 
         file = self.driver.Create(os.path.join(self.filename, VariableDefinition.VARIABLE_NAME[
-                                                   'mesh_size'] + ".tiff"),
+            'mesh_size'] + ".tiff"),
                                   int(self.rows), int(self.cols), 1, gdal.GDT_Float64)
 
         # CRS info
@@ -160,7 +162,8 @@ class DefaultWriter(CoverageWriter):
                 file.GetRasterBand(1).WriteArray(var[time_index])
 
         else:
-            raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
+            raise CoverageError("DefaultWriter",
+                                "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
     def write_variable_3D_sea_binary_mask(self):
 
@@ -339,7 +342,8 @@ class DefaultWriter(CoverageWriter):
                         file.GetRasterBand(1).WriteArray(vcomp[time_index])
 
         else:
-            raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
+            raise CoverageError("DefaultWriter",
+                                "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
     #################
     # HYDRO
@@ -350,7 +354,9 @@ class DefaultWriter(CoverageWriter):
         if (isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
             if self.coverage.rank == 0:
-                var = np.zeros([self.coverage.get_t_size(type="target_global"),self.coverage.get_y_size(type="target_global"),self.coverage.get_x_size(type="target_global")])
+                var = np.zeros(
+                    [self.coverage.get_t_size(type="target_global"), self.coverage.get_y_size(type="target_global"),
+                     self.coverage.get_x_size(type="target_global")])
                 var[:] = np.nan
             else:
                 var = None
@@ -380,7 +386,8 @@ class DefaultWriter(CoverageWriter):
                 file.GetRasterBand(1).WriteArray(var[time_index])
 
         else:
-            raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
+            raise CoverageError("DefaultWriter",
+                                "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
     def write_variable_sea_surface_height_above_geoid(self):
 
@@ -419,7 +426,8 @@ class DefaultWriter(CoverageWriter):
                 file.GetRasterBand(1).WriteArray(var[time_index])
 
         else:
-            raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
+            raise CoverageError("DefaultWriter",
+                                "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
     def write_variable_sea_water_column_thickness(self):
 
@@ -498,7 +506,8 @@ class DefaultWriter(CoverageWriter):
                 file.GetRasterBand(1).WriteArray(var[time_index])
 
         else:
-            raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
+            raise CoverageError("DefaultWriter",
+                                "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
     def write_variable_sea_surface_salinity(self):
 
@@ -537,7 +546,8 @@ class DefaultWriter(CoverageWriter):
                 file.GetRasterBand(1).WriteArray(var[time_index])
 
         else:
-            raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
+            raise CoverageError("DefaultWriter",
+                                "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
     def write_variable_sea_water_velocity_at_sea_water_surface(self):
 
@@ -560,10 +570,12 @@ class DefaultWriter(CoverageWriter):
                 time = self.coverage.read_axis_t(type="target_global")[time_index]
 
                 if self.coverage.rank == 0:
-                    logging.info('[DefaultWriter] Writing variable \'Sea Water Velocity at Sea Water Surface\' at time \'' + str(
-                        time) + '\'')
+                    logging.info(
+                        '[DefaultWriter] Writing variable \'Sea Water Velocity at Sea Water Surface\' at time \'' + str(
+                            time) + '\'')
 
-                local_data_u, local_data_v = self.coverage.read_variable_sea_water_velocity_at_sea_water_surface_at_time(time)
+                local_data_u, local_data_v = self.coverage.read_variable_sea_water_velocity_at_sea_water_surface_at_time(
+                    time)
 
                 # We remove nan value
                 local_data_u[local_data_u == 9.96921e+36] = np.nan
@@ -603,7 +615,8 @@ class DefaultWriter(CoverageWriter):
                         file.GetRasterBand(1).WriteArray(vcomp[time_index])
 
         else:
-            raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
+            raise CoverageError("DefaultWriter",
+                                "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
     #################
     # HYDRO
@@ -647,7 +660,8 @@ class DefaultWriter(CoverageWriter):
                 file.GetRasterBand(1).WriteArray(var[time_index])
 
         else:
-            raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
+            raise CoverageError("DefaultWriter",
+                                "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
     def write_variable_sea_water_salinity_at_ground_level(self):
 
@@ -686,7 +700,8 @@ class DefaultWriter(CoverageWriter):
                 file.GetRasterBand(1).WriteArray(var[time_index])
 
         else:
-            raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
+            raise CoverageError("DefaultWriter",
+                                "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
     def write_variable_sea_water_velocity_at_ground_level(self):
 
@@ -709,10 +724,12 @@ class DefaultWriter(CoverageWriter):
                 time = self.coverage.read_axis_t(type="target_global")[time_index]
 
                 if self.coverage.rank == 0:
-                    logging.info('[DefaultWriter] Writing variable \'Sea Water Velocity at Ground Level\' at time \'' + str(
-                        time) + '\'')
+                    logging.info(
+                        '[DefaultWriter] Writing variable \'Sea Water Velocity at Ground Level\' at time \'' + str(
+                            time) + '\'')
 
-                local_data_u, local_data_v = self.coverage.read_variable_sea_water_velocity_at_ground_level_at_time(time)
+                local_data_u, local_data_v = self.coverage.read_variable_sea_water_velocity_at_ground_level_at_time(
+                    time)
 
                 # We remove nan value
                 local_data_u[local_data_u == 9.96921e+36] = np.nan
@@ -752,14 +769,13 @@ class DefaultWriter(CoverageWriter):
                         file.GetRasterBand(1).WriteArray(vcomp[time_index])
 
         else:
-            raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
-
+            raise CoverageError("DefaultWriter",
+                                "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
     #################
     # HYDRO
     # 3D
     #################
-
 
     #################
     # WAVES
@@ -802,7 +818,8 @@ class DefaultWriter(CoverageWriter):
                 file.GetRasterBand(1).WriteArray(var[time_index])
 
         else:
-            raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
+            raise CoverageError("DefaultWriter",
+                                "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
     def write_variable_sea_surface_wave_breaking_height(self):
 
@@ -841,7 +858,8 @@ class DefaultWriter(CoverageWriter):
                 file.GetRasterBand(1).WriteArray(var[time_index])
 
         else:
-            raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
+            raise CoverageError("DefaultWriter",
+                                "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
     def write_variable_sea_surface_wave_mean_period(self):
 
@@ -880,7 +898,8 @@ class DefaultWriter(CoverageWriter):
                 file.GetRasterBand(1).WriteArray(var[time_index])
 
         else:
-            raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
+            raise CoverageError("DefaultWriter",
+                                "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
     def write_variable_sea_surface_wave_peak_period(self):
 
@@ -919,7 +938,8 @@ class DefaultWriter(CoverageWriter):
                 file.GetRasterBand(1).WriteArray(var[time_index])
 
         else:
-            raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
+            raise CoverageError("DefaultWriter",
+                                "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
     def write_variable_sea_surface_wave_from_direction(self):
 
@@ -958,7 +978,8 @@ class DefaultWriter(CoverageWriter):
                 file.GetRasterBand(1).WriteArray(var[time_index])
 
         else:
-            raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
+            raise CoverageError("DefaultWriter",
+                                "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
     def write_variable_sea_surface_wave_to_direction(self):
 
@@ -996,7 +1017,8 @@ class DefaultWriter(CoverageWriter):
                 file.SetGeoTransform(self.geotransform)
                 file.GetRasterBand(1).WriteArray(var[time_index])
         else:
-            raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
+            raise CoverageError("DefaultWriter",
+                                "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
     def write_variable_sea_surface_wave_stokes_drift_velocity(self):
 
@@ -1022,7 +1044,8 @@ class DefaultWriter(CoverageWriter):
                     logging.info('[DefaultWriter] Writing variable \'Surface Stokes Drift Velocity\' at time \'' + str(
                         time) + '\'')
 
-                local_data_u, local_data_v = self.coverage.read_variable_sea_surface_wave_stokes_drift_velocity_at_time(time)
+                local_data_u, local_data_v = self.coverage.read_variable_sea_surface_wave_stokes_drift_velocity_at_time(
+                    time)
 
                 # We remove nan value
                 local_data_u[local_data_u == 9.96921e+36] = np.nan
@@ -1062,7 +1085,8 @@ class DefaultWriter(CoverageWriter):
                         file.GetRasterBand(1).WriteArray(vcomp[time_index])
 
         else:
-            raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
+            raise CoverageError("DefaultWriter",
+                                "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
     def write_variable_radiation_pressure_bernouilli_head(self):
 
@@ -1101,7 +1125,8 @@ class DefaultWriter(CoverageWriter):
                 file.GetRasterBand(1).WriteArray(var[time_index])
 
         else:
-            raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
+            raise CoverageError("DefaultWriter",
+                                "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
     def write_variable_sea_surface_wave_energy_flux_to_ocean(self):
 
@@ -1141,7 +1166,8 @@ class DefaultWriter(CoverageWriter):
                 file.GetRasterBand(1).WriteArray(var[time_index])
 
         else:
-            raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
+            raise CoverageError("DefaultWriter",
+                                "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
     #################
     # WAVES
@@ -1168,7 +1194,8 @@ class DefaultWriter(CoverageWriter):
                             'sea_surface_wave_energy_dissipation_at_ground_level']) + '\' at time \'' + str(
                         time) + '\'')
 
-                local_data = self.coverage.read_variable_sea_surface_wave_energy_dissipation_at_ground_level_at_time(time)
+                local_data = self.coverage.read_variable_sea_surface_wave_energy_dissipation_at_ground_level_at_time(
+                    time)
                 self._gathering_var(local_data, var, time_index=time_index)
 
                 file = self.driver.Create(os.path.join(self.filename, time.strftime("%Y%m%d_%H%M%S") + "_" +
@@ -1184,7 +1211,8 @@ class DefaultWriter(CoverageWriter):
                 file.GetRasterBand(1).WriteArray(var[time_index])
 
         else:
-            raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
+            raise CoverageError("DefaultWriter",
+                                "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
     #################
     # WAVES
@@ -1211,8 +1239,9 @@ class DefaultWriter(CoverageWriter):
                 time = self.coverage.read_axis_t(type="target_global")[time_index]
 
                 if self.coverage.rank == 0:
-                    logging.info('[DefaultWriter] Writing variable \'Atmosphere Momentum Flux to Waves\' at time \'' + str(
-                        time) + '\'')
+                    logging.info(
+                        '[DefaultWriter] Writing variable \'Atmosphere Momentum Flux to Waves\' at time \'' + str(
+                            time) + '\'')
 
                 local_data_u, local_data_v = self.coverage.read_variable_atmosphere_momentum_flux_to_waves_at_time(time)
 
@@ -1254,7 +1283,8 @@ class DefaultWriter(CoverageWriter):
                         file.GetRasterBand(1).WriteArray(vcomp[time_index])
 
         else:
-            raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
+            raise CoverageError("DefaultWriter",
+                                "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
     def write_variable_waves_momentum_flux_to_ocean(self):
 
@@ -1320,7 +1350,8 @@ class DefaultWriter(CoverageWriter):
                         file.GetRasterBand(1).WriteArray(vcomp[time_index])
 
         else:
-            raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
+            raise CoverageError("DefaultWriter",
+                                "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
     #################
     # METEO
@@ -1795,7 +1826,8 @@ class DefaultWriter(CoverageWriter):
                         file.GetRasterBand(1).WriteArray(vcomp[time_index])
 
         else:
-            raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
+            raise CoverageError("DefaultWriter",
+                                "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
     #################
     # METEO
@@ -1865,7 +1897,8 @@ class DefaultWriter(CoverageWriter):
                         file.GetRasterBand(1).WriteArray(vcomp[time_index])
 
         else:
-            raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
+            raise CoverageError("DefaultWriter",
+                                "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
     def write_variable_wind_speed_10m(self):
 
@@ -1904,7 +1937,8 @@ class DefaultWriter(CoverageWriter):
                 file.GetRasterBand(1).WriteArray(var[time_index])
 
         else:
-            raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
+            raise CoverageError("DefaultWriter",
+                                "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
     def write_variable_wind_to_direction_10m(self):
 
@@ -1943,7 +1977,8 @@ class DefaultWriter(CoverageWriter):
                 file.GetRasterBand(1).WriteArray(var[time_index])
 
         else:
-            raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
+            raise CoverageError("DefaultWriter",
+                                "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
 
     def write_variable_wind_from_direction_10m(self):
 
@@ -1982,9 +2017,5 @@ class DefaultWriter(CoverageWriter):
                 file.GetRasterBand(1).WriteArray(var[time_index])
 
         else:
-            raise CoverageError("DefaultWriter","The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")
-
-
-
-
-
+            raise CoverageError("DefaultWriter",
+                                "The given coverage is not an instance of 'TimeCoverage' or 'TimeLevelCoverage'")

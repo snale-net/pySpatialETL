@@ -32,6 +32,7 @@ from scipy.interpolate import interp1d
 from scipy.spatial import qhull
 
 from spatialetl.utils.logger import logging
+from spatialetl.utils.timing import timing
 
 
 def interp_2d_weights(gridX, gridY, map, interpolator="scipy"):
@@ -153,6 +154,7 @@ def resample_2d_to_grid(tri, newX, newY, data, method, map, interpolator="scipy"
     else:
         raise ValueError(f"Unable to find interpolator {interpolator}")
 
+
 def vertical_interpolation(sourceAxis, targetAxis, data, method, extrapolate=False):
     # logging.debug("[InterpolatorCore][vertical_interpolation()] Looking for water depth : " + str(
     #   targetAxis[0]) + " m with method '" + str(method) + "'.")
@@ -204,11 +206,13 @@ def temporal_1d_interpolation(sourceAxis, targetAxis, data, method, extrapolate=
         datetime.utcfromtimestamp(targetAxis[0])) + " with method '" + str(method) + "'.")
     for time in sourceAxis:
         logging.debug(
-            "[InterpolatorCore][temporal_interpolation()] Source Axis contains: " + str(datetime.utcfromtimestamp(time)))
+            "[InterpolatorCore][temporal_interpolation()] Source Axis contains: " + str(
+                datetime.utcfromtimestamp(time)))
 
     for time in targetAxis:
         logging.debug(
-            "[InterpolatorCore][temporal_interpolation()] Target Axis contains: " + str(datetime.utcfromtimestamp(time)))
+            "[InterpolatorCore][temporal_interpolation()] Target Axis contains: " + str(
+                datetime.utcfromtimestamp(time)))
 
     if method is None:
         return np.nan
@@ -249,12 +253,13 @@ def temporal_1d_interpolation(sourceAxis, targetAxis, data, method, extrapolate=
     else:
         raise ValueError("Unable to decode temporal interpolation method : " + str(method))
 
+
 def temporal_2d_interpolation(data, method):
     logging.debug(f"[InterpolatorCore][temporal_interpolation()] Starting interpolation with method '{method}'.")
 
     if method == "nearest":
         return data
     elif method == "mean":
-        return np.mean(data,axis=0)
+        return np.mean(data, axis=0)
     else:
         raise ValueError("Unable to decode temporal interpolation method : " + str(method))

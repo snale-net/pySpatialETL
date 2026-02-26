@@ -22,6 +22,7 @@
 # SOFTWARE.
 from __future__ import division, print_function, absolute_import
 
+# TODO add MPI gathering
 from netCDF4 import Dataset
 from netCDF4 import date2num
 from numpy import float32

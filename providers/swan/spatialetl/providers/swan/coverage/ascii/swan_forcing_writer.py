@@ -27,7 +27,7 @@ import numpy as np
 from spatialetl.coverage.io.coverage_writer import CoverageWriter
 from spatialetl.utils.logger import logging
 
-
+# TODO Add MPI gathering
 class SWANForcingWriter(CoverageWriter):
 
     def __init__(self,cov,myFile):

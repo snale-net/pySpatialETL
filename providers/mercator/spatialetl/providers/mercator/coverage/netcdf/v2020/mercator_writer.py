@@ -22,7 +22,9 @@
 # SOFTWARE.
 from __future__ import division, print_function, absolute_import
 
+
 import numpy as np
+# TODO remove MPI dependencies
 from mpi4py import MPI
 from netCDF4 import Dataset
 from netCDF4 import date2num
