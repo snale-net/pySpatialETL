@@ -1,5 +1,3 @@
-#! /usr/bin/env python2.7
-# -*- coding: utf-8 -*-
 # MIT License
 # Copyright (c) 2024 [SNALE - French SAS Company - RCS 951 724 616]
 #
@@ -22,28 +20,26 @@
 # SOFTWARE.
 from __future__ import division, print_function, absolute_import
 
-from mpi4py import MPI
 from netCDF4 import Dataset
 from netCDF4 import date2num
 from numpy import float32, float64, int32
 
+from spatialetl.point.io.multi_point_writer import MultiPointWriter
 from spatialetl.point.level_multi_point import LevelMultiPoint
 from spatialetl.point.time_level_multi_point import TimeLevelMultiPoint
 from spatialetl.point.time_multi_point import TimeMultiPoint
-from spatialetl.point.io.multi_point_writer import MultiPointWriter
-from spatialetl.utils.variable_definition import VariableDefinition
 from spatialetl.utils.logger import logging
+from spatialetl.utils.variable_definition import VariableDefinition
 
 
 class DefaultWriter(MultiPointWriter):
 
-    def __init__(self, p,myFile):
-        MultiPointWriter.__init__(self,p,myFile)
+    def __init__(self, p, myFile):
+        MultiPointWriter.__init__(self, p, myFile)
         format = 'NETCDF4_CLASSIC'
 
-        self.ncfile = Dataset(self.filename, 'w', parallel=True, comm=self.points.comm, info=MPI.Info(),
-                              format=format)
-        self.ncfile.description = 'Generated with pySpatialETL'
+        self.ncfile = Dataset(self.filename, 'w', format=format)
+        self.ncfile.description = 'Generated with spatialETL'
 
         self.ncfile.data_source = str(self.points.data_source)
         self.ncfile.meta_data = str(self.points.meta_data)
@@ -77,7 +73,6 @@ class DefaultWriter(MultiPointWriter):
         var[:] = self.points.read_axis_x()
 
         if (isinstance(self.points, TimeMultiPoint) or isinstance(self.points, TimeLevelMultiPoint)):
-
             # Time dimension
             self.ncfile.createDimension(VariableDefinition.VARIABLE_NAME['time'],
                                         self.points.get_t_size(type="target_global"))
@@ -89,9 +84,9 @@ class DefaultWriter(MultiPointWriter):
             times.axis = 'T'
             times.conventions = "UTC time"
 
-            times[self.points.parallel_map[self.points.rank]["dst_global_t"]] = date2num(self.points.read_axis_t(),
-                                                                                      units=times.units,
-                                                                                      calendar=times.calendar)
+            times[:] = date2num(self.points.read_axis_t(),
+                                units=times.units,
+                                calendar=times.calendar)
 
         if (isinstance(self.points, LevelMultiPoint) or isinstance(self.points, TimeLevelMultiPoint)):
 
@@ -120,7 +115,7 @@ class DefaultWriter(MultiPointWriter):
         times.standard_name = 'time'
         times.conventions = "UTC time"
 
-        times[self.points.parallel_map[self.points.rank]["dst_global_t"]] = date2num(self.points.read_variable_time(), units=times.units, calendar=times.calendar)
+        times[:] = date2num(self.points.read_variable_time(), units=times.units, calendar=times.calendar)
 
     #################
     # HYDRO
@@ -160,13 +155,16 @@ class DefaultWriter(MultiPointWriter):
                     VariableDefinition.LONG_NAME['sea_surface_height_above_mean_sea_level']) + '\' at time \'' + str(
                     time) + '\'')
 
-            var[self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index:self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index+1,
-            :] = self.points.read_variable_sea_surface_height_above_mean_sea_level_at_time(time)
+            var[
+                time_index:time_index + 1, :] = self.points.read_variable_sea_surface_height_above_mean_sea_level_at_time(
+                time)
             time_index += 1
 
     def write_variable_water_volume_transport_into_sea_water_from_rivers(self):
-        var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['water_volume_transport_into_sea_water_from_rivers'], float32, (
-        VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['point']), fill_value=9.96921e+36)
+        var = self.ncfile.createVariable(
+            VariableDefinition.VARIABLE_NAME['water_volume_transport_into_sea_water_from_rivers'], float32, (
+                VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['point']),
+            fill_value=9.96921e+36)
         var.long_name = VariableDefinition.LONG_NAME['water_volume_transport_into_sea_water_from_rivers']
         var.standard_name = VariableDefinition.STANDARD_NAME['water_volume_transport_into_sea_water_from_rivers']
         var.units = VariableDefinition.CANONICAL_UNITS['water_volume_transport_into_sea_water_from_rivers']
@@ -178,10 +176,13 @@ class DefaultWriter(MultiPointWriter):
         for time in self.points.read_axis_t():
             logging.info(
                 '[DefaultWriter] Writing variable \'' + str(
-                    VariableDefinition.LONG_NAME['water_volume_transport_into_sea_water_from_rivers']) + '\' at time \'' + str(
+                    VariableDefinition.LONG_NAME[
+                        'water_volume_transport_into_sea_water_from_rivers']) + '\' at time \'' + str(
                     time) + '\'')
 
-            var[self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index:self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index+1, :] = self.points.read_variable_water_volume_transport_into_sea_water_from_rivers_at_time(time)
+            var[
+                time_index:time_index + 1, :] = self.points.read_variable_water_volume_transport_into_sea_water_from_rivers_at_time(
+                time)
             time_index += 1
 
     def write_variable_barotropic_sea_water_speed(self):
@@ -201,7 +202,7 @@ class DefaultWriter(MultiPointWriter):
                 '[DefaultWriter] Writing variable \'' + str(
                     VariableDefinition.LONG_NAME['barotropic_sea_water_speed']) + '\' at time \'' + str(time) + '\'')
 
-            var[self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index:self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index+1, :] = self.points.read_variable_barotropic_sea_water_speed_at_time(time)
+            var[time_index:time_index + 1, :] = self.points.read_variable_barotropic_sea_water_speed_at_time(time)
             time_index += 1
 
     def write_variable_barotropic_sea_water_from_direction(self):
@@ -223,7 +224,7 @@ class DefaultWriter(MultiPointWriter):
                     VariableDefinition.LONG_NAME['barotropic_sea_water_from_direction']) + '\' at time \'' + str(
                     time) + '\'')
 
-            var[self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index:self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index+1, :] = self.points.read_variable_barotropic_sea_water_from_direction_at_time(
+            var[time_index:time_index + 1, :] = self.points.read_variable_barotropic_sea_water_from_direction_at_time(
                 time)
             time_index += 1
 
@@ -246,7 +247,7 @@ class DefaultWriter(MultiPointWriter):
                     VariableDefinition.LONG_NAME['barotropic_sea_water_to_direction']) + '\' at time \'' + str(
                     time) + '\'')
 
-            var[self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index:self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index+1, :] = self.points.read_variable_barotropic_sea_water_to_direction_at_time(
+            var[time_index:time_index + 1, :] = self.points.read_variable_barotropic_sea_water_to_direction_at_time(
                 time)
             time_index += 1
 
@@ -272,7 +273,7 @@ class DefaultWriter(MultiPointWriter):
                 '[DefaultWriter] Writing variable \'' + str(
                     VariableDefinition.LONG_NAME['sea_surface_temperature']) + '\' at time \'' + str(time) + '\'')
 
-            var[self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index:self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index+1, :] = self.points.read_variable_sea_surface_temperature_at_time(time)
+            var[time_index:time_index + 1, :] = self.points.read_variable_sea_surface_temperature_at_time(time)
             time_index += 1
 
     def write_variable_sea_surface_salinity(self):
@@ -293,7 +294,7 @@ class DefaultWriter(MultiPointWriter):
                     VariableDefinition.LONG_NAME['sea_surface_salinity']) + '\' at time \'' + str(
                     time) + '\'')
 
-            var[self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index:self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index+1, :] = self.points.read_variable_sea_surface_salinity_at_time(time)
+            var[time_index:time_index + 1, :] = self.points.read_variable_sea_surface_salinity_at_time(time)
             time_index += 1
 
     def write_variable_sea_water_pressure_at_sea_water_surface(self):
@@ -315,13 +316,15 @@ class DefaultWriter(MultiPointWriter):
                     VariableDefinition.LONG_NAME['sea_water_pressure_at_sea_water_surface']) + '\' at time \'' + str(
                     time) + '\'')
 
-            var[self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index:self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index+1,
+            var[time_index:time_index + 1,
             :] = self.points.read_variable_sea_water_pressure_at_sea_water_surface_at_time(time)
             time_index += 1
 
     def write_variable_sea_water_speed_at_sea_water_surface(self):
-        var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_water_speed_at_sea_water_surface'], float32, (
-            VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['point']),
+        var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_water_speed_at_sea_water_surface'],
+                                         float32, (
+                                             VariableDefinition.VARIABLE_NAME['time'],
+                                             VariableDefinition.VARIABLE_NAME['point']),
                                          fill_value=9.96921e+36)
         var.long_name = VariableDefinition.LONG_NAME['sea_water_speed_at_sea_water_surface']
         var.standard_name = VariableDefinition.STANDARD_NAME['sea_water_speed_at_sea_water_surface']
@@ -337,14 +340,16 @@ class DefaultWriter(MultiPointWriter):
                     VariableDefinition.LONG_NAME['sea_water_speed_at_sea_water_surface']) + '\' at time \'' + str(
                     time) + '\'')
 
-            var[self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index:self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index+1, :] = self.points.read_variable_sea_water_speed_at_sea_water_surface_at_time(time)
+            var[time_index:time_index + 1, :] = self.points.read_variable_sea_water_speed_at_sea_water_surface_at_time(
+                time)
             time_index += 1
 
     def write_variable_sea_water_from_direction_at_sea_water_surface(self):
-        var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_water_from_direction_at_sea_water_surface'],
-                                         float32, (VariableDefinition.VARIABLE_NAME['time'],
-                                                   VariableDefinition.VARIABLE_NAME['point']),
-                                         fill_value=9.96921e+36)
+        var = self.ncfile.createVariable(
+            VariableDefinition.VARIABLE_NAME['sea_water_from_direction_at_sea_water_surface'],
+            float32, (VariableDefinition.VARIABLE_NAME['time'],
+                      VariableDefinition.VARIABLE_NAME['point']),
+            fill_value=9.96921e+36)
         var.long_name = VariableDefinition.LONG_NAME['sea_water_from_direction_at_sea_water_surface']
         var.standard_name = VariableDefinition.STANDARD_NAME['sea_water_from_direction_at_sea_water_surface']
         var.units = VariableDefinition.CANONICAL_UNITS['sea_water_from_direction_at_sea_water_surface']
@@ -356,20 +361,22 @@ class DefaultWriter(MultiPointWriter):
         for time in self.points.read_axis_t():
             logging.info(
                 '[DefaultWriter] Writing variable \'' + str(
-                    VariableDefinition.LONG_NAME['sea_water_from_direction_at_sea_water_surface']) + '\' at time \'' + str(
+                    VariableDefinition.LONG_NAME[
+                        'sea_water_from_direction_at_sea_water_surface']) + '\' at time \'' + str(
                     time) + '\'')
 
-            var[self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index:self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index+1,
+            var[time_index:time_index + 1,
             :] = self.points.read_variable_sea_water_from_direction_at_sea_water_surface_at_time(
                 time)
             time_index += 1
 
     def write_variable_sea_water_to_direction_at_sea_water_surface(self):
-        var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_water_to_direction_at_sea_water_surface'],
-                                         float32,
-                                         (VariableDefinition.VARIABLE_NAME['time'],
-                                          VariableDefinition.VARIABLE_NAME['point']),
-                                         fill_value=9.96921e+36)
+        var = self.ncfile.createVariable(
+            VariableDefinition.VARIABLE_NAME['sea_water_to_direction_at_sea_water_surface'],
+            float32,
+            (VariableDefinition.VARIABLE_NAME['time'],
+             VariableDefinition.VARIABLE_NAME['point']),
+            fill_value=9.96921e+36)
         var.long_name = VariableDefinition.LONG_NAME['sea_water_to_direction_at_sea_water_surface']
         var.standard_name = VariableDefinition.STANDARD_NAME['sea_water_to_direction_at_sea_water_surface']
         var.units = VariableDefinition.CANONICAL_UNITS['sea_water_to_direction_at_sea_water_surface']
@@ -381,10 +388,12 @@ class DefaultWriter(MultiPointWriter):
         for time in self.points.read_axis_t():
             logging.info(
                 '[DefaultWriter] Writing variable \'' + str(
-                    VariableDefinition.LONG_NAME['sea_water_to_direction_at_sea_water_surface']) + '\' at time \'' + str(
+                    VariableDefinition.LONG_NAME[
+                        'sea_water_to_direction_at_sea_water_surface']) + '\' at time \'' + str(
                     time) + '\'')
 
-            var[self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index:self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index+1, :] = self.points.read_variable_sea_water_to_direction_at_sea_water_surface_at_time(
+            var[
+                time_index:time_index + 1, :] = self.points.read_variable_sea_water_to_direction_at_sea_water_surface_at_time(
                 time)
             time_index += 1
 
@@ -394,8 +403,10 @@ class DefaultWriter(MultiPointWriter):
     #################
 
     def write_variable_sea_water_temperature_at_ground_level(self):
-        var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_water_temperature_at_ground_level'], float32, (
-        VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['point']), fill_value=9.96921e+36)
+        var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_water_temperature_at_ground_level'],
+                                         float32, (
+                                             VariableDefinition.VARIABLE_NAME['time'],
+                                             VariableDefinition.VARIABLE_NAME['point']), fill_value=9.96921e+36)
         var.long_name = VariableDefinition.LONG_NAME['sea_water_temperature_at_ground_level'];
         var.standard_name = VariableDefinition.STANDARD_NAME['sea_water_temperature_at_ground_level']
         var.units = VariableDefinition.CANONICAL_UNITS['sea_water_temperature_at_ground_level']
@@ -407,9 +418,11 @@ class DefaultWriter(MultiPointWriter):
         for time in self.points.read_axis_t():
             logging.info(
                 '[DefaultWriter] Writing variable \'' + str(
-                    VariableDefinition.LONG_NAME['sea_water_temperature_at_ground_level']) + '\' at time \'' + str(time) + '\'')
+                    VariableDefinition.LONG_NAME['sea_water_temperature_at_ground_level']) + '\' at time \'' + str(
+                    time) + '\'')
 
-            var[self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index:self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index+1, :] = self.points.read_variable_sea_water_temperature_at_ground_level_at_time(time)
+            var[time_index:time_index + 1, :] = self.points.read_variable_sea_water_temperature_at_ground_level_at_time(
+                time)
             time_index += 1
 
     def write_variable_sea_water_salinity_at_ground_level(self):
@@ -431,7 +444,7 @@ class DefaultWriter(MultiPointWriter):
                     VariableDefinition.LONG_NAME['sea_water_salinity_at_ground_level']) + '\' at time \'' + str(
                     time) + '\'')
 
-            var[self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index:self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index+1, :] = self.points.read_variable_sea_water_salinity_at_ground_level_at_time(
+            var[time_index:time_index + 1, :] = self.points.read_variable_sea_water_salinity_at_ground_level_at_time(
                 time)
             time_index += 1
 
@@ -453,7 +466,7 @@ class DefaultWriter(MultiPointWriter):
                     VariableDefinition.LONG_NAME['sea_water_speed_at_ground_level']) + '\' at time \'' + str(
                     time) + '\'')
 
-            var[self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index:self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index+1, :] = self.points.read_variable_sea_water_speed_at_ground_level_at_time(time)
+            var[time_index:time_index + 1, :] = self.points.read_variable_sea_water_speed_at_ground_level_at_time(time)
             time_index += 1
 
     def write_variable_sea_water_from_direction_at_ground_level(self):
@@ -475,7 +488,7 @@ class DefaultWriter(MultiPointWriter):
                     VariableDefinition.LONG_NAME['sea_water_from_direction_at_ground_level']) + '\' at time \'' + str(
                     time) + '\'')
 
-            var[self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index:self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index+1,
+            var[time_index:time_index + 1,
             :] = self.points.read_variable_sea_water_from_direction_at_ground_level_at_time(
                 time)
             time_index += 1
@@ -500,7 +513,8 @@ class DefaultWriter(MultiPointWriter):
                     VariableDefinition.LONG_NAME['sea_water_to_direction_at_ground_level']) + '\' at time \'' + str(
                     time) + '\'')
 
-            var[self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index:self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index+1, :] = self.points.read_variable_sea_water_to_direction_at_ground_level_at_time(
+            var[
+                time_index:time_index + 1, :] = self.points.read_variable_sea_water_to_direction_at_ground_level_at_time(
                 time)
             time_index += 1
 
@@ -512,8 +526,8 @@ class DefaultWriter(MultiPointWriter):
     def write_variable_sea_water_temperature(self):
 
         var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_water_temperature'], float32, (
-        VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['depth'],
-        VariableDefinition.VARIABLE_NAME['point']), fill_value=9.96921e+36)
+            VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['depth'],
+            VariableDefinition.VARIABLE_NAME['point']), fill_value=9.96921e+36)
         var.long_name = VariableDefinition.LONG_NAME['sea_water_temperature']
         var.standard_name = VariableDefinition.STANDARD_NAME['sea_water_temperature']
         var.units = VariableDefinition.CANONICAL_UNITS['sea_water_temperature']
@@ -529,15 +543,15 @@ class DefaultWriter(MultiPointWriter):
             z_index = 0
             for depth in self.points.read_axis_z():
                 data = self.points.read_variable_sea_water_temperature_at_time_and_depth(time, depth)
-                var[self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index:self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index+1, z_index:z_index + 1] = data
+                var[time_index:time_index + 1, z_index:z_index + 1] = data
                 z_index = z_index + 1
 
             time_index += 1
 
     def write_variable_sea_water_salinity(self):
         var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_water_salinity'], float32, (
-        VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['depth'],
-        VariableDefinition.VARIABLE_NAME['point']), fill_value=9.96921e+36)
+            VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['depth'],
+            VariableDefinition.VARIABLE_NAME['point']), fill_value=9.96921e+36)
         var.long_name = VariableDefinition.LONG_NAME['sea_water_salinity']
         var.standard_name = VariableDefinition.STANDARD_NAME['sea_water_salinity']
         var.units = VariableDefinition.CANONICAL_UNITS['sea_water_salinity']
@@ -554,15 +568,15 @@ class DefaultWriter(MultiPointWriter):
             z_index = 0
             for depth in self.points.read_axis_z():
                 data = self.points.read_variable_sea_water_salinity_at_time_and_depth(time, depth)
-                var[self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index:self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index+1, z_index:z_index + 1] = data
+                var[time_index:time_index + 1, z_index:z_index + 1] = data
                 z_index = z_index + 1
 
             time_index += 1
 
     def write_variable_sea_water_density(self):
         var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_water_density'], float32, (
-        VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['depth'],
-        VariableDefinition.VARIABLE_NAME['point']), fill_value=9.96921e+36)
+            VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['depth'],
+            VariableDefinition.VARIABLE_NAME['point']), fill_value=9.96921e+36)
         var.long_name = VariableDefinition.LONG_NAME['sea_water_density']
         var.standard_name = VariableDefinition.STANDARD_NAME['sea_water_density']
         var.units = VariableDefinition.CANONICAL_UNITS['sea_water_density']
@@ -579,7 +593,7 @@ class DefaultWriter(MultiPointWriter):
             z_index = 0
             for depth in self.points.read_axis_z():
                 data = self.points.read_variable_sea_water_density_at_time_and_depth(time, depth)
-                var[self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index:self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index+1, z_index:z_index + 1] = data
+                var[time_index:time_index + 1, z_index:z_index + 1] = data
                 z_index = z_index + 1
 
             time_index += 1
@@ -607,15 +621,15 @@ class DefaultWriter(MultiPointWriter):
             z_index = 0
             for depth in self.points.read_axis_z():
                 data = self.points.read_variable_sea_water_conductivity_at_time_and_depth(time, depth)
-                var[self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index:self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index+1, z_index:z_index + 1] = data
+                var[time_index:time_index + 1, z_index:z_index + 1] = data
                 z_index = z_index + 1
 
             time_index += 1
 
     def write_variable_sea_water_turbidity(self):
         var = self.ncfile.createVariable(VariableDefinition.VARIABLE_NAME['sea_water_turbidity'], float32, (
-        VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['depth'],
-        VariableDefinition.VARIABLE_NAME['point']), fill_value=9.96921e+36)
+            VariableDefinition.VARIABLE_NAME['time'], VariableDefinition.VARIABLE_NAME['depth'],
+            VariableDefinition.VARIABLE_NAME['point']), fill_value=9.96921e+36)
         var.long_name = VariableDefinition.LONG_NAME['sea_water_turbidity']
         var.standard_name = VariableDefinition.STANDARD_NAME['sea_water_turbidity']
         var.units = VariableDefinition.CANONICAL_UNITS['sea_water_turbidity']
@@ -632,7 +646,7 @@ class DefaultWriter(MultiPointWriter):
             z_index = 0
             for depth in self.points.read_axis_z():
                 data = self.points.read_variable_sea_water_turbidity_at_time_and_depth(time, depth)
-                var[self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index:self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index+1, z_index:z_index + 1] = data
+                var[time_index:time_index + 1, z_index:z_index + 1] = data
                 z_index = z_index + 1
 
             time_index += 1
@@ -670,8 +684,8 @@ class DefaultWriter(MultiPointWriter):
             z_index = 0
             for depth in self.points.read_axis_z():
                 cur = self.points.read_variable_baroclinic_sea_water_velocity_at_time_and_depth(time, depth)
-                ucur[self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index:self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index+1, z_index:z_index + 1] = cur[0]
-                vcur[self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index:self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index+1, z_index:z_index + 1] = cur[1]
+                ucur[time_index:time_index + 1, z_index:z_index + 1] = cur[0]
+                vcur[time_index:time_index + 1, z_index:z_index + 1] = cur[1]
                 z_index = z_index + 1
 
             time_index += 1
@@ -718,7 +732,7 @@ class DefaultWriter(MultiPointWriter):
                 '[DefaultWriter] Writing variable \'' + str(
                     VariableDefinition.LONG_NAME['rainfall_amount']) + '\' at time \'' + str(time) + '\'')
 
-            var[self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index:self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index+1, :] = self.points.read_variable_rainfall_amount_at_time(time)
+            var[time_index:time_index + 1, :] = self.points.read_variable_rainfall_amount_at_time(time)
             time_index += 1
 
     def write_variable_surface_air_pressure(self):
@@ -738,7 +752,7 @@ class DefaultWriter(MultiPointWriter):
                 '[DefaultWriter] Writing variable \'' + str(
                     VariableDefinition.LONG_NAME['surface_air_pressure']) + '\' at time \'' + str(time) + '\'')
 
-            var[self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index:self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index+1, :] = self.points.read_variable_surface_air_pressure_at_time(time)
+            var[time_index:time_index + 1, :] = self.points.read_variable_surface_air_pressure_at_time(time)
             time_index += 1
 
     #################
@@ -763,7 +777,7 @@ class DefaultWriter(MultiPointWriter):
                 '[DefaultWriter] Writing variable \'' + str(
                     VariableDefinition.LONG_NAME['wind_speed_10m']) + '\' at time \'' + str(time) + '\'')
 
-            var[self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index:self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index+1, :] = self.points.read_variable_wind_speed_10m_at_time(time)
+            var[time_index:time_index + 1, :] = self.points.read_variable_wind_speed_10m_at_time(time)
             time_index += 1
 
     def write_variable_wind_from_direction_10m(self):
@@ -783,7 +797,7 @@ class DefaultWriter(MultiPointWriter):
                 '[DefaultWriter] Writing variable \'' + str(
                     VariableDefinition.LONG_NAME['wind_from_direction_10m']) + '\' at time \'' + str(time) + '\'')
 
-            var[self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index:self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index+1, :] = self.points.read_variable_wind_from_direction_10m_at_time(time)
+            var[time_index:time_index + 1, :] = self.points.read_variable_wind_from_direction_10m_at_time(time)
             time_index += 1
 
     def write_variable_wind_to_direction_10m(self):
@@ -804,5 +818,5 @@ class DefaultWriter(MultiPointWriter):
                     VariableDefinition.LONG_NAME['wind_to_direction_10m']) + '\' at time \'' + str(
                     time) + '\'')
 
-            var[self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index:self.points.parallel_map[self.points.rank]["dst_global_t"].start+time_index+1, :] = self.points.read_variable_wind_to_direction_10m_at_time(time)
+            var[time_index:time_index + 1, :] = self.points.read_variable_wind_to_direction_10m_at_time(time)
             time_index += 1

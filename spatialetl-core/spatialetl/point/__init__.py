@@ -19,3 +19,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 __path__ = __import__("pkgutil").extend_path(__path__, __name__)
+
+from .multi_point import MultiPoint
+from .level_multi_point import LevelMultiPoint
+from .time_multi_point import TimeMultiPoint
+from .time_level_multi_point import TimeLevelMultiPoint
+
+__all__ = ['MultiPoint','LevelMultiPoint','TimeMultiPoint','TimeLevelMultiPoint']

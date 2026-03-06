@@ -156,13 +156,13 @@ def resample_2d_to_grid(tri, newX, newY, data, method, map, interpolator="scipy"
 
 
 def vertical_interpolation(sourceAxis, targetAxis, data, method, extrapolate=False):
-    # logging.debug("[InterpolatorCore][vertical_interpolation()] Looking for water depth : " + str(
-    #   targetAxis[0]) + " m with method '" + str(method) + "'.")
+    logging.debug("[InterpolatorCore][vertical_interpolation()] Looking for water depth : " + str(
+       targetAxis[0]) + " m with method '" + str(method) + "'.")
     logging.debug("[InterpolatorCore][vertical_interpolation()] Source Axis contains: " + str(sourceAxis))
-    logging.debug("[InterpolatorCore][vertical_interpolation()] Candidates values are: " + str(data))
-    logging.debug("[InterpolatorCore][vertical_interpolation()] Target Axis contains: " + str(targetAxis))
-    logging.debug("[InterpolatorCore][vertical_interpolation()] Method: " + str(method))
-    logging.debug("[InterpolatorCore][vertical_interpolation()] ----------------------------------------")
+    #logging.debug("[InterpolatorCore][vertical_interpolation()] Candidates values are: " + str(data))
+    #logging.debug("[InterpolatorCore][vertical_interpolation()] Target Axis contains: " + str(targetAxis))
+    #logging.debug("[InterpolatorCore][vertical_interpolation()] Method: " + str(method))
+    #logging.debug("[InterpolatorCore][vertical_interpolation()] ----------------------------------------")
 
     if method == "mean":
         return np.mean(data)
@@ -209,11 +209,6 @@ def temporal_1d_interpolation(sourceAxis, targetAxis, data, method, extrapolate=
             "[InterpolatorCore][temporal_interpolation()] Source Axis contains: " + str(
                 datetime.utcfromtimestamp(time)))
 
-    for time in targetAxis:
-        logging.debug(
-            "[InterpolatorCore][temporal_interpolation()] Target Axis contains: " + str(
-                datetime.utcfromtimestamp(time)))
-
     if method is None:
         return np.nan
 
@@ -258,7 +253,7 @@ def temporal_2d_interpolation(data, method):
     logging.debug(f"[InterpolatorCore][temporal_interpolation()] Starting interpolation with method '{method}'.")
 
     if method == "nearest":
-        return data
+        return data[0]
     elif method == "mean":
         return np.mean(data, axis=0)
     else:

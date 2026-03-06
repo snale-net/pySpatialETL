@@ -138,13 +138,13 @@ class MERCATORReader(CoverageReader):
         gridrotsin_t = np.zeros([ymax,xmax])       
         
         u = np.zeros([ymax,xmax])
-        u[:] = np.NAN
+        u[:] =np.nan
         v = np.zeros([ymax,xmax])
-        v[:] = np.NAN
+        v[:] =np.nan
         u_rot = np.zeros([ymax,xmax])
-        u_rot[:] = np.NAN
+        u_rot[:] =np.nan
         v_rot = np.zeros([ymax,xmax])
-        v_rot[:] = np.NAN
+        v_rot[:] =np.nan
 
         # We process point inside the domain
         for y in range(1,ymax-1):

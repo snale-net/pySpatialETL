@@ -22,6 +22,8 @@
 # SOFTWARE.
 from __future__ import division, print_function, absolute_import
 
+from concurrent.futures import ThreadPoolExecutor
+
 import numpy as np
 
 from spatialetl.point.level_multi_point import LevelMultiPoint
@@ -44,10 +46,10 @@ class TimeLevelMultiPoint(LevelMultiPoint, TimeMultiPoint):
         indexes_z = tmp[1]
 
         layers = np.zeros([np.shape(indexes_t)[0],2, np.shape(indexes_z)[0],self.get_nb_points()])
-        layers[::] = np.NAN
+        layers[::] =np.nan
 
         results = np.zeros([np.shape(indexes_t)[0],2,self.get_nb_points()])
-        results[:] = np.NAN
+        results[:] =np.nan
 
         for t in range(0, len(indexes_t)):
 
@@ -80,10 +82,10 @@ class TimeLevelMultiPoint(LevelMultiPoint, TimeMultiPoint):
         indexes_z = tmp[1]
 
         layers = np.zeros([np.shape(indexes_t)[0],np.shape(indexes_z)[0], self.get_nb_points()])
-        layers[::] = np.NAN
+        layers[::] = np.nan
 
         results = np.zeros([np.shape(indexes_t)[0],self.get_nb_points()])
-        results[:] = np.NAN
+        results[:] = np.nan
 
         for t in range(0, len(indexes_t)):
             for z in range(0, len(indexes_z)):
@@ -96,7 +98,6 @@ class TimeLevelMultiPoint(LevelMultiPoint, TimeMultiPoint):
 
         return results
 
-
     def read_variable_sea_water_salinity_at_time_and_depth(self, time, depth):
 
         indexes_t = self.find_time_index(time);
@@ -105,10 +106,10 @@ class TimeLevelMultiPoint(LevelMultiPoint, TimeMultiPoint):
         indexes_z = tmp[1]
 
         layers = np.zeros([np.shape(indexes_t)[0], np.shape(indexes_z)[0], self.get_nb_points()])
-        layers[::] = np.NAN
+        layers[::] =np.nan
 
         results = np.zeros([np.shape(indexes_t)[0], self.get_nb_points()])
-        results[:] = np.NAN
+        results[:] =np.nan
 
         for t in range(0, len(indexes_t)):
             for z in range(0, len(indexes_z)):

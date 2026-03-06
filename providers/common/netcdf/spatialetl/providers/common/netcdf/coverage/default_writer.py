@@ -204,7 +204,8 @@ class DefaultWriter(CoverageWriter):
                         variable_type,
                         (VariableDefinition.VARIABLE_NAME['time'],
                          VariableDefinition.VARIABLE_NAME['latitude'],
-                         VariableDefinition.VARIABLE_NAME['longitude'],), fill_value=variable_fill_value)
+                         VariableDefinition.VARIABLE_NAME['longitude'],),
+                        fill_value=variable_fill_value)
                 else:
                     var = self.ncfile.createVariable(variable_name, variable_type,
                                                      (VariableDefinition.VARIABLE_NAME['latitude'],

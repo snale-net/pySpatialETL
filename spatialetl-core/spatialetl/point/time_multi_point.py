@@ -1,5 +1,3 @@
-#! /usr/bin/env python2.7
-# -*- coding: utf-8 -*-
 # MIT License
 # Copyright (c) 2024 [SNALE - French SAS Company - RCS 951 724 616]
 #
@@ -25,6 +23,7 @@ from __future__ import division, print_function, absolute_import
 import math
 from datetime import datetime, timedelta, timezone
 
+import cftime
 import numpy as np
 import pandas
 from array_split import shape_split
@@ -57,72 +56,71 @@ class TimeMultiPoint(MultiPoint):
             self.target_global_axis_t = time_range
             self.target_global_t_size = np.shape(self.target_global_axis_t)[0]
             self.temporal_resampling = True
-
-        if start_time is not None:
-
-            if type(start_time) == datetime:
-                time = start_time
-            elif type(start_time) == str:
-                try:
-                    time = datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S')
-                except ValueError as ex:
-                    raise ValueError("start_time is not well formated " + str(ex))
-            else:
-                raise ValueError("start_time have to be string or datetime. Found " + str(type(start_time)))
-
-            nearest_t_index = (np.abs(np.asarray(self.source_global_axis_t) - time)).argmin()
-
-            if time - datetime.strptime(str(self.source_global_axis_t[nearest_t_index]),'%Y-%m-%d %H:%M:%S') == zero_delta or abs(
-                    time - datetime.strptime(str(self.source_global_axis_t[nearest_t_index]),'%Y-%m-%d %H:%M:%S')) < TimeMultiPoint.TIME_DELTA:
-                tmin = nearest_t_index
-            else:
-                raise ValueError(str(time) + " not found. Maybe the TimeMultiPoint.TIME_DELTA (" + str(
-                    TimeMultiPoint.TIME_DELTA) + ") is too small or the date is out the range.")
-
-        if end_time is not None:
-
-            if type(end_time) == datetime:
-                time = end_time
-            elif type(end_time) == str:
-                try:
-                    time = datetime.strptime(end_time, '%Y-%m-%d %H:%M:%S')
-                except ValueError as ex:
-                    raise ValueError("end_time is not well formated " + str(ex))
-            else:
-                raise ValueError("end_time have to be string or datetime. Found " + str(type(end_time)))
-
-            nearest_t_index = (np.abs(np.asarray(self.source_global_axis_t) - time)).argmin()
-
-            if time - datetime.strptime(str(self.source_global_axis_t[nearest_t_index]),'%Y-%m-%d %H:%M:%S') == zero_delta or abs(
-                    time - datetime.strptime(str(self.source_global_axis_t[nearest_t_index]),'%Y-%m-%d %H:%M:%S')) < TimeMultiPoint.TIME_DELTA:
-                tmax = nearest_t_index + 1
-            else:
-                raise ValueError(str(time) + " not found. Maybe the TimeMultiPoint.TIME_DELTA (" + str(
-                    TimeMultiPoint.TIME_DELTA) + ") is too small or the date is out the range.")
-
-        if freq is not None:
-            self.temporal_resampling = True
-            self.target_global_axis_t =pandas.date_range(start=datetime.utcfromtimestamp(self.read_axis_t(type="source_global", with_overlap=False,timestamp=1)[tmin]),
-                                                  end=datetime.utcfromtimestamp(self.read_axis_t(type="source_global", with_overlap=False,timestamp=1)[tmax-1]), freq=freq).to_pydatetime();
-            self.target_global_t_size = np.shape(self.target_global_axis_t)[0]
         else:
-            self.target_global_axis_t = self.source_global_axis_t[tmin:tmax]
-            self.target_global_t_size = tmax - tmin
+            if start_time is not None:
+                if type(start_time) == datetime:
+                    time = start_time
+                elif type(start_time) == str:
+                    try:
+                        time = datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S')
+                    except ValueError as ex:
+                        raise ValueError("start_time is not well formated " + str(ex))
+                else:
+                    raise ValueError("start_time have to be string or datetime. Found " + str(type(start_time)))
+
+                nearest_t_index = (np.abs(np.asarray(self.source_global_axis_t) - time)).argmin()
+
+                if time - datetime.strptime(str(self.source_global_axis_t[nearest_t_index]),'%Y-%m-%d %H:%M:%S') == zero_delta or abs(
+                        time - datetime.strptime(str(self.source_global_axis_t[nearest_t_index]),'%Y-%m-%d %H:%M:%S')) < TimeMultiPoint.TIME_DELTA:
+                    tmin = nearest_t_index
+                else:
+                    raise ValueError(str(time) + " not found. Maybe the TimeMultiPoint.TIME_DELTA (" + str(
+                        TimeMultiPoint.TIME_DELTA) + ") is too small or the date is out the range.")
+
+            if end_time is not None:
+
+                if type(end_time) == datetime:
+                    time = end_time
+                elif type(end_time) == str:
+                    try:
+                        time = datetime.strptime(end_time, '%Y-%m-%d %H:%M:%S')
+                    except ValueError as ex:
+                        raise ValueError("end_time is not well formated " + str(ex))
+                else:
+                    raise ValueError("end_time have to be string or datetime. Found " + str(type(end_time)))
+
+                nearest_t_index = (np.abs(np.asarray(self.source_global_axis_t) - time)).argmin()
+
+                if time - datetime.strptime(str(self.source_global_axis_t[nearest_t_index]),'%Y-%m-%d %H:%M:%S') == zero_delta or abs(
+                        time - datetime.strptime(str(self.source_global_axis_t[nearest_t_index]),'%Y-%m-%d %H:%M:%S')) < TimeMultiPoint.TIME_DELTA:
+                    tmax = nearest_t_index + 1
+                else:
+                    raise ValueError(str(time) + " not found. Maybe the TimeMultiPoint.TIME_DELTA (" + str(
+                        TimeMultiPoint.TIME_DELTA) + ") is too small or the date is out the range.")
+
+            if freq is not None:
+                self.temporal_resampling = True
+                self.target_global_axis_t =pandas.date_range(start=datetime.utcfromtimestamp(self.read_axis_t(type="source_global", with_overlap=False,timestamp=1)[tmin]),
+                                                      end=datetime.utcfromtimestamp(self.read_axis_t(type="source_global", with_overlap=False,timestamp=1)[tmax-1]), freq=freq).to_pydatetime();
+                self.target_global_t_size = np.shape(self.target_global_axis_t)[0]
+            else:
+                self.target_global_axis_t = self.source_global_axis_t[tmin:tmax]
+                self.target_global_t_size = tmax - tmin
 
         self.create_mpi_map()
-        self.update_mpi_map()
+        #self.update_mpi_map()
 
-        if self.rank == 0:
-            logging.debug("MPI map:")
-        for key in self.parallel_map[self.rank]:
-            logging.debug("Proc n°" + str(self.rank) + " " + str(key) + "=" + str(self.parallel_map[self.rank][key]))
+        logging.debug("Multithreading map:")
+        for current_thread in range(0,self.threads_count):
+            for key in self.parallel_map[current_thread]:
+                logging.debug("Proc n°" + str(current_thread) + " " + str(key) + "=" + str(self.parallel_map[current_thread][key]))
         logging.debug("---------")
 
     def create_mpi_map(self):
 
-        self.parallel_map = np.empty(self.size, dtype=object)
+        self.parallel_map = np.empty(self.threads_count, dtype=object)
         target_sample = (self.target_global_t_size,)
-        target_slices = shape_split(target_sample, self.size, axis=[0])
+        target_slices = shape_split(target_sample, self.threads_count, axis=[0])
 
         slice_index = 0
         for slyce in target_slices.flatten():
@@ -260,22 +258,21 @@ class TimeMultiPoint(MultiPoint):
     @return:  l'index de la date la plus proche à TIME_DELTA_MIN prêt ou une erreur si aucune date n'a pu être trouvée."""
 
         indexes_t = []
-        zero_delta = timedelta(seconds=0.2)
 
         if type(t) == int or type(t) == np.int32 or type(t) == np.int64:
 
-            if t < 0 or t >= self.get_t_size(type="source"):
+            if t < 0 or t >= self.get_t_size(type="source_global"):
                 raise ValueError("Time index have to range between 0 and " + str(
-                    self.get_t_size(type="source") - 1) + ". Actually Time index = " + str(t))
+                    self.get_t_size(type="source_global") - 1) + ". Actually Time index = " + str(t))
 
             indexes_t.append(int(t));
 
-        if type(t) == datetime:
+        if type(t) == datetime or type(t) == cftime._cftime.datetime or type(t) == cftime._cftime.real_datetime:
 
             logging.debug("[TimeMultiPoint][find_time_index()] Looking for : "+str(t))
 
             target_timestamp = (t - TimeMultiPoint.TIME_DATUM).total_seconds()
-            array = np.asarray(self.read_axis_t(type="source", timestamp=1))
+            array = np.asarray(self.read_axis_t(type="source_global", timestamp=1))
 
             X = np.abs(array - target_timestamp)
 
@@ -283,13 +280,13 @@ class TimeMultiPoint(MultiPoint):
             if (len(idx[0])==1):
                 index_t = idx[0][0]
                 indexes_t.append(int(index_t))
-                logging.debug("[TimeMultiPoint][find_time_index()] Found : " + str(array[index_t]))
+                logging.debug("[TimeMultiPoint][find_time_index()] Found : " + str(datetime.fromtimestamp(array[index_t])))
             else:
                 idx = np.where(X <= (TimeMultiPoint.TIME_DELTA).total_seconds())
                 for index in range(np.shape(idx)[1]):
                     index_t = idx[0][index]
                     indexes_t.append(int(index_t))
-                    logging.debug("[TimeMultiPoint][find_time_index()] Found : " + str(array[index_t]))
+                    logging.debug("[TimeMultiPoint][find_time_index()] Found : " + str(datetime.fromtimestamp(array[index_t])))
 
             if not indexes_t:
                 raise ValueError("Proc n°"+str(self.rank)+" " + str(t) + " was not found. Maybe the TimeMultiPoint.TIME_DELTA (" + str(
@@ -343,10 +340,13 @@ class TimeMultiPoint(MultiPoint):
     def interpolate_time(self,date,indexes_t,layers):
 
         results = np.zeros([self.get_nb_points()])
-        results[:] = np.NAN
+        results[:] = np.nan
 
-        targetTime = [date.replace(tzinfo=timezone.utc).timestamp()]
-        rawTime = self.read_axis_t(type="source",timestamp=1)
+        # TODO find a better way to convert cftime to datetime
+        date_dt = datetime(date.year,date.month,date.day,date.hour,date.minute,date.second)
+
+        targetTime = [date_dt.replace(tzinfo=timezone.utc).timestamp()]
+        rawTime = self.read_axis_t(type="source_global",timestamp=1)
 
         candidateTimes = np.zeros([len(indexes_t)])
         candidateValues = np.zeros([len(indexes_t)])
@@ -375,12 +375,18 @@ class TimeMultiPoint(MultiPoint):
         return results
 
     # Scalar
+    def read_variable_time(self):
+        """
+        Read time for all point
+        """
+        return self.reader.read_variable_time(0, self.source_global_t_size,0);
+
     def read_variable_longitude_at_time(self, date):
         index_t = self.find_time_index(date)
 
         if len(index_t) > 1:
             layers = np.zeros([len(index_t), self.get_nb_points()])
-            layers[::] = np.NAN
+            layers[::] = np.nan
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_longitude_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
@@ -397,7 +403,7 @@ class TimeMultiPoint(MultiPoint):
 
         if len(index_t) > 1:
             layers = np.zeros([len(index_t), self.get_nb_points()])
-            layers[::] = np.NAN
+            layers[::] = np.nan
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_latitude_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
@@ -419,7 +425,7 @@ class TimeMultiPoint(MultiPoint):
 
         if len(index_t) > 1:
             layers = np.zeros([len(index_t), self.get_nb_points()])
-            layers[::] = np.NAN
+            layers[::] =np.nan
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_sea_surface_height_above_mean_sea_level_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
@@ -436,7 +442,7 @@ class TimeMultiPoint(MultiPoint):
 
         if len(index_t) > 1:
             layers = np.zeros([len(index_t), self.get_nb_points()])
-            layers[::] = np.NAN
+            layers[::] =np.nan
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_sea_surface_height_above_geoid_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
@@ -453,7 +459,7 @@ class TimeMultiPoint(MultiPoint):
 
         if len(index_t) > 1:
             layers = np.zeros([len(index_t), self.get_nb_points()])
-            layers[::] = np.NAN
+            layers[::] =np.nan
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_sea_water_column_thickness_at_time(
@@ -472,7 +478,7 @@ class TimeMultiPoint(MultiPoint):
 
         if len(index_t) > 1:
             layers = np.zeros([len(index_t), self.get_nb_points()])
-            layers[::] = np.NAN
+            layers[::] =np.nan
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_sea_surface_density_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
@@ -489,7 +495,7 @@ class TimeMultiPoint(MultiPoint):
 
         if len(index_t) > 1:
             layers = np.zeros([len(index_t), self.get_nb_points()])
-            layers[::] = np.NAN
+            layers[::] =np.nan
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_sea_water_turbidity_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
@@ -506,7 +512,7 @@ class TimeMultiPoint(MultiPoint):
 
         if len(index_t) > 1:
             layers = np.zeros([len(index_t), self.get_nb_points()])
-            layers[::] = np.NAN
+            layers[::] =np.nan
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_sea_water_electrical_conductivity_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
@@ -522,11 +528,11 @@ class TimeMultiPoint(MultiPoint):
         index_t = self.find_time_index(date)
 
         data = np.zeros([2, self.get_nb_points()])
-        data[::] = np.NAN
+        data[::] =np.nan
 
         if len(index_t) > 1:
             layers = np.zeros([len(index_t), 2, self.get_nb_points()])
-            layers[::] = np.NAN
+            layers[::] =np.nan
 
             for t in range(0, len(index_t)):
                 comp = self.reader.read_variable_barotropic_sea_water_velocity_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
@@ -545,7 +551,7 @@ class TimeMultiPoint(MultiPoint):
         comp = self.read_variable_barotropic_sea_water_velocity_at_time(date)
 
         data = np.zeros([self.get_nb_points()])
-        data[::] = np.NAN
+        data[::] =np.nan
 
         for index_x in range(0, self.get_nb_points()):
             data[index_x] = math.sqrt(comp[0][index_x] ** 2 + comp[1][index_x] ** 2)
@@ -556,7 +562,7 @@ class TimeMultiPoint(MultiPoint):
         comp = self.read_variable_barotropic_sea_water_velocity_at_time(date)
 
         data = np.zeros([self.get_nb_points()])
-        data[::] = np.NAN
+        data[::] =np.nan
 
         for index_x in range(0, self.get_nb_points()):
             data[index_x] = (270. - (math.degrees(math.atan2(comp[1][index_x], comp[0][index_x])))) % 360.0
@@ -567,7 +573,7 @@ class TimeMultiPoint(MultiPoint):
         comp = self.read_variable_barotropic_sea_water_velocity_at_time(date)
 
         data = np.zeros([self.get_nb_points()])
-        data[::] = np.NAN
+        data[::] =np.nan
 
         for index_x in range(0, self.get_nb_points()):
             data[index_x] = (270. - (math.degrees(math.atan2(comp[1][index_x], comp[0][index_x]))) + 180.0 ) % 360.0
@@ -584,7 +590,7 @@ class TimeMultiPoint(MultiPoint):
 
         if len(index_t) > 1:
             layers = np.zeros([len(index_t), self.get_nb_points()])
-            layers[::] = np.NAN
+            layers[::] =np.nan
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_sea_surface_temperature_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
@@ -601,7 +607,7 @@ class TimeMultiPoint(MultiPoint):
 
         if len(index_t) > 1:
             layers = np.zeros([len(index_t), self.get_nb_points()])
-            layers[::] = np.NAN
+            layers[::] =np.nan
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_sea_surface_salinity_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
@@ -618,7 +624,7 @@ class TimeMultiPoint(MultiPoint):
 
         if len(index_t) > 1:
             layers = np.zeros([len(index_t), self.get_nb_points()])
-            layers[::] = np.NAN
+            layers[::] =np.nan
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_sea_water_pressure_at_sea_water_surface_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
@@ -634,11 +640,11 @@ class TimeMultiPoint(MultiPoint):
         index_t = self.find_time_index(date)
 
         data = np.zeros([2, self.get_nb_points()])
-        data[::] = np.NAN
+        data[::] =np.nan
 
         if len(index_t) > 1:
             layers = np.zeros([len(index_t), 2, self.get_nb_points()])
-            layers[::] = np.NAN
+            layers[::] =np.nan
 
             for t in range(0, len(index_t)):
                 comp = self.reader.read_variable_sea_water_velocity_at_sea_water_surface_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
@@ -657,7 +663,7 @@ class TimeMultiPoint(MultiPoint):
         comp = self.read_variable_sea_water_velocity_at_sea_water_surface_at_time(date)
 
         data = np.zeros([self.get_nb_points()])
-        data[::] = np.NAN
+        data[::] =np.nan
 
         for index_x in range(0, self.get_nb_points()):
             data[index_x] = math.sqrt(comp[0][index_x] ** 2 + comp[1][index_x] ** 2)
@@ -668,7 +674,7 @@ class TimeMultiPoint(MultiPoint):
         comp = self.read_variable_sea_water_velocity_at_sea_water_surface_at_time(date)
 
         data = np.zeros([self.get_nb_points()])
-        data[::] = np.NAN
+        data[::] =np.nan
 
         for index_x in range(0, self.get_nb_points()):
             data[index_x] = (270. - (math.degrees(math.atan2(comp[1][index_x], comp[0][index_x])))) % 360.0
@@ -679,7 +685,7 @@ class TimeMultiPoint(MultiPoint):
         comp = self.read_variable_sea_water_velocity_at_sea_water_surface_at_time(date)
 
         data = np.zeros([self.get_nb_points()])
-        data[::] = np.NAN
+        data[::] =np.nan
 
         for index_x in range(0, self.get_nb_points()):
             data[index_x] = (270. - (math.degrees(math.atan2(comp[1][index_x], comp[0][index_x]))) + 180.0 ) % 360.0
@@ -696,7 +702,7 @@ class TimeMultiPoint(MultiPoint):
 
         if len(index_t) > 1:
             layers = np.zeros([len(index_t), self.get_nb_points()])
-            layers[::] = np.NAN
+            layers[::] =np.nan
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_sea_water_temperature_at_ground_level_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
@@ -713,7 +719,7 @@ class TimeMultiPoint(MultiPoint):
 
         if len(index_t) > 1:
             layers = np.zeros([len(index_t), self.get_nb_points()])
-            layers[::] = np.NAN
+            layers[::] =np.nan
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_sea_water_salinity_at_ground_level_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
@@ -729,11 +735,11 @@ class TimeMultiPoint(MultiPoint):
         index_t = self.find_time_index(date)
 
         data = np.zeros([2, self.get_nb_points()])
-        data[::] = np.NAN
+        data[::] =np.nan
 
         if len(index_t) > 1:
             layers = np.zeros([len(index_t), 2, self.get_nb_points()])
-            layers[::] = np.NAN
+            layers[::] =np.nan
 
             for t in range(0, len(index_t)):
                 comp = self.reader.read_variable_sea_water_velocity_at_ground_level_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
@@ -752,7 +758,7 @@ class TimeMultiPoint(MultiPoint):
         comp = self.read_variable_sea_water_velocity_at_ground_level_at_time(date)
 
         data = np.zeros([self.get_nb_points()])
-        data[::] = np.NAN
+        data[::] =np.nan
 
         for index_x in range(0, self.get_nb_points()):
             data[index_x] = math.sqrt(comp[0][index_x] ** 2 + comp[1][index_x] ** 2)
@@ -763,7 +769,7 @@ class TimeMultiPoint(MultiPoint):
         comp = self.read_variable_sea_water_velocity_at_ground_level_at_time(date)
 
         data = np.zeros([self.get_nb_points()])
-        data[::] = np.NAN
+        data[::] =np.nan
 
         for index_x in range(0, self.get_nb_points()):
             data[index_x] =  (270. - (math.degrees(math.atan2(comp[1][index_x], comp[0][index_x])))) % 360.0
@@ -774,7 +780,7 @@ class TimeMultiPoint(MultiPoint):
         comp = self.read_variable_sea_water_velocity_at_ground_level_at_time(date)
 
         data = np.zeros([self.get_nb_points()])
-        data[::] = np.NAN
+        data[::] =np.nan
 
         for index_x in range(0, self.get_nb_points()):
             data[index_x] = (270. - (math.degrees(math.atan2(comp[1][index_x], comp[0][index_x]))) + 180.0 ) % 360.0
@@ -791,7 +797,7 @@ class TimeMultiPoint(MultiPoint):
 
         if len(index_t) > 1:
             layers = np.zeros([len(index_t), self.get_nb_points()])
-            layers[::] = np.NAN
+            layers[::] =np.nan
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_sea_surface_wave_significant_height_at_time(
@@ -810,7 +816,7 @@ class TimeMultiPoint(MultiPoint):
 
         if len(index_t) > 1:
             layers = np.zeros([len(index_t), self.get_nb_points()])
-            layers[::] = np.NAN
+            layers[::] =np.nan
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_sea_surface_wave_mean_period_at_time(
@@ -829,7 +835,7 @@ class TimeMultiPoint(MultiPoint):
 
         if len(index_t) > 1:
             layers = np.zeros([len(index_t), self.get_nb_points()])
-            layers[::] = np.NAN
+            layers[::] =np.nan
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_sea_surface_wave_to_direction_at_time(
@@ -863,7 +869,7 @@ class TimeMultiPoint(MultiPoint):
 
         if len(index_t) > 1:
             layers = np.zeros([len(index_t), self.get_nb_points()])
-            layers[::] = np.NAN
+            layers[::] =np.nan
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_wave_collision_at_time(
@@ -882,7 +888,7 @@ class TimeMultiPoint(MultiPoint):
 
         if len(index_t) > 1:
             layers = np.zeros([len(index_t), self.get_nb_points()])
-            layers[::] = np.NAN
+            layers[::] =np.nan
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_wave_overtopping_at_time(
@@ -906,7 +912,7 @@ class TimeMultiPoint(MultiPoint):
 
         if len(index_t) > 1:
             layers = np.zeros([len(index_t), self.get_nb_points()])
-            layers[::] = np.NAN
+            layers[::] =np.nan
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_water_volume_transport_into_sea_water_from_rivers_at_time(
@@ -929,7 +935,7 @@ class TimeMultiPoint(MultiPoint):
 
         if len(index_t) > 1:
             layers = np.zeros([len(index_t), self.get_nb_points()])
-            layers[::] = np.NAN
+            layers[::] =np.nan
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_surface_air_pressure_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
@@ -946,7 +952,7 @@ class TimeMultiPoint(MultiPoint):
 
         if len(index_t) > 1:
             layers = np.zeros([len(index_t), self.get_nb_points()])
-            layers[::] = np.NAN
+            layers[::] =np.nan
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_sea_surface_air_pressure_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
@@ -963,7 +969,7 @@ class TimeMultiPoint(MultiPoint):
 
         if len(index_t) > 1:
             layers = np.zeros([len(index_t), self.get_nb_points()])
-            layers[::] = np.NAN
+            layers[::] =np.nan
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_surface_downward_sensible_heat_flux_at_time(
@@ -982,7 +988,7 @@ class TimeMultiPoint(MultiPoint):
 
         if len(index_t) > 1:
             layers = np.zeros([len(index_t), self.get_nb_points()])
-            layers[::] = np.NAN
+            layers[::] =np.nan
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_rainfall_amount_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
@@ -998,11 +1004,11 @@ class TimeMultiPoint(MultiPoint):
         index_t = self.find_time_index(date)
 
         data = np.zeros([2, self.get_nb_points()])
-        data[::] = np.NAN
+        data[::] =np.nan
 
         if len(index_t) > 1:
             layers = np.zeros([len(index_t), 2, self.get_nb_points()])
-            layers[::] = np.NAN
+            layers[::] =np.nan
 
             for t in range(0, len(index_t)):
                 comp = self.reader.read_variable_wind_stress_at_time(
@@ -1023,7 +1029,7 @@ class TimeMultiPoint(MultiPoint):
         comp = self.read_variable_wind_stress_at_time(date)
 
         data = np.zeros([self.get_nb_points()])
-        data[::] = np.NAN
+        data[::] =np.nan
 
         for index_x in range(0, self.get_nb_points()):
             data[index_x] = math.sqrt(comp[0][index_x] ** 2 + comp[1][index_x] ** 2)
@@ -1034,7 +1040,7 @@ class TimeMultiPoint(MultiPoint):
         comp = self.read_variable_wind_stress_at_time(date)
 
         data = np.zeros([self.get_nb_points()])
-        data[::] = np.NAN
+        data[::] =np.nan
 
         for index_x in range(0, self.get_nb_points()):
             data[index_x] = (270. - (math.degrees(math.atan2(comp[1][index_x], comp[0][index_x])))) % 360.0
@@ -1045,7 +1051,7 @@ class TimeMultiPoint(MultiPoint):
         comp = self.read_variable_wind_stress_at_time(date)
 
         data = np.zeros([self.get_nb_points()])
-        data[::] = np.NAN
+        data[::] =np.nan
 
         for index_x in range(0, self.get_nb_points()):
             data[index_x] = (270. - (math.degrees(math.atan2(comp[1][index_x], comp[0][index_x]))) + 180.0 ) % 360.0
@@ -1057,7 +1063,7 @@ class TimeMultiPoint(MultiPoint):
 
         if len(index_t) > 1:
             layers = np.zeros([len(index_t), self.get_nb_points()])
-            layers[::] = np.NAN
+            layers[::] =np.nan
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_surface_downward_sensible_heat_flux_at_time(
@@ -1076,7 +1082,7 @@ class TimeMultiPoint(MultiPoint):
 
         if len(index_t) > 1:
             layers = np.zeros([len(index_t), self.get_nb_points()])
-            layers[::] = np.NAN
+            layers[::] =np.nan
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_surface_downward_latent_heat_flux_at_time(
@@ -1095,7 +1101,7 @@ class TimeMultiPoint(MultiPoint):
 
         if len(index_t) > 1:
             layers = np.zeros([len(index_t), self.get_nb_points()])
-            layers[::] = np.NAN
+            layers[::] =np.nan
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_surface_air_temperature_at_time(
@@ -1114,7 +1120,7 @@ class TimeMultiPoint(MultiPoint):
 
         if len(index_t) > 1:
             layers = np.zeros([len(index_t), self.get_nb_points()])
-            layers[::] = np.NAN
+            layers[::] =np.nan
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_dew_point_temperature_at_time(
@@ -1133,7 +1139,7 @@ class TimeMultiPoint(MultiPoint):
 
         if len(index_t) > 1:
             layers = np.zeros([len(index_t), self.get_nb_points()])
-            layers[::] = np.NAN
+            layers[::] =np.nan
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_surface_downward_solar_radiation_at_time(
@@ -1152,7 +1158,7 @@ class TimeMultiPoint(MultiPoint):
 
         if len(index_t) > 1:
             layers = np.zeros([len(index_t), self.get_nb_points()])
-            layers[::] = np.NAN
+            layers[::] =np.nan
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_surface_downward_thermal_radiation_at_time(
@@ -1171,7 +1177,7 @@ class TimeMultiPoint(MultiPoint):
 
         if len(index_t) > 1:
             layers = np.zeros([len(index_t), self.get_nb_points()])
-            layers[::] = np.NAN
+            layers[::] =np.nan
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_surface_solar_radiation_at_time(
@@ -1190,7 +1196,7 @@ class TimeMultiPoint(MultiPoint):
 
         if len(index_t) > 1:
             layers = np.zeros([len(index_t), self.get_nb_points()])
-            layers[::] = np.NAN
+            layers[::] =np.nan
 
             for t in range(0, len(index_t)):
                 layers[t] = self.reader.read_variable_surface_thermal_radiation_at_time(
@@ -1213,11 +1219,11 @@ class TimeMultiPoint(MultiPoint):
         index_t = self.find_time_index(date)
 
         data = np.zeros([2, self.get_nb_points()])
-        data[::] = np.NAN
+        data[::] =np.nan
 
         if len(index_t) > 1:
             layers = np.zeros([len(index_t), 2, self.get_nb_points()])
-            layers[::] = np.NAN
+            layers[::] =np.nan
 
             for t in range(0, len(index_t)):
                 comp = self.reader.read_variable_wind_10m_at_time(self.parallel_map[self.rank]["src_global_t"].start + index_t[t])
@@ -1236,7 +1242,7 @@ class TimeMultiPoint(MultiPoint):
         comp = self.read_variable_wind_10m_at_time(date)
 
         data = np.zeros([self.get_nb_points()])
-        data[::] = np.NAN
+        data[::] =np.nan
 
         for index_x in range(0, self.get_nb_points()):
             data[index_x] = math.sqrt(comp[0][index_x] ** 2 + comp[1][index_x] ** 2)
@@ -1247,7 +1253,7 @@ class TimeMultiPoint(MultiPoint):
         comp = self.read_variable_wind_10m_at_time(date)
 
         data = np.zeros([self.get_nb_points()])
-        data[::] = np.NAN
+        data[::] =np.nan
 
         for index_x in range(0, self.get_nb_points()):
             data[index_x] = (270. - (math.degrees(math.atan2(comp[1][index_x], comp[0][index_x])))) % 360.0
@@ -1258,7 +1264,7 @@ class TimeMultiPoint(MultiPoint):
         comp = self.read_variable_wind_10m_at_time(date)
 
         data = np.zeros([self.get_nb_points()])
-        data[::] = np.NAN
+        data[::] =np.nan
 
         for index_x in range(0, self.get_nb_points()):
             data[index_x] = (270. - (math.degrees(math.atan2(comp[1][index_x], comp[0][index_x])) + 180.0 )) % 360.0

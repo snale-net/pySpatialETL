@@ -55,7 +55,7 @@ class LevelMultiPoint(MultiPoint):
         else:
             raise ValueError("[LevelMultiPoint] Unable to recognize the type of the vertical grid.")
 
-        if zbox == None:
+        if zbox is None:
             # we compute the destination grid
             Zmin = np.min(self.source_axis_z)
             Zmax = np.max(self.source_axis_z)
@@ -224,36 +224,36 @@ class LevelMultiPoint(MultiPoint):
 
             else:  # Cas de grille classique
 
-                logging.debug("[LevelMultiPoint][find_level_index()] Water depth candidates are : " + str(self.source_axis_z))
+                #logging.debug("[LevelMultiPoint][find_level_index()] Water depth candidates are : " + str(self.source_axis_z))
 
                 # On cherche l'index le plus proche
-                array = np.asarray(self.raw_levels)
+                array = np.asarray(self.source_axis_z)
                 index_z = (np.abs(array - depth)).argmin()
 
-                if abs(depth - self.raw_levels[index_z]) <= LevelMultiPoint.DEPTH_DELTA:
+                if abs(depth - self.source_axis_z[index_z]) <= LevelMultiPoint.DEPTH_DELTA:
                     # On a trouvé une profondeur qui correspond au delta près.
 
                     for i in range(0, self.get_nb_points()):
 
                         vert_coord[i] = []
 
-                        logging.debug("[LevelMultiPoint][find_level_index()] Point "+str(i)+" - found : " + str(self.raw_levels[index_z]) + " m water depth")
+                        logging.debug("[LevelMultiPoint][find_level_index()] Point "+str(i)+" - found : " + str(self.source_axis_z[index_z]) + " m water depth")
                         vert_coord[i].append((int(index_z)))
                         indexes_z.append((int(index_z)))
 
-                        if abs(depth - self.raw_levels[index_z]) != 0.0:
+                        if abs(depth - self.source_axis_z[index_z]) != 0.0:
                             # On n'a pas trouvé exactement notre profondeur, on va chercher autour au DEPTH_DELTA près
 
                             zz = index_z
-                            while zz - 1 >= 0 and abs(self.raw_levels[zz - 1] - depth) <= LevelMultiPoint.DEPTH_DELTA and zz - 1 not in vert_coord[i]:
-                                logging.debug("[LevelMultiPoint][find_level_index()] Point "+str(i)+" - found : " + str(self.raw_levels[zz-1])+" m water depth")
+                            while zz - 1 >= 0 and abs(self.source_axis_z[zz - 1] - depth) <= LevelMultiPoint.DEPTH_DELTA and zz - 1 not in vert_coord[i]:
+                                logging.debug("[LevelMultiPoint][find_level_index()] Point "+str(i)+" - found : " + str(self.source_axis_z[zz-1])+" m water depth")
                                 vert_coord[i].append((int(zz - 1)))
                                 indexes_z.append((int(zz - 1)))
                                 zz = zz - 1
 
                             zz = index_z
-                            while zz + 1 < self.get_z_size(raw=True) and abs(self.raw_levels[zz + 1] - depth) <= LevelMultiPoint.DEPTH_DELTA and zz + 1 not in vert_coord[i]:
-                                logging.debug("[LevelMultiPoint][find_level_index()] Point "+str(i)+" - found : " + str(self.raw_levels[zz+1])+" m water depth")
+                            while zz + 1 < self.get_z_size(raw=True) and abs(self.source_axis_z[zz + 1] - depth) <= LevelMultiPoint.DEPTH_DELTA and zz + 1 not in vert_coord[i]:
+                                logging.debug("[LevelMultiPoint][find_level_index()] Point "+str(i)+" - found : " + str(self.source_axis_z[zz+1])+" m water depth")
                                 vert_coord[i].append((int(zz + 1)))
                                 indexes_z.append((int(zz + 1)))
                                 zz = zz + 1
@@ -280,7 +280,7 @@ class LevelMultiPoint(MultiPoint):
         targetDepth = [depth]
 
         results = np.zeros([self.get_nb_points()])
-        results[:] = np.NAN
+        results[:] = np.nan
 
         idx = np.where(vert_coord != None)
 

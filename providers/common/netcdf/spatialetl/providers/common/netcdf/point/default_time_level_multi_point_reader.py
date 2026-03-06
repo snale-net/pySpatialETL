@@ -1,5 +1,3 @@
-#! /usr/bin/env python2.7
-# -*- coding: utf-8 -*-
 # MIT License
 # Copyright (c) 2024 [SNALE - French SAS Company - RCS 951 724 616]
 #
@@ -23,6 +21,7 @@
 from __future__ import division, print_function, absolute_import
 
 import numpy as np
+from cftime import num2pydate
 from netCDF4 import Dataset, num2date
 
 from spatialetl.point.time_multi_point import TimeMultiPoint
@@ -40,7 +39,10 @@ class DefaultTimeLevelMultiPointReader(MultiPointReader):
         self.tmax = np.shape(self.ncfile["time"])[0]
 
     def get_z_size(self):
-        return np.shape(self.ncfile["depth"])[0]
+        return self.zmax
+
+    def get_t_size(self):
+        return self.tmax
 
     # Axis
     def read_axis_x(self):
@@ -52,9 +54,9 @@ class DefaultTimeLevelMultiPointReader(MultiPointReader):
     def read_axis_z(self):
         return self.ncfile["depth"]
 
-    def read_axis_t(self,timestamp=0):
-        data = self.ncfile.variables['time'][:]
-        result = num2date(data, units=self.ncfile.variables['time'].units, calendar="gregorian")
+    def read_axis_t(self,tmin,tmax,timestamp=0):
+        data = self.ncfile.variables['time'][tmin:tmax]
+        result = num2pydate(data, units=self.ncfile.variables['time'].units, calendar="gregorian")
 
         if timestamp == 1:
             return [(t - TimeMultiPoint.TIME_DATUM).total_seconds() \
