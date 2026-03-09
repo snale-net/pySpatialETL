@@ -21,11 +21,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 from abc import ABC
+
 import numpy as np
 
+
 class CoverageWriter(ABC):
-    
-    def __init__(self, cov,myFile):
+
+    def __init__(self, cov, myFile):
         self.coverage = cov;
         self.filename = myFile;
 
@@ -34,7 +36,7 @@ class CoverageWriter(ABC):
             self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
         else:
             # For MPI rank n°1
-            if time_index and level_index:
+            if time_index is not None and level_index is not None:
                 var[
                     self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index:
                     self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index + 1,
@@ -42,14 +44,14 @@ class CoverageWriter(ABC):
                     self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
                     self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
                 ] = local_data
-            elif time_index:
+            elif time_index is not None:
                 var[
                     self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index:
                     self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index + 1,
                     self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
                     self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
                 ] = local_data
-            elif level_index:
+            elif level_index is not None:
                 var[
                     level_index:level_index + 1,
                     self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
@@ -99,7 +101,8 @@ class CoverageWriter(ABC):
         raise NotImplementedError(str(type(self)) + " don't have implemented the function 'close()'.")
 
     def write_variable_longitude(self):
-        raise NotImplementedError(str(type(self)) + " don't have implemented the function 'write_variable_longitude()'.")
+        raise NotImplementedError(
+            str(type(self)) + " don't have implemented the function 'write_variable_longitude()'.")
 
     def write_variable_latitude(self):
         raise NotImplementedError(str(type(self)) + " don't have implemented the function 'write_variable_latitude()'.")
@@ -135,7 +138,8 @@ class CoverageWriter(ABC):
             str(type(self)) + " don't have implemented the function 'write_variable_wet_binary_mask()'.")
 
     def write_variable_mesh_size(self):
-        raise NotImplementedError(str(type(self)) + " don't have implemented the function 'write_variable_mesh_size()'.")
+        raise NotImplementedError(
+            str(type(self)) + " don't have implemented the function 'write_variable_mesh_size()'.")
 
     #################
     # HYDRO
@@ -386,6 +390,3 @@ class CoverageWriter(ABC):
     def write_variable_wind_from_direction_10m(self):
         raise NotImplementedError(
             str(type(self)) + " don't have implemented the function 'write_variable_wind_from_direction_10m()'.")
-
-
-

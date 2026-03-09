@@ -27,13 +27,13 @@ from netCDF4 import Dataset
 from netCDF4 import date2num
 from numpy import int16, float32, float64
 
+from spatialetl.coverage.io.coverage_writer import CoverageWriter
 from spatialetl.coverage.level_coverage import LevelCoverage
 from spatialetl.coverage.time_coverage import TimeCoverage
 from spatialetl.coverage.time_level_coverage import TimeLevelCoverage
-from spatialetl.coverage.io.coverage_writer import CoverageWriter
 from spatialetl.exception.coverage_error import CoverageError
-from spatialetl.utils.variable_definition import VariableDefinition
 from spatialetl.utils.logger import logging
+from spatialetl.utils.variable_definition import VariableDefinition
 
 
 class DefaultWriter(CoverageWriter):
@@ -1060,7 +1060,7 @@ class DefaultWriter(CoverageWriter):
     def write_variable_wind_from_direction_10m(self):
 
         self._write_time_2d_scalar(
-            'read_variablewind_from_direction_10m_at_time',
+            'read_variable_wind_from_direction_10m_at_time',
             VariableDefinition.VARIABLE_NAME['wind_from_direction_10m'],
             VariableDefinition.LONG_NAME['wind_from_direction_10m'],
             VariableDefinition.STANDARD_NAME['wind_from_direction_10m'],
