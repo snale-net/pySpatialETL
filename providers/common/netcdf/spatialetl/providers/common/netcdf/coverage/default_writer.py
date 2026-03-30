@@ -503,10 +503,10 @@ class DefaultWriter(CoverageWriter):
     def write_variable_wet_binary_mask(self):
         self._write_time_2d_scalar(
             'read_variable_2D_wet_binary_mask_at_time',
-            VariableDefinition.VARIABLE_NAME['2d_sea_binary_mask'],
-            VariableDefinition.LONG_NAME['2d_sea_binary_mask'],
-            VariableDefinition.STANDARD_NAME['2d_sea_binary_mask'],
-            VariableDefinition.CANONICAL_UNITS['2d_sea_binary_mask'],
+            VariableDefinition.VARIABLE_NAME['wet_binary_mask'],
+            VariableDefinition.LONG_NAME['wet_binary_mask'],
+            VariableDefinition.STANDARD_NAME['wet_binary_mask'],
+            VariableDefinition.CANONICAL_UNITS['wet_binary_mask'],
             variable_comment="1 = sea, 0 = land",
             variable_type=int16,
             variable_fill_value=-9999

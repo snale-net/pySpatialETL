@@ -131,7 +131,7 @@ class Coverage(object):
             Xmax = np.max(self.source_global_axis_x)
         else:
             if self.check_bbox_validity(bbox) is False:
-                raise ValueError("Your Bbox is not valid or is outside the coverage")
+                raise ValueError("Your Bbox is not valid (e.g [Xmin,Xmax,Ymin,Ymax] or is outside the coverage")
             Ymin = bbox[2]
             Ymax = bbox[3]
             Xmin = bbox[0]
@@ -258,6 +258,8 @@ class Coverage(object):
         --------
         >>> coverage = Coverage(myReader, bbox=[0, 10, 0, 10], resolution_x=1.0, resolution_y=1.0)
         """
+        # TODO improve error messages
+
         Ymin = candidate[2]
         Ymax = candidate[3]
         Xmin = candidate[0]
@@ -1114,7 +1116,7 @@ class Coverage(object):
             logging.warning("Point is outside the rank n°" + str(self.rank))
             raise NotFoundInRankError(self.rank, "Point is outside the rank")
 
-    def resample_2d_variable(self, values):
+    def resample_2d_variable(self, values, is_binary_data=False):
         return resample_2d_to_grid(
             self.source_global_tri[self.rank],
             self.read_axis_x(type="target", with_overlap=True),
@@ -1122,10 +1124,11 @@ class Coverage(object):
             values,
             Coverage.HORIZONTAL_INTERPOLATION_METHOD,
             self.parallel_map[self.rank]["threads"],
-            Coverage.HORIZONTAL_INTERPOLATOR
+            Coverage.HORIZONTAL_INTERPOLATOR,
+            is_binary_data
         )[self.parallel_map[self.rank]["dst_local_y"], self.parallel_map[self.rank]["dst_local_x"]]
 
-    def __read_variable(self, function_name):
+    def __read_variable(self, function_name, is_binary_data=False):
 
         fn = getattr(self.reader, function_name)
 
@@ -1139,9 +1142,12 @@ class Coverage(object):
 
         if self.horizontal_resampling:
             if is_vector:
-                return [self.resample_2d_variable(data[0]), self.resample_2d_variable(data[1])]
+                return [
+                    self.resample_2d_variable(data[0], is_binary_data=is_binary_data),
+                    self.resample_2d_variable(data[1], is_binary_data=is_binary_data)
+                ]
             else:
-                return self.resample_2d_variable(data)
+                return self.resample_2d_variable(data, is_binary_data=is_binary_data)
         else:
             if is_vector:
                 return [
@@ -1252,7 +1258,7 @@ class Coverage(object):
         --------
         >>> mask = coverage.read_variable_2D_sea_binary_mask()
         """
-        return self.__read_variable(inspect.stack()[0][3])
+        return self.__read_variable(inspect.stack()[0][3], is_binary_data=True)
 
     def read_variable_Ha(self):
         """

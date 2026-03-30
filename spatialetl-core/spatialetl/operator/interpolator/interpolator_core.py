@@ -27,7 +27,7 @@ from datetime import datetime, UTC
 
 import numpy as np
 from numpy import int8, int16, int32, int64
-from scipy.interpolate import LinearNDInterpolator, NearestNDInterpolator
+from scipy.interpolate import LinearNDInterpolator, NearestNDInterpolator, CloughTocher2DInterpolator
 from scipy.interpolate import interp1d
 from scipy.spatial import qhull
 
@@ -95,7 +95,7 @@ def interp_2d_weights(gridX, gridY, map, interpolator="scipy"):
         raise ValueError(f"Unable to find interpolator {interpolator}")
 
 
-def resample_2d_to_grid(tri, newX, newY, data, method, map, interpolator="scipy"):
+def resample_2d_to_grid(tri, newX, newY, data, method, map, interpolator="scipy",is_binary_data=False):
     """
     2D resampling function
     """
@@ -113,6 +113,15 @@ def resample_2d_to_grid(tri, newX, newY, data, method, map, interpolator="scipy"
             local_data = np.zeros([np.shape(newY)[0], np.shape(newX)[0]])
             local_data[:] = fill_value
 
+            if method == "linear":
+                pass
+            elif method == "nearest" or method == "cubic" :
+                raise ValueError(
+                    f"Interpolation method '{method}' is not implemented in cgal interpolator'. Use 'linear' method")
+            else:
+                raise ValueError(
+                    f"Unable to decode interpolation method '{method}'. Try 'linear' or 'nearest' or 'cubic'")
+
             with ThreadPoolExecutor(max_workers=threads_count) as executor:
                 futures = []
                 for current_thread in range(0, executor._max_workers):
@@ -121,6 +130,12 @@ def resample_2d_to_grid(tri, newX, newY, data, method, map, interpolator="scipy"
 
                     values = data[map[current_thread]["src_global_y_overlap"],
                     map[current_thread]["src_global_x_overlap"]].flatten().T
+
+                    if is_binary_data:
+                        # To avoid doubtful linear interpolation with binary data,
+                        # we change enlarge the boundaries to -9999 / 9999
+                        values[values == 0] = -9999
+                        values[values == 1] = 9999
 
                     futures.append(
                         executor.submit(nninterpol, tri[current_thread], values, dst_local_grid_x, dst_local_grid_y,
@@ -133,6 +148,15 @@ def resample_2d_to_grid(tri, newX, newY, data, method, map, interpolator="scipy"
                         map[current_thread]["dst_local_y"],
                         map[current_thread]["dst_local_x"]]
 
+            # We force the result's type to be the same as the original one
+            local_data = local_data.astype(values.dtype)
+
+            if is_binary_data:
+                # We avoid doubtful linear interpolation with binary data,
+                # we compute binary data from 0
+                local_data[local_data <= 0] = 0
+                local_data[local_data > 0] = 1
+
             return local_data
         except ModuleNotFoundError:
             logging.warning(f"Unable to find the cgal interpolator, we switch to scipy")
@@ -144,13 +168,43 @@ def resample_2d_to_grid(tri, newX, newY, data, method, map, interpolator="scipy"
 
         # Values
         values = data.flatten()
+
         if method == "linear":
+
+            if is_binary_data:
+                # To avoid doubtful linear interpolation with binary data,
+                # we change enlarge the boundaries to -9999 / 9999
+                values[values == 0] = -9999
+                values[values == 1] = 9999
+
             ip = LinearNDInterpolator(tri, values, fill_value=fill_value,
                                       rescale=False)
         elif method == "nearest":
             ip = NearestNDInterpolator(tri, values, rescale=False)
+        elif method == "cubic":
 
-        return ip((dst_local_grid_x, dst_local_grid_y))
+            if is_binary_data:
+                # To avoid doubtful linear interpolation with binary data,
+                # we change enlarge the boundaries to -9999 / 9999
+                values[values == 0] = -9999
+                values[values == 1] = 9999
+
+            ip = CloughTocher2DInterpolator(tri, values, rescale=False)
+        else:
+            raise ValueError(f"Unable to decode interpolation method '{method}'. Try 'linear' or 'nearest' or 'cubic'")
+
+        data = ip((dst_local_grid_x, dst_local_grid_y))
+
+        # We force the result's type to be the same as the original one
+        data = data.astype(values.dtype)
+
+        if method == "linear" or method == "cubic" and is_binary_data:
+            # We avoid doubtful linear interpolation with binary data,
+            # we compute binary data from 0
+            data[data <= 0] = 0
+            data[data > 0] = 1
+
+        return data
     else:
         raise ValueError(f"Unable to find interpolator {interpolator}")
 

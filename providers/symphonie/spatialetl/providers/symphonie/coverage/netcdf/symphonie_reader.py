@@ -27,6 +27,7 @@ import os
 import re
 
 import cftime
+import numexpr as ne
 import numpy as np
 from netCDF4 import Dataset, num2date
 
@@ -35,7 +36,6 @@ from spatialetl.coverage.time_coverage import TimeCoverage
 from spatialetl.exception.variable_name_error import VariableNameError
 from spatialetl.utils.logger import logging
 from spatialetl.utils.path import path_leaf
-from spatialetl.utils.timing import timing
 from spatialetl.utils.variable_definition import VariableDefinition
 
 
@@ -49,8 +49,8 @@ La classe SymphonieReader permet de lire les données du format Symphonie
     HORIZONTAL_OVERLAPING_SIZE = 2
     APPLY_WET_MASK = False
 
-    def __init__(self,myGrid, myFile=None):
-        CoverageReader.__init__(self,myGrid);
+    def __init__(self, myGrid, myFile=None):
+        CoverageReader.__init__(self, myGrid);
 
         try:
             self.grid = Dataset(self.filename, 'r')
@@ -63,7 +63,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
         if myFile is not None:
             if os.path.isfile(myFile):
-                self.files= [myFile]
+                self.files = [myFile]
             elif os.path.isdir(myFile):
                 self.files = sorted(glob.glob(os.path.join(myFile, "*.nc")))
             elif myFile.endswith("*"):
@@ -96,26 +96,31 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
                         if "time" in current_file.variables and np.shape(current_file.variables["time"]) == (1,):
                             current_time = num2date(current_file.variables["time"][0],
-                                     units=current_file.variables["time"].units.replace('from', 'since').replace('jan',
-                                                                                                                    '01').replace(
-                                         'feb', '02').replace('mar', '03').replace('apr', '04').replace('may',
-                                                                                                        '05').replace('jun',
-                                                                                                                      '06').replace(
-                                         'jul', '07').replace('aug', '08').replace('sep', '09').replace('oct',
-                                                                                                        '10').replace('nov',
-                                                                                                                      '11').replace(
-                                         'dec', '12'), calendar=current_file.variables['time'].calendar)
+                                                    units=current_file.variables["time"].units.replace('from',
+                                                                                                       'since').replace(
+                                                        'jan',
+                                                        '01').replace(
+                                                        'feb', '02').replace('mar', '03').replace('apr', '04').replace(
+                                                        'may',
+                                                        '05').replace('jun',
+                                                                      '06').replace(
+                                                        'jul', '07').replace('aug', '08').replace('sep', '09').replace(
+                                                        'oct',
+                                                        '10').replace('nov',
+                                                                      '11').replace(
+                                                        'dec', '12'), calendar=current_file.variables['time'].calendar)
                             self.times.append(current_time)
                         else:
                             for time in current_file.variables["time"]:
                                 nc_time = num2date(time,
-                                         units=current_file.variables["time"].units, calendar=current_file.variables['time'].calendar)
+                                                   units=current_file.variables["time"].units,
+                                                   calendar=current_file.variables['time'].calendar)
 
                                 self.times.append(nc_time.replace(microsecond=0))
 
                             self.t_size = len(self.times)
                     except Exception as ex:
-                        raise ValueError("Unable to decode time records in file "+str(file)+ ":"+str(ex))
+                        raise ValueError("Unable to decode time records in file " + str(file) + ":" + str(ex))
 
         if len(self.times) == 0:
             logging.info("No time records found")
@@ -123,7 +128,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
     def open_file(self, index_t):
 
         if len(self.files) == 1 and index_t > 0:
-           return
+            return
 
         if index_t != self.last_opened_t_index:
             self.close()
@@ -134,24 +139,27 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
     def compute_rot(self):
 
-        logging.debug("[SymphonieReader] Compute grid rotation matrix...")
+        if "gridrotcos_t" in self.grid.variables and "gridrotsin_t" in self.grid.variables:
+            self.gridrotcos_t = np.ma.filled(self.grid.variables['gridrotcos_t'][:], fill_value=0)
+            self.gridrotsin_t = np.ma.filled(self.grid.variables['gridrotsin_t'][:], fill_value=0)
+        else:
+            logging.debug("[SymphonieReader] Compute grid rotation matrix...")
+            lon_t = np.ma.filled(self.grid.variables['longitude_t'][:], fill_value=np.nan)
+            lat_t = np.ma.filled(self.grid.variables['latitude_t'][:], fill_value=np.nan)
 
-        lon_t = np.ma.filled(self.grid.variables['longitude_t'][:], fill_value=np.nan)
-        lat_t = np.ma.filled(self.grid.variables['latitude_t'][:], fill_value=np.nan)
+            self.gridrotcos_t = np.zeros([self.get_y_size(), self.get_x_size()])
+            self.gridrotsin_t = np.zeros([self.get_y_size(), self.get_x_size()])
 
-        self.gridrotcos_t = np.zeros([self.get_y_size(), self.get_x_size()])
-        self.gridrotsin_t = np.zeros([self.get_y_size(), self.get_x_size()])
+            for y in range(1, self.get_y_size() - 1):
+                for x in range(1, self.get_x_size() - 1):
 
-        for y in range(1, self.get_y_size() - 1):
-            for x in range(1, self.get_x_size() - 1):
-
-                x1 = (lon_t[y, x + 1] - lon_t[y, x - 1]) * np.pi / 180.
-                if (x1 < -np.pi): x1 = x1 + 2. * np.pi
-                if (x1 > np.pi): x1 = x1 - 2. * np.pi
-                x0 = -np.arctan2((lat_t[y, x + 1] - lat_t[y, x - 1]) * np.pi / 180.,
-                                 x1 * np.cos(lat_t[y, x] * np.pi / 180.))
-                self.gridrotcos_t[y, x] = np.cos(x0)
-                self.gridrotsin_t[y, x] = np.sin(x0)
+                    x1 = (lon_t[y, x + 1] - lon_t[y, x - 1]) * np.pi / 180.
+                    if (x1 < -np.pi): x1 = x1 + 2. * np.pi
+                    if (x1 > np.pi): x1 = x1 - 2. * np.pi
+                    x0 = -np.arctan2((lat_t[y, x + 1] - lat_t[y, x - 1]) * np.pi / 180.,
+                                     x1 * np.cos(lat_t[y, x] * np.pi / 180.))
+                    self.gridrotcos_t[y, x] = np.cos(x0)
+                    self.gridrotsin_t[y, x] = np.sin(x0)
 
     def compute_to_tracer(self, data_u, data_v, mask_t, mask_u, mask_v):
 
@@ -219,79 +227,49 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
         return u_t, v_t
 
-    @timing
     def compute_vector_rotation(self, data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v):
 
-        #TODO Speed up the function with C
-        x_size = np.shape(mask_t)[1]
-        y_size = np.shape(mask_t)[0]
+        y_size, x_size = mask_t.shape
 
-        u = np.zeros([y_size, x_size])
-        u[:] = np.nan
-        v = np.zeros([y_size, x_size])
-        v[:] = np.nan
-        u_rot = np.zeros([y_size, x_size])
-        u_rot[:] = np.nan
-        v_rot = np.zeros([y_size, x_size])
-        v_rot[:] = np.nan
+        # Initialize with NaNs
+        u = np.full((y_size, x_size), np.nan)
+        v = np.full((y_size, x_size), np.nan)
 
-        # 1. On calcule les point à l'intérieur du domaine en excluant les bords
-        for y in range(1, y_size - 1):
-            for x in range(1, x_size - 1):
+        # --- Compute u component ---
+        u_left = np.where(mask_u[:, :-1] == 1., data_u[:, :-1], 0)
+        u_right = np.where(mask_u[:, 1:] == 1., data_u[:, 1:], 0)
 
-                if mask_t[y, x] == 1.:
+        u[:, 1:-1] = 0.5 * (u_left[:, :-1] + u_right[:, :-1])
 
-                    # 1.2 On récupère les valeurs aux point encadrant X pour faire la demi-somme
-                    ##############################
-                    #           v_up
-                    #
-                    #   u_left   X     u_right
-                    #
-                    #         v_bottom
-                    #############################
+        # --- Compute v component ---
+        v_down = np.where(mask_v[:-1, :] == 1., data_v[:-1, :], 0)
+        v_up = np.where(mask_v[1:, :] == 1., data_v[1:, :], 0)
 
-                    # u_left
-                    u_left = 0
-                    if mask_u[y, x - 1] == 1.:
-                        u_left = data_u[y, x - 1];
+        v[1:-1, :] = 0.5 * (v_down[:-1, :] + v_up[:-1, :])
 
-                    # u_right
-                    u_right = 0
-                    if mask_u[y, x] == 1.:
-                        u_right = data_u[y, x];
+        # --- Apply mask_t ---
+        valid = mask_t == 1.
+        u[~valid] = np.nan
+        v[~valid] = np.nan
 
-                    # v_down
-                    v_down = 0
-                    if mask_v[y - 1, x] == 1.:
-                        v_down = data_v[y - 1, x];
+        # --- Rotation ---
+        u_rot = ne.evaluate("u * rotcos + v * rotsin")
+        v_rot = ne.evaluate("-u * rotsin + v * rotcos")
 
-                    # v_up
-                    v_up = 0
-                    if mask_v[y, x] == 1.:
-                        v_up = data_v[y, x];
+        # --- Border replication ---
+        # top/bottom
+        u_rot[0, :] = u_rot[1, :]
+        v_rot[0, :] = v_rot[1, :]
 
-                    # 1.3 On calcule la demi-somme
-                    u[y, x] = 0.5 * (u_left + u_right)
-                    v[y, x] = 0.5 * (v_down + v_up)
+        u_rot[-1, :] = u_rot[-2, :]
+        v_rot[-1, :] = v_rot[-2, :]
 
-                    # 1.4 On applique la rotation
-                    u_rot[y, x] = u[y, x] * rotcos[y, x] + v[y, x] * rotsin[y, x]
-                    v_rot[y, x] = -u[y, x] * rotsin[y, x] + v[y, x] * rotcos[y, x]
+        # left/right
+        u_rot[:, 0] = u_rot[:, 1]
+        v_rot[:, 0] = v_rot[:, 1]
 
-        # 2. On duplique les point sur les bords.
-        # bottom
-        u_rot[0, 0:x_size] = u_rot[1, 0:x_size]
-        v_rot[0, 0:x_size] = v_rot[1, 0:x_size]
-        # up
-        u_rot[y_size - 1, 0:x_size] = u_rot[y_size - 2, 0:x_size]
-        v_rot[y_size - 1, 0:x_size] = v_rot[y_size - 2, 0:x_size]
-
-        # left
-        u_rot[0:y_size, 0] = u_rot[0:y_size, 1]
-        v_rot[0:y_size, 0] = v_rot[0:y_size, 1]
-        # right
-        u_rot[0:y_size, x_size - 1] = u_rot[0:y_size, x_size - 2]
-        v_rot[0:y_size, x_size - 1] = v_rot[0:y_size, x_size - 2]
+        u_rot[:, -1] = u_rot[:, -2]
+        v_rot[:, -1] = v_rot[:, -2]
 
         return u_rot, v_rot
 
@@ -426,20 +404,21 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             return self.times[tmin:tmax]
 
     # Variables
-    def read_variable_time(self,tmin, tmax, timestamp):
-        return self.read_axis_t(tmin,tmax, timestamp=timestamp)
+    def read_variable_time(self, tmin, tmax, timestamp):
+        return self.read_axis_t(tmin, tmax, timestamp=timestamp)
 
     def read_variable_longitude(self, xmin, xmax, ymin, ymax):
-        return self.read_axis_x(xmin,xmax,ymin,ymax)
+        return self.read_axis_x(xmin, xmax, ymin, ymax)
 
     def read_variable_latitude(self, xmin, xmax, ymin, ymax):
-        return self.read_axis_y(xmin,xmax,ymin,ymax)
+        return self.read_axis_y(xmin, xmax, ymin, ymax)
 
     def read_variable_2D_sea_binary_mask(self, xmin, xmax, ymin, ymax):
         index_z = self.get_z_size() - 1  # At surface level
         try:
             if "mask_t" in self.grid.variables:
-                return np.ma.filled(self.grid.variables["mask_t"][index_z, ymin:ymax, xmin:xmax], fill_value=np.nan)
+                return np.ma.filled(self.grid.variables["mask_t"][index_z, ymin:ymax, xmin:xmax].astype(int),
+                                    fill_value=-9999)
             else:
                 logging.debug(
                     "No variables found for '" + str(VariableDefinition.LONG_NAME['2d_sea_binary_mask']) + "'")
@@ -447,6 +426,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
                                          "No variables found for '" + str(
                                              VariableDefinition.LONG_NAME['2d_sea_binary_mask']) + "'",
                                          1000))
+
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
@@ -454,7 +434,8 @@ La classe SymphonieReader permet de lire les données du format Symphonie
     def read_variable_3D_sea_binary_mask(self, xmin, xmax, ymin, ymax):
         try:
             if "mask_t" in self.grid.variables:
-                return np.ma.filled(self.grid.variables["mask_t"][:, ymin:ymax, xmin:xmax], fill_value=np.nan)
+                return np.ma.filled(self.grid.variables["mask_t"][:, ymin:ymax, xmin:xmax], fill_value=-9999).astype(
+                    int)
             else:
                 logging.debug(
                     "No variables found for '" + str(VariableDefinition.LONG_NAME['2d_sea_binary_mask']) + "'")
@@ -469,9 +450,9 @@ La classe SymphonieReader permet de lire les données du format Symphonie
     def read_variable_2D_wet_binary_mask_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
             self.open_file(index_t)
-            if SYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables:
+            if "wetmask_t" in self.ncfile.variables:
                 return np.ma.filled(self.ncfile.variables["wetmask_t"][0, ymin:ymax, xmin:xmax],
-                                    fill_value=np.nan)
+                                    fill_value=-9999).astype(int)
             else:
                 logging.debug(
                     "No variables found for '" + str(VariableDefinition.LONG_NAME['wet_binary_mask']) + "'")
@@ -548,7 +529,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
                                                  'sea_surface_height_above_mean_sea_level']) + "'",
                                          1000))
 
-            if SYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables: # We apply the wetmask
+            if SYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables:  # We apply the wetmask
                 data[self.ncfile.variables["wetmask_t"][0, ymin:ymax, xmin:xmax] == 0] = np.nan
 
             return data
@@ -568,7 +549,8 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             elif "ssh" in self.ncfile.variables:
                 data = np.ma.filled(self.ncfile.variables["ssh"][0, ymin:ymax, xmin:xmax] + bathy, fill_value=np.nan)
             elif "ssh_inst" in self.ncfile.variables:
-                data = np.ma.filled(self.ncfile.variables["ssh_inst"][0, ymin:ymax, xmin:xmax] + bathy, fill_value=np.nan)
+                data = np.ma.filled(self.ncfile.variables["ssh_inst"][0, ymin:ymax, xmin:xmax] + bathy,
+                                    fill_value=np.nan)
             else:
                 logging.debug("No variables found for '" + str(
                     VariableDefinition.LONG_NAME['sea_water_column_thickness']) + "'")
@@ -577,10 +559,10 @@ La classe SymphonieReader permet de lire les données du format Symphonie
                                              VariableDefinition.LONG_NAME['sea_water_column_thickness']) + "'",
                                          1000))
 
-            if SYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables: # We apply the wetmask
+            if SYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables:  # We apply the wetmask
                 data[self.ncfile.variables["wetmask_t"][0, ymin:ymax, xmin:xmax] == 0] = np.nan
 
-            data[data < 0.1] = 0 # Remove values on topo
+            data[data < 0.1] = 0  # Remove values on topo
 
             return data
 
@@ -603,7 +585,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
                                              VariableDefinition.LONG_NAME['sea_surface_temperature']) + "'",
                                          1000))
 
-            if SYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables: # We apply the wetmask
+            if SYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables:  # We apply the wetmask
                 data[self.ncfile.variables["wetmask_t"][0, ymin:ymax, xmin:xmax] == 0] = np.nan
 
             return data
@@ -617,7 +599,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             self.open_file(index_t)
             index_z = self.get_z_size() - 1
             if "sal" in self.ncfile.variables:
-                data =np.ma.filled(self.ncfile.variables["sal"][0, index_z, ymin:ymax, xmin:xmax],
+                data = np.ma.filled(self.ncfile.variables["sal"][0, index_z, ymin:ymax, xmin:xmax],
                                     fill_value=np.nan)
             else:
                 logging.debug("No variables found for '" + str(
@@ -675,11 +657,11 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
             u_rot, v_rot = self.compute_vector_rotation(data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v)
 
-            if SYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables: # We apply the wetmask
+            if SYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables:  # We apply the wetmask
                 u_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
-                      xmin_overlap:xmax_overlap] == 0] = np.nan
+                xmin_overlap:xmax_overlap] == 0] = np.nan
                 v_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
-                      xmin_overlap:xmax_overlap] == 0] = np.nan
+                xmin_overlap:xmax_overlap] == 0] = np.nan
 
             return [u_rot[new_ymin:new_ymax, new_xmin:new_xmax], v_rot[new_ymin:new_ymax, new_xmin:new_xmax]]
 
@@ -704,10 +686,11 @@ La classe SymphonieReader permet de lire les données du format Symphonie
                     VariableDefinition.LONG_NAME['sea_water_temperature_at_ground_level']) + "'")
                 raise (VariableNameError("SymphonieReader",
                                          "No variables found for '" + str(
-                                             VariableDefinition.LONG_NAME['sea_water_temperature_at_ground_level']) + "'",
+                                             VariableDefinition.LONG_NAME[
+                                                 'sea_water_temperature_at_ground_level']) + "'",
                                          1000))
 
-            if SYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables: # We apply the wetmask
+            if SYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables:  # We apply the wetmask
                 data[self.ncfile.variables["wetmask_t"][0, ymin:ymax, xmin:xmax] == 0] = np.nan
 
             return data
@@ -731,7 +714,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
                                              VariableDefinition.LONG_NAME['sea_water_salinity_at_ground_level']) + "'",
                                          1000))
 
-            if SYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables: # We apply the wetmask
+            if SYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables:  # We apply the wetmask
                 data[self.ncfile.variables["wetmask_t"][0, ymin:ymax, xmin:xmax] == 0] = np.nan
 
             return data
@@ -739,7 +722,6 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         except Exception as ex:
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
-
 
     def read_variable_sea_water_velocity_at_ground_level_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
@@ -784,11 +766,11 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
             u_rot, v_rot = self.compute_vector_rotation(data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v)
 
-            if SYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables: # We apply the wetmask
+            if SYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables:  # We apply the wetmask
                 u_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
-                      xmin_overlap:xmax_overlap] == 0] = np.nan
+                xmin_overlap:xmax_overlap] == 0] = np.nan
                 v_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
-                      xmin_overlap:xmax_overlap] == 0] = np.nan
+                xmin_overlap:xmax_overlap] == 0] = np.nan
 
             return [u_rot[new_ymin:new_ymax, new_xmin:new_xmax], v_rot[new_ymin:new_ymax, new_xmin:new_xmax]]
 
@@ -818,7 +800,6 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             logging.debug("Error '" + str(ex) + "'")
             raise (VariableNameError("SymphonieReader", "An error occured : '" + str(ex) + "'", 1000))
 
-    @timing
     def read_variable_barotropic_sea_water_velocity_at_time(self, index_t, xmin, xmax, ymin, ymax):
         try:
             self.open_file(index_t)
@@ -852,10 +833,10 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             u_rot, v_rot = self.compute_vector_rotation(data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v)
 
             if SYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables:  # We apply the wetmask
-                 u_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
-                       xmin_overlap:xmax_overlap] == 0] = np.nan
-                 v_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
-                       xmin_overlap:xmax_overlap] == 0] = np.nan
+                u_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
+                xmin_overlap:xmax_overlap] == 0] = np.nan
+                v_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
+                xmin_overlap:xmax_overlap] == 0] = np.nan
 
             return [u_rot[new_ymin:new_ymax, new_xmin:new_xmax], v_rot[new_ymin:new_ymax, new_xmin:new_xmax]]
 
@@ -921,7 +902,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
                                              VariableDefinition.LONG_NAME['sea_water_salinity']) + "'",
                                          1000))
 
-            if SYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables: # We apply the wetmask
+            if SYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables:  # We apply the wetmask
                 data[self.ncfile.variables["wetmask_t"][0, ymin:ymax, xmin:xmax] == 0] = np.nan
 
             return data
@@ -946,7 +927,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             rotcos = self.gridrotcos_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
             rotsin = self.gridrotsin_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
 
-            if "vel_u" in self.ncfile.variables and  "vel_v" in self.ncfile.variables:
+            if "vel_u" in self.ncfile.variables and "vel_v" in self.ncfile.variables:
                 data_u = np.ma.filled(
                     self.ncfile.variables["vel_u"][0, index_z, ymin_overlap:ymax_overlap,
                     xmin_overlap:xmax_overlap],
@@ -972,11 +953,11 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
             u_rot, v_rot = self.compute_vector_rotation(data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v)
 
-            if SYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables: # We apply the wetmask
+            if SYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables:  # We apply the wetmask
                 u_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
-                      xmin_overlap:xmax_overlap] == 0] = np.nan
+                xmin_overlap:xmax_overlap] == 0] = np.nan
                 v_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
-                      xmin_overlap:xmax_overlap] == 0] = np.nan
+                xmin_overlap:xmax_overlap] == 0] = np.nan
 
             return [u_rot[new_ymin:new_ymax, new_xmin:new_xmax], v_rot[new_ymin:new_ymax, new_xmin:new_xmax]]
 
@@ -1003,7 +984,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
                                              VariableDefinition.LONG_NAME['sea_surface_wave_significant_height']) + "'",
                                          1000))
 
-            if SYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables: # We apply the wetmask
+            if SYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables:  # We apply the wetmask
                 data[self.ncfile.variables["wetmask_t"][0, ymin:ymax, xmin:xmax] == 0] = np.nan
 
             return data
@@ -1026,7 +1007,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
                                              VariableDefinition.LONG_NAME['sea_surface_wave_mean_period']) + "'",
                                          1000))
 
-            if SYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables: # We apply the wetmask
+            if SYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables:  # We apply the wetmask
                 data[self.ncfile.variables["wetmask_t"][0, ymin:ymax, xmin:xmax] == 0] = np.nan
 
             return data
@@ -1050,7 +1031,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
                                              VariableDefinition.LONG_NAME['sea_surface_wave_to_direction']) + "'",
                                          1000))
 
-            if SYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables: # We apply the wetmask
+            if SYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables:  # We apply the wetmask
                 data[self.ncfile.variables["wetmask_t"][0, ymin:ymax, xmin:xmax] == 0] = np.nan
 
             return data
@@ -1093,11 +1074,11 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
             u_rot, v_rot = self.compute_vector_rotation(data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v)
 
-            if SYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables: # We apply the wetmask
+            if SYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables:  # We apply the wetmask
                 u_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
-                      xmin_overlap:xmax_overlap] == 0] = np.nan
+                xmin_overlap:xmax_overlap] == 0] = np.nan
                 v_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
-                      xmin_overlap:xmax_overlap] == 0] = np.nan
+                xmin_overlap:xmax_overlap] == 0] = np.nan
 
             return [u_rot[new_ymin:new_ymax, new_xmin:new_xmax], v_rot[new_ymin:new_ymax, new_xmin:new_xmax]]
 
@@ -1127,7 +1108,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             rotcos = self.gridrotcos_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
             rotsin = self.gridrotsin_t[ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap];
 
-            if "tawx" in self.ncfile.variables and  "tawy" in self.ncfile.variables: # We apply the wetmask
+            if "tawx" in self.ncfile.variables and "tawy" in self.ncfile.variables:  # We apply the wetmask
                 data_u = np.ma.filled(
                     self.ncfile.variables["tawx"][0, ymin_overlap:ymax_overlap, xmin_overlap:xmax_overlap],
                     fill_value=np.nan)
@@ -1142,11 +1123,11 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
             u_rot, v_rot = self.compute_vector_rotation(data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v)
 
-            if SYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables: # We apply the wetmask
+            if SYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables:  # We apply the wetmask
                 u_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
-                      xmin_overlap:xmax_overlap] == 0] = np.nan
+                xmin_overlap:xmax_overlap] == 0] = np.nan
                 v_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
-                      xmin_overlap:xmax_overlap] == 0] = np.nan
+                xmin_overlap:xmax_overlap] == 0] = np.nan
 
             return [u_rot[new_ymin:new_ymax, new_xmin:new_xmax], v_rot[new_ymin:new_ymax, new_xmin:new_xmax]]
 
@@ -1186,11 +1167,11 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
             u_rot, v_rot = self.compute_vector_rotation(data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v)
 
-            if SYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables: # We apply the wetmask
+            if SYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables:  # We apply the wetmask
                 u_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
-                      xmin_overlap:xmax_overlap] == 0] = np.nan
+                xmin_overlap:xmax_overlap] == 0] = np.nan
                 v_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
-                      xmin_overlap:xmax_overlap] == 0] = np.nan
+                xmin_overlap:xmax_overlap] == 0] = np.nan
 
             return [u_rot[new_ymin:new_ymax, new_xmin:new_xmax], v_rot[new_ymin:new_ymax, new_xmin:new_xmax]]
 
@@ -1240,11 +1221,11 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
             u_rot, v_rot = self.compute_vector_rotation(data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v)
 
-            if SYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables: # We apply the wetmask
+            if SYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables:  # We apply the wetmask
                 u_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
-                      xmin_overlap:xmax_overlap] == 0] = np.nan
+                xmin_overlap:xmax_overlap] == 0] = np.nan
                 v_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
-                      xmin_overlap:xmax_overlap] == 0] = np.nan
+                xmin_overlap:xmax_overlap] == 0] = np.nan
 
             return [u_rot[new_ymin:new_ymax, new_xmin:new_xmax], v_rot[new_ymin:new_ymax, new_xmin:new_xmax]]
 
@@ -1288,11 +1269,11 @@ La classe SymphonieReader permet de lire les données du format Symphonie
 
             u_rot, v_rot = self.compute_vector_rotation(data_u, data_v, rotcos, rotsin, mask_t, mask_u, mask_v)
 
-            if SYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables: # We apply the wetmask
+            if SYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables:  # We apply the wetmask
                 u_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
-                      xmin_overlap:xmax_overlap] == 0] = np.nan
+                xmin_overlap:xmax_overlap] == 0] = np.nan
                 v_rot[self.ncfile.variables["wetmask_t"][0, ymin_overlap:ymax_overlap,
-                      xmin_overlap:xmax_overlap] == 0] = np.nan
+                xmin_overlap:xmax_overlap] == 0] = np.nan
 
             return [u_rot[new_ymin:new_ymax, new_xmin:new_xmax], v_rot[new_ymin:new_ymax, new_xmin:new_xmax]]
 
@@ -1313,7 +1294,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
                                          "No variables found for 'Ha'",
                                          1000))
 
-            if SYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables: # We apply the wetmask
+            if SYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables:  # We apply the wetmask
                 data[self.ncfile.variables["wetmask_t"][0, ymin:ymax, xmin:xmax] == 0] = np.nan
 
             return data

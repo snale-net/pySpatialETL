@@ -317,7 +317,7 @@ class LevelCoverage(Coverage):
 
         return self.depth_weight[depth]
 
-    def __read_variable(self, function_name, depth):
+    def __read_variable(self, function_name, depth, is_binary_data=False):
 
         fn = getattr(self.reader, function_name)
         vert_coord, indexes_z = self.find_level_index(depth);
@@ -368,10 +368,12 @@ class LevelCoverage(Coverage):
 
         if self.horizontal_resampling:
             if is_vector:
-                return [self.resample_2d_variable(self.data_temp[0, 0]),
-                        self.resample_2d_variable(self.data_temp[0, 1])]
+                return [
+                    self.resample_2d_variable(self.data_temp[0, 0], is_binary_data=is_binary_data),
+                    self.resample_2d_variable(self.data_temp[0, 1], is_binary_data=is_binary_data)
+                ]
             else:
-                return self.resample_2d_variable(self.data_temp[0])
+                return self.resample_2d_variable(self.data_temp[0], is_binary_data=is_binary_data)
         else:
             if is_vector:
                 return [
@@ -390,7 +392,7 @@ class LevelCoverage(Coverage):
             0 = Terre
             1 = Mer
     """
-        return self.__read_variable(inspect.stack()[0][3], depth=depth)
+        return self.__read_variable(inspect.stack()[0][3], depth=depth, is_binary_data=True)
 
     def read_variable_depth_at_depth(self, depth):
 

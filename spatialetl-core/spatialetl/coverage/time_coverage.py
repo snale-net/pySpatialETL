@@ -360,7 +360,7 @@ class TimeCoverage(Coverage):
 
             indexes_t.append(int(t));
 
-        if type(t) == datetime or type(t) == cftime._cftime.datetime or type(t) == cftime._cftime.real_datetime:
+        elif type(t) == datetime or type(t) == cftime._cftime.datetime or type(t) == cftime._cftime.real_datetime:
 
             target_timestamp = (t - TimeCoverage.TIME_DATUM).total_seconds()
             array = np.asarray(self.read_axis_t(type="source_mpi", timestamp=1))
@@ -385,8 +385,9 @@ class TimeCoverage(Coverage):
 
                     else:
                         raise NotFoundInRankError(self.rank,
-                                              "'" + str(t) + "' not found. Maybe the TimeCoverage.TIME_DELTA (" + str(
-                                                  TimeCoverage.TIME_DELTA) + ") is too small or the date is out the range.")
+                                                  "'" + str(
+                                                      t) + "' not found. Maybe the TimeCoverage.TIME_DELTA (" + str(
+                                                      TimeCoverage.TIME_DELTA) + ") is too small or the date is out the range.")
 
                 elif TimeCoverage.TIME_INTERPOLATION_METHOD == "mean":
 
@@ -416,7 +417,8 @@ class TimeCoverage(Coverage):
                             else:
                                 raise ValueError("Type doesn't match [source, source_global]")
 
-                            logging.debug(f"[TimeCoverage][find_time_index()] Found : { self.read_axis_t(type="source_mpi", timestamp=0)[int(index_t)]}")
+                            logging.debug(
+                                f"[TimeCoverage][find_time_index()] Found : {self.read_axis_t(type="source_mpi", timestamp=0)[int(index_t)]}")
 
                     if not indexes_t:
                         raise NotFoundInRankError(self.rank,
@@ -425,17 +427,18 @@ class TimeCoverage(Coverage):
                                                       TimeCoverage.TIME_DELTA) + ") is too small or the date is out the range.")
 
                 else:
-                    raise NotImplementedError("Method " + str(TimeCoverage.TIME_INTERPOLATION_METHOD ) + " is not implemented.")
+                    raise NotImplementedError(
+                        "Method " + str(TimeCoverage.TIME_INTERPOLATION_METHOD) + " is not implemented.")
             else:
                 raise NotImplementedError("Method " + str(method) + " is not implemented for regular grid.")
 
-            indexes_t = np.unique(indexes_t)
-            logging.debug("[TimeCoverage][find_time_index()] Found " + str(len(indexes_t)) + " candidate datetime(s)")
-
-            return np.array(indexes_t)
-
         else:
             raise ValueError("" + str(t) + " have to be an integer or a datetime. Current type: " + str(type(t)))
+
+        indexes_t = np.unique(indexes_t)
+        logging.debug("[TimeCoverage][find_time_index()] Found " + str(len(indexes_t)) + " candidate datetime(s)")
+
+        return np.array(indexes_t)
 
     def read_axis_t(self, type="target_mpi", with_overlap=False, timestamp=0, current_thread: int = None):
         """Retourne les valeurs de l'axe t.
@@ -510,18 +513,18 @@ class TimeCoverage(Coverage):
         else:
             return self.parallel_map[self.rank]["dst_local_t_size"]
 
-    def __read_variable(self, function_name, time):
+    def __read_variable(self, function_name, time, is_binary_data=False):
 
         fn = getattr(self.reader, function_name)
 
         index_t = self.find_time_index(time);
 
         layers = np.stack([fn(
-                self.parallel_map[self.rank]["src_global_t"].start + index_t[t],
-                self.parallel_map[self.rank]["src_global_x_overlap"].start,
-                self.parallel_map[self.rank]["src_global_x_overlap"].stop,
-                self.parallel_map[self.rank]["src_global_y_overlap"].start,
-                self.parallel_map[self.rank]["src_global_y_overlap"].stop) for t in range(0, len(index_t))])
+            self.parallel_map[self.rank]["src_global_t"].start + index_t[t],
+            self.parallel_map[self.rank]["src_global_x_overlap"].start,
+            self.parallel_map[self.rank]["src_global_x_overlap"].stop,
+            self.parallel_map[self.rank]["src_global_y_overlap"].start,
+            self.parallel_map[self.rank]["src_global_y_overlap"].stop) for t in range(0, len(index_t))])
 
         data = temporal_2d_interpolation(layers, TimeCoverage.TIME_INTERPOLATION_METHOD)
 
@@ -529,9 +532,12 @@ class TimeCoverage(Coverage):
 
         if self.horizontal_resampling:
             if is_vector:
-                return [self.resample_2d_variable(data[0]), self.resample_2d_variable(data[1])]
+                return [
+                    self.resample_2d_variable(data[0], is_binary_data=is_binary_data),
+                    self.resample_2d_variable(data[1], is_binary_data=is_binary_data)
+                ]
             else:
-                return self.resample_2d_variable(data)
+                return self.resample_2d_variable(data, is_binary_data=is_binary_data)
         else:
             if is_vector:
                 return [
@@ -547,17 +553,17 @@ class TimeCoverage(Coverage):
     @type t: datetime ou l'index
     @param t: date souhaitée
     @return: un tableau en deux dimensions [y,x]."""
-        return self.__read_variable(inspect.stack()[0][3], time=t)
+        return self.__read_variable(inspect.stack()[0][3], time=t, is_binary_data=True)
 
     def read_variable_2D_wet_binary_mask_at_time(self, t):
         """Retourne le masque à la date souhaitée sur toute la couverture horizontale.
     @type t: datetime ou l'index
     @param t: date souhaitée
     @return: un tableau en deux dimensions [y,x]."""
-        return self.__read_variable(inspect.stack()[0][3], time=t)
+        return self.__read_variable(inspect.stack()[0][3], time=t, is_binary_data=True)
 
     def read_variable_2D_land_binary_mask_at_time(self, t):
-        return self.__read_variable(inspect.stack()[0][3], time=t)
+        return self.__read_variable(inspect.stack()[0][3], time=t, is_binary_data=True)
 
     #################
     # HYDRO
@@ -654,13 +660,7 @@ class TimeCoverage(Coverage):
 
     def read_variable_barotropic_sea_water_speed_at_time(self, date):
         comp = self.read_variable_barotropic_sea_water_velocity_at_time(date)
-        result = np.zeros([self.get_y_size(), self.get_x_size()])
-        result[:] = np.nan
-        for x in range(0, self.get_x_size()):
-            for y in range(0, self.get_y_size()):
-                result[y, x] = math.sqrt(comp[0][y, x] ** 2 + comp[1][y, x] ** 2)
-
-        return result
+        return np.hypot(comp[0],comp[1])
 
     def read_variable_barotropic_sea_water_from_direction_at_time(self, date):
         comp = self.read_variable_barotropic_sea_water_velocity_at_time(date)
@@ -886,13 +886,7 @@ class TimeCoverage(Coverage):
 
     def read_variable_wind_speed_10m_at_time(self, date):
         comp = self.read_variable_wind_10m_at_time(date)
-        result = np.zeros([self.get_y_size(), self.get_x_size()])
-        result[:] = np.nan
-        for x in range(0, self.get_x_size()):
-            for y in range(0, self.get_y_size()):
-                result[y, x] = math.sqrt(comp[0][y, x] ** 2 + comp[1][y, x] ** 2)
-
-        return result
+        return np.hypot(comp[0], comp[1])
 
     def read_variable_wind_from_direction_10m_at_time(self, date):
         comp = self.read_variable_wind_10m_at_time(date)
