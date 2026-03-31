@@ -25,6 +25,7 @@ from __future__ import division, print_function, absolute_import
 import glob
 import os
 import re
+from concurrent.futures import ProcessPoolExecutor, as_completed
 
 import cftime
 import numexpr as ne
@@ -38,6 +39,59 @@ from spatialetl.utils.logger import logging
 from spatialetl.utils.path import path_leaf
 from spatialetl.utils.variable_definition import VariableDefinition
 
+# precompile regex once
+FILENAME_TIME_RE = re.compile(
+    r"^(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2}).*\.nc$"
+)
+
+# precompile month replacements once
+MONTH_MAP = {
+    'jan': '01', 'feb': '02', 'mar': '03', 'apr': '04',
+    'may': '05', 'jun': '06', 'jul': '07', 'aug': '08',
+    'sep': '09', 'oct': '10', 'nov': '11', 'dec': '12'
+}
+
+def normalize_units(units: str) -> str:
+    units = units.replace('from', 'since')
+    for k, v in MONTH_MAP.items():
+        units = units.replace(k, v)
+    return units
+
+def extract_times_from_file(file):
+    times = []
+    filename = path_leaf(file)
+
+    match = FILENAME_TIME_RE.search(filename)
+    if match:
+        y, m, d, hh, mm, ss = map(int, match.groups())
+        times.append(cftime.datetime(y, m, d, hh, mm, ss))
+        return times
+
+    if not (os.path.isfile(file) and "bathycote_in" not in str(file)):
+        return times
+
+    try:
+        with Dataset(file, 'r') as ds:
+            time_var = ds.variables.get("time")
+            if time_var is None:
+                return times
+
+            units = normalize_units(time_var.units)
+            calendar = getattr(time_var, "calendar", "standard")
+
+            times = time_var[:]
+
+            # vectorized conversion when possible
+            if times.shape == (1,):
+               times.append(num2date(times[0], units=units, calendar=calendar))
+            else:
+                decoded = num2date(times, units=units, calendar=calendar)
+                times.extend(t.replace(microsecond=0) for t in decoded)
+
+    except Exception as ex:
+        raise ValueError(f"Unable to decode time records in file {file}: {ex}")
+
+    return times
 
 class SYMPHONIEReader(CoverageReader):
     """
@@ -81,46 +135,20 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         self.t_size = len(self.files)
         self.times = []
 
-        for file in self.files:
-            groups = re.search("^([0-9]{4})([0-9]{2})([0-9]{2})\_([0-9]{2})([0-9]{2})([0-9]{2}).*.nc$",
-                               path_leaf(file))
-            if groups:
-                current_time = cftime.datetime(int(groups.group(1)), int(groups.group(2)), int(groups.group(3)),
-                                               int(groups.group(4)), int(groups.group(5)),
-                                               int(groups.group(6)))
-                self.times.append(current_time)
-            else:
-                if os.path.isfile(file) and "bathycote_in" not in str(file):
-                    try:
-                        current_file = Dataset(file, 'r')
+        if self.t_size > 20:
+            # Multithreading process
+            with ProcessPoolExecutor(max_workers=os.cpu_count() - 1) as executor:
+                futures = [executor.submit(extract_times_from_file, f) for f in self.files]
 
-                        if "time" in current_file.variables and np.shape(current_file.variables["time"]) == (1,):
-                            current_time = num2date(current_file.variables["time"][0],
-                                                    units=current_file.variables["time"].units.replace('from',
-                                                                                                       'since').replace(
-                                                        'jan',
-                                                        '01').replace(
-                                                        'feb', '02').replace('mar', '03').replace('apr', '04').replace(
-                                                        'may',
-                                                        '05').replace('jun',
-                                                                      '06').replace(
-                                                        'jul', '07').replace('aug', '08').replace('sep', '09').replace(
-                                                        'oct',
-                                                        '10').replace('nov',
-                                                                      '11').replace(
-                                                        'dec', '12'), calendar=current_file.variables['time'].calendar)
-                            self.times.append(current_time)
-                        else:
-                            for time in current_file.variables["time"]:
-                                nc_time = num2date(time,
-                                                   units=current_file.variables["time"].units,
-                                                   calendar=current_file.variables['time'].calendar)
+                for future in as_completed(futures):
+                    result = future.result()
+                    self.times.extend(result)
+        else:
+            # Sequential process
+            for f in self.files:
+                self.times.extend(extract_times_from_file(f))
 
-                                self.times.append(nc_time.replace(microsecond=0))
-
-                            self.t_size = len(self.times)
-                    except Exception as ex:
-                        raise ValueError("Unable to decode time records in file " + str(file) + ":" + str(ex))
+        self.t_size = len(self.times)
 
         if len(self.times) == 0:
             logging.info("No time records found")
