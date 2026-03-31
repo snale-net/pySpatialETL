@@ -34,7 +34,8 @@ readme = "README.md"
 
 dependencies = [
   "spatialetl>=0.2.0",
-  "spatialetl-providers-common-netcdf>=0.0.1"
+  "spatialetl-providers-common-netcdf>=0.0.1",
+  "numexpr==2.14.1"
 ]
 
 [project.urls]

@@ -148,6 +148,9 @@ COPY --from=prebuilt /build/boost/py37/gcc142/1.90.0/lib /usr/local/lib
 COPY --from=prebuilt /build/cgal/gcc142/6.1/lib /usr/local/lib
 RUN ldconfig
 
+# Share
+COPY --from=prebuilt /build/proj/gcc142/9.7.1/share/ /usr/local/share/
+
 # Bin
 COPY --from=prebuilt /build/gdal/gcc142/3.12.1/bin/ /usr/local/bin/
 
