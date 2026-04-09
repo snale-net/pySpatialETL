@@ -49,4 +49,4 @@ spatialetl = {workspace = true}
 spatialetl-providers-common-netcdf = {workspace = true}
 
 [tool.flit.module]
-name = "spatialetl.providers.ecmwf"
+name = "spatialetl.providers.gmt"

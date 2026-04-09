@@ -1,5 +1,3 @@
-#! /usr/bin/env python2.7
-# -*- coding: utf-8 -*-
 # MIT License
 # Copyright (c) 2024 [SNALE - French SAS Company - RCS 951 724 616]
 #
@@ -79,11 +77,8 @@ class MultiPoint():
     def __init__(self,myReader):
         self.reader = myReader;
 
-        # MPI
-        # TODO Make a multiprocessing version
-        self.map_mpi = None
-        self.comm = None
-        self.size = 1
+        self.parallel_map = None
+        self.threads_count = 1
         self.rank = 0
 
         if np.shape(self.reader.read_axis_x())[0] != np.shape(self.reader.read_axis_y())[0] :
@@ -191,12 +186,6 @@ class MultiPoint():
     # Scalar
     def read_variable_point_names(self):
         return self.reader.read_variable_point_names()
-
-    def read_variable_time(self):
-        """
-        Read time for all point
-        """
-        return self.reader.read_variable_time();
 
     def read_variable_bathymetry(self):
         """

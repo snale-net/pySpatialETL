@@ -22,8 +22,8 @@
 # SOFTWARE.
 from __future__ import division, print_function, absolute_import
 
-from spatialetl.providers.symphonie.coverage.netcdf.symphonie.SYMPHONIEReader import SYMPHONIEReader as CovReader
-from spatialetl.providers.symphonie.point.abstract_coverage_reader import AbstractCoverageReader
+from spatialetl.providers.symphonie.coverage.netcdf.symphonie_reader import SYMPHONIEReader as CovReader
+from spatialetl.point.io.abstract_coverage_reader import AbstractCoverageReader
 
 
 class SYMPHONIEReader(AbstractCoverageReader):

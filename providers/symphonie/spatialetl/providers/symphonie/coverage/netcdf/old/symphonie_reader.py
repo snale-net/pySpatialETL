@@ -55,13 +55,13 @@ class SYMPHONIEReader(AbstractSYMPHONIEReader):
         gridrotsin_t = np.zeros([ymax,xmax])
 
         u = np.zeros([ymax,xmax])
-        u[:] = np.NAN
+        u[:] =np.nan
         v = np.zeros([ymax,xmax])
-        v[:] = np.NAN
+        v[:] =np.nan
         u_rot = np.zeros([ymax,xmax])
-        u_rot[:] = np.NAN
+        u_rot[:] =np.nan
         v_rot = np.zeros([ymax,xmax])
-        v_rot[:] = np.NAN
+        v_rot[:] =np.nan
 
         #print data_v[39,300,300]
 

@@ -22,7 +22,9 @@
 # SOFTWARE.
 from __future__ import division, print_function, absolute_import
 
+
 import numpy as np
+# TODO remove MPI dependencies
 from mpi4py import MPI
 from netCDF4 import Dataset
 from netCDF4 import date2num
@@ -71,8 +73,8 @@ class DefaultWriter (CoverageWriter):
                 longitudes.axis = "X" ;
                 longitudes.units = VariableDefinition.CANONICAL_UNITS['longitude'];
 
-                latitudes[self.coverage.map_mpi[self.coverage.rank]["dst_global_y"]] = self.coverage.read_axis_y()
-                longitudes[self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]] = self.coverage.read_axis_x()
+                latitudes[self.coverage.parallel_map[self.coverage.rank]["dst_global_y"]] = self.coverage.read_axis_y()
+                longitudes[self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]] = self.coverage.read_axis_x()
 
                 if(isinstance(self.coverage, TimeCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
@@ -85,7 +87,7 @@ class DefaultWriter (CoverageWriter):
                     times.conventions = "UTC time"
 
                     times[
-                    self.coverage.map_mpi[self.coverage.rank]["dst_global_t"]] = date2num(self.coverage.read_axis_t(), units = times.units, calendar = times.calendar)
+                    self.coverage.parallel_map[self.coverage.rank]["dst_global_t"]] = date2num(self.coverage.read_axis_t(), units = times.units, calendar = times.calendar)
 
                 if(isinstance(self.coverage, LevelCoverage) or isinstance(self.coverage, TimeLevelCoverage)):
 
@@ -148,8 +150,8 @@ class DefaultWriter (CoverageWriter):
             logging.info('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['2d_sea_binary_mask']) + '\'')
 
         var[
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-            self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+            self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
         ] = self.coverage.read_variable_2D_sea_binary_mask()
 
     #################
@@ -177,9 +179,9 @@ class DefaultWriter (CoverageWriter):
                 logging.info('[DefaultWriter] Writing variable \'' + str(VariableDefinition.LONG_NAME['sea_surface_height_above_geoid']) + '\' at time \'' + str(time) + '\'')
 
                 var[
-                self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start+time_index:self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start+time_index+1,
-                self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]
+                self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start+time_index:self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start+time_index+1,
+                self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
                 ] = self.coverage.read_variable_sea_surface_height_above_geoid_at_time(time)
 
                 time_index += 1
@@ -217,10 +219,10 @@ class DefaultWriter (CoverageWriter):
                 for level in self.coverage.read_axis_z():
                     # Pas d'interpolation temporelle donc on parcours les index du temps
                     var[
-                    self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index:self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index + 1,
+                    self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index:self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index + 1,
                     level_index:level_index + 1,
-                    self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                    self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]
+                    self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                    self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
                     ] = self.coverage.read_variable_sea_water_temperature_at_time_and_depth(time, level)
 
                     level_index += 1
@@ -255,10 +257,10 @@ class DefaultWriter (CoverageWriter):
                 for level in self.coverage.read_axis_z():
                     # Pas d'interpolation temporelle donc on parcours les index du temps
                     var[
-                    self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index:self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index + 1,
+                    self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index:self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index + 1,
                     level_index:level_index + 1,
-                    self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                    self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]
+                    self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                    self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
                     ] = self.coverage.read_variable_sea_water_salinity_at_time_and_depth(time, level)
 
                     level_index += 1
@@ -313,17 +315,17 @@ class DefaultWriter (CoverageWriter):
                     data_u,data_v = self.coverage.read_variable_baroclinic_sea_water_velocity_at_time_and_depth(time, level)
 
                     ucomp[
-                    self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index:self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index + 1,
+                    self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index:self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index + 1,
                     level_index:level_index + 1,
-                    self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                    self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]
+                    self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                    self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
                     ] = data_u
 
                     vcomp[
-                    self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index:self.coverage.map_mpi[self.coverage.rank]["dst_global_t"].start + time_index + 1,
+                    self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index:self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index + 1,
                     level_index:level_index + 1,
-                    self.coverage.map_mpi[self.coverage.rank]["dst_global_y"],
-                    self.coverage.map_mpi[self.coverage.rank]["dst_global_x"]
+                    self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                    self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
                     ] = data_v
                     level_index += 1
 

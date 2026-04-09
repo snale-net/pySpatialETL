@@ -20,19 +20,20 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from __future__ import division, print_function, absolute_import
-
+import inspect
 import math
+import os
 from datetime import datetime
 from datetime import timedelta
 
+import cftime
 import numpy as np
 import pandas
 from array_split import shape_split
 
 from spatialetl.coverage.coverage import Coverage
 from spatialetl.exception.not_found_in_rank_error import NotFoundInRankError
-from spatialetl.operator.interpolator.interpolator_core import resample_2d_to_grid
+from spatialetl.operator.interpolator.interpolator_core import temporal_2d_interpolation
 from spatialetl.utils.logger import logging
 
 
@@ -44,12 +45,14 @@ class TimeCoverage(Coverage):
 
     TIME_DATUM = datetime(1970, 1, 1)
     TIME_DELTA = timedelta(minutes=15)
+    TIME_INTERPOLATION_METHOD = "nearest"
     TIME_OVERLAPING_SIZE = 0
 
     def __init__(self, reader, bbox=None, resolution_x=None, resolution_y=None, start_time=None, end_time=None,
-                 freq=None):
+                 freq=None, nb_thread: int = os.cpu_count() - 1):
 
-        Coverage.__init__(self, reader, bbox=bbox, resolution_x=resolution_x, resolution_y=resolution_y);
+        Coverage.__init__(self, reader, bbox=bbox, resolution_x=resolution_x, resolution_y=resolution_y,
+                          nb_thread=nb_thread);
 
         self.source_global_t_size = self.reader.get_t_size()
         self.source_global_axis_t = self.reader.read_axis_t(0, self.source_global_t_size, 0);
@@ -75,8 +78,8 @@ class TimeCoverage(Coverage):
 
             if time - datetime.strptime(str(self.source_global_axis_t[nearest_t_index]),
                                         '%Y-%m-%d %H:%M:%S') == zero_delta or abs(
-                    time - datetime.strptime(str(self.source_global_axis_t[nearest_t_index]),
-                                             '%Y-%m-%d %H:%M:%S')) < TimeCoverage.TIME_DELTA:
+                time - datetime.strptime(str(self.source_global_axis_t[nearest_t_index]),
+                                         '%Y-%m-%d %H:%M:%S')) < TimeCoverage.TIME_DELTA:
                 tmin = nearest_t_index
             else:
                 raise ValueError(str(time) + " not found. Maybe the TimeCoverage.TIME_DELTA (" + str(
@@ -98,50 +101,84 @@ class TimeCoverage(Coverage):
 
             if time - datetime.strptime(str(self.source_global_axis_t[nearest_t_index]),
                                         '%Y-%m-%d %H:%M:%S') == zero_delta or abs(
-                    time - datetime.strptime(str(self.source_global_axis_t[nearest_t_index]),
-                                             '%Y-%m-%d %H:%M:%S')) < TimeCoverage.TIME_DELTA:
+                time - datetime.strptime(str(self.source_global_axis_t[nearest_t_index]),
+                                         '%Y-%m-%d %H:%M:%S')) < TimeCoverage.TIME_DELTA:
                 tmax = nearest_t_index + 1
             else:
                 raise ValueError(str(time) + " not found. Maybe the TimeCoverage.TIME_DELTA (" + str(
                     TimeCoverage.TIME_DELTA) + ") is too small or the date is out the range.")
 
         if freq is not None:
+            self.temporal_resampling = True
+
             self.target_global_axis_t = pandas.date_range(start=datetime.utcfromtimestamp(
                 self.read_axis_t(type="source_global", with_overlap=False, timestamp=1)[tmin]),
-                                                          end=datetime.utcfromtimestamp(
-                                                              self.read_axis_t(type="source_global", with_overlap=False,
-                                                                               timestamp=1)[tmax - 1]),
-                                                          freq=freq).to_pydatetime();
+                end=datetime.utcfromtimestamp(
+                    self.read_axis_t(type="source_global", with_overlap=False,
+                                     timestamp=1)[tmax - 1]),
+                freq=freq).to_pydatetime();
             self.target_global_t_size = np.shape(self.target_global_axis_t)[0]
+
         else:
             self.target_global_axis_t = self.source_global_axis_t[tmin:tmax]
             self.target_global_t_size = tmax - tmin
 
-        self.create_mpi_map()
-        self.update_mpi_map()
+        self.__init_parallel_map()
 
-        if type(self) == TimeCoverage and self.horizontal_resampling and self.rank == 0:
+        if self.temporal_resampling and self.rank == 0:
             logging.info(
-                '[horizontal_interpolation] Source grid size : (' + str(self.source_global_x_size) + ", " + str(
-                    self.source_global_y_size) + ")")
+                '[temporal_interpolation] Source grid size : ' + str(self.source_global_t_size) + " time(s)")
             logging.info(
-                '[horizontal_interpolation] Target grid size : (' + str(self.target_global_x_size) + ", " + str(
-                    self.target_global_y_size) + ")")
+                '[temporal_interpolation] Target grid size : ' + str(self.target_global_t_size) + " time(s)")
 
-        # self.map_mpi[self.rank]["src_global_t"] = np.s_[tmin:tmax]
-        # self.map_mpi[self.rank]["src_global_overlap"] = np.s_[tmin:tmax]
-        # self.map_mpi[self.rank]["src_local_t"] = np.s_[0:self.source_global_t_size]
+        if self.horizontal_resampling:
+            if self.rank == 0:
+                logging.info(
+                    '[horizontal_interpolation] Source grid size : (' + str(self.source_global_x_size) + ", " + str(
+                        self.source_global_y_size) + ")")
+                logging.info(
+                    '[horizontal_interpolation] Target grid size : (' + str(self.target_global_x_size) + ", " + str(
+                        self.target_global_y_size) + ")")
+
+            self.compute_weight()
+
+        if self.rank == 0 and self.comm:
+            logging.debug("MPI map:")
+
+        if self.comm:
+            logging.debug(f"{'-' * 10} MPI rank n° {self.rank} {'-' * 10}")
+        else:
+            logging.debug("Multithreads map:")
+            logging.debug(f"{'-' * 10} Source grid {'-' * 10}")
+            for key in ['src_global_x', 'src_global_y', 'src_global_x_size', 'src_global_y_size', ]:
+                logging.debug(f"{key} = {self.parallel_map[self.rank][key]}")
+            logging.debug(f"{'-' * 10} Target grid {'-' * 10}")
+            for key in ['dst_global_x', 'dst_global_y', 'dst_local_x_size', 'dst_local_y_size']:
+                logging.debug(f"{key} = {self.parallel_map[self.rank][key]}")
+
+        for key in self.parallel_map[self.rank]:
+            if self.comm and key != "threads":
+                logging.debug(f"{key} = {self.parallel_map[self.rank][key]}")
+
+            # if len(self.parallel_map[self.rank]["threads"]) != 1:
+        for thread in range(len(self.parallel_map[self.rank]["threads"])):
+            logging.debug(f"   {'-' * 10} Rank {self.rank} - Thread n° {thread} {'-' * 10}")
+            for thread_key in self.parallel_map[self.rank]["threads"][thread]:
+                logging.debug(
+                    f"    {thread_key} = {self.parallel_map[self.rank]['threads'][thread][thread_key]}")
 
         if self.rank == 0:
-            logging.debug("MPI map:")
-        for key in self.map_mpi[self.rank]:
-            logging.debug("Proc n°" + str(self.rank) + " " + str(key) + "=" + str(self.map_mpi[self.rank][key]))
-        logging.debug("---------")
+            logging.debug("-" * 20)
 
-    def create_mpi_map(self):
+    def __init_parallel_map(self):
+        """
+        Create the MPI map for parallel processing.
+        The MPI map is a dictionary that contains the mapping of the source and destination grids for each MPI rank.
 
-        self.map_mpi = np.empty(self.size, dtype=object)
-        target_sample = (self.target_global_t_size, self.target_global_y_size, self.target_global_x_size)
+        Examples
+        --------
+        >>> coverage.__init_parellel_map()
+        """
 
         # Découpage des axes
         # if self.horizontal_resampling:
@@ -152,138 +189,159 @@ class TimeCoverage(Coverage):
         #         target_slices = shape_split(target_sample, self.size, axis=[0, 0, 0])
         # else:
 
-        target_slices = shape_split(target_sample, self.size, axis=[0, 0, 0])
+        target_mpi_sample = (self.target_global_t_size, self.target_global_y_size, self.target_global_x_size)
 
-        slice_index = 0
-        for slyce in target_slices.flatten():
-            slice = tuple(slyce)
+        # Split the axes with the MPI size
+        target_mpi_slices = shape_split(target_mpi_sample, self.size, axis=[0, 0, 0])
 
-            map = {}
-            # Grille source
-            map["dst_global_t"] = slice[0]
-            map["dst_global_x"] = slice[2]
-            map["dst_global_y"] = slice[1]
+        mpi_slice_index = 0
+        for slyce in target_mpi_slices.flatten():
+            mpi_slice = tuple(slyce)
+            self.parallel_map[mpi_slice_index] = self.compute_slice_coordinates(
+                mpi_slice,
+                self.source_global_t_size,
+                self.source_global_x_size,
+                self.source_global_y_size,
+                self.target_global_t_size,
+                self.target_global_x_size,
+                self.target_global_y_size
+            )
 
-            map["dst_local_t_size"] = map["dst_global_t"].stop - map["dst_global_t"].start
-            map["dst_local_x_size"] = map["dst_global_x"].stop - map["dst_global_x"].start
-            map["dst_local_y_size"] = map["dst_global_y"].stop - map["dst_global_y"].start
+            # Split the axes with the number of threads
+            # We only split coverage grid
+            target_threads_sample = (self.parallel_map[mpi_slice_index]["dst_local_y_size"],
+                                     self.parallel_map[mpi_slice_index]["dst_local_x_size"])
+            target_threads_slices = shape_split(target_threads_sample, self.threads_number, axis=[0, 0])
 
-            dst_global_t_min_overlap = max(0, map["dst_global_t"].start - TimeCoverage.TIME_OVERLAPING_SIZE)
-            dst_global_t_max_overlap = min(self.target_global_t_size,
-                                           map["dst_global_t"].stop + TimeCoverage.TIME_OVERLAPING_SIZE)
-            map["dst_global_t_overlap"] = np.s_[dst_global_t_min_overlap:dst_global_t_max_overlap]
+            # If we can't divide the grid dimensions with the number of threads,
+            # we set the threads number with the number of slices
+            self.threads_number = len(target_threads_slices.flatten())
+            logging.debug(f"Threads number is {self.threads_number}")
 
-            dst_global_x_min_overlap = max(0, map["dst_global_x"].start - Coverage.HORIZONTAL_OVERLAPING_SIZE)
-            dst_global_x_max_overlap = min(self.target_global_x_size,
-                                           map["dst_global_x"].stop + Coverage.HORIZONTAL_OVERLAPING_SIZE)
-            map["dst_global_x_overlap"] = np.s_[dst_global_x_min_overlap:dst_global_x_max_overlap]
+            self.parallel_map[mpi_slice_index]['threads'] = np.empty([self.threads_number], dtype=object)
 
-            dst_global_y_min_overlap = max(0, map["dst_global_y"].start - Coverage.HORIZONTAL_OVERLAPING_SIZE)
-            dst_global_y_max_overlap = min(self.target_global_y_size,
-                                           map["dst_global_y"].stop + Coverage.HORIZONTAL_OVERLAPING_SIZE)
-            map["dst_global_y_overlap"] = np.s_[dst_global_y_min_overlap:dst_global_y_max_overlap]
+            slice_thread_index = 0
+            for thread_slyce in target_threads_slices.flatten():
+                thread_slice = tuple(thread_slyce)
+                self.parallel_map[mpi_slice_index]["threads"][slice_thread_index] = Coverage.compute_slice_coordinates(
+                    self,
+                    thread_slice,
+                    self.parallel_map[mpi_slice_index]["src_local_x_size"],
+                    self.parallel_map[mpi_slice_index]["src_local_y_size"],
+                    self.parallel_map[mpi_slice_index]["dst_local_x_size"],
+                    self.parallel_map[mpi_slice_index]["dst_local_y_size"],
+                    self.parallel_map[mpi_slice_index])
+                slice_thread_index = slice_thread_index + 1
 
-            map["dst_global_t_size_overlap"] = map["dst_global_t_overlap"].stop - map["dst_global_t_overlap"].start
-            map["dst_global_x_size_overlap"] = map["dst_global_x_overlap"].stop - map["dst_global_x_overlap"].start
-            map["dst_global_y_size_overlap"] = map["dst_global_y_overlap"].stop - map["dst_global_y_overlap"].start
+            mpi_slice_index = mpi_slice_index + 1
 
-            dst_t_min = TimeCoverage.TIME_OVERLAPING_SIZE
-            dst_t_max = map["dst_global_t_size_overlap"] - TimeCoverage.TIME_OVERLAPING_SIZE
-            dst_x_min = Coverage.HORIZONTAL_OVERLAPING_SIZE
-            dst_x_max = map["dst_global_x_size_overlap"] - Coverage.HORIZONTAL_OVERLAPING_SIZE
-            dst_y_min = Coverage.HORIZONTAL_OVERLAPING_SIZE
-            dst_y_max = map["dst_global_y_size_overlap"] - Coverage.HORIZONTAL_OVERLAPING_SIZE
+    def compute_slice_coordinates(self,
+                                  slice,
+                                  source_global_t_size: int,
+                                  source_global_x_size: int,
+                                  source_global_y_size: int,
+                                  target_global_t_size: int,
+                                  target_global_x_size: int,
+                                  target_global_y_size: int,
+                                  parent_slice=None
+                                  ):
+        """
+        Compute slice coordinates in the source grid and the destination grid with overlap.
 
-            if map["dst_global_t"].start == 0:
-                dst_t_min = 0
+        Args:
+           slice (array slice): Current slice to compute
+           source_global_x_size (int) : Size of the global source x axis
+           source_global_y_size (int) : Size of the global source y axis
+           target_global_x_size (int) : Size of the global target x axis
+           target_global_y_size (int) : Size of the global target y axis
+           parent_slice (map of slice, optionial) : Slice of the parent slice
+       """
 
-            if map["dst_global_t"].stop == self.target_global_t_size:
-                dst_t_max = map["dst_global_t_size_overlap"]
+        map = Coverage.compute_slice_coordinates(self,
+                                                 slice[1:],
+                                                 source_global_x_size,
+                                                 source_global_y_size,
+                                                 target_global_x_size,
+                                                 target_global_y_size,
+                                                 parent_slice
+                                                 )
 
-            if map["dst_global_x"].start == 0:
-                dst_x_min = 0
+        # Grille source
+        map["dst_global_t"] = slice[0]
 
-            if map["dst_global_x"].stop == self.target_global_x_size:
-                dst_x_max = map["dst_global_x_size_overlap"]
+        map["dst_local_t_size"] = map["dst_global_t"].stop - map["dst_global_t"].start
 
-            if map["dst_global_y"].start == 0:
-                dst_y_min = 0
+        dst_global_t_min_overlap = max(0, map["dst_global_t"].start - TimeCoverage.TIME_OVERLAPING_SIZE)
+        dst_global_t_max_overlap = min(target_global_t_size,
+                                       map["dst_global_t"].stop + TimeCoverage.TIME_OVERLAPING_SIZE)
+        map["dst_global_t_overlap"] = np.s_[dst_global_t_min_overlap:dst_global_t_max_overlap]
 
-            if map["dst_global_y"].stop == self.target_global_y_size:
-                dst_y_max = map["dst_global_y_size_overlap"]
+        map["dst_global_t_size_overlap"] = map["dst_global_t_overlap"].stop - map["dst_global_t_overlap"].start
 
-            map["dst_local_t"] = np.s_[dst_t_min:dst_t_max]
-            map["dst_local_x"] = np.s_[dst_x_min:dst_x_max]
-            map["dst_local_y"] = np.s_[dst_y_min:dst_y_max]
+        dst_t_min = TimeCoverage.TIME_OVERLAPING_SIZE
+        dst_t_max = map["dst_global_t_size_overlap"] - TimeCoverage.TIME_OVERLAPING_SIZE
 
-            # Source grille
-            map["src_global_t"] = map["dst_global_t"]
-            map["src_global_x"] = map["dst_global_x"]
-            map["src_global_y"] = map["dst_global_y"]
+        if map["dst_global_t"].start == 0:
+            dst_t_min = 0
 
-            map["src_global_t_overlap"] = map["dst_global_t_overlap"]
-            map["src_global_x_overlap"] = map["dst_global_x_overlap"]
-            map["src_global_y_overlap"] = map["dst_global_y_overlap"]
+        if map["dst_global_t"].stop == target_global_t_size:
+            dst_t_max = map["dst_global_t_size_overlap"]
 
-            map["src_local_t"] = map["dst_local_t"]
-            map["src_local_x"] = map["dst_local_x"]
-            map["src_local_y"] = map["dst_local_y"]
+        map["dst_local_t"] = np.s_[dst_t_min:dst_t_max]
 
-            map["src_local_t_size"] = map["dst_local_t_size"]
-            map["src_local_x_size"] = map["dst_local_x_size"]
-            map["src_local_y_size"] = map["dst_local_y_size"]
+        # Source grille
+        if parent_slice is not None:
+            source_global_axis_t = self.source_global_axis_t[parent_slice["dst_global_t"]]
+        else:
+            source_global_axis_t = self.source_global_axis_t
 
-            map["src_local_t_size_overlap"] = map["dst_global_t_size_overlap"]
-            map["src_local_x_size_overlap"] = map["dst_global_x_size_overlap"]
-            map["src_local_y_size_overlap"] = map["dst_global_y_size_overlap"]
+        target_global_axis_t = self.target_global_axis_t[map["dst_global_t"]]
 
-            self.map_mpi[slice_index] = map
-
-            slice_index = slice_index + 1
-
-    def update_mpi_map(self):
-
-        Coverage.update_mpi_map(self)
-
-        if self.get_t_size(type="target", with_overlap=False) == 1:
-            tmin = (np.abs(np.asarray(self.read_axis_t(type="source_global", with_overlap=False, timestamp=1)) - np.min(
-                self.read_axis_t(type="target", with_overlap=False, timestamp=1)))).argmin()
+        if target_global_t_size == 1:
+            tmin = (np.abs(np.asarray(source_global_axis_t) - np.min(
+                target_global_axis_t))).argmin()
             tmax = tmin + 1
         else:
-            idx = np.where((self.read_axis_t(type="source_global", with_overlap=False, timestamp=1) >= np.min(
-                self.read_axis_t(type="target", with_overlap=False, timestamp=1))) &
-                           (self.read_axis_t(type="source_global", with_overlap=False, timestamp=1) <= np.max(
-                               self.read_axis_t(type="target", with_overlap=False, timestamp=1))))
+            idx = np.where(
+                (np.asarray(source_global_axis_t) >= np.min(
+                    target_global_axis_t)) &
+                (np.asarray(source_global_axis_t) <= np.max(
+                    target_global_axis_t)))
 
             tmin = np.min(idx[0])
             tmax = np.max(idx[0]) + 1
 
-        # SRC GLOBAL
-        self.map_mpi[self.rank]["src_global_t"] = np.s_[tmin:tmax]
-        self.map_mpi[self.rank]["src_global_t_size"] = tmax - tmin
+            # SRC GLOBAL
+        map["src_global_t"] = np.s_[int(tmin):int(tmax)]
+        map["src_global_t_size"] = tmax - tmin
 
-        dst_global_t_min_overlap = max(0, self.map_mpi[self.rank][
+        dst_global_t_min_overlap = max(0, map[
             "src_global_t"].start - TimeCoverage.TIME_OVERLAPING_SIZE)
-        dst_global_t_max_overlap = min(self.source_global_t_size,
-                                       self.map_mpi[self.rank][
+        dst_global_t_max_overlap = min(source_global_t_size,
+                                       map[
                                            "src_global_t"].stop + TimeCoverage.TIME_OVERLAPING_SIZE)
-        self.map_mpi[self.rank]["src_global_t_overlap"] = np.s_[
-                                                          dst_global_t_min_overlap:dst_global_t_max_overlap]
+        map["src_global_t_overlap"] = np.s_[
+            dst_global_t_min_overlap:dst_global_t_max_overlap]
 
-        self.map_mpi[self.rank]["src_global_t_size_overlap"] = self.map_mpi[self.rank][
-                                                                   "src_global_t_overlap"].stop - \
-                                                               self.map_mpi[self.rank][
-                                                                   "src_global_t_overlap"].start
+        map["src_global_t_size_overlap"] = \
+            map[
+                "src_global_t_overlap"].stop - \
+            map[
+                "src_global_t_overlap"].start
 
-        self.map_mpi[self.rank]["src_local_t_size"] = tmax - tmin
-        self.map_mpi[self.rank]["src_local_t"] = np.s_[0:self.map_mpi[self.rank]["src_local_t_size"]]
+        map["src_local_t_size"] = tmax - tmin
+        map["src_local_t"] = np.s_[
+            0:int(map["src_local_t_size"])]
 
         # OVERLAP
-        self.map_mpi[self.rank]["src_local_t_size_overlap"] = self.map_mpi[self.rank][
-            "src_global_t_size_overlap"]
+        map["src_local_t_size_overlap"] = \
+            map[
+                "src_global_t_size_overlap"]
 
-        self.map_mpi[self.rank]["src_local_t_overlap"] = np.s_[
-                                                         0:self.map_mpi[self.rank]["src_local_t_size_overlap"]]
+        map["src_local_t_overlap"] = np.s_[
+            0:map["src_local_t_size_overlap"]]
+
+        return map
 
     # Axis
     def find_time_index(self, t, method="fast", domain="source"):
@@ -292,46 +350,97 @@ class TimeCoverage(Coverage):
     @param t: date souhaitée ou l'index de la date souhaitée
     @return:  l'index de la date la plus proche à TIME_DELTA_MIN prêt ou une erreur si aucune date n'a pu être trouvée."""
 
+        indexes_t = []
+
         if type(t) == int or type(t) == np.int32 or type(t) == np.int64:
 
             if t < 0 or t >= self.get_t_size():
                 raise ValueError("Time index have to range between 0 and " + str(
                     self.get_t_size() - 1) + ". Actually Time index = " + str(t))
 
-            return t;
+            indexes_t.append(int(t));
 
-        if type(t) == datetime or type(t) == cftime._cftime.datetime or type(t) == cftime._cftime.real_datetime:
+        elif type(t) == datetime or type(t) == cftime._cftime.datetime or type(t) == cftime._cftime.real_datetime:
 
             target_timestamp = (t - TimeCoverage.TIME_DATUM).total_seconds()
-            array = np.asarray(self.read_axis_t(type="source", timestamp=1))
+            array = np.asarray(self.read_axis_t(type="source_mpi", timestamp=1))
 
             logging.debug("[TimeCoverage][find_time_index()] Looking for : " + str(t))
 
             if method == "fast":
+                if TimeCoverage.TIME_INTERPOLATION_METHOD == "nearest":
+                    nearest_t_index = (np.abs(array - target_timestamp)).argmin()
+                    if target_timestamp - array[nearest_t_index] == 0.0 or abs(
+                            target_timestamp - array[nearest_t_index]) < (TimeCoverage.TIME_DELTA).total_seconds():
 
-                nearest_t_index = (np.abs(array - target_timestamp)).argmin()
-                if target_timestamp - array[nearest_t_index] == 0.0 or abs(
-                        target_timestamp - array[nearest_t_index]) < (TimeCoverage.TIME_DELTA).total_seconds():
-                    logging.debug("[TimeCoverage][find_time_index()] Nearest datetime found : " + str(
-                        self.read_axis_t(type="source", timestamp=0)[nearest_t_index]))
+                        logging.debug("[TimeCoverage][find_time_index()] Nearest datetime found : " + str(
+                            self.read_axis_t(type="source_mpi", timestamp=0)[nearest_t_index]))
 
-                    if domain == "source":
-                        return nearest_t_index
-                    elif domain == "source_global":
-                        return self.map_mpi[self.rank]["src_global_t"].start + nearest_t_index
+                        if domain == "source":
+                            indexes_t.append(nearest_t_index)
+                        elif domain == "source_global":
+                            indexes_t.append(self.parallel_map[self.rank]["src_global_t"].start + nearest_t_index)
+                        else:
+                            raise ValueError("Type doesn't match [source, source_global]")
+
                     else:
-                        raise ValueError("Type doesn't match [source, source_global]")
+                        raise NotFoundInRankError(self.rank,
+                                                  "'" + str(
+                                                      t) + "' not found. Maybe the TimeCoverage.TIME_DELTA (" + str(
+                                                      TimeCoverage.TIME_DELTA) + ") is too small or the date is out the range.")
+
+                elif TimeCoverage.TIME_INTERPOLATION_METHOD == "mean":
+
+                    X = np.abs(array - target_timestamp)
+                    idx = np.where(X <= (TimeCoverage.TIME_DELTA).total_seconds())
+
+                    if (len(idx[0]) == 1):
+                        index_t = idx[0][0]
+                        if domain == "source":
+                            indexes_t.append(int(index_t))
+                        elif domain == "source_global":
+                            indexes_t.append(self.parallel_map[self.rank]["src_global_t"].start + int(index_t))
+                        else:
+                            raise ValueError("Type doesn't match [source, source_global]")
+
+                        logging.debug(
+                            f"[TimeCoverage][find_time_index()] Found : {self.read_axis_t(type='source_mpi', timestamp=0)[int(index_t)]}")
+
+                    else:
+                        for index in range(np.shape(idx)[1]):
+                            index_t = idx[0][index]
+
+                            if domain == "source":
+                                indexes_t.append(int(index_t))
+                            elif domain == "source_global":
+                                indexes_t.append(self.parallel_map[self.rank]["src_global_t"].start + int(index_t))
+                            else:
+                                raise ValueError("Type doesn't match [source, source_global]")
+
+                            logging.debug(
+                                f"[TimeCoverage][find_time_index()] Found : {self.read_axis_t(type='source_mpi', timestamp=0)[int(index_t)]}")
+
+                    if not indexes_t:
+                        raise NotFoundInRankError(self.rank,
+                                                  "'" + str(
+                                                      t) + "' not found. Maybe the TimeCoverage.TIME_DELTA (" + str(
+                                                      TimeCoverage.TIME_DELTA) + ") is too small or the date is out the range.")
+
+                else:
+                    raise NotImplementedError(
+                        "Method " + str(TimeCoverage.TIME_INTERPOLATION_METHOD) + " is not implemented.")
             else:
                 raise NotImplementedError("Method " + str(method) + " is not implemented for regular grid.")
-
-            raise NotFoundInRankError(self.rank,
-                                      "'" + str(t) + "' not found. Maybe the TimeCoverage.TIME_DELTA (" + str(
-                                          TimeCoverage.TIME_DELTA) + ") is too small or the date is out the range.")
 
         else:
             raise ValueError("" + str(t) + " have to be an integer or a datetime. Current type: " + str(type(t)))
 
-    def read_axis_t(self, type="target", with_overlap=False, timestamp=0):
+        indexes_t = np.unique(indexes_t)
+        logging.debug("[TimeCoverage][find_time_index()] Found " + str(len(indexes_t)) + " candidate datetime(s)")
+
+        return np.array(indexes_t)
+
+    def read_axis_t(self, type="target_mpi", with_overlap=False, timestamp=0, current_thread: int = None):
         """Retourne les valeurs de l'axe t.
     @param timestamp: égale 1 si le temps est souhaité en timestamp depuis TIME_DATUM.
     @return:  un tableau à une dimensions [z] au format datetime ou timestamp si timestamp=1."""
@@ -347,25 +456,50 @@ class TimeCoverage(Coverage):
                         for t in self.source_global_axis_t];
             return self.source_global_axis_t
 
+        elif type == "source_mpi" and with_overlap is True:
+            return self.reader.read_axis_t(self.parallel_map[self.rank]["src_global_t_overlap"].start,
+                                           self.parallel_map[self.rank]["src_global_t_overlap"].stop, timestamp)
+
+        elif type == "source_mpi" and with_overlap is False:
+            return self.reader.read_axis_t(self.parallel_map[self.rank]["src_global_t"].start,
+                                           self.parallel_map[self.rank]["src_global_t"].stop, timestamp)
+
         elif type == "source" and with_overlap is True:
-            return self.reader.read_axis_t(self.map_mpi[self.rank]["src_global_t_overlap"].start,
-                                           self.map_mpi[self.rank]["src_global_t_overlap"].stop, timestamp)
+            return self.reader.read_axis_t(
+                self.parallel_map[self.rank]["threads"][current_thread]["src_global_t_overlap"].start,
+                self.parallel_map[self.rank]["threads"][current_thread]["src_global_t_overlap"].stop, timestamp)
 
         elif type == "source" and with_overlap is False:
-            return self.reader.read_axis_t(self.map_mpi[self.rank]["src_global_t"].start,
-                                           self.map_mpi[self.rank]["src_global_t"].stop, timestamp)
+            return self.reader.read_axis_t(
+                self.parallel_map[self.rank]["threads"][current_thread]["src_global_t"].start,
+                self.parallel_map[self.rank]["threads"][current_thread]["src_global_t"].stop, timestamp)
 
         elif type == "target" and with_overlap is True:
             if timestamp == 1:
                 return [(t - TimeCoverage.TIME_DATUM).total_seconds() \
-                        for t in self.target_global_axis_t[self.map_mpi[self.rank]["dst_global_t_overlap"]]];
-            return self.target_global_axis_t[self.map_mpi[self.rank]["dst_global_t_overlap"]]
+                        for t in self.target_global_axis_t[
+                            self.parallel_map[self.rank]["threads"][current_thread]["dst_global_t_overlap"]]];
+            return self.target_global_axis_t[
+                self.parallel_map[self.rank]["threads"][current_thread]["dst_global_t_overlap"]]
+
+        elif type == "target" and with_overlap is False:
+            if timestamp == 1:
+                return [(t - TimeCoverage.TIME_DATUM).total_seconds() \
+                        for t in self.target_global_axis_t[
+                            self.parallel_map[self.rank]["threads"][current_thread]["dst_global_t"]]];
+            return self.target_global_axis_t[self.parallel_map[self.rank]["threads"][current_thread]["dst_global_t"]]
+
+        elif type == "target_mpi" and with_overlap is True:
+            if timestamp == 1:
+                return [(t - TimeCoverage.TIME_DATUM).total_seconds() \
+                        for t in self.target_global_axis_t[self.parallel_map[self.rank]["dst_global_t_overlap"]]];
+            return self.target_global_axis_t[self.parallel_map[self.rank]["dst_global_t_overlap"]]
 
         else:
             if timestamp == 1:
                 return [(t - TimeCoverage.TIME_DATUM).total_seconds() \
-                        for t in self.target_global_axis_t[self.map_mpi[self.rank]["dst_global_t"]]];
-            return self.target_global_axis_t[self.map_mpi[self.rank]["dst_global_t"]]
+                        for t in self.target_global_axis_t[self.parallel_map[self.rank]["dst_global_t"]]];
+            return self.target_global_axis_t[self.parallel_map[self.rank]["dst_global_t"]]
 
     def get_t_size(self, type="target", with_overlap=False):
         if type == "target_global":
@@ -373,11 +507,45 @@ class TimeCoverage(Coverage):
         elif type == "source_global":
             return self.source_global_t_size
         elif type == "source":
-            return self.map_mpi[self.rank]["src_local_t_size"]
+            return self.parallel_map[self.rank]["src_local_t_size"]
         elif type == "target" and with_overlap is True:
-            return self.map_mpi[self.rank]["dst_local_t_size_overlap"]
+            return self.parallel_map[self.rank]["dst_local_t_size_overlap"]
         else:
-            return self.map_mpi[self.rank]["dst_local_t_size"]
+            return self.parallel_map[self.rank]["dst_local_t_size"]
+
+    def __read_variable(self, function_name, time, is_binary_data=False):
+
+        fn = getattr(self.reader, function_name)
+
+        index_t = self.find_time_index(time);
+
+        layers = np.stack([fn(
+            self.parallel_map[self.rank]["src_global_t"].start + index_t[t],
+            self.parallel_map[self.rank]["src_global_x_overlap"].start,
+            self.parallel_map[self.rank]["src_global_x_overlap"].stop,
+            self.parallel_map[self.rank]["src_global_y_overlap"].start,
+            self.parallel_map[self.rank]["src_global_y_overlap"].stop) for t in range(0, len(index_t))])
+
+        data = temporal_2d_interpolation(layers, TimeCoverage.TIME_INTERPOLATION_METHOD)
+
+        is_vector = True if len(np.shape(data)) == 3 and np.shape(data)[0] == 2 else False
+
+        if self.horizontal_resampling:
+            if is_vector:
+                return [
+                    self.resample_2d_variable(data[0], is_binary_data=is_binary_data),
+                    self.resample_2d_variable(data[1], is_binary_data=is_binary_data)
+                ]
+            else:
+                return self.resample_2d_variable(data, is_binary_data=is_binary_data)
+        else:
+            if is_vector:
+                return [
+                    data[0][self.parallel_map[self.rank]["dst_global_y"], self.parallel_map[self.rank]["dst_global_x"]],
+                    data[1][self.parallel_map[self.rank]["dst_global_y"], self.parallel_map[self.rank]["dst_global_x"]]
+                ]
+            else:
+                return data[self.parallel_map[self.rank]["dst_global_y"], self.parallel_map[self.rank]["dst_global_x"]]
 
     # Variables
     def read_variable_2D_sea_binary_mask_at_time(self, t):
@@ -385,308 +553,72 @@ class TimeCoverage(Coverage):
     @type t: datetime ou l'index
     @param t: date souhaitée
     @return: un tableau en deux dimensions [y,x]."""
-
-        index_t = self.find_time_index(t);
-
-        data = self.reader.read_variable_2D_sea_binary_mask_at_time(
-            self.map_mpi[self.rank]["src_global_t"].start + index_t,
-            self.map_mpi[self.rank]["src_global_x_overlap"].start,
-            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-            self.map_mpi[self.rank]["src_global_y_overlap"].start,
-            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
-
-        if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data,
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-
-        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3], time=t, is_binary_data=True)
 
     def read_variable_2D_wet_binary_mask_at_time(self, t):
         """Retourne le masque à la date souhaitée sur toute la couverture horizontale.
     @type t: datetime ou l'index
     @param t: date souhaitée
     @return: un tableau en deux dimensions [y,x]."""
-
-        index_t = self.find_time_index(t);
-
-        data = self.reader.read_variable_2D_wet_binary_mask_at_time(
-            self.map_mpi[self.rank]["src_global_t"].start + index_t,
-            self.map_mpi[self.rank]["src_global_x_overlap"].start,
-            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-            self.map_mpi[self.rank]["src_global_y_overlap"].start,
-            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
-
-        if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data,
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-
-        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3], time=t, is_binary_data=True)
 
     def read_variable_2D_land_binary_mask_at_time(self, t):
-
-        index_t = self.find_time_index(t);
-
-        data = self.reader.read_variable_2D_land_binary_mask_at_time(
-            self.map_mpi[self.rank]["src_global_t"].start + index_t,
-            self.map_mpi[self.rank]["src_global_x_overlap"].start,
-            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-            self.map_mpi[self.rank]["src_global_y_overlap"].start,
-            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
-
-        if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data,
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-
-        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3], time=t, is_binary_data=True)
 
     #################
     # HYDRO
     # Sea Surface
     #################
     def read_variable_sea_surface_height_above_mean_sea_level_at_time(self, t):
-
-        index_t = self.find_time_index(t);
-
-        data = self.reader.read_variable_sea_surface_height_above_mean_sea_level_at_time(
-            self.map_mpi[self.rank]["src_global_t"].start + index_t,
-            self.map_mpi[self.rank]["src_global_x_overlap"].start,
-            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-            self.map_mpi[self.rank]["src_global_y_overlap"].start,
-            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
-
-        if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data,
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-
-        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3], time=t)
 
     def read_variable_sea_surface_height_above_geoid_at_time(self, t):
-
-        index_t = self.find_time_index(t);
-
-        data = self.reader.read_variable_sea_surface_height_above_geoid_at_time(
-            self.map_mpi[self.rank]["src_global_t"].start + index_t,
-            self.map_mpi[self.rank]["src_global_x_overlap"].start,
-            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-            self.map_mpi[self.rank]["src_global_y_overlap"].start,
-            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
-
-        if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data,
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-
-        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3], time=t)
 
     def read_variable_sea_water_column_thickness_at_time(self, t):
-
-        index_t = self.find_time_index(t);
-
-        data = self.reader.read_variable_sea_water_column_thickness_at_time(
-            self.map_mpi[self.rank]["src_global_t"].start + index_t,
-            self.map_mpi[self.rank]["src_global_x_overlap"].start,
-            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-            self.map_mpi[self.rank]["src_global_y_overlap"].start,
-            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
-
-        if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data,
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-
-        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3], time=t)
 
     def read_variable_sea_surface_temperature_at_time(self, t):
         """Retourne la temperature de surface à la date souhaitée
     @type t: datetime ou l'index
     @param t: date souhaitée
     @return: un tableau en deux dimensions [y,x]."""
-
-        index_t = self.find_time_index(t);
-
-        data = self.reader.read_variable_sea_surface_temperature_at_time(
-            self.map_mpi[self.rank]["src_global_t"].start + index_t,
-            self.map_mpi[self.rank]["src_global_x_overlap"].start,
-            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-            self.map_mpi[self.rank]["src_global_y_overlap"].start,
-            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
-
-        if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data,
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-
-        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3], time=t)
 
     def read_variable_sea_surface_salinity_at_time(self, t):
         """Retourne la salinité de surface à la date souhaitée
     @type t: datetime ou l'index
     @param t: date souhaitée
     @return: un tableau en deux dimensions [y,x]."""
-
-        index_t = self.find_time_index(t);
-
-        data = self.reader.read_variable_sea_surface_salinity_at_time(
-            self.map_mpi[self.rank]["src_global_t"].start + index_t,
-            self.map_mpi[self.rank]["src_global_x_overlap"].start,
-            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-            self.map_mpi[self.rank]["src_global_y_overlap"].start,
-            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
-
-        if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data,
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-
-        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3], time=t)
 
     def read_variable_sea_surface_pressure_at_time(self, t):
         """Retourne la pression à la surface de la mer (sea surface pressure) à la date souhaitée sur toute la couverture horizontale.
     @type t: datetime ou l'index
     @param t: date souhaitée
     @return: un tableau en deux dimensions [y,x]."""
-
-        index_t = self.find_time_index(t);
-
-        data = self.reader.read_variable_sea_surface_pressure_at_time(
-            self.map_mpi[self.rank]["src_global_t"].start + index_t,
-            self.map_mpi[self.rank]["src_global_x_overlap"].start,
-            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-            self.map_mpi[self.rank]["src_global_y_overlap"].start,
-            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
-
-        if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data,
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-
-        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3], time=t)
 
     def read_variable_sea_surface_density_at_time(self, t):
         """Retourne la densité de l'eau de surface à la date souhaitée
     @type t: datetime ou l'index
     @param t: date souhaitée
     @return: un tableau en deux dimensions [y,x]."""
-
-        index_t = self.find_time_index(t);
-
-        data = self.reader.read_variable_sea_surface_density_at_time(
-            self.map_mpi[self.rank]["src_global_t"].start + index_t,
-            self.map_mpi[self.rank]["src_global_x_overlap"].start,
-            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-            self.map_mpi[self.rank]["src_global_y_overlap"].start,
-            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
-
-        if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data,
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-
-        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3], time=t)
 
     def read_variable_sea_water_turbidity_at_time(self, t):
         """Retourne la turbidité de l'eau de surface à la date souhaitée
     @type t: datetime ou l'index
     @param t: date souhaitée
     @return: un tableau en deux dimensions [y,x]."""
-
-        index_t = self.find_time_index(t);
-
-        data = self.reader.read_variable_sea_water_turbidity_at_time(
-            self.map_mpi[self.rank]["src_global_t"].start + index_t,
-            self.map_mpi[self.rank]["src_global_x_overlap"].start,
-            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-            self.map_mpi[self.rank]["src_global_y_overlap"].start,
-            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
-
-        if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data,
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-
-        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3], time=t)
 
     def read_variable_sea_water_velocity_at_sea_water_surface_at_time(self, t):
         """Retourne les composantes u,v du courant à la date souhaitée
     @type t: datetime ou l'index
     @param t: date souhaitée
     @return: un tableau en deux dimensions [u_comp,v_comp] contenant chacun deux dimensions [y,x]."""
-
-        index_t = self.find_time_index(t);
-
-        data = self.reader.read_variable_sea_water_velocity_at_sea_water_surface_at_time(
-            self.map_mpi[self.rank]["src_global_t"].start + index_t,
-            self.map_mpi[self.rank]["src_global_x_overlap"].start,
-            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-            self.map_mpi[self.rank]["src_global_y_overlap"].start,
-            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
-
-        if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data[0],
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]], \
-                resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                    self.read_axis_y(type="source", with_overlap=True),
-                                    self.read_axis_x(type="target", with_overlap=True),
-                                    self.read_axis_y(type="target", with_overlap=True),
-                                    data[1],
-                                    Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                    self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-
-        return data[0][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]], data[1][
-            self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3], time=t)
 
     #################
     # HYDRO
@@ -698,86 +630,21 @@ class TimeCoverage(Coverage):
     @type t: datetime ou l'index
     @param t: date souhaitée
     @return: un tableau en deux dimensions [y,x]."""
-
-        index_t = self.find_time_index(t);
-
-        data = self.reader.read_variable_sea_water_temperature_at_ground_level_at_time(
-            self.map_mpi[self.rank]["src_global_t"].start + index_t,
-            self.map_mpi[self.rank]["src_global_x_overlap"].start,
-            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-            self.map_mpi[self.rank]["src_global_y_overlap"].start,
-            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
-
-        if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data,
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-
-        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3], time=t)
 
     def read_variable_sea_water_salinity_at_ground_level_at_time(self, t):
         """Retourne la salinité de surface à la date souhaitée
     @type t: datetime ou l'index
     @param t: date souhaitée
     @return: un tableau en deux dimensions [y,x]."""
-
-        index_t = self.find_time_index(t);
-
-        data = self.reader.read_variable_sea_water_salinity_at_ground_level_at_time(
-            self.map_mpi[self.rank]["src_global_t"].start + index_t,
-            self.map_mpi[self.rank]["src_global_x_overlap"].start,
-            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-            self.map_mpi[self.rank]["src_global_y_overlap"].start,
-            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
-
-        if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data,
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-
-        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3], time=t)
 
     def read_variable_sea_water_velocity_at_ground_level_at_time(self, t):
         """Retourne les composantes u,v du courant à la date souhaitée
            @type t: datetime ou l'index
            @param t: date souhaitée
            @return: un tableau en deux dimensions [u_comp,v_comp] contenant chacun deux dimensions [y,x]."""
-
-        index_t = self.find_time_index(t);
-
-        data = self.reader.read_variable_sea_water_velocity_at_ground_level_at_time(
-            self.map_mpi[self.rank]["src_global_t"].start + index_t,
-            self.map_mpi[self.rank]["src_global_x_overlap"].start,
-            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-            self.map_mpi[self.rank]["src_global_y_overlap"].start,
-            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
-
-        if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data[0],
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]], \
-                resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                    self.read_axis_y(type="source", with_overlap=True),
-                                    self.read_axis_x(type="target", with_overlap=True),
-                                    self.read_axis_y(type="target", with_overlap=True),
-                                    data[1],
-                                    Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                    self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-
-        return data[0][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]], data[1][
-            self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3], time=t)
 
     #################
     # HYDRO
@@ -789,43 +656,11 @@ class TimeCoverage(Coverage):
     @param t: date souhaitée
     @return: un tableau en deux dimensions [u_comp,v_comp] contenant chacun deux dimensions [y,x]."""
 
-        index_t = self.find_time_index(t);
-
-        data = self.reader.read_variable_barotropic_sea_water_velocity_at_time(
-            self.map_mpi[self.rank]["src_global_t"].start + index_t,
-            self.map_mpi[self.rank]["src_global_x_overlap"].start,
-            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-            self.map_mpi[self.rank]["src_global_y_overlap"].start,
-            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
-
-        if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data[0],
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]], \
-                resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                    self.read_axis_y(type="source", with_overlap=True),
-                                    self.read_axis_x(type="target", with_overlap=True),
-                                    self.read_axis_y(type="target", with_overlap=True),
-                                    data[1],
-                                    Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                    self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-
-        return data[0][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]], data[1][
-            self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3], time=t)
 
     def read_variable_barotropic_sea_water_speed_at_time(self, date):
         comp = self.read_variable_barotropic_sea_water_velocity_at_time(date)
-        result = np.zeros([self.get_y_size(), self.get_x_size()])
-        result[:] = np.nan
-        for x in range(0, self.get_x_size()):
-            for y in range(0, self.get_y_size()):
-                result[y, x] = math.sqrt(comp[0][y, x] ** 2 + comp[1][y, x] ** 2)
-
-        return result
+        return np.hypot(comp[0],comp[1])
 
     def read_variable_barotropic_sea_water_from_direction_at_time(self, date):
         comp = self.read_variable_barotropic_sea_water_velocity_at_time(date)
@@ -857,139 +692,29 @@ class TimeCoverage(Coverage):
     @param t: date souhaitée
     @return: un tableau en deux dimensions [y,x]."""
 
-        index_t = self.find_time_index(t);
-
-        data = self.reader.read_variable_sea_surface_wave_significant_height_at_time(
-            self.map_mpi[self.rank]["src_global_t"].start + index_t,
-            self.map_mpi[self.rank]["src_global_x_overlap"].start,
-            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-            self.map_mpi[self.rank]["src_global_y_overlap"].start,
-            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
-
-        if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data,
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-
-        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3], time=t)
 
     def read_variable_sea_surface_wave_breaking_height_at_time(self, t):
         """Retourne la hauteur de déferlement des vagues à la date souhaitée sur toute la couverture horizontale.
     @type t: datetime ou l'index
     @param t: date souhaitée
     @return: un tableau en deux dimensions [y,x]."""
-
-        index_t = self.find_time_index(t);
-
-        data = self.reader.read_variable_sea_surface_wave_breaking_height_at_time(
-            self.map_mpi[self.rank]["src_global_t"].start + index_t,
-            self.map_mpi[self.rank]["src_global_x_overlap"].start,
-            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-            self.map_mpi[self.rank]["src_global_y_overlap"].start,
-            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
-
-        if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data,
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-
-        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3], time=t)
 
     def read_variable_sea_surface_wave_mean_period_at_time(self, t):
-
-        index_t = self.find_time_index(t);
-
-        data = self.reader.read_variable_sea_surface_wave_mean_period_at_time(
-            self.map_mpi[self.rank]["src_global_t"].start + index_t,
-            self.map_mpi[self.rank]["src_global_x_overlap"].start,
-            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-            self.map_mpi[self.rank]["src_global_y_overlap"].start,
-            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
-
-        if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data,
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-
-        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3], time=t)
 
     def read_variable_sea_surface_wave_peak_period_at_time(self, t):
 
-        index_t = self.find_time_index(t);
-
-        data = self.reader.read_variable_sea_surface_wave_peak_period_at_time(
-            self.map_mpi[self.rank]["src_global_t"].start + index_t,
-            self.map_mpi[self.rank]["src_global_x_overlap"].start,
-            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-            self.map_mpi[self.rank]["src_global_y_overlap"].start,
-            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
-
-        if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data,
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-
-        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3], time=t)
 
     def read_variable_sea_surface_wave_from_direction_at_time(self, t):
 
-        index_t = self.find_time_index(t);
-
-        data = self.reader.read_variable_sea_surface_wave_from_direction_at_time(
-            self.map_mpi[self.rank]["src_global_t"].start + index_t,
-            self.map_mpi[self.rank]["src_global_x_overlap"].start,
-            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-            self.map_mpi[self.rank]["src_global_y_overlap"].start,
-            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
-
-        if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data,
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-
-        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3], time=t)
 
     def read_variable_sea_surface_wave_to_direction_at_time(self, t):
 
-        index_t = self.find_time_index(t);
-
-        data = self.reader.read_variable_sea_surface_wave_to_direction_at_time(
-            self.map_mpi[self.rank]["src_global_t"].start + index_t,
-            self.map_mpi[self.rank]["src_global_x_overlap"].start,
-            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-            self.map_mpi[self.rank]["src_global_y_overlap"].start,
-            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
-
-        if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data,
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-
-        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3], time=t)
 
     def read_variable_sea_surface_wave_stokes_drift_velocity_at_time(self, t):
         """Retourne la dérive de Stokes en surface à la date souhaitée sur toute la couverture horizontale.
@@ -997,33 +722,7 @@ class TimeCoverage(Coverage):
     @param t: date souhaitée
     @return: un tableau en deux dimensions [y,x]."""
 
-        index_t = self.find_time_index(t);
-
-        data = self.reader.read_variable_sea_surface_wave_stokes_drift_velocity_at_time(
-            self.map_mpi[self.rank]["src_global_t"].start + index_t,
-            self.map_mpi[self.rank]["src_global_x_overlap"].start,
-            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-            self.map_mpi[self.rank]["src_global_y_overlap"].start,
-            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
-
-        if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data[0],
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]], \
-                resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                    self.read_axis_y(type="source", with_overlap=True),
-                                    self.read_axis_x(type="target", with_overlap=True),
-                                    self.read_axis_y(type="target", with_overlap=True),
-                                    data[1],
-                                    Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                    self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-
-        return data[0][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]], data[1][
-            self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3], time=t)
 
     def read_variable_radiation_pressure_bernouilli_head_at_time(self, t):
         """Retourne la pression J due aux vagues à la date souhaitée sur toute la couverture horizontale.
@@ -1031,25 +730,7 @@ class TimeCoverage(Coverage):
     @param t: date souhaitée
     @return: un tableau en deux dimensions [y,x]."""
 
-        index_t = self.find_time_index(t);
-
-        data = self.reader.read_variable_radiation_pressure_bernouilli_head_at_time(
-            self.map_mpi[self.rank]["src_global_t"].start + index_t,
-            self.map_mpi[self.rank]["src_global_x_overlap"].start,
-            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-            self.map_mpi[self.rank]["src_global_y_overlap"].start,
-            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
-
-        if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data,
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-
-        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3], time=t)
 
     def read_variable_sea_surface_wave_energy_flux_to_ocean_at_time(self, t):
         """Retourne la waves_to_ocean_energy_flux à la date souhaitée sur toute la couverture horizontale.
@@ -1057,33 +738,7 @@ class TimeCoverage(Coverage):
     @param t: date souhaitée
     @return: un tableau en deux dimensions [y,x]."""
 
-        index_t = self.find_time_index(t);
-
-        data = self.reader.read_variable_sea_surface_wave_energy_flux_to_ocean_at_time(
-            self.map_mpi[self.rank]["src_global_t"].start + index_t,
-            self.map_mpi[self.rank]["src_global_x_overlap"].start,
-            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-            self.map_mpi[self.rank]["src_global_y_overlap"].start,
-            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
-
-        if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data[0],
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]], \
-                resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                    self.read_axis_y(type="source", with_overlap=True),
-                                    self.read_axis_x(type="target", with_overlap=True),
-                                    self.read_axis_y(type="target", with_overlap=True),
-                                    data[1],
-                                    Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                    self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-
-        return data[0][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]], data[1][
-            self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3], time=t)
 
     def read_variable_sea_surface_wave_energy_dissipation_at_ground_level_at_time(self, t):
         """Retourne la l'énergie des vagues dissipée par le fond à la date souhaitée sur toute la couverture horizontale.
@@ -1091,25 +746,7 @@ class TimeCoverage(Coverage):
     @param t: date souhaitée
     @return: un tableau en deux dimensions [y,x]."""
 
-        index_t = self.find_time_index(t);
-
-        data = self.reader.read_variable_sea_surface_wave_energy_dissipation_at_ground_level_at_time(
-            self.map_mpi[self.rank]["src_global_t"].start + index_t,
-            self.map_mpi[self.rank]["src_global_x_overlap"].start,
-            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-            self.map_mpi[self.rank]["src_global_y_overlap"].start,
-            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
-
-        if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data,
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-
-        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3], time=t)
 
     #################
     # WAVES
@@ -1121,33 +758,7 @@ class TimeCoverage(Coverage):
     @param t: date souhaitée
     @return: un tableau en deux dimensions [y,x]."""
 
-        index_t = self.find_time_index(t);
-
-        data = self.reader.read_variable_atmosphere_momentum_flux_to_waves_at_time(
-            self.map_mpi[self.rank]["src_global_t"].start + index_t,
-            self.map_mpi[self.rank]["src_global_x_overlap"].start,
-            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-            self.map_mpi[self.rank]["src_global_y_overlap"].start,
-            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
-
-        if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data[0],
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]], \
-                resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                    self.read_axis_y(type="source", with_overlap=True),
-                                    self.read_axis_x(type="target", with_overlap=True),
-                                    self.read_axis_y(type="target", with_overlap=True),
-                                    data[1],
-                                    Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                    self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-
-        return data[0][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]], data[1][
-            self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3], time=t)
 
     def read_variable_waves_momentum_flux_to_ocean_at_time(self, t):
         """Retourne la composante u du tau vagues->ocean à la date souhaitée sur toute la couverture horizontale.
@@ -1155,33 +766,7 @@ class TimeCoverage(Coverage):
     @param t: date souhaitée
     @return: un tableau en deux dimensions [y,x]."""
 
-        index_t = self.find_time_index(t);
-
-        data = self.reader.read_variable_waves_momentum_flux_to_ocean_at_time(
-            self.map_mpi[self.rank]["src_global_t"].start + index_t,
-            self.map_mpi[self.rank]["src_global_x_overlap"].start,
-            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-            self.map_mpi[self.rank]["src_global_y_overlap"].start,
-            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
-
-        if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data[0],
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]], \
-                resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                    self.read_axis_y(type="source", with_overlap=True),
-                                    self.read_axis_x(type="target", with_overlap=True),
-                                    self.read_axis_y(type="target", with_overlap=True),
-                                    data[1],
-                                    Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                    self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-
-        return data[0][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]], data[1][
-            self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3], time=t)
 
     #################
     # METEO
@@ -1193,25 +778,7 @@ class TimeCoverage(Coverage):
     @param t: date souhaitée
     @return: un tableau en deux dimensions [u_comp,v_comp] contenant chacun deux dimensions [y,x]."""
 
-        index_t = self.find_time_index(t);
-
-        data = self.reader.read_variable_rainfall_amount_at_time(
-            self.map_mpi[self.rank]["src_global_t"].start + index_t,
-            self.map_mpi[self.rank]["src_global_x_overlap"].start,
-            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-            self.map_mpi[self.rank]["src_global_y_overlap"].start,
-            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
-
-        if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data,
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-
-        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3], time=t)
 
     #################
     # METEO
@@ -1224,25 +791,7 @@ class TimeCoverage(Coverage):
     @param t: date souhaitée
     @return: un tableau en deux dimensions [y,x]."""
 
-        index_t = self.find_time_index(t);
-
-        data = self.reader.read_variable_surface_air_pressure_at_time(
-            self.map_mpi[self.rank]["src_global_t"].start + index_t,
-            self.map_mpi[self.rank]["src_global_x_overlap"].start,
-            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-            self.map_mpi[self.rank]["src_global_y_overlap"].start,
-            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
-
-        if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data,
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-
-        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3], time=t)
 
     def read_variable_sea_surface_air_pressure_at_time(self, t):
         """Retourne la pression à la surface à la date souhaitée sur toute la couverture horizontale.
@@ -1250,25 +799,7 @@ class TimeCoverage(Coverage):
     @param t: date souhaitée
     @return: un tableau en deux dimensions [y,x]."""
 
-        index_t = self.find_time_index(t);
-
-        data = self.reader.read_variable_sea_surface_air_pressure_at_time(
-            self.map_mpi[self.rank]["src_global_t"].start + index_t,
-            self.map_mpi[self.rank]["src_global_x_overlap"].start,
-            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-            self.map_mpi[self.rank]["src_global_y_overlap"].start,
-            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
-
-        if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data,
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-
-        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3], time=t)
 
     def read_variable_wind_stress_at_time(self, t):
         """Retourne les composantes u,v de la contrainte de vent à la date souhaitée
@@ -1276,33 +807,7 @@ class TimeCoverage(Coverage):
     @param t: date souhaitée
     @return: un tableau en deux dimensions [u_comp,v_comp] contenant chacun deux dimensions [y,x]."""
 
-        index_t = self.find_time_index(t);
-
-        data = self.reader.read_variable_wind_stress_at_time(
-            self.map_mpi[self.rank]["src_global_t"].start + index_t,
-            self.map_mpi[self.rank]["src_global_x_overlap"].start,
-            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-            self.map_mpi[self.rank]["src_global_y_overlap"].start,
-            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
-
-        if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data[0],
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]], \
-                resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                    self.read_axis_y(type="source", with_overlap=True),
-                                    self.read_axis_x(type="target", with_overlap=True),
-                                    self.read_axis_y(type="target", with_overlap=True),
-                                    data[1],
-                                    Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                    self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-
-        return data[0][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]], data[1][
-            self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3], time=t)
 
     def read_variable_surface_downward_sensible_heat_flux_at_time(self, t):
         """Retourne les composantes u,v de surface sensible heat flux à la date souhaitée
@@ -1310,25 +815,7 @@ class TimeCoverage(Coverage):
     @param t: date souhaitée
     @return: un tableau en deux dimensions [u_comp,v_comp] contenant chacun deux dimensions [y,x]."""
 
-        index_t = self.find_time_index(t);
-
-        data = self.reader.read_variable_surface_downward_sensible_heat_flux_at_time(
-            self.map_mpi[self.rank]["src_global_t"].start + index_t,
-            self.map_mpi[self.rank]["src_global_x_overlap"].start,
-            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-            self.map_mpi[self.rank]["src_global_y_overlap"].start,
-            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
-
-        if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data,
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-
-        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3], time=t)
 
     def read_variable_surface_downward_latent_heat_flux_at_time(self, t):
         """Retourne les composantes u,v de surface latente heat flux à la date souhaitée
@@ -1336,25 +823,7 @@ class TimeCoverage(Coverage):
     @param t: date souhaitée
     @return: un tableau en deux dimensions [u_comp,v_comp] contenant chacun deux dimensions [y,x]."""
 
-        index_t = self.find_time_index(t);
-
-        data = self.reader.read_variable_surface_downward_latent_heat_flux_at_time(
-            self.map_mpi[self.rank]["src_global_t"].start + index_t,
-            self.map_mpi[self.rank]["src_global_x_overlap"].start,
-            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-            self.map_mpi[self.rank]["src_global_y_overlap"].start,
-            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
-
-        if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data,
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-
-        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3], time=t)
 
     def read_variable_surface_air_temperature_at_time(self, t):
         """Retourne les composantes u,v de surface air temperature à la date souhaitée
@@ -1362,25 +831,7 @@ class TimeCoverage(Coverage):
     @param t: date souhaitée
     @return: un tableau en deux dimensions [u_comp,v_comp] contenant chacun deux dimensions [y,x]."""
 
-        index_t = self.find_time_index(t);
-
-        data = self.reader.read_variable_surface_air_temperature_at_time(
-            self.map_mpi[self.rank]["src_global_t"].start + index_t,
-            self.map_mpi[self.rank]["src_global_x_overlap"].start,
-            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-            self.map_mpi[self.rank]["src_global_y_overlap"].start,
-            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
-
-        if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data,
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-
-        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3], time=t)
 
     def read_variable_dew_point_temperature_at_time(self, t):
         """Retourne les composantes u,v de dewpoint temperature à la date souhaitée
@@ -1388,25 +839,7 @@ class TimeCoverage(Coverage):
     @param t: date souhaitée
     @return: un tableau en deux dimensions [u_comp,v_comp] contenant chacun deux dimensions [y,x]."""
 
-        index_t = self.find_time_index(t);
-
-        data = self.reader.read_variable_dew_point_temperature_at_time(
-            self.map_mpi[self.rank]["src_global_t"].start + index_t,
-            self.map_mpi[self.rank]["src_global_x_overlap"].start,
-            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-            self.map_mpi[self.rank]["src_global_y_overlap"].start,
-            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
-
-        if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data,
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-
-        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3], time=t)
 
     def read_variable_surface_downward_solar_radiation_at_time(self, t):
         """Retourne les composantes u,v de surface solar radiation downwards à la date souhaitée
@@ -1414,25 +847,7 @@ class TimeCoverage(Coverage):
     @param t: date souhaitée
     @return: un tableau en deux dimensions [u_comp,v_comp] contenant chacun deux dimensions [y,x]."""
 
-        index_t = self.find_time_index(t);
-
-        data = self.reader.read_variable_surface_downward_solar_radiation_at_time(
-            self.map_mpi[self.rank]["src_global_t"].start + index_t,
-            self.map_mpi[self.rank]["src_global_x_overlap"].start,
-            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-            self.map_mpi[self.rank]["src_global_y_overlap"].start,
-            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
-
-        if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data,
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-
-        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3], time=t)
 
     def read_variable_surface_downward_thermal_radiation_at_time(self, t):
         """Retourne les composantes u,v de surface thermal radiation downwards à la date souhaitée
@@ -1440,25 +855,7 @@ class TimeCoverage(Coverage):
     @param t: date souhaitée
     @return: un tableau en deux dimensions [u_comp,v_comp] contenant chacun deux dimensions [y,x]."""
 
-        index_t = self.find_time_index(t);
-
-        data = self.reader.read_variable_surface_downward_thermal_radiation_at_time(
-            self.map_mpi[self.rank]["src_global_t"].start + index_t,
-            self.map_mpi[self.rank]["src_global_x_overlap"].start,
-            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-            self.map_mpi[self.rank]["src_global_y_overlap"].start,
-            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
-
-        if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data,
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-
-        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3], time=t)
 
     def read_variable_surface_solar_radiation_at_time(self, t):
         """Retourne les composantes u,v de surface solar radiation à la date souhaitée
@@ -1466,25 +863,7 @@ class TimeCoverage(Coverage):
     @param t: date souhaitée
     @return: un tableau en deux dimensions [u_comp,v_comp] contenant chacun deux dimensions [y,x]."""
 
-        index_t = self.find_time_index(t);
-
-        data = self.reader.read_variable_surface_solar_radiation_at_time(
-            self.map_mpi[self.rank]["src_global_t"].start + index_t,
-            self.map_mpi[self.rank]["src_global_x_overlap"].start,
-            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-            self.map_mpi[self.rank]["src_global_y_overlap"].start,
-            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
-
-        if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data,
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-
-        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3], time=t)
 
     def read_variable_surface_thermal_radiation_at_time(self, t):
         """Retourne les composantes u,v de surface thermal radiation à la date souhaitée
@@ -1492,25 +871,7 @@ class TimeCoverage(Coverage):
     @param t: date souhaitée
     @return: un tableau en deux dimensions [u_comp,v_comp] contenant chacun deux dimensions [y,x]."""
 
-        index_t = self.find_time_index(t);
-
-        data = self.reader.read_variable_surface_thermal_radiation_at_time(
-            self.map_mpi[self.rank]["src_global_t"].start + index_t,
-            self.map_mpi[self.rank]["src_global_x_overlap"].start,
-            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-            self.map_mpi[self.rank]["src_global_y_overlap"].start,
-            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
-
-        if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data,
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-
-        return data[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3], time=t)
 
     #################
     # METEO
@@ -1521,44 +882,11 @@ class TimeCoverage(Coverage):
     @type t: datetime ou l'index
     @param t: date souhaitée
     @return: un tableau en deux dimensions [u_comp,v_comp] contenant chacun deux dimensions [y,x]."""
-
-        index_t = self.find_time_index(t);
-
-        data = self.reader.read_variable_wind_10m_at_time(
-            self.map_mpi[self.rank]["src_global_t"].start + index_t,
-            self.map_mpi[self.rank]["src_global_x_overlap"].start,
-            self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-            self.map_mpi[self.rank]["src_global_y_overlap"].start,
-            self.map_mpi[self.rank]["src_global_y_overlap"].stop)
-
-        if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       data[0],
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]], \
-                resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                    self.read_axis_y(type="source", with_overlap=True),
-                                    self.read_axis_x(type="target", with_overlap=True),
-                                    self.read_axis_y(type="target", with_overlap=True),
-                                    data[1],
-                                    Coverage.HORIZONTAL_INTERPOLATION_METHOD)[
-                    self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-
-        return data[0][self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]], data[1][
-            self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+        return self.__read_variable(inspect.stack()[0][3], time=t)
 
     def read_variable_wind_speed_10m_at_time(self, date):
         comp = self.read_variable_wind_10m_at_time(date)
-        result = np.zeros([self.get_y_size(), self.get_x_size()])
-        result[:] = np.nan
-        for x in range(0, self.get_x_size()):
-            for y in range(0, self.get_y_size()):
-                result[y, x] = math.sqrt(comp[0][y, x] ** 2 + comp[1][y, x] ** 2)
-
-        return result
+        return np.hypot(comp[0], comp[1])
 
     def read_variable_wind_from_direction_10m_at_time(self, date):
         comp = self.read_variable_wind_10m_at_time(date)

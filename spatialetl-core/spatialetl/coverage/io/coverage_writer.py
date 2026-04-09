@@ -22,17 +22,87 @@
 # SOFTWARE.
 from abc import ABC
 
+import numpy as np
+
+
 class CoverageWriter(ABC):
-    
-    def __init__(self, cov,myFile):
+
+    def __init__(self, cov, myFile):
         self.coverage = cov;
         self.filename = myFile;
+
+    def _gathering_var(self, local_data, var, time_index=None, level_index=None):
+        if self.coverage.comm and self.coverage.rank != 0:
+            self.coverage.comm.Send(np.ascontiguousarray(local_data), dest=0)
+        else:
+            # For MPI rank n°1
+            if time_index is not None and level_index is not None:
+                var[
+                    self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index:
+                    self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index + 1,
+                    level_index:level_index + 1,
+                    self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                    self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
+                ] = local_data
+            elif time_index is not None:
+                var[
+                    self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index:
+                    self.coverage.parallel_map[self.coverage.rank]["dst_global_t"].start + time_index + 1,
+                    self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                    self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
+                ] = local_data
+            elif level_index is not None:
+                var[
+                    level_index:level_index + 1,
+                    self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                    self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
+                ] = local_data
+            else:
+                var[
+                    self.coverage.parallel_map[self.coverage.rank]["dst_global_y"],
+                    self.coverage.parallel_map[self.coverage.rank]["dst_global_x"]
+                ] = local_data
+
+            if self.coverage.comm:
+                # For othes MPI rank
+                for source in range(1, self.coverage.size):
+                    recvbuf = np.empty([self.coverage.parallel_map[source]["dst_local_y_size"],
+                                        self.coverage.parallel_map[source]["dst_local_x_size"]])
+                    self.coverage.comm.Recv(recvbuf, source=source)
+
+                    if time_index and level_index:
+                        var[
+                            self.coverage.parallel_map[source]["dst_global_t"].start + time_index:
+                            self.coverage.parallel_map[source]["dst_global_t"].start + time_index + 1,
+                            level_index:level_index + 1,
+                            self.coverage.parallel_map[source]["dst_global_y"],
+                            self.coverage.parallel_map[source]["dst_global_x"]
+                        ] = recvbuf
+                    elif time_index:
+                        var[
+                            self.coverage.parallel_map[source]["dst_global_t"].start + time_index:
+                            self.coverage.parallel_map[source]["dst_global_t"].start + time_index + 1,
+                            self.coverage.parallel_map[source]["dst_global_y"],
+                            self.coverage.parallel_map[source]["dst_global_x"]
+                        ] = recvbuf
+                    elif level_index:
+                        var[
+                            level_index:level_index + 1,
+                            self.coverage.parallel_map[source]["dst_global_y"],
+                            self.coverage.parallel_map[source]["dst_global_x"]
+                        ] = recvbuf
+                    else:
+                        var[
+                            self.coverage.parallel_map[source]["dst_global_y"],
+                            self.coverage.parallel_map[source]["dst_global_x"]
+                        ] = recvbuf
 
     def close(self):
         raise NotImplementedError(str(type(self)) + " don't have implemented the function 'close()'.")
 
     def write_variable_longitude(self):
-        raise NotImplementedError(str(type(self)) + " don't have implemented the function 'write_variable_longitude()'.")
+        raise NotImplementedError(
+            str(type(self)) + " don't have implemented the function 'write_variable_longitude()'.")
 
     def write_variable_latitude(self):
         raise NotImplementedError(str(type(self)) + " don't have implemented the function 'write_variable_latitude()'.")
@@ -68,7 +138,8 @@ class CoverageWriter(ABC):
             str(type(self)) + " don't have implemented the function 'write_variable_wet_binary_mask()'.")
 
     def write_variable_mesh_size(self):
-        raise NotImplementedError(str(type(self)) + " don't have implemented the function 'write_variable_mesh_size()'.")
+        raise NotImplementedError(
+            str(type(self)) + " don't have implemented the function 'write_variable_mesh_size()'.")
 
     #################
     # HYDRO
@@ -319,6 +390,3 @@ class CoverageWriter(ABC):
     def write_variable_wind_from_direction_10m(self):
         raise NotImplementedError(
             str(type(self)) + " don't have implemented the function 'write_variable_wind_from_direction_10m()'.")
-
-
-

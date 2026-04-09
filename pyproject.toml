@@ -45,9 +45,17 @@ Documentation = "https://readthedocs.org"
 Repository = "https://github.com/snale-net/SpatialETL.git"
 
 [tool.setuptools.packages.find]
-exclude = ["spatialetl.providers","spatialetl.providers.*","*.tests", "*.tests.*", "tests.*", "tests", "demo"]
+exclude = ["spatialetl.providers","spatialetl.providers.*","*.tests", "*.tests.*", "tests.*", "tests", "examples"]
+
+[dependency-groups]
+test = [
+    "pytest==9.0.1"
+]
 
 [project.optional-dependencies]
+"interpcgal" = [
+    "spatialetl-interpcgal"
+]
 "gdal" = [
     "spatialetl-providers-common-gdal"
 ]
@@ -88,6 +96,7 @@ exclude = ["spatialetl.providers","spatialetl.providers.*","*.tests", "*.tests.*
     "spatialetl-providers-ww3"
 ]
 "all" = [
+    "spatialetl-interpcgal",
     "spatialetl-providers-common-gdal",
     "spatialetl-providers-common-grib",
     "spatialetl-providers-common-mpi",
@@ -123,6 +132,7 @@ log_cli_level = "DEBUG"
 # *not* the workspace folder paths
 spatialetl = {workspace = true}
 spatialetl-core = {workspace = true}
+spatialetl-interpcgal = {workspace = true}
 spatialetl-providers-common-gdal = {workspace = true}
 spatialetl-providers-common-grib = {workspace = true}
 spatialetl-providers-common-mpi = {workspace = true}
@@ -141,6 +151,7 @@ spatialetl-providers-ww3 = {workspace = true}
 members = [
     ".",
     "spatialetl-core",
+    "interpcgal",
     "providers/common/gdal",
     "providers/common/grib",
     "providers/common/mpi",

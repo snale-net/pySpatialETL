@@ -22,6 +22,8 @@
 # SOFTWARE.
 from __future__ import division, print_function, absolute_import
 
+from concurrent.futures import ThreadPoolExecutor
+
 import numpy as np
 
 from spatialetl.point.level_multi_point import LevelMultiPoint
@@ -44,16 +46,16 @@ class TimeLevelMultiPoint(LevelMultiPoint, TimeMultiPoint):
         indexes_z = tmp[1]
 
         layers = np.zeros([np.shape(indexes_t)[0],2, np.shape(indexes_z)[0],self.get_nb_points()])
-        layers[::] = np.NAN
+        layers[::] =np.nan
 
         results = np.zeros([np.shape(indexes_t)[0],2,self.get_nb_points()])
-        results[:] = np.NAN
+        results[:] =np.nan
 
         for t in range(0, len(indexes_t)):
 
             for z in range(0, len(indexes_z)):
 
-                all_data = self.reader.read_variable_baroclinic_sea_water_velocity_at_time_and_depth(self.map_mpi[self.rank]["src_global_t"].start +indexes_t[t],
+                all_data = self.reader.read_variable_baroclinic_sea_water_velocity_at_time_and_depth(self.parallel_map[self.rank]["src_global_t"].start +indexes_t[t],
                                                                                                  indexes_z[z])
 
                 # Comp U
@@ -80,14 +82,14 @@ class TimeLevelMultiPoint(LevelMultiPoint, TimeMultiPoint):
         indexes_z = tmp[1]
 
         layers = np.zeros([np.shape(indexes_t)[0],np.shape(indexes_z)[0], self.get_nb_points()])
-        layers[::] = np.NAN
+        layers[::] = np.nan
 
         results = np.zeros([np.shape(indexes_t)[0],self.get_nb_points()])
-        results[:] = np.NAN
+        results[:] = np.nan
 
         for t in range(0, len(indexes_t)):
             for z in range(0, len(indexes_z)):
-                    layers[t,z] = self.reader.read_variable_sea_water_temperature_at_time_and_depth(self.map_mpi[self.rank]["src_global_t"].start +indexes_t[t], indexes_z[z])
+                    layers[t,z] = self.reader.read_variable_sea_water_temperature_at_time_and_depth(self.parallel_map[self.rank]["src_global_t"].start +indexes_t[t], indexes_z[z])
 
             results[t] = self.interpolate_vertical(depth,vert_coord,indexes_z,layers[t])
 
@@ -95,7 +97,6 @@ class TimeLevelMultiPoint(LevelMultiPoint, TimeMultiPoint):
             results = self.interpolate_time(time, indexes_t, results)
 
         return results
-
 
     def read_variable_sea_water_salinity_at_time_and_depth(self, time, depth):
 
@@ -105,14 +106,14 @@ class TimeLevelMultiPoint(LevelMultiPoint, TimeMultiPoint):
         indexes_z = tmp[1]
 
         layers = np.zeros([np.shape(indexes_t)[0], np.shape(indexes_z)[0], self.get_nb_points()])
-        layers[::] = np.NAN
+        layers[::] =np.nan
 
         results = np.zeros([np.shape(indexes_t)[0], self.get_nb_points()])
-        results[:] = np.NAN
+        results[:] =np.nan
 
         for t in range(0, len(indexes_t)):
             for z in range(0, len(indexes_z)):
-                layers[t, z] = self.reader.read_variable_sea_water_salinity_at_time_and_depth(self.map_mpi[self.rank]["src_global_t"].start +indexes_t[t],
+                layers[t, z] = self.reader.read_variable_sea_water_salinity_at_time_and_depth(self.parallel_map[self.rank]["src_global_t"].start +indexes_t[t],
                                                                                                  indexes_z[z])
 
             results[t] = self.interpolate_vertical(depth, vert_coord, indexes_z, layers[t])

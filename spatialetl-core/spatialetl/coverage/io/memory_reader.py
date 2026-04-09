@@ -21,18 +21,28 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 import numpy as np
+
+from spatialetl.coverage import TimeCoverage
 from spatialetl.coverage.io.coverage_reader import CoverageReader
 
 
 class MemoryReader (CoverageReader):
 
-    def __init__(self, x,y,bathy):
-        self.x = x
-        self.y = y
-        self.bathy = bathy
+    def __init__(self, x_axis, y_axis, t_axis=None, z_axis=None,
+                 bathymetry=None,
+                 surface_air_pressure=None):
+        self.x = x_axis
+        self.y = y_axis
+        self.t = t_axis
+
+        self.bathy = bathymetry
+        self.sp = surface_air_pressure
 
     def is_regular_grid(self):
-        return True
+        return True if len(np.shape(self.x)) == 1 else False
+
+    def get_t_size(self):
+        return np.shape(self.t)[0];
 
     def get_x_size(self):
         return np.shape(self.x)[0];
@@ -40,11 +50,25 @@ class MemoryReader (CoverageReader):
     def get_y_size(self):
         return np.shape(self.y)[0];
 
-    def read_axis_x(self,xmin,xmax,ymin,ymax):
-        return self.x[xmin:xmax]
+    def read_axis_x(self,xmin,xmax,ymin=None,ymax=None):
+        if self.is_regular_grid():
+            return self.x[xmin:xmax]
+        else:
 
-    def read_axis_y(self,xmin,xmax,ymin,ymax):
-        return self.y[ymin:ymax]
+            return self.x[ymin:ymax,xmin:xmax]
+
+    def read_axis_y(self,xmin=None,xmax=None,ymin=None,ymax=None):
+        if self.is_regular_grid():
+            return self.y[ymin:ymax]
+        else:
+            return self.y[ymin:ymax, xmin:xmax]
+
+    def read_axis_t(self, tmin, tmax,timestamp):
+        if timestamp == 1:
+            return [(t - TimeCoverage.TIME_DATUM).total_seconds() \
+                    for t in self.t[tmin:tmax]];
+        else:
+            return self.t[tmin:tmax]
 
     # Variables
     def read_variable_longitude(self,xmin,xmax,ymin,ymax):
@@ -87,7 +111,7 @@ class MemoryReader (CoverageReader):
     #################
 
     def read_variable_surface_air_pressure_at_time(self, index_t,xmin,xmax,ymin,ymax):
-        raise NotImplementedError(str(type(self))+" don't have implemented the function 'get_x_size()'.")
+        return self.sp[index_t,ymin:ymax,xmin:xmax]
 
     def read_variable_sea_surface_air_pressure_at_time(self,index_t,xmin,xmax,ymin,ymax):
         raise NotImplementedError(str(type(self))+" don't have implemented the function 'get_x_size()'.")

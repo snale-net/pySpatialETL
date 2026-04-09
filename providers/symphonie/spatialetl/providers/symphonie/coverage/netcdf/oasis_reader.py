@@ -94,7 +94,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         ymax=np.shape(lon_t)[0]
         data = self.ncfile.variables["sal"][index_t][:]
         sal = np.zeros([ymax,xmax])
-        sal[:] = np.NAN
+        sal[:] =np.nan
 
         for y in range(1,ymax-1):
             for x in range(1,xmax-1):
@@ -120,13 +120,13 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         gridrotsin_t = np.zeros([ymax,xmax])
 
         u = np.zeros([ymax,xmax])
-        u[:] = np.NAN
+        u[:] =np.nan
         v = np.zeros([ymax,xmax])
-        v[:] = np.NAN
+        v[:] =np.nan
         u_rot = np.zeros([ymax,xmax])
-        u_rot[:] = np.NAN
+        u_rot[:] =np.nan
         v_rot = np.zeros([ymax,xmax])
-        v_rot[:] = np.NAN
+        v_rot[:] =np.nan
 
         # 1. On calcule les point à l'intérieur du domaine en excluant les bords
         for y in range(1,ymax-1):
@@ -198,13 +198,13 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         gridrotsin_t = np.zeros([ymax,xmax])
 
         u = np.zeros([ymax,xmax])
-        u[:] = np.NAN
+        u[:] =np.nan
         v = np.zeros([ymax,xmax])
-        v[:] = np.NAN
+        v[:] =np.nan
         u_rot = np.zeros([ymax,xmax])
-        u_rot[:] = np.NAN
+        u_rot[:] =np.nan
         v_rot = np.zeros([ymax,xmax])
-        v_rot[:] = np.NAN
+        v_rot[:] =np.nan
 
         # 1. On calcule les point à l'intérieur du domaine en excluant les bords
         for y in range(1,ymax-1):
@@ -276,13 +276,13 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         gridrotsin_t = np.zeros([ymax,xmax])
 
         u = np.zeros([ymax,xmax])
-        u[:] = np.NAN
+        u[:] =np.nan
         v = np.zeros([ymax,xmax])
-        v[:] = np.NAN
+        v[:] =np.nan
         u_rot = np.zeros([ymax,xmax])
-        u_rot[:] = np.NAN
+        u_rot[:] =np.nan
         v_rot = np.zeros([ymax,xmax])
-        v_rot[:] = np.NAN
+        v_rot[:] =np.nan
 
         # 1. On calcule les point à l'intérieur du domaine en excluant les bords
         for y in range(1,ymax-1):
@@ -354,11 +354,11 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         gridrotsin_t = np.zeros([ymax,xmax])
 
         u = np.zeros([ymax,xmax])
-        u[:] = np.NAN
+        u[:] =np.nan
         v = np.zeros([ymax,xmax])
-        v[:] = np.NAN
+        v[:] =np.nan
         rot = np.zeros([ymax,xmax])
-        rot[:] = np.NAN
+        rot[:] =np.nan
 
         # 1. On calcule les point à l'intérieur du domaine en excluant les bords
         for y in range(1,ymax-1):

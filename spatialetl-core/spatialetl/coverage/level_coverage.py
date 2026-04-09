@@ -22,6 +22,8 @@
 # SOFTWARE.
 from __future__ import division, print_function, absolute_import
 
+import inspect
+import os
 from itertools import product
 
 import numpy as np
@@ -41,11 +43,13 @@ class LevelCoverage(Coverage):
     --------
     >>> coverage = LevelCoverage(myReader, bbox=[-5, 5, -5, 5], resolution_x=0.1, resolution_y=0.1, resolution_z=0.1)
     """
-    DEPTH_DELTA = 1.0; #meters
+    DEPTH_DELTA = 1.0;  # meters
     VERTICAL_INTERPOLATION_METHOD = "linear"
-    
-    def __init__(self, reader, bbox=None, resolution_x=None, resolution_y=None, zbox=None, resolution_z=None):
-        Coverage.__init__(self, reader, bbox=bbox, resolution_x=resolution_x, resolution_y=resolution_y);
+
+    def __init__(self, reader, bbox=None, resolution_x=None, resolution_y=None, zbox=None, resolution_z=None,
+                 nb_thread: int = os.cpu_count() - 1):
+        Coverage.__init__(self, reader, bbox=bbox, resolution_x=resolution_x, resolution_y=resolution_y,
+                          nb_thread=nb_thread);
 
         self.vertical_resampling = False
         self.source_sigma_coordinate = False
@@ -74,7 +78,8 @@ class LevelCoverage(Coverage):
                            (self.source_global_axis_z <= Zmax))
 
             if (np.shape(idx)[1] == 0):
-                raise ValueError("Zmin or Zmax is out of range. Current range: "+str(np.min(self.source_global_axis_z))+" / "+str(np.max(self.source_global_axis_z)))
+                raise ValueError("Zmin or Zmax is out of range. Current range: " + str(
+                    np.min(self.source_global_axis_z)) + " / " + str(np.max(self.source_global_axis_z)))
 
             zmin = np.min(idx[0])
             zmax = np.max(idx[0]) + 1
@@ -82,15 +87,19 @@ class LevelCoverage(Coverage):
             self.target_global_axis_z = self.source_global_axis_z[zmin:zmax]
             self.target_global_z_size = zmax - zmin
         else:
-            idx = np.where((self.source_global_axis_z[:,0:self.get_y_size(type="source_global"),0:self.get_x_size(type="source_global")] >= Zmin) &
-                           (self.source_global_axis_z[:,0:self.get_y_size(type="source_global"),0:self.get_x_size(type="source_global")] <= Zmax))
+            idx = np.where((self.source_global_axis_z[:, 0:self.get_y_size(type="source_global"), 0:self.get_x_size(
+                type="source_global")] >= Zmin) &
+                           (self.source_global_axis_z[:, 0:self.get_y_size(type="source_global"), 0:self.get_x_size(
+                               type="source_global")] <= Zmax))
 
             if (np.shape(idx)[1] == 0):
-                raise ValueError("Zmin or Zmax is out of range. Current range: "+str(np.min(self.source_global_axis_z))+" / "+str(np.max(self.source_global_axis_z)))
+                raise ValueError("Zmin or Zmax is out of range. Current range: " + str(
+                    np.min(self.source_global_axis_z)) + " / " + str(np.max(self.source_global_axis_z)))
             zmin = np.min(idx[0])
             zmax = np.max(idx[0]) + 1
 
-            self.target_global_axis_z = self.source_global_axis_z[zmin:zmax,0:self.get_y_size(type="source_global"),0:self.get_x_size(type="source_global")]
+            self.target_global_axis_z = self.source_global_axis_z[
+                zmin:zmax, 0:self.get_y_size(type="source_global"), 0:self.get_x_size(type="source_global")]
             self.target_global_z_size = zmax - zmin
 
         # source_global sont réduit au zoom
@@ -105,10 +114,10 @@ class LevelCoverage(Coverage):
 
             self.vertical_resampling = True
             self.target_sigma_coordinate = False
-            if resolution_z >= Zmax: # On fait un seul niveau
+            if resolution_z >= Zmax:  # On fait un seul niveau
                 self.target_global_axis_z = [Zmax];
             else:
-                self.target_global_axis_z = np.arange(Zmin, Zmax+resolution_z, resolution_z)
+                self.target_global_axis_z = np.arange(Zmin, Zmax + resolution_z, resolution_z)
 
             self.target_global_z_size = len(self.target_global_axis_z)
 
@@ -116,7 +125,8 @@ class LevelCoverage(Coverage):
 
                 if self.is_sigma_coordinate(type="source"):
                     logging.info(
-                        '[vertical_interpolation] Source grid size : ' + str(self.source_global_z_size) + " sigma coordinates level(s)")
+                        '[vertical_interpolation] Source grid size : ' + str(
+                            self.source_global_z_size) + " sigma coordinates level(s)")
                 else:
                     logging.info(
                         '[vertical_interpolation] Source grid size : ' + str(self.source_global_z_size) + " level(s)")
@@ -135,7 +145,7 @@ class LevelCoverage(Coverage):
                     self.target_global_y_size) + ")")
 
     # Axis
-    def read_axis_z(self,type="target",with_horizontal_overlap=False):
+    def read_axis_z(self, type="target", with_horizontal_overlap=False):
         """Retourne les valeurs (souvent en mètre) de l'axe z.
     @return:  si la grille est en coordonnée sigma alors un tableau à trois dimensions [z,y,x] est retourné sinon
     un tableau une dimension [z]."""
@@ -143,52 +153,52 @@ class LevelCoverage(Coverage):
         if type == "source" and with_horizontal_overlap is True:
 
             if self.is_sigma_coordinate(type):
-                return self.source_global_axis_z[:,self.map_mpi[self.rank]["src_global_y_overlap"],
-                                                 self.map_mpi[self.rank]["src_global_x_overlap"]]
+                return self.source_global_axis_z[:, self.parallel_map[self.rank]["src_global_y_overlap"],
+                self.parallel_map[self.rank]["src_global_x_overlap"]]
             else:
                 return self.source_global_axis_z
 
         elif type == "source" and with_horizontal_overlap is False:
 
             if self.is_sigma_coordinate(type):
-                return self.source_global_axis_z[:,self.map_mpi[self.rank]["src_global_y"],
-                                                 self.map_mpi[self.rank]["src_global_x"]]
+                return self.source_global_axis_z[:, self.parallel_map[self.rank]["src_global_y"],
+                self.parallel_map[self.rank]["src_global_x"]]
             else:
                 return self.source_global_axis_z
 
         elif type == "target" and with_horizontal_overlap is True:
 
             if self.is_sigma_coordinate(type):
-                return self.target_global_axis_z[:,self.map_mpi[self.rank]["dst_global_y_overlap"],
-                                                 self.map_mpi[self.rank]["dst_global_x_overlap"]]
+                return self.target_global_axis_z[:, self.parallel_map[self.rank]["dst_global_y_overlap"],
+                self.parallel_map[self.rank]["dst_global_x_overlap"]]
             else:
                 return self.target_global_axis_z
         else:
 
             if self.is_sigma_coordinate(type):
-                return self.target_global_axis_z[:,self.map_mpi[self.rank]["dst_global_y"],
-                                                 self.map_mpi[self.rank]["dst_global_x"]]
+                return self.target_global_axis_z[:, self.parallel_map[self.rank]["dst_global_y"],
+                self.parallel_map[self.rank]["dst_global_x"]]
             else:
                 return self.target_global_axis_z
 
-    def is_sigma_coordinate(self,type="target"):
+    def is_sigma_coordinate(self, type="target"):
         """Retourne vrai si la grille verticale est en coordonnée sigma, sinon faux.
     @return:  vrai si la grille verticale est en coordonnée sigma sinon faux."""
         if type == "source":
             return self.source_sigma_coordinate
         else:
             return self.target_sigma_coordinate
-    
-    def get_z_size(self,type="target"):
+
+    def get_z_size(self, type="target"):
         """Retourne la taille de l'axe z.
     @return:  un entier correspondant à la taille de l'axe z."""
 
-        if type=="source":
+        if type == "source":
             return self.source_global_z_size
         else:
             return self.target_global_z_size
 
-    def find_level_index(self,depth,method="fast"):
+    def find_level_index(self, depth, method="fast"):
         """Retourne l'index de la profondeur la plus proche selon le point le plus proche.
     @type depth : integer ou flottant
     @param depth: Profondeur en mètre souhaitée ou index de la profondeur souhaitée
@@ -198,9 +208,9 @@ class LevelCoverage(Coverage):
         if depth in self.depth_weight:
             return self.depth_weight[depth]
 
-        xmax=self.get_x_size(type="source",with_overlap=True)
-        ymax=self.get_y_size(type="source",with_overlap=True)
-        vert_coord = np.empty([ymax,xmax],dtype=object)
+        xmax = self.get_x_size(type="source", with_overlap=True)
+        ymax = self.get_y_size(type="source", with_overlap=True)
+        vert_coord = np.empty([ymax, xmax], dtype=object)
         indexes_z = []
 
         if type(depth) == int or type(depth) == np.int32 or type(depth) == np.int64:
@@ -212,27 +222,30 @@ class LevelCoverage(Coverage):
             for y in range(0, ymax):
                 for x in range(0, xmax):
                     vert_coord[y, x] = []
-                    vert_coord[y,x].append((depth))
+                    vert_coord[y, x].append((depth))
 
             indexes_z.append((int(depth)))
 
-        elif self.is_sigma_coordinate(type="source") == True: # Cas de grille sigma
+        elif self.is_sigma_coordinate(type="source") == True:  # Cas de grille sigma
 
             if self.rank == 0:
-                logging.debug("[LevelCoverage][find_level_index()] Looking for : " + str(depth) + " m water depth with an interval of +/- " + str(LevelCoverage.DEPTH_DELTA) + " m")
+                logging.debug("[LevelCoverage][find_level_index()] Looking for : " + str(
+                    depth) + " m water depth with an interval of +/- " + str(LevelCoverage.DEPTH_DELTA) + " m")
 
             if method == "fast":
 
-                X = np.abs(self.source_global_axis_z[:,self.map_mpi[self.rank]["src_global_y_overlap"],self.map_mpi[self.rank]["src_global_x_overlap"]] - depth)
+                X = np.abs(self.source_global_axis_z[
+                               :, self.parallel_map[self.rank]["src_global_y_overlap"], self.parallel_map[self.rank][
+                                   "src_global_x_overlap"]] - depth)
                 idx = np.where(X <= LevelCoverage.DEPTH_DELTA)
                 vert_coord[:] = None
 
                 for index in range(np.shape(idx)[1]):
                     index_z = idx[0][index]
-                    x =  idx[2][index]
-                    y =  idx[1][index]
+                    x = idx[2][index]
+                    y = idx[1][index]
 
-                    if vert_coord[y,x] is None: #first time
+                    if vert_coord[y, x] is None:  # first time
                         vert_coord[y, x] = []
 
                     vert_coord[y, x].append((int(index_z)))
@@ -242,7 +255,7 @@ class LevelCoverage(Coverage):
             else:
                 raise ValueError("Unable to decode method between 'fast' or 'classic'.")
 
-        else: # Cas de grille classique
+        else:  # Cas de grille classique
 
             if self.rank == 0:
                 logging.debug("[LevelCoverage][find_level_index()] Looking for : " + str(
@@ -258,27 +271,27 @@ class LevelCoverage(Coverage):
 
                     if self.rank == 0:
                         logging.debug("[LevelCoverage][find_level_index()] found : " + str(
-                                self.source_global_axis_z[index_z]) + " m water depth")
+                            self.source_global_axis_z[index_z]) + " m water depth")
 
-                    for y,x in product(range(0,ymax),range(0,xmax)):
-                            if vert_coord[y, x] is None:  # first time
-                                vert_coord[y, x] = []
+                    for y, x in product(range(0, ymax), range(0, xmax)):
+                        if vert_coord[y, x] is None:  # first time
+                            vert_coord[y, x] = []
 
-                            vert_coord[y, x].append((int(index_z)))
+                        vert_coord[y, x].append((int(index_z)))
 
-                            if int(index_z) not in indexes_z:
-                                indexes_z.append((int(index_z)))
+                        if int(index_z) not in indexes_z:
+                            indexes_z.append((int(index_z)))
                 else:
                     idx = np.where(X <= LevelCoverage.DEPTH_DELTA)
 
                     for index in range(np.shape(idx)[1]):
                         index_z = idx[0][index]
 
-                        for y,x in product(range(0,ymax),range(0,xmax)):
+                        for y, x in product(range(0, ymax), range(0, xmax)):
                             if vert_coord[y, x] is None:  # first time
                                 vert_coord[y, x] = []
 
-                            #logging.debug(
+                            # logging.debug(
                             #    "[LevelCoverage][find_level_index()] found : " + str(
                             #        self.source_global_axis_z[index_z]) + " m water depth")
 
@@ -290,40 +303,35 @@ class LevelCoverage(Coverage):
             else:
                 raise ValueError("Unable to decode method between 'fast' or 'classic'.")
 
-        if len(indexes_z)==0:
+        if len(indexes_z) == 0:
             logging.warning("[LevelCoverage] " + str(
-                    depth) + " m water depth was not found in the grid (proc n° "+str(self.rank)+"). Maybe the LevelCoverage.DEPTH_DELTA (+/- " + str(
-                    LevelCoverage.DEPTH_DELTA) + " m) is too small or the depth is out of range.")
+                depth) + " m water depth was not found in the grid (proc n° " + str(
+                self.rank) + "). Maybe the LevelCoverage.DEPTH_DELTA (+/- " + str(
+                LevelCoverage.DEPTH_DELTA) + " m) is too small or the depth is out of range.")
 
         if self.rank == 0:
             logging.debug("[LevelCoverage][find_level_index()] Found " + str(len(indexes_z)) + " candidate level(s)")
 
         # On retourne le tableau d'index
-        self.depth_weight[depth] = [vert_coord,np.array(np.unique(indexes_z))]
+        self.depth_weight[depth] = [vert_coord, np.array(np.unique(indexes_z))]
 
         return self.depth_weight[depth]
 
-    def read_variable_3D_sea_binary_mask(self):
-        """Retourne le masque terre/mer sur toute la couverture selon la profondeur z
-    @return: un tableau en deux dimensions [z,y,x].
-            0 = Terre
-            1 = Mer
-    """
-        return self.reader.read_variable_3D_sea_binary_mask()
+    def __read_variable(self, function_name, depth, is_binary_data=False):
 
-    def read_variable_depth_at_depth(self, depth):
-        vert_coord,indexes_z = self.find_level_index(depth);
-        self.layers_temp[::] = np.NAN
-        self.data_temp[::] = np.NAN
+        fn = getattr(self.reader, function_name)
+        vert_coord, indexes_z = self.find_level_index(depth);
+        self.layers_temp[::] = np.nan
+        self.data_temp[::] = np.nan
         targetDepth = [depth]
 
         for z in range(0, len(indexes_z)):
-            self.layers_temp[z] = self.reader.read_variable_depth_at_depth(
+            self.layers_temp[z] = fn(
                 indexes_z[z],
-                self.map_mpi[self.rank]["src_global_x_overlap"].start,
-                self.map_mpi[self.rank]["src_global_x_overlap"].stop,
-                self.map_mpi[self.rank]["src_global_y_overlap"].start,
-                self.map_mpi[self.rank]["src_global_y_overlap"].stop)
+                self.parallel_map[self.rank]["src_global_x_overlap"].start,
+                self.parallel_map[self.rank]["src_global_x_overlap"].stop,
+                self.parallel_map[self.rank]["src_global_y_overlap"].start,
+                self.parallel_map[self.rank]["src_global_y_overlap"].stop)
 
         idx = np.where(vert_coord != None)
         for index in range(np.shape(idx)[1]):
@@ -351,21 +359,41 @@ class LevelCoverage(Coverage):
                         candidateDepths[z] = self.read_axis_z(type="source", with_horizontal_overlap=True)[
                             vert_coord[y, x][z]]
 
-                    candidateValues[z] = self.layers_temp[index_layer,0, y, x]
+                    candidateValues[z] = self.layers_temp[index_layer, 0, y, x]
 
-                self.data_temp[0,y, x] = vertical_interpolation(candidateDepths, targetDepth, candidateValues,
-                                                    LevelCoverage.VERTICAL_INTERPOLATION_METHOD)
+                self.data_temp[0, y, x] = vertical_interpolation(candidateDepths, targetDepth, candidateValues,
+                                                                 LevelCoverage.VERTICAL_INTERPOLATION_METHOD)
+
+        is_vector = True if len(np.shape(self.data_temp[0])) == 3 and np.shape(self.data_temp[0])[0] == 2 else False
 
         if self.horizontal_resampling:
-            return resample_2d_to_grid(self.read_axis_x(type="source", with_overlap=True),
-                                       self.read_axis_y(type="source", with_overlap=True),
-                                       self.read_axis_x(type="target", with_overlap=True),
-                                       self.read_axis_y(type="target", with_overlap=True),
-                                       self.data_temp[0],
-                                       Coverage.HORIZONTAL_INTERPOLATION_METHOD)[self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
+            if is_vector:
+                return [
+                    self.resample_2d_variable(self.data_temp[0, 0], is_binary_data=is_binary_data),
+                    self.resample_2d_variable(self.data_temp[0, 1], is_binary_data=is_binary_data)
+                ]
+            else:
+                return self.resample_2d_variable(self.data_temp[0], is_binary_data=is_binary_data)
+        else:
+            if is_vector:
+                return [
+                    self.data_temp[0, 0, self.parallel_map[self.rank]["dst_global_y"], self.parallel_map[self.rank][
+                        "dst_global_x"]],
+                    self.data_temp[0, 1, self.parallel_map[self.rank]["dst_global_y"], self.parallel_map[self.rank][
+                        "dst_global_x"]]
+                ]
+            else:
+                return self.data_temp[
+                    0, self.parallel_map[self.rank]["dst_global_y"], self.parallel_map[self.rank]["dst_global_x"]]
 
-        return self.data_temp[0,self.map_mpi[self.rank]["dst_local_y"], self.map_mpi[self.rank]["dst_local_x"]]
-        
-        
-    
+    def read_variable_3D_sea_binary_mask_at_depth(self, depth):
+        """Retourne le masque terre/mer sur toute la couverture selon la profondeur z
+    @return: un tableau en deux dimensions [z,y,x].
+            0 = Terre
+            1 = Mer
+    """
+        return self.__read_variable(inspect.stack()[0][3], depth=depth, is_binary_data=True)
 
+    def read_variable_depth_at_depth(self, depth):
+
+        return self.__read_variable(inspect.stack()[0][3], depth=depth)
