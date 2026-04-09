@@ -34,12 +34,17 @@ cd pySpatialETL
 cd doc
 ```
 
-### 3️⃣ Generate HTML documentation
+### 3️⃣ Install requirements
+```bash
+uv run pip install -r requirements.txt
+```
+
+### 4️⃣ Generate HTML documentation
 ```bash
 uv run make html
 ```
 
-### 4️⃣ View the result
+### 5️⃣ View the result
 
 Open `doc/build/html/index.html` in your browser.
 

@@ -146,13 +146,13 @@ class TimeCoverage(Coverage):
             logging.debug("MPI map:")
 
         if self.comm:
-            logging.debug(f"{"-" * 10} MPI rank n° {self.rank} {"-" * 10}")
+            logging.debug(f"{'-' * 10} MPI rank n° {self.rank} {'-' * 10}")
         else:
             logging.debug("Multithreads map:")
-            logging.debug(f"{"-" * 10} Source grid {"-" * 10}")
+            logging.debug(f"{'-' * 10} Source grid {'-' * 10}")
             for key in ['src_global_x', 'src_global_y', 'src_global_x_size', 'src_global_y_size', ]:
                 logging.debug(f"{key} = {self.parallel_map[self.rank][key]}")
-            logging.debug(f"{"-" * 10} Target grid {"-" * 10}")
+            logging.debug(f"{'-' * 10} Target grid {'-' * 10}")
             for key in ['dst_global_x', 'dst_global_y', 'dst_local_x_size', 'dst_local_y_size']:
                 logging.debug(f"{key} = {self.parallel_map[self.rank][key]}")
 
@@ -162,10 +162,10 @@ class TimeCoverage(Coverage):
 
             # if len(self.parallel_map[self.rank]["threads"]) != 1:
         for thread in range(len(self.parallel_map[self.rank]["threads"])):
-            logging.debug(f"   {"-" * 10} Rank {self.rank} - Thread n° {thread} {"-" * 10}")
+            logging.debug(f"   {'-' * 10} Rank {self.rank} - Thread n° {thread} {'-' * 10}")
             for thread_key in self.parallel_map[self.rank]["threads"][thread]:
                 logging.debug(
-                    f"    {thread_key} = {self.parallel_map[self.rank]["threads"][thread][thread_key]}")
+                    f"    {thread_key} = {self.parallel_map[self.rank]['threads'][thread][thread_key]}")
 
         if self.rank == 0:
             logging.debug("-" * 20)
@@ -404,7 +404,7 @@ class TimeCoverage(Coverage):
                             raise ValueError("Type doesn't match [source, source_global]")
 
                         logging.debug(
-                            f"[TimeCoverage][find_time_index()] Found : {self.read_axis_t(type="source_mpi", timestamp=0)[int(index_t)]}")
+                            f"[TimeCoverage][find_time_index()] Found : {self.read_axis_t(type='source_mpi', timestamp=0)[int(index_t)]}")
 
                     else:
                         for index in range(np.shape(idx)[1]):
@@ -418,7 +418,7 @@ class TimeCoverage(Coverage):
                                 raise ValueError("Type doesn't match [source, source_global]")
 
                             logging.debug(
-                                f"[TimeCoverage][find_time_index()] Found : {self.read_axis_t(type="source_mpi", timestamp=0)[int(index_t)]}")
+                                f"[TimeCoverage][find_time_index()] Found : {self.read_axis_t(type='source_mpi', timestamp=0)[int(index_t)]}")
 
                     if not indexes_t:
                         raise NotFoundInRankError(self.rank,

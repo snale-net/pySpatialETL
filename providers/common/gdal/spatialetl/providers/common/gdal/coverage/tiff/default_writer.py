@@ -76,7 +76,7 @@ class DefaultWriter(CoverageWriter):
             if time and depth:
                 file = self.driver.Create(os.path.join(
                     self.filename,
-                    f"{time.strftime("%Y%m%d_%H%M%S")}_{depth}m_{variable_name}.tiff"
+                    f"{time.strftime('%Y%m%d_%H%M%S')}_{depth}m_{variable_name}.tiff"
                 ),
                     int(self.rows), int(self.cols), 1, variable_type)
             elif depth:
@@ -88,7 +88,7 @@ class DefaultWriter(CoverageWriter):
             elif time:
                 file = self.driver.Create(os.path.join(
                     self.filename,
-                    f"{time.strftime("%Y%m%d_%H%M%S")}_{variable_name}.tiff"
+                    f"{time.strftime('%Y%m%d_%H%M%S')}_{variable_name}.tiff"
                 ),
                     int(self.rows), int(self.cols), 1, variable_type)
             else:

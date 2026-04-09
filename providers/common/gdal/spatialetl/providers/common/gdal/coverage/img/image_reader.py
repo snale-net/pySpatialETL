@@ -22,8 +22,6 @@
 # SOFTWARE.
 from __future__ import division, print_function, absolute_import
 
-from osgeo import gdal
-
 from spatialetl.providers.common.gdal.coverage.tiff.default_reader import DefaultReader
 
 
