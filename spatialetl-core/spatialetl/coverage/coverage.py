@@ -210,13 +210,13 @@ class Coverage(object):
                 logging.debug("MPI map:")
 
             if MPI_FOUND:
-                logging.debug(f"{"-" * 10} MPI rank n° {self.rank} {"-" * 10}")
+                logging.debug(f"---------- MPI rank n° {self.rank} ----------")
             else:
                 logging.debug("Multithreads map:")
-                logging.debug(f"{"-" * 10} Source grid {"-" * 10}")
+                logging.debug(f"---------- Source grid ----------")
                 for key in ['src_global_x', 'src_global_y', 'src_global_x_size', 'src_global_y_size', ]:
                     logging.debug(f"{key} = {self.parallel_map[self.rank][key]}")
-                logging.debug(f"{"-" * 10} Target grid {"-" * 10}")
+                logging.debug(f"---------- Target grid ----------")
                 for key in ['dst_global_x', 'dst_global_y', 'dst_local_x_size', 'dst_local_y_size']:
                     logging.debug(f"{key} = {self.parallel_map[self.rank][key]}")
 
@@ -226,7 +226,7 @@ class Coverage(object):
 
             # if len(self.parallel_map[self.rank]["threads"]) != 1:
             for thread in range(len(self.parallel_map[self.rank]["threads"])):
-                logging.debug(f"   {"-" * 10} Rank {self.rank} - Thread n° {thread} {"-" * 10}")
+                logging.debug(f"   ---------- Rank {self.rank} - Thread n° {thread} ----------")
                 for thread_key in self.parallel_map[self.rank]["threads"][thread]:
                     logging.debug(
                         f"    {thread_key} = {self.parallel_map[self.rank]["threads"][thread][thread_key]}")
