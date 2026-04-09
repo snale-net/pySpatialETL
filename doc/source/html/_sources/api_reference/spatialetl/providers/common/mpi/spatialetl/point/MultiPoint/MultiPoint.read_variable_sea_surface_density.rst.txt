@@ -1,4 +1,0 @@
-read_variable_sea_surface_density
-=================================
-
-.. py:method:: spatialetl.providers.common.mpi.spatialetl.point.MultiPoint.MultiPoint.read_variable_sea_surface_density()

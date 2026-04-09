@@ -1,7 +1,0 @@
-
-spatialetl.point.io.ascii.tests
-===============================
-
-.. py:module:: spatialetl.point.io.ascii.tests
-
-

@@ -1,6 +1,0 @@
-read_variable_rainfall_amount_at_time
-=====================================
-
-.. py:method:: spatialetl.point.io.MultiPointReader.MultiPointReader.read_variable_rainfall_amount_at_time(index_t)
-   :abstractmethod:
-

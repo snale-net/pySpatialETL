@@ -1,9 +1,0 @@
-set_variables
-=============
-
-.. py:method:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader.set_variables(selected_vars)
-
-   !
-   @brief: Set new variables
-   @param selected_vars <[str, bytes, bytes]>: list composed of variable ID, name and unit
-

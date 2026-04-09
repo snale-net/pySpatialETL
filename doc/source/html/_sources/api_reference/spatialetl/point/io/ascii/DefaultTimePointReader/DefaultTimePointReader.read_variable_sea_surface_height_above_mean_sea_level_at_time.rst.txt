@@ -1,4 +1,0 @@
-read_variable_sea_surface_height_above_mean_sea_level_at_time
-=============================================================
-
-.. py:method:: spatialetl.point.io.ascii.DefaultTimePointReader.DefaultTimePointReader.read_variable_sea_surface_height_above_mean_sea_level_at_time(index_t)

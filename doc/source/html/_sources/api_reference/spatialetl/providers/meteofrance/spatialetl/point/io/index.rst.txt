@@ -1,6 +1,0 @@
-spatialetl.providers.meteofrance.spatialetl.point.io
-====================================================
-
-.. py:module:: spatialetl.providers.meteofrance.spatialetl.point.io
-
-

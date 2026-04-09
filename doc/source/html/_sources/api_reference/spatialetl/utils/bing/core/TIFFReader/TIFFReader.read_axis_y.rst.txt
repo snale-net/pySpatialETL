@@ -1,4 +1,0 @@
-read_axis_y
-===========
-
-.. py:method:: spatialetl.utils.bing.core.TIFFReader.TIFFReader.read_axis_y()

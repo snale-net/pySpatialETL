@@ -1,4 +1,0 @@
-read_axis_z
-===========
-
-.. py:method:: spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.SYMPHONIEReader.SYMPHONIEReader.read_axis_z()

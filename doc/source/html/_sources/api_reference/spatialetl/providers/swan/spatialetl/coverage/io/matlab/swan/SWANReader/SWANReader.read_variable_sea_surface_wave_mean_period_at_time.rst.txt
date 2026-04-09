@@ -1,4 +1,0 @@
-read_variable_sea_surface_wave_mean_period_at_time
-==================================================
-
-.. py:method:: spatialetl.providers.swan.spatialetl.coverage.io.matlab.swan.SWANReader.SWANReader.read_variable_sea_surface_wave_mean_period_at_time(t, xmin, xmax, ymin, ymax)

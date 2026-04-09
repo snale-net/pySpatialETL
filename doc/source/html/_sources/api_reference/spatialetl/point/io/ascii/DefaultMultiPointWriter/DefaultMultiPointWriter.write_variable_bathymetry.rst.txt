@@ -1,4 +1,0 @@
-write_variable_bathymetry
-=========================
-
-.. py:method:: spatialetl.point.io.ascii.DefaultMultiPointWriter.DefaultMultiPointWriter.write_variable_bathymetry()

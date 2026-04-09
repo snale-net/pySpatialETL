@@ -1,4 +1,0 @@
-read_variable_depth_at_depth
-============================
-
-.. py:method:: spatialetl.coverage.LevelCoverage.LevelCoverage.read_variable_depth_at_depth(depth)

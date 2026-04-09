@@ -1,4 +1,0 @@
-find_points_coordinates
-=======================
-
-.. py:method:: spatialetl.providers.ecmwf.spatialetl.point.io.netcdf.ecmwf.ECMWFReader.ECMWFReader.find_points_coordinates()

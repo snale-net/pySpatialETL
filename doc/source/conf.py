@@ -19,11 +19,35 @@ extensions = [
     'sphinx_design',  # Enhanced design elements (buttons, grids, etc.)
 ]
 
-exclude_patterns = ["**/tests/*"]
+exclude_patterns = [
+    '_build',
+    'build',
+    '**/tests/*'
+]
 
 # -- AutoAPI configuration ---------------------------------------------------
 autoapi_generate_api_docs = True
-autoapi_dirs = ["../../spatialetl"]
+autoapi_dirs = [
+    # Core package
+    "../../spatialetl-core/spatialetl",
+
+    # Common providers
+    "../../providers/common/gdal/spatialetl",
+    "../../providers/common/grib/spatialetl",
+    "../../providers/common/mpi/spatialetl",
+    "../../providers/common/netcdf/spatialetl",
+
+    # Data source providers
+    "../../providers/ecmwf/spatialetl",
+    "../../providers/gmt/spatialetl",
+    "../../providers/hycom/spatialetl",
+    "../../providers/mercator/spatialetl",
+    "../../providers/meteofrance/spatialetl",
+    "../../providers/swan/spatialetl",
+    "../../providers/symphonie/spatialetl",
+    "../../providers/telemac/spatialetl",
+    "../../providers/ww3/spatialetl",
+]
 autoapi_root = "api_reference"
 autoapi_keep_files = True  # Keep generated .rst files
 autoapi_add_toctree_entry = False  # Do not auto-inject into the toctree (manual control)

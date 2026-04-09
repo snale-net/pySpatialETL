@@ -1,4 +1,0 @@
-get_x_size
-==========
-
-.. py:method:: spatialetl.providers.meteofrance.spatialetl.coverage.io.grib.mf.MFWAMReader.MFWAMReader.get_x_size()

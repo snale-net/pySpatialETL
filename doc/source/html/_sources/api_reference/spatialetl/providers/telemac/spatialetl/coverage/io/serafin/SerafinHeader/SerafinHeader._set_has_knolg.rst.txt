@@ -1,4 +1,0 @@
-_set_has_knolg
-==============
-
-.. py:method:: spatialetl.providers.telemac.spatialetl.coverage.io.serafin.SerafinHeader.SerafinHeader._set_has_knolg()

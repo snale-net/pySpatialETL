@@ -1,4 +1,0 @@
-write_variable_wind_stress_stress
-=================================
-
-.. py:method:: spatialetl.point.io.ascii.DefaultTimePointWriter.DefaultTimePointWriter.write_variable_wind_stress_stress()

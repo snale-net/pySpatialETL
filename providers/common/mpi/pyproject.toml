@@ -46,7 +46,7 @@ test = [
 [project.urls]
 Homepage = "https://lab.snale.net/produits/pyspatialetl"
 Documentation = "https://readthedocs.org"
-Repository = "https://github.com/snale-net/pySpatialETL.git"
+Repository = "https://github.com/snale-net/SpatialETL.git"
 
 [tool.uv.sources]
 # These names must match the names as defined in the pyproject.toml of the workspace items,

@@ -1,4 +1,0 @@
-check_point_is_inside
-=====================
-
-.. py:method:: spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.check_point_is_inside(target_lon, target_lat, lon, lat, tolerance=5)

@@ -1,4 +1,0 @@
-write_grids
-===========
-
-.. py:method:: spatialetl.providers.symphonie.spatialetl.coverage.io.netcdf.symphonie.OASISWriter.OASISWriter.write_grids(filename)

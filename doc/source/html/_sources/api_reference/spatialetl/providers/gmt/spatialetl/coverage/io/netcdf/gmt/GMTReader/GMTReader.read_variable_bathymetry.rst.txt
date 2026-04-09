@@ -1,4 +1,0 @@
-read_variable_bathymetry
-========================
-
-.. py:method:: spatialetl.providers.gmt.spatialetl.coverage.io.netcdf.gmt.GMTReader.GMTReader.read_variable_bathymetry(xmin, xmax, ymin, ymax)

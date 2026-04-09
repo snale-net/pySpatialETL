@@ -1,4 +1,0 @@
-read_variable_4D_sea_binary_mask
-================================
-
-.. py:method:: spatialetl.providers.mercator.spatialetl.coverage.io.netcdf.mercator.v2015.MERCATORReader.MERCATORReader.read_variable_4D_sea_binary_mask(xmin, xmax, ymin, ymax)

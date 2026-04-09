@@ -1,4 +1,0 @@
-write_variable_waves_momentum_flux_to_ocean
-===========================================
-
-.. py:method:: spatialetl.providers.common.gdal.spatialetl.coverage.io.tiff.DefaultWriter.DefaultWriter.write_variable_waves_momentum_flux_to_ocean()

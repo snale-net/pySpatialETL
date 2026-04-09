@@ -1,8 +1,0 @@
-read_variable_bathymetry
-========================
-
-.. py:method:: spatialetl.providers.common.mpi.spatialetl.coverage.Coverage.Coverage.read_variable_bathymetry()
-
-   Retourne la bathymétrie sur toute la couverture
-   @return: un tableau en deux dimensions [y,x].
-

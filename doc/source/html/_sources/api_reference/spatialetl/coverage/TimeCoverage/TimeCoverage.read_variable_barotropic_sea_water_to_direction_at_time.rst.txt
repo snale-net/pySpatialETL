@@ -1,4 +1,0 @@
-read_variable_barotropic_sea_water_to_direction_at_time
-=======================================================
-
-.. py:method:: spatialetl.coverage.TimeCoverage.TimeCoverage.read_variable_barotropic_sea_water_to_direction_at_time(date)

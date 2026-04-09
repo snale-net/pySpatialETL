@@ -1,6 +1,0 @@
-read_axis_y
-===========
-
-.. py:method:: spatialetl.point.io.MultiPointReader.MultiPointReader.read_axis_y()
-   :abstractmethod:
-

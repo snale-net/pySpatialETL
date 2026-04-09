@@ -1,6 +1,0 @@
-write_variable_sea_surface_wave_energy_flux_to_ocean
-====================================================
-
-.. py:method:: spatialetl.coverage.io.CoverageWriter.CoverageWriter.write_variable_sea_surface_wave_energy_flux_to_ocean()
-   :abstractmethod:
-

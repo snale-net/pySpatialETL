@@ -9,7 +9,8 @@
 Welcome to the SpatialETL Documentation
 =========================================
 
-The SpatialETL documentation is organized into four main sections:
+The SpatialETL documentation is organized into main sections:
+
 - :doc:`User Guide <docs/user_guide>`: a high-level overview of the core concepts and main features
 - :doc:`Advanced Guide <docs/advanced_guide>`: deeper dives into more complex functionality and use cases
 - :doc:`Examples <docs/example>`: real-world usage examples and tutorials
@@ -46,15 +47,16 @@ Documentation
    docs/user_guide
    docs/advanced_guide
    docs/example
-   docs/reference/providers
+   docs/reference/coverage/providers
    docs/reference
 
 Index
 -----
+
 * :ref:`genindex`
 * :ref:`modindex`
 
 Links
 -----
 
-- **Github** : `pySpatialETL <https://github.com/snale-net/pySpatialETL>`_
+- **Github** : `pySpatialETL <https://github.com/snale-net/SpatialETL>`_

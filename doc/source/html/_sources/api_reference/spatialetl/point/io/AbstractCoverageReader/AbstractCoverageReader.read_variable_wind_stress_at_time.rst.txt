@@ -1,4 +1,0 @@
-read_variable_wind_stress_at_time
-=================================
-
-.. py:method:: spatialetl.point.io.AbstractCoverageReader.AbstractCoverageReader.read_variable_wind_stress_at_time(index_t)

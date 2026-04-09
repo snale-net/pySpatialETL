@@ -1,4 +1,0 @@
-get_y_size
-==========
-
-.. py:method:: spatialetl.providers.common.gdal.spatialetl.coverage.io.img.ImageReader.ImageReader.get_y_size()

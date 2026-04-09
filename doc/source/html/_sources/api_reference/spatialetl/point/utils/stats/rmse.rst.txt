@@ -1,4 +1,0 @@
-rmse
-====
-
-.. py:function:: spatialetl.point.utils.stats.rmse(obs, model)

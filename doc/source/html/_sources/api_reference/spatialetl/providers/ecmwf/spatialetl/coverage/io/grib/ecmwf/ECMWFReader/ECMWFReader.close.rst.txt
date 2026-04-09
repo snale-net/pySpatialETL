@@ -1,4 +1,0 @@
-close
-=====
-
-.. py:method:: spatialetl.providers.ecmwf.spatialetl.coverage.io.grib.ecmwf.ECMWFReader.ECMWFReader.close()

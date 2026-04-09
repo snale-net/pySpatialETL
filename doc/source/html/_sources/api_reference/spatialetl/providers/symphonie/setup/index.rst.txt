@@ -1,6 +1,0 @@
-spatialetl.providers.symphonie.setup
-====================================
-
-.. py:module:: spatialetl.providers.symphonie.setup
-
-

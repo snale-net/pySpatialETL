@@ -1,4 +1,0 @@
-write_variable_surface_downward_solar_radiation
-===============================================
-
-.. py:method:: spatialetl.providers.ecmwf.spatialetl.coverage.io.netcdf.ecmwf.ECMWFWriter.ECMWFWriter.write_variable_surface_downward_solar_radiation()

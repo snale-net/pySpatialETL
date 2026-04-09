@@ -1,4 +1,0 @@
-is_regular_grid
-===============
-
-.. py:method:: spatialetl.providers.swan.spatialetl.coverage.io.matlab.swan.SWANUnstructuredReader.SWANUnstructuredReader.is_regular_grid()

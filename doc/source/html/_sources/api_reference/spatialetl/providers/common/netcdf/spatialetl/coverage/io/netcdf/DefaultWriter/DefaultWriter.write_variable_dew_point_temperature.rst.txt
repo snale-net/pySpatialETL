@@ -1,4 +1,0 @@
-write_variable_dew_point_temperature
-====================================
-
-.. py:method:: spatialetl.providers.common.netcdf.spatialetl.coverage.io.netcdf.DefaultWriter.DefaultWriter.write_variable_dew_point_temperature()

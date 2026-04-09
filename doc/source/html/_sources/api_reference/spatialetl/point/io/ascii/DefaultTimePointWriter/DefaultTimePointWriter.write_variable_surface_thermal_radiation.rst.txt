@@ -1,4 +1,0 @@
-write_variable_surface_thermal_radiation
-========================================
-
-.. py:method:: spatialetl.point.io.ascii.DefaultTimePointWriter.DefaultTimePointWriter.write_variable_surface_thermal_radiation()
