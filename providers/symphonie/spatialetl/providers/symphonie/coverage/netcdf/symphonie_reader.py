@@ -148,6 +148,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             for f in self.files:
                 self.times.extend(extract_times_from_file(f))
 
+        self.times = np.sort(self.times)
         self.t_size = len(self.times)
 
         if len(self.times) == 0:
@@ -426,10 +427,10 @@ La classe SymphonieReader permet de lire les données du format Symphonie
     def read_axis_t(self, tmin, tmax, timestamp):
 
         if timestamp == 1:
-            return [(t - TimeCoverage.TIME_DATUM).total_seconds() \
-                    for t in self.times[tmin:tmax]];
+            return np.asarray([(t - TimeCoverage.TIME_DATUM).total_seconds() \
+                    for t in self.times[tmin:tmax]]);
         else:
-            return self.times[tmin:tmax]
+            return np.asarray(self.times[tmin:tmax])
 
     # Variables
     def read_variable_time(self, tmin, tmax, timestamp):
