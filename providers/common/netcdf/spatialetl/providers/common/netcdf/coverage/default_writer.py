@@ -596,6 +596,15 @@ class DefaultWriter(CoverageWriter):
             VariableDefinition.CANONICAL_UNITS['barotropic_sea_water_from_direction']
         )
 
+    def write_variable_ocean_tracer_residence_time(self):
+        self._write_time_2d_scalar(
+            'read_variable_ocean_tracer_residence_time_at_time',
+            VariableDefinition.VARIABLE_NAME['ocean_tracer_residence_time'],
+            VariableDefinition.LONG_NAME['ocean_tracer_residence_time'],
+            VariableDefinition.STANDARD_NAME['ocean_tracer_residence_time'],
+            VariableDefinition.CANONICAL_UNITS['ocean_tracer_residence_time']
+        )
+
     #################
     # HYDRO
     # Sea Surface
@@ -1086,7 +1095,3 @@ class DefaultWriter(CoverageWriter):
             VariableDefinition.STANDARD_NAME['wind_from_direction_10m'],
             VariableDefinition.CANONICAL_UNITS['wind_from_direction_10m']
         )
-
-
-
-

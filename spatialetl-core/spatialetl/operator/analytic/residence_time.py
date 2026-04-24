@@ -29,50 +29,6 @@ def compute_residence_time(sourceAxis, data):
     """
     """
 
-    ## ORIGINAL ##
-
-    # # --- Dimensions ---
-    # Nt, Ny, Nx = data.shape
-    # Npix = Nx * Ny  # total number of pixels
-    #
-    # # --- Reshape to 2D: (Nt,Npix) ---
-    # Bios2D = data.reshape(Nt,Npix)
-    #
-    # # --- Initialize ---
-    # TR_vec = np.full((Npix,), np.nan)
-    #
-    # # --- Loop over pixels ---
-    # for p in range(Npix):
-    #     C = Bios2D[:,p]
-    #
-    #     # no data
-    #     if np.all(np.isnan(C)):
-    #         continue
-    #
-    #     seuil = C[0] / np.exp(1)  # 1/e threshold
-    #
-    #     # first index where C <= seuil
-    #     indices = np.where(C <= seuil)[0]
-    #     idx = indices[0] if len(indices) > 0 else None
-    #
-    #     if idx is not None and idx > 0:
-    #         # Linear interpolation (MATLAB interp1 equivalent)
-    #         x = C[idx - 1:idx + 1]
-    #         y = sourceAxis[idx - 1:idx + 1]
-    #
-    #         # np.interp requires increasing x → fix order if needed
-    #         if x[0] > x[1]:
-    #             TR_vec[p] = np.interp(seuil, x[::-1], y[::-1])
-    #         else:
-    #             TR_vec[p] = np.interp(seuil, x, y)
-    #     else:
-    #         TR_vec[p] = sourceAxis[-1]
-    #
-    # # --- Reshape to (Nx, Ny) ---
-    # return TR_vec.reshape(Ny, Nx)
-
-    ## OPTIMIZED ##
-
     # --- Dimensions ---
     Nt, Ny, Nx = data.shape
     Npix = Nx * Ny
@@ -129,3 +85,29 @@ def compute_residence_time(sourceAxis, data):
     # --- Reshape ---
     return TR_vec.reshape(Ny, Nx)
 
+
+def compute_lagrangian_residence_time(sourceAxis, data):
+    TR_lag = np.full(data.shape[2], np.max(sourceAxis))
+
+    dt = np.median(np.diff(sourceAxis))
+    t0 = sourceAxis[0]
+
+    # Search indices where tracer vanish (=> lon, lat is Nan)
+    mask = np.isnan(data)
+    has_nan = mask.any(axis=1)
+    idx = np.argmax(has_nan, axis=0)  # First index where Nan are found
+
+    # If no NaN were found, set -1
+    no_nan = ~has_nan.any(axis=0)
+    idx[no_nan] = -1
+
+    valid = idx != -1  # Create a mask where values are found
+
+    # Select indices where values are found
+    tracer_idx = np.nonzero(valid)[0]
+    time_idx = idx[valid]
+
+    # Compute the TR
+    TR_lag[tracer_idx] = sourceAxis[time_idx] - t0 + dt
+
+    return TR_lag

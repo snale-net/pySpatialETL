@@ -23,7 +23,6 @@
 import inspect
 import math
 import os
-from calendar import calendar, timegm
 from datetime import datetime
 from datetime import timedelta
 
@@ -113,11 +112,15 @@ class TimeCoverage(Coverage):
         if freq is not None:
             self.temporal_resampling = True
 
-            self.target_global_axis_t = pandas.date_range(start=datetime.utcfromtimestamp(
-                self.read_axis_t(type="source_global", with_overlap=False, timestamp=1)[tmin]),
-                end=datetime.utcfromtimestamp(
-                    self.read_axis_t(type="source_global", with_overlap=False,
-                                     timestamp=1)[tmax - 1]),
+            start_date = datetime.utcfromtimestamp(
+                self.read_axis_t(type="source_global", with_overlap=False, timestamp=1)[tmin])
+            end_date = datetime.utcfromtimestamp(
+                self.read_axis_t(type="source_global", with_overlap=False,
+                                 timestamp=1)[tmax - 1])
+
+            self.target_global_axis_t = pandas.date_range(
+                start=start_date,
+                end=end_date,
                 freq=freq).to_pydatetime()
 
             self.target_global_t_size = np.shape(self.target_global_axis_t)[0]
@@ -306,14 +309,14 @@ class TimeCoverage(Coverage):
         # TODO Add delta time
         idx = np.where(
             (source_global_axis_t >= np.min(
-                target_global_axis_t  - TimeCoverage.TIME_DELTA)) &
+                target_global_axis_t - TimeCoverage.TIME_DELTA)) &
             (source_global_axis_t <= np.max(
-                target_global_axis_t  + TimeCoverage.TIME_DELTA)))
+                target_global_axis_t + TimeCoverage.TIME_DELTA)))
 
         tmin = np.min(idx[0])
         tmax = np.max(idx[0]) + 1
 
-            # SRC GLOBAL
+        # SRC GLOBAL
         map["src_global_t"] = np.s_[int(tmin):int(tmax)]
         map["src_global_t_size"] = tmax - tmin
 
@@ -365,7 +368,7 @@ class TimeCoverage(Coverage):
         elif type(t) == datetime or type(t) == cftime._cftime.datetime or type(t) == cftime._cftime.real_datetime:
 
             target_timestamp = (t - TimeCoverage.TIME_DATUM).total_seconds()
-            array =self.read_axis_t(type="source_mpi", timestamp=1)
+            array = self.read_axis_t(type="source_mpi", timestamp=1)
 
             logging.debug("[TimeCoverage][find_time_index()] Looking for : " + str(t))
 
@@ -407,10 +410,10 @@ class TimeCoverage(Coverage):
         else:
             raise ValueError("" + str(t) + " have to be an integer or a datetime. Current type: " + str(type(t)))
 
-        indexes_t = np.unique(indexes_t)
+        indexes_t = np.array(np.sort(np.unique(indexes_t)))
         logging.debug("[TimeCoverage][find_time_index()] Found " + str(len(indexes_t)) + " candidate datetime(s)")
 
-        return np.array(indexes_t)
+        return indexes_t
 
     def read_axis_t(self, type="target_mpi", with_overlap=False, timestamp=0, current_thread: int = None):
         """Retourne les valeurs de l'axe t.
@@ -501,7 +504,8 @@ class TimeCoverage(Coverage):
         times = self.read_axis_t(type="source_mpi")
         source_time = times[index_t]
 
-        data = temporal_2d_interpolation(source_time,time,layers, TimeCoverage.TIME_INTERPOLATION_METHOD, TimeCoverage.TIME_DELTA)
+        data = temporal_2d_interpolation(source_time, time, layers, TimeCoverage.TIME_INTERPOLATION_METHOD,
+                                         TimeCoverage.TIME_DELTA)
 
         is_vector = True if len(np.shape(data)) == 3 and np.shape(data)[0] == 2 else False
 
@@ -603,17 +607,17 @@ class TimeCoverage(Coverage):
         """
         fn = getattr(self.reader, "read_variable_sea_surface_biogeochemical_tracer_1_at_time")
 
-        index_t = self.find_time_index(t);
+        indexes_t = self.find_time_index(t);
 
         layers = np.stack([fn(
-            self.parallel_map[self.rank]["src_global_t"].start + index_t[t],
+            self.parallel_map[self.rank]["src_global_t"].start + indexes_t[index_t],
             self.parallel_map[self.rank]["src_global_x_overlap"].start,
             self.parallel_map[self.rank]["src_global_x_overlap"].stop,
             self.parallel_map[self.rank]["src_global_y_overlap"].start,
-            self.parallel_map[self.rank]["src_global_y_overlap"].stop) for t in range(0, len(index_t))])
+            self.parallel_map[self.rank]["src_global_y_overlap"].stop) for index_t in range(0, len(indexes_t))])
 
         times = self.read_axis_t(type="source_mpi")
-        source_time = times[index_t] - np.min(times)
+        source_time = times[indexes_t] - np.min(times)
 
         def to_decimal_days(td):
             return td.total_seconds() / (3600 * 24)
@@ -662,17 +666,17 @@ class TimeCoverage(Coverage):
         """
         fn = getattr(self.reader, "read_variable_biogeochemical_tracer_1_at_ground_level_at_time")
 
-        index_t = self.find_time_index(t);
+        indexes_t = self.find_time_index(t);
 
         layers = np.stack([fn(
-            self.parallel_map[self.rank]["src_global_t"].start + index_t[t],
+            self.parallel_map[self.rank]["src_global_t"].start + indexes_t[index_t],
             self.parallel_map[self.rank]["src_global_x_overlap"].start,
             self.parallel_map[self.rank]["src_global_x_overlap"].stop,
             self.parallel_map[self.rank]["src_global_y_overlap"].start,
-            self.parallel_map[self.rank]["src_global_y_overlap"].stop) for t in range(0, len(index_t))])
+            self.parallel_map[self.rank]["src_global_y_overlap"].stop) for index_t in range(0, len(indexes_t))])
 
         times = self.read_axis_t(type="source_mpi")
-        source_time = times[index_t] - np.min(times)
+        source_time = times[indexes_t] - np.min(times)
 
         def to_decimal_days(td):
             return td.total_seconds() / (3600 * 24)
@@ -701,7 +705,7 @@ class TimeCoverage(Coverage):
 
     def read_variable_barotropic_sea_water_speed_at_time(self, date):
         comp = self.read_variable_barotropic_sea_water_velocity_at_time(date)
-        return np.hypot(comp[0],comp[1])
+        return np.hypot(comp[0], comp[1])
 
     def read_variable_barotropic_sea_water_from_direction_at_time(self, date):
         comp = self.read_variable_barotropic_sea_water_velocity_at_time(date)
@@ -722,6 +726,13 @@ class TimeCoverage(Coverage):
                 result[y, x] = 270. - (180.0 / math.pi) * (math.atan2(comp[0][y, x], comp[1][y, x])) % 360.0
 
         return result
+
+    def read_variable_ocean_tracer_residence_time_at_time(self, t):
+        """ Read ocean tracer residence time at the given time
+           @type t: datetime ou l'index
+           @param t: date souhaitée
+           @return: un tableau en deux dimensions [y,x]."""
+        return self.__read_variable(inspect.stack()[0][3], time=t)
 
     #################
     # WAVES

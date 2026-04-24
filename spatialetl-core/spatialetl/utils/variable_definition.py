@@ -262,6 +262,11 @@ class VariableDefinition:
     VARIABLE_NAME['water_volume_transport_into_sea_water_from_rivers'] = "rivers_flux"
     CANONICAL_UNITS['water_volume_transport_into_sea_water_from_rivers'] = "m3 s-1"
 
+    STANDARD_NAME['ocean_tracer_residence_time'] = "ocean_tracer_residence_time"
+    LONG_NAME['ocean_tracer_residence_time'] = "Water Residence Time From Ocean Tracers"
+    VARIABLE_NAME['ocean_tracer_residence_time'] = "residence_time"
+    CANONICAL_UNITS['ocean_tracer_residence_time'] = "days"
+
     #################
     # HYDRO
     # 3D

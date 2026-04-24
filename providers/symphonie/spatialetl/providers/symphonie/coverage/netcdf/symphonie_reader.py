@@ -67,7 +67,7 @@ def extract_times_from_file(file):
         times.append(cftime.datetime(y, m, d, hh, mm, ss))
         return times
 
-    if not (os.path.isfile(file) and "bathycote_in" not in str(file)):
+    if not (os.path.isfile(file) and "bathycote_in" not in str(file)) and "drifter_initial" not in str(file):
         return times
 
     try:
@@ -77,15 +77,15 @@ def extract_times_from_file(file):
                 return times
 
             units = normalize_units(time_var.units)
-            calendar = getattr(time_var, "calendar", "standard")
+            calendar = getattr(time_var, "calendar", "gregorian")
 
-            times = time_var[:]
+            current_time = time_var[:]
 
             # vectorized conversion when possible
-            if times.shape == (1,):
-               times.append(num2date(times[0], units=units, calendar=calendar))
+            if current_time.shape == (1,):
+               times.append(num2date(current_time[0], units=units, calendar=calendar))
             else:
-                decoded = num2date(times, units=units, calendar=calendar)
+                decoded = num2date(current_time, units=units, calendar=calendar)
                 times.extend(t.replace(microsecond=0) for t in decoded)
 
     except Exception as ex:
@@ -148,7 +148,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
             for f in self.files:
                 self.times.extend(extract_times_from_file(f))
 
-        self.times = np.sort(self.times)
+        # Note : sort in times and files has to be exactly the same order
         self.t_size = len(self.times)
 
         if len(self.times) == 0:
@@ -162,6 +162,7 @@ La classe SymphonieReader permet de lire les données du format Symphonie
         if index_t != self.last_opened_t_index:
             self.close()
             self.ncfile = Dataset(self.files[index_t])
+            self.last_opened_t_index = index_t
 
     def close(self):
         self.ncfile.close()

@@ -54,11 +54,9 @@ La classe SymphonieReader permet de lire les données du format Symphonie
                 data = np.ma.filled(self.ncfile.variables["bio1"][0, index_z, ymin:ymax, xmin:xmax],
                                     fill_value=np.nan)
             else:
-                logging.debug("No variables found for '" + str(
-                    VariableDefinition.LONG_NAME['sea_surface_temperature']) + "'")
+                logging.debug("No variables found for 'sea_surface_biogeochemical_tracer_1'")
                 raise (VariableNameError("SymphonieReader",
-                                         "No variables found for '" + str(
-                                             VariableDefinition.LONG_NAME['sea_surface_temperature']) + "'",
+                                         "No variables found for 'sea_surface_biogeochemical_tracer_1'",
                                          1000))
 
             if AbstractSYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables:  # We apply the wetmask
@@ -83,11 +81,9 @@ La classe SymphonieReader permet de lire les données du format Symphonie
                 data = np.ma.filled(self.ncfile.variables["bio1"][0, index_z, ymin:ymax, xmin:xmax],
                                     fill_value=np.nan)
             else:
-                logging.debug("No variables found for '" + str(
-                    VariableDefinition.LONG_NAME['sea_surface_temperature']) + "'")
+                logging.debug("No variables found for 'biogeochemical_tracer_1_at_ground_level'")
                 raise (VariableNameError("SymphonieReader",
-                                         "No variables found for '" + str(
-                                             VariableDefinition.LONG_NAME['sea_surface_temperature']) + "'",
+                                         "No variables found for 'biogeochemical_tracer_1_at_ground_level'",
                                          1000))
 
             if AbstractSYMPHONIEReader.APPLY_WET_MASK and "wetmask_t" in self.ncfile.variables:  # We apply the wetmask
