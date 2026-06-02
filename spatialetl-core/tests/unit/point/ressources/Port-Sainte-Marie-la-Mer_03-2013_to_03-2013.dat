@@ -1,0 +1,29 @@
+############################################################ 
+# Station : Port-Sainte-Marie-la-Mer 
+# Coordinate Reference System : WGS84 
+# Longitude : 3.0381070436335205 
+# Latitude : 42.7230238237492 
+# Data source : Coverage file 
+# Meta Data : 
+# Port-Sainte-Marie-la-Mer : nearest point in the coverage file is 0.0091 km from the target point
+# Canal-Sainte-Marie-la-Mer : nearest point in the coverage file is 0.0061 km from the target point
+# La-Tet : nearest point in the coverage file is 0.0037 km from the target point
+# Port-Canet : nearest point in the coverage file is 0.0062 km from the target point 
+# Time zone : UTC 
+# Separator: Tabulation \t 
+# Column 1: year-month-day hour:minute:second UTC 
+# Column 2: sea_water_column_thickness (m) - FillValue: NaN 
+############################################################
+2013-03-04 17:45:36	1.0109639167785645
+2013-03-04 18:45:36	1.0177937746047974
+2013-03-04 19:45:36	1.036091923713684
+2013-03-04 20:45:36	1.0631723403930664
+2013-03-04 21:45:36	1.0998176336288452
+2013-03-04 22:45:36	1.1396385431289673
+2013-03-04 23:45:36	1.1743478775024414
+2013-03-05 00:45:36	1.2013068199157715
+2013-03-05 01:45:36	1.2120176553726196
+2013-03-05 02:45:36	1.2138863801956177
+2013-03-05 03:45:36	1.207862138748169
+2013-03-05 04:45:36	1.2015458345413208
+2013-03-05 05:45:36	1.2047830820083618

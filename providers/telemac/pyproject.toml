@@ -1,0 +1,50 @@
+# MIT License
+# Copyright (c) 2024 [SNALE - French SAS Company - RCS 951 724 616]
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+[build-system]
+requires = ["flit_core==3.12.0"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "spatialetl-providers-telemac"
+version = "0.0.1"
+requires-python = ">=3.9"
+authors = [
+  {name = "Fabien RÉTIF", email = "fabien.retif@snale.net"},
+]
+description = "Provider package spatialetl-providers-telemac for SpatialETL"
+readme = "README.md"
+
+dependencies = [
+  "spatialetl>=0.2.0"
+]
+
+[project.urls]
+Homepage = "https://lab.snale.net/produits/pyspatialetl"
+Documentation = "https://readthedocs.org"
+Repository = "https://github.com/snale-net/SpatialETL.git"
+
+[tool.uv.sources]
+# These names must match the names as defined in the pyproject.toml of the workspace items,
+# *not* the workspace folder paths
+spatialetl = {workspace = true}
+
+[tool.flit.module]
+name = "spatialetl.providers.telemac"

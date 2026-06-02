@@ -1,0 +1,153 @@
+#! /usr/bin/env python2.7
+# -*- coding: utf-8 -*-
+# MIT License
+# Copyright (c) 2024 [SNALE - French SAS Company - RCS 951 724 616]
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+import inspect
+import os
+
+import numpy as np
+
+from spatialetl.coverage.level_coverage import LevelCoverage
+from spatialetl.coverage.time_coverage import TimeCoverage
+from spatialetl.operator.interpolator.interpolator_core import vertical_interpolation
+
+
+class TimeLevelCoverage(LevelCoverage, TimeCoverage):
+    """
+    La classe TimeLevelCoverage est une extension de la classe Coverage, LevelCoverage, TimeCoverage.
+    Elle rajoute les dimensions temporelle et verticale à la couverture horizontale classique.
+    """
+
+    def __init__(self, reader, bbox=None, resolution_x=None, resolution_y=None, zbox=None, resolution_z=None,
+                 start_time=None, end_time=None, freq=None, nb_thread:int=os.cpu_count()-1):
+
+        LevelCoverage.__init__(self, reader, bbox=bbox, resolution_x=resolution_x, resolution_y=resolution_y,
+                               zbox=zbox, resolution_z=resolution_z, nb_thread=nb_thread);
+        TimeCoverage.__init__(self, reader, bbox=bbox, resolution_x=resolution_x, resolution_y=resolution_y,
+                              start_time=start_time, end_time=end_time, freq=freq, nb_thread=nb_thread);
+
+        self.data_temp = np.zeros(
+            [2, self.get_y_size(type="source", with_overlap=True), self.get_x_size(type="source", with_overlap=True)])
+        self.layers_temp = np.zeros(
+            [self.get_z_size(type="source"), 2, self.get_y_size(type="source", with_overlap=True),
+             self.get_x_size(type="source", with_overlap=True)])
+
+
+    def __read_variable(self, function_name, time, depth):
+
+        fn = getattr(self.reader, function_name)
+
+        index_t = self.find_time_index(time);
+        vert_coord, indexes_z = self.find_level_index(depth);
+        self.layers_temp[::] = np.nan
+        self.data_temp[::] = np.nan
+        targetDepth = [depth]
+
+        for z in range(0, len(indexes_z)):
+            self.layers_temp[z] = fn(
+                self.parallel_map[self.rank]["src_global_t"].start + index_t,
+                indexes_z[z],
+                self.parallel_map[self.rank]["src_global_x_overlap"].start,
+                self.parallel_map[self.rank]["src_global_x_overlap"].stop,
+                self.parallel_map[self.rank]["src_global_y_overlap"].start,
+                self.parallel_map[self.rank]["src_global_y_overlap"].stop)
+
+        idx = np.where(vert_coord != None)
+        for index in range(np.shape(idx)[1]):
+            x = idx[1][index]
+            y = idx[0][index]
+
+            if len(vert_coord[y, x]) == 1:
+                # Il n'y a qu'une seule couche de sélectionner donc pas d'interpolation possible
+                # On retrouve l'index de la layer
+                index_layer = (np.abs(indexes_z - vert_coord[y, x][0])).argmin()
+                self.data_temp[0, y, x] = self.layers_temp[index_layer, 0, y, x]
+            else:
+
+                candidateValues = np.zeros([len(vert_coord[y, x])])
+                candidateDepths = np.zeros([len(vert_coord[y, x])])
+
+                for z in range(0, len(vert_coord[y, x])):
+                    # On retrouve l'index de la layer
+                    index_layer = (np.abs(indexes_z - vert_coord[y, x][z])).argmin()
+
+                    if self.is_sigma_coordinate(type="source"):
+                        candidateDepths[z] = self.read_axis_z(type="source", with_horizontal_overlap=True)[
+                            vert_coord[y, x][z], y, x]
+                    else:
+                        candidateDepths[z] = self.read_axis_z(type="source", with_horizontal_overlap=True)[
+                            vert_coord[y, x][z]]
+
+                    candidateValues[z] = self.layers_temp[index_layer, 0, y, x]
+
+                self.data_temp[0, y, x] = vertical_interpolation(candidateDepths, targetDepth, candidateValues,
+                                                                 LevelCoverage.VERTICAL_INTERPOLATION_METHOD)
+
+        is_vector = True if len(np.shape(self.data_temp[0])) == 3 and np.shape(self.data_temp[0])[0] == 2 else False
+
+        if self.horizontal_resampling:
+            if is_vector:
+                return [self.resample_2d_variable(self.data_temp[0,0]),self.resample_2d_variable(self.data_temp[0,1])]
+            else:
+                return self.resample_2d_variable(self.data_temp[0])
+        else:
+            if is_vector:
+                return [
+                    self.data_temp[0,0,self.parallel_map[self.rank]["dst_global_y"], self.parallel_map[self.rank]["dst_global_x"]],
+                    self.data_temp[0,1,self.parallel_map[self.rank]["dst_global_y"], self.parallel_map[self.rank]["dst_global_x"]]
+                ]
+            else:
+                return self.data_temp[0,self.parallel_map[self.rank]["dst_global_y"], self.parallel_map[self.rank]["dst_global_x"]]
+
+    #################
+    # HYDRO
+    # 3D
+    #################
+    def read_variable_sea_water_temperature_at_time_and_depth(self, time, depth):
+        """Retourne la salinité à la date souhaitée et au niveau souhaité sur toute la couverture horizontale.
+    @type time: datetime ou l'index
+    @param time: date souhaitée
+    @type depth: profondeur en mètre (float) ou index (integer)
+    @param depth: profondeur souhaitée. Si le z est un entier, on considère qu'il s'agit de l'index,
+    si c'est un flottant on considère qu'il s'agit d'une profondeur
+    @return: un tableau en deux dimensions [y,x]."""
+        return self.__read_variable(inspect.stack()[0][3],time=time, depth=depth)
+
+    def read_variable_sea_water_salinity_at_time_and_depth(self, time, depth):
+        """Retourne la salinité à la date souhaitée et au niveau souhaité sur toute la couverture horizontale.
+    @type time: datetime ou l'index
+    @param time: date souhaitée
+    @type depth: profondeur en mètre (float) ou index (integer)
+    @param depth: profondeur souhaitée. Si le z est un entier, on considère qu'il s'agit de l'index,
+    si c'est un flottant on considère qu'il s'agit d'une profondeur
+    @return: un tableau en deux dimensions [y,x]."""
+        return self.__read_variable(inspect.stack()[0][3],time=time, depth=depth)
+
+    def read_variable_baroclinic_sea_water_velocity_at_time_and_depth(self, time, depth):
+        """Retourne les composantes u,v du courant à la date souhaitée et au niveau souhaité sur toute la couverture horizontale.
+    @type time: datetime ou l'index
+    @param time: date souhaitée
+    @type depth: profondeur en mètre (float) ou index (integer)
+    @param depth: profondeur souhaitée. Si le z est un entier, on considère qu'il s'agit de l'index,
+    si c'est un flottant on considère qu'il s'agit d'une profondeur
+    @return: un tableau en deux dimensions [u_comp,v_comp] contenant chacun deux dimensions [y,x]."""
+
+        return self.__read_variable(inspect.stack()[0][3],time=time, depth=depth)

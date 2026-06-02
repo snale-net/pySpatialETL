@@ -1,0 +1,64 @@
+#! /usr/bin/env python2.7
+# -*- coding: utf-8 -*-
+# MIT License
+# Copyright (c) 2024 [SNALE - French SAS Company - RCS 951 724 616]
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+from spatialetl.coverage.time_level_coverage import TimeLevelCoverage
+from spatialetl.coverage.io.netcdf.mercator.v2020.MERCATORReader import MERCATORReader
+from spatialetl.coverage.io.netcdf.ww3.WW3Writer import WW3Writer
+import logging
+import numpy as np
+
+if __name__ == "__main__":
+    """
+    Cette routine permet de transformer les données du format Mercator à WaveWatch III en vu de forcer le modèle de vagues.
+    """
+    print("Transform MERCATOR to WW3")
+    
+    logging.basicConfig(format='[%(levelname)s] %(message)s',level=logging.INFO)
+    
+    # Read file
+    reader = MERCATORReader('/home/fabien/mercator/ext-PSY2V4R4_mask.nc',
+                            '/home/fabien/mercator/ext-PSY2V4R4_1dAV_20130201_20130202_grid2D_R20130213.nc',
+                            '/home/fabien/mercator/ext-PSY2V4R4_1dAV_20130201_20130202_gridT_R20130213.nc',
+                            '/home/fabien/mercator/ext-PSY2V4R4_1dAV_20130201_20130202_gridU_R20130213.nc',
+                            '/home/fabien/mercator/ext-PSY2V4R4_1dAV_20130201_20130202_gridV_R20130213.nc')
+        
+    coverage = TimeLevelCoverage(reader);
+    depths = np.array([0.0, 10.0, 50.0, 100.0])
+    
+    writer = WW3Writer(coverage,'/tmp/ww3.mercator-forcing.nc',depths)
+
+    writer.write_variable_sea_surface_height_above_mean_sea_level()
+    writer.write_variable_barotropic_sea_water_velocity();
+    writer.close()    
+    
+    print('End of program')
+     
+    
+    
+    
+       
+        
+    
+    
+    
+    
+    

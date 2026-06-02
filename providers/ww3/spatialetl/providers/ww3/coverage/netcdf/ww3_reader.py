@@ -1,0 +1,167 @@
+#! /usr/bin/env python2.7
+# -*- coding: utf-8 -*-
+# MIT License
+# Copyright (c) 2024 [SNALE - French SAS Company - RCS 951 724 616]
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+from __future__ import division, print_function, absolute_import
+
+import os
+
+import cftime
+import numpy as np
+from netCDF4 import Dataset, MFDataset, num2date
+
+from spatialetl.coverage.time_coverage import TimeCoverage
+from spatialetl.coverage.io.coverage_reader import CoverageReader
+
+
+class WW3Reader (CoverageReader):
+
+    def __init__(self, myFile):
+        CoverageReader.__init__(self,myFile);
+
+        if os.path.isfile(self.filename):
+            self.ncfile = Dataset(self.filename, 'r')
+        elif os.path.isdir(self.filename):
+            self.ncfile = MFDataset(os.path.join(self.filename, "*.nc"), 'r')
+
+        if self.ncfile.variables['longitude'].ndim == 2:
+            self.regular_grid=False
+        else:
+            self.regular_grid=True
+
+    def close(self):
+        self.ncfile.close()
+
+    def is_regular_grid(self):
+        return self.regular_grid
+
+    def get_x_size(self):
+        if self.regular_grid:
+            return np.shape(self.ncfile.variables['longitude'])[0]
+        else:
+            return np.shape(self.ncfile.variables['longitude'])[1]
+
+    def get_y_size(self):
+        if self.regular_grid:
+            return np.shape(self.ncfile.variables['latitude'])[0]
+        else:
+            return np.shape(self.ncfile.variables['latitude'])[0]
+
+    def get_t_size(self):
+        return np.shape(self.ncfile.variables['time'])[0]
+        
+    # Axis
+    def read_axis_t(self,tmin,tmax,timestamp):
+        data = self.ncfile.variables['time'][tmin:tmax]
+        temp = num2date(data, units=self.ncfile.variables['time'].units, calendar="julian")
+
+        result = [cftime.datetime(t.year, t.month, t.day, t.hour, t.minute, t.second, t.microsecond) \
+                  for t in temp];
+
+        if timestamp == 1:
+            return [(t - TimeCoverage.TIME_DATUM).total_seconds() \
+                    for t in result];
+        else:
+            return result;
+    
+    def read_axis_x(self,xmin,xmax,ymin,ymax):
+        if self.regular_grid:
+            return self.ncfile.variables['longitude'][xmin:xmax]
+        else:
+            return self.ncfile.variables['longitude'][ymin:ymax, xmin:xmax]
+    
+    def read_axis_y(self,xmin,xmax,ymin,ymax):
+        if self.regular_grid:
+            return self.ncfile.variables['latitude'][ymin:ymax]
+        else:
+            return self.ncfile.variables['latitude'][ymin:ymax, xmin:xmax]
+    
+    # Scalar 
+    def read_variable_2D_sea_binary_mask(self,xmin,xmax,ymin,ymax):
+        mask = np.ma.filled(self.ncfile.variables["MAPSTA"][ymin:ymax,xmin:xmax], fill_value=np.nan)
+        #mask += 1.0 # inverse le mask
+        #mask %= 2 # inverse le mask
+        return mask
+
+    def read_variable_bathymetry(self,xmin,xmax,ymin,ymax):
+        return np.ma.filled(self.ncfile.variables["dpt"][0][ymin:ymax,xmin:xmax], fill_value=np.nan)
+
+    def read_variable_bathymetry_at_time(self,t,xmin,xmax,ymin,ymax):
+        return np.ma.filled(self.ncfile.variables["dpt"][t][ymin:ymax,xmin:xmax], fill_value=np.nan)
+    
+    def read_variable_sea_surface_height_above_mean_sea_level_at_time(self,t,xmin,xmax,ymin,ymax):
+        return self.ncfile.variables["wlv"][t][ymin:ymax,xmin:xmax]
+    
+    def read_variable_sea_surface_wave_significant_height_at_time(self,t,xmin,xmax,ymin,ymax):
+        return np.ma.filled(self.ncfile.variables["hs"][t][ymin:ymax,xmin:xmax], fill_value=np.nan)
+
+    def read_variable_sea_surface_wave_breaking_height_at_time(self,t,xmin,xmax,ymin,ymax):
+        return np.ma.filled(self.ncfile.variables["wch"][t][ymin:ymax,xmin:xmax], fill_value=np.nan)
+    
+    def read_variable_sea_surface_wave_from_direction_at_time(self,t,xmin,xmax,ymin,ymax):
+        #attention en ce qui concerne les conventions d'angle en meteorologie. celles ci
+        # sont appliquées par ww3. en meteo, un vent venant du nord a une direction de 0°,
+        # un vent venant de l'est a une direction de 90°. par consequent il faut corriger
+        # cette convention si on veut la direction vers en faisant 270°-angle
+        return np.ma.filled(self.ncfile.variables["dir"][t][ymin:ymax,xmin:xmax], fill_value=np.nan)
+
+    def read_variable_sea_surface_wave_to_direction_at_time(self, t,xmin,xmax,ymin,ymax):
+        #attention en ce qui concerne les conventions d'angle en meteorologie. celles ci
+        # sont appliquées par ww3. en meteo, un vent venant du nord a une direction de 0°,
+        # un vent venant de l'est a une direction de 90°. par consequent il faut corriger
+        # cette convention si on veut la direction vers en faisant 270°-angle
+        return 270.-np.ma.filled(self.ncfile.variables["dir"][t][ymin:ymax,xmin:xmax], fill_value=np.nan)
+    
+    def read_variable_sea_surface_wave_mean_period_at_time(self,t,xmin,xmax,ymin,ymax):
+        return np.ma.filled(self.ncfile.variables["t01"][t][ymin:ymax,xmin:xmax], fill_value=np.nan)
+
+    def read_variable_sea_surface_wave_peak_period_at_time(self,t,xmin,xmax,ymin,ymax):
+        return np.ma.filled(self.ncfile.variables["tp"][t][ymin:ymax,xmin:xmax], fill_value=np.nan)
+
+    def read_variable_sea_surface_wave_energy_dissipation_at_ground_level_at_time(self,t,xmin,xmax,ymin,ymax):
+        return np.ma.filled(self.ncfile.variables["fbb"][t][ymin:ymax,xmin:xmax], fill_value=np.nan)
+    
+    def read_variable_radiation_pressure_bernouilli_head_at_time(self,t,xmin,xmax,ymin,ymax):
+        return np.ma.filled(self.ncfile.variables["bhd"][t][ymin:ymax,xmin:xmax], fill_value=np.nan)
+
+    def read_variable_sea_surface_wave_energy_flux_to_ocean_at_time(self,t,xmin,xmax,ymin,ymax):
+        return np.ma.filled(self.ncfile.variables["foc"][t][ymin:ymax,xmin:xmax], fill_value=np.nan)
+
+    def read_variable_sea_surface_wave_peak_frequency_at_time(self,t,xmin,xmax,ymin,ymax):
+        return np.ma.filled(self.ncfile.variables["fp"][t][ymin:ymax,xmin:xmax], fill_value=np.nan)
+    
+    # Vector
+    def read_variable_barotropic_sea_water_velocity_at_time(self,t,xmin,xmax,ymin,ymax):
+        return [np.ma.filled(self.ncfile.variables["ucur"][t][ymin:ymax,xmin:xmax], fill_value=np.nan),np.ma.filled(self.ncfile.variables["vcur"][t][ymin:ymax,xmin:xmax], fill_value=np.nan)]
+
+    def read_variable_atmosphere_momentum_flux_to_waves_at_time(self,t,xmin,xmax,ymin,ymax):
+        return [np.ma.filled(self.ncfile.variables["utaw"][t][ymin:ymax,xmin:xmax], fill_value=np.nan),np.ma.filled(self.ncfile.variables["vtaw"][t][ymin:ymax,xmin:xmax], fill_value=np.nan)]
+
+    def read_variable_waves_momentum_flux_to_ocean_at_time(self,t,xmin,xmax,ymin,ymax):
+        return [np.ma.filled(self.ncfile.variables["utwo"][t][ymin:ymax,xmin:xmax], fill_value=np.nan),np.ma.filled(self.ncfile.variables["vtwo"][t][ymin:ymax,xmin:xmax], fill_value=np.nan)]
+
+    def read_variable_sea_surface_wave_stokes_drift_velocity_at_time(self,t,xmin,xmax,ymin,ymax):
+        return [np.ma.filled(self.ncfile.variables["uuss"][t][ymin:ymax,xmin:xmax], fill_value=np.nan),np.ma.filled(self.ncfile.variables["vuss"][t][ymin:ymax,xmin:xmax], fill_value=np.nan)]
+
+    def read_variable_wind_10m_at_time(self,t,xmin,xmax,ymin,ymax):
+        return [np.ma.filled(self.ncfile.variables["uwnd"][t][ymin:ymax,xmin:xmax], fill_value=np.nan),np.ma.filled(self.ncfile.variables["vwnd"][t][ymin:ymax,xmin:xmax], fill_value=np.nan)]
+           
+    
